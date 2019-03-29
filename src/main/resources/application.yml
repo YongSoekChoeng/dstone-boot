@@ -1,0 +1,29 @@
+server: 
+    port: 9080
+    error: 
+        whitelabel: 
+            enabled: true
+    servlet: 
+        jsp: 
+            init-parameters: 
+                development: true
+
+spring:
+    db1: 
+        datasource:
+            driver-class-name: com.mysql.jdbc.Driver
+            jdbc-url: jdbc:mysql://localhost:3306/memberDB?charSet=utf8&zeroDateTimeBehavior=convertToNull
+            username: root
+            password: db2admin
+    db2: 
+        datasource:
+            driver-class-name: com.mysql.jdbc.Driver
+            jdbc-url: jdbc:mysql://localhost:3306/deptDB?charSet=utf8&zeroDateTimeBehavior=convertToNull
+            username: root
+            password: db2admin
+    mvc: 
+        view: 
+            prefix: /WEB-INF/views/
+            suffix: .jsp
+#    thymeleaf:
+#        cache: false
