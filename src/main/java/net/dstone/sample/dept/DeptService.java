@@ -4,18 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.dstone.common.biz.BaseService; 
+import net.dstone.common.biz.BaseService;
+import net.dstone.common.utils.LogUtil; 
  
 @Service 
 public class DeptService extends BaseService { 
-     
-    private Logger logger = LoggerFactory.getLogger(getClass()); 
-     
+
+    private LogUtil logger = getLogger();
 
     /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/
     @Autowired 
