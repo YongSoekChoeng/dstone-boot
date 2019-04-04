@@ -40,11 +40,11 @@
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>2.0.0</version>
 		</dependency>
-
+	
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId><!-- MySql JDBC -->
-			<version>5.1.37</version>
+			<version>8.0.15</version>
 		</dependency>
 		
 		<dependency>
@@ -64,10 +64,13 @@
 		</dependency>
 		
 		<!-- VIEW -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.boot</groupId> -->
-<!-- 			<artifactId>spring-boot-starter-thymeleaf</artifactId> -->
-<!-- 		</dependency> -->
+		<!-- thymeleaf 와 jasper,jstl 둘중 하나만 선택해야 함. -->
+		<!--  
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>

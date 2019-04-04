@@ -29,6 +29,8 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 @Aspect
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -47,9 +49,10 @@ public class DstoneBootConfig {
 	// DB1 관련 설정
 	/* 2-1. Datasource Configuration START */
     @Bean(name = "dataSource1")
-    @ConfigurationProperties("spring.db1.datasource")
+    @ConfigurationProperties("spring.db1.datasource.hikari")
     public DataSource dataSource1() {
-    	return DataSourceBuilder.create().build();
+    	//return DataSourceBuilder.create().build();
+    	return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
 	/* 2-2. SqlMap Configuration START */
 	@Bean
@@ -110,9 +113,10 @@ public class DstoneBootConfig {
 	// DB2 관련 설정
 	/* 2-1. Datasource Configuration START */
     @Bean(name = "dataSource2")
-    @ConfigurationProperties("spring.db2.datasource")
+    @ConfigurationProperties("spring.db2.datasource.hikari")
     public DataSource dataSource2() {
-    	return DataSourceBuilder.create().build();
+    	//return DataSourceBuilder.create().build();
+    	return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
 	/* 2-2. SqlMap Configuration START */
 	@Bean

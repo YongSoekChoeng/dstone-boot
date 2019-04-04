@@ -11,16 +11,18 @@ server:
 spring:
     db1: 
         datasource:
-            driver-class-name: com.mysql.jdbc.Driver
-            jdbc-url: jdbc:mysql://localhost:3306/memberDB?charSet=utf8&zeroDateTimeBehavior=convertToNull
-            username: root
-            password: db2admin
+            hikari: 
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                jdbc-url: jdbc:mysql://localhost:3306/memberDB?characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false&zeroDateTimeBehavior=convertToNull
+                username: root
+                password: db2admin
     db2: 
-        datasource:
-            driver-class-name: com.mysql.jdbc.Driver
-            jdbc-url: jdbc:mysql://localhost:3306/deptDB?charSet=utf8&zeroDateTimeBehavior=convertToNull
-            username: root
-            password: db2admin
+        datasource: 
+            hikari: 
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                jdbc-url: jdbc:mysql://localhost:3306/deptDB?characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false&zeroDateTimeBehavior=convertToNull
+                username: root
+                password: db2admin
     mvc: 
         view: 
             prefix: /WEB-INF/views/
