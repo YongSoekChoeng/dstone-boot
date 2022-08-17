@@ -38,15 +38,7 @@
     </logger>
     <logger name="java.sql" level="INFO">
         <appender-ref ref="executionAppender" />
-    </logger>    
-    <!--  
-    <logger name="org.springframework" level="INFO">
-        <appender-ref ref="executionAppender" />
-    </logger>
-    <logger name="java.sql" level="DEBUG">
-        <appender-ref ref="executionAppender" />
-    </logger>
-    -->
+    </logger> 
     
     <root level="INFO">
         <appender-ref ref="stdoutAppender" />
