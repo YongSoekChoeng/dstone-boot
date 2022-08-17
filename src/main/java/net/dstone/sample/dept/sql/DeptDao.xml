@@ -6,47 +6,59 @@
                                                                                       
     <!-- SampleDeptVo VO -->                                                                
                                                                                    
-    <!--  샘플그룹정보 리스트조회(카운트) -->                                                      
+    <!--  샘플부서정보 리스트조회(카운트) -->                                                      
     <select id="listSampleDeptCount" parameterType="net.dstone.sample.dept.vo.SampleDeptVo" resultType="Integer">         
         SELECT COUNT(*) CNT FROM ( 
         SELECT                                                            
             *
-        FROM                                                                          
-            SAMPLE_DEPT                                                                     
+        FROM        	                                                                                 
+            --SAMPLE_GROUP /* 샘플그룹 */                                                    
+            --SAMPLE_MEMBER /* 샘플맴버 */                           
+            SAMPLE_DEPT	/* 샘플부서 */
         WHERE 1=1 
         ) P
     </select>                                                                       
                                                                                    
-    <!--  샘플그룹정보 리스트조회 -->                                                      
+    <!--  샘플부서정보 리스트조회 -->                                                      
     <select id="listSampleDept" parameterType="net.dstone.sample.dept.vo.SampleDeptVo" resultType="net.dstone.sample.dept.vo.SampleDeptVo">         
 		SELECT  
-			P.* 
+			RNUM 
+			,P.* 
 		FROM  
 		    (  
-            /**********************************************************************************************************************************/ 
+		    SELECT  
+		        ROWNUM RNUM, P1.*  
+		    FROM  
+		        (  
+                /**********************************************************************************************************************************/ 
 
         SELECT                                                            
             *
-        FROM                                                                          
-            SAMPLE_DEPT                                                                     
+        FROM        	                                                                                 
+            --SAMPLE_GROUP /* 샘플그룹 */                                                    
+            --SAMPLE_MEMBER /* 샘플맴버 */                           
+            SAMPLE_DEPT	/* 샘플부서 */
         WHERE 1=1 
 
-            /**********************************************************************************************************************************/ 
+                /**********************************************************************************************************************************/ 
+		        ) P1 
 		    )   P 
 		WHERE 2>1 
-		    /* 페이징의 기준이 되는 KEY값을 반드시 넣어주시기 바랍니다. */  
-		ORDER BY DEPT_ID LIMIT #{INT_FROM}, #{INT_TO} 
-
+		    AND RNUM <![CDATA[>=]]> #{INT_FROM} 
+		    AND RNUM <![CDATA[<=]]> #{INT_TO} 
+		    AND ROWNUM <![CDATA[<=]]> #{PAGE_SIZE} 
     </select>                                                                       
  
-    <!--  샘플그룹정보 상세조회 -->                                                      
+    <!--  샘플부서정보 상세조회 -->                                                      
     <select id="getSampleDept" parameterType="net.dstone.sample.dept.vo.SampleDeptVo" resultType="net.dstone.sample.dept.vo.SampleDeptVo">         
         SELECT                                                            
             *
-        FROM                                                                          
-            SAMPLE_DEPT                                                                     
+        FROM        	                                                                                 
+            --SAMPLE_GROUP /* 샘플그룹 */                                                    
+            --SAMPLE_MEMBER /* 샘플맴버 */                           
+            SAMPLE_DEPT	/* 샘플부서 */
         WHERE 1=1 
-			AND DEPT_ID = #{DEPT_ID}
+
     </select>                                                                       
  
 </mapper>                                                                             

@@ -1,41 +1,30 @@
 package net.dstone.sample.member; 
  
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import net.dstone.common.biz.BaseService;
-import net.dstone.common.utils.LogUtil;
-import net.dstone.common.utils.StringUtil; 
+import java.util.Map; 
+import java.util.HashMap; 
+import java.util.List; 
+ 
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Service; 
+import org.springframework.transaction.annotation.Transactional; 
+ 
+import net.dstone.common.biz.BaseService; 
+import net.dstone.common.utils.LogUtil; 
  
 @Service 
 public class MemberService extends BaseService { 
-
-    private LogUtil logger = getLogger();
+     
+    LogUtil logger = getLogger(); 
+     
 
     /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/
     @Autowired 
     private net.dstone.sample.member.cud.MemberCudDao memberCudDao; 
     /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/
-    
     /********* DAO 정의부분 시작 *********/
     @Autowired 
     private net.dstone.sample.member.MemberDao memberDao; 
     /********* DAO 정의부분 끝 *********/
-
-    /********* 샘플그룹 SVC 정의 시작 *********/
-    @Autowired 
-    private net.dstone.sample.member.GroupService groupService;
-    /********* 샘플그룹 SVC 정의 끝 *********/
-
-    /********* 샘플부서 SVC 정의 시작 *********/
-    @Autowired 
-    private net.dstone.sample.dept.DeptService deptService; 
-    /********* 샘플부서 SVC 정의 끝 *********/
-    
     /** 
      * 샘플멤버정보 리스트조회 
      * @param paramVo 
@@ -66,7 +55,7 @@ public class MemberService extends BaseService {
             if ( 1>paramVo.getPAGE_NUM() ) { paramVo.setPAGE_NUM(1); } 
             if ( 1>paramVo.getPAGE_SIZE() ) { paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE); } 
             INT_FROM = (paramVo.getPAGE_NUM() - 1) * paramVo.getPAGE_SIZE(); 
-            INT_TO = paramVo.getPAGE_SIZE(); 
+            INT_TO = (paramVo.getPAGE_NUM()) * paramVo.getPAGE_SIZE(); 
             paramVo.setINT_FROM(INT_FROM);
             paramVo.setINT_TO(INT_TO);
 
@@ -139,37 +128,9 @@ public class MemberService extends BaseService {
             /************************ 비즈니스로직 시작 ************************/  
             //NEW KEY 생성 부분 구현 
             newKeyVo.setGROUP_ID( paramVo.getGROUP_ID() ); 
-            //paramVo.setUSER_ID( memberCudDao.selectSampleMemberNewKey(newKeyVo).getUSER_ID() ); 
-            paramVo.setUSER_ID( paramVo.getUSER_ID()); 
+            paramVo.setUSER_ID( memberCudDao.selectSampleMemberNewKey(newKeyVo).getUSER_ID() ); 
             //DAO 호출부분 구현 
             memberCudDao.insertSampleMember(paramVo);  
-            
-            if( !StringUtil.isEmpty(paramVo.getGROUP_ID()) ) {
-            	net.dstone.sample.member.vo.SampleGroupVo sampleGroupVo = new net.dstone.sample.member.vo.SampleGroupVo();
-            	sampleGroupVo.setGROUP_ID(paramVo.getGROUP_ID());
-            	sampleGroupVo = groupService.getSampleGroup(sampleGroupVo);
-            	if( sampleGroupVo == null || StringUtil.isEmpty(sampleGroupVo.getGROUP_ID())  ) {
-            		net.dstone.sample.member.cud.vo.SampleGroupCudVo sampleGroupCudVo = new net.dstone.sample.member.cud.vo.SampleGroupCudVo();
-            		sampleGroupCudVo.setGROUP_ID(paramVo.getGROUP_ID());
-            		sampleGroupCudVo.setNAME("임시샘플그룹");
-            		sampleGroupCudVo.setINPUT_DT(paramVo.getINPUT_DT());
-            		groupService.insertSampleGroup(sampleGroupCudVo);
-            	}
-            }
-            
-            if( !StringUtil.isEmpty(paramVo.getDEPT_ID()) ) {
-            	net.dstone.sample.dept.vo.SampleDeptVo sampleDeptVo = new net.dstone.sample.dept.vo.SampleDeptVo();
-            	sampleDeptVo.setDEPT_ID(paramVo.getDEPT_ID());
-            	sampleDeptVo = deptService.getSampleDept(sampleDeptVo);
-            	if( sampleDeptVo == null || StringUtil.isEmpty(sampleDeptVo.getDEPT_ID())  ) {
-                	net.dstone.sample.dept.cud.vo.SampleDeptCudVo  sampleDeptCudVo = new net.dstone.sample.dept.cud.vo.SampleDeptCudVo();
-                	sampleDeptCudVo.setDEPT_ID(paramVo.getDEPT_ID());
-                	sampleDeptCudVo.setDEPT_NAME("임시샘플부서");
-                	sampleDeptCudVo.setINPUT_DT(paramVo.getINPUT_DT());
-            		deptService.insertSampleDept(sampleDeptCudVo);
-            	}
-            }
-            
             isSuccess = true; 
             /************************ 비즈니스로직 끝 **************************/  
         } catch (Exception e) { 

@@ -9,7 +9,7 @@
     <!--  샘플맴버[SAMPLE_MEMBER] NEW키값 조회 -->                                                        
     <select id="selectSampleMemberNewKey" parameterType="net.dstone.sample.member.cud.vo.SampleMemberCudVo" resultType="net.dstone.sample.member.cud.vo.SampleMemberCudVo">       
         SELECT                                                                        
-            LPAD(( IF( ISNULL(MAX(USER_ID)), 0, MAX(USER_ID) )+1), 30, '0') USER_ID 
+            LPAD((NVL(MAX(USER_ID),0)+1), 30, '0') USER_ID 
         FROM                                                                          
             SAMPLE_MEMBER                                                                       
         WHERE 1=1                                                                     
@@ -54,7 +54,7 @@
                 <if test="TEL != null and !TEL.equals('')" >#{TEL},</if>
                 <if test="HP != null and !HP.equals('')" >#{HP},</if>
                 <if test="EMAIL != null and !EMAIL.equals('')" >#{EMAIL},</if>
-                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >STR_TO_DATE( #{INPUT_DT}, '%Y%m%d%H%i%s' ),</if>
+                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >TO_DATE( #{INPUT_DT}, 'YYYYMMDDHH24MISS'),</if>
                 </trim>
         )                                                                             
     </insert>                                                                       
@@ -79,7 +79,7 @@
                 <if test="TEL != null and !TEL.equals('')" >TEL = #{TEL},</if>
                 <if test="HP != null and !HP.equals('')" >HP = #{HP},</if>
                 <if test="EMAIL != null and !EMAIL.equals('')" >EMAIL = #{EMAIL},</if>
-                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >INPUT_DT = STR_TO_DATE( #{INPUT_DT}, '%Y%m%d%H%i%s' ),</if>
+                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >INPUT_DT = TO_DATE( #{INPUT_DT}, 'YYYYMMDDHH24MISS'),</if>
                 </trim>
         WHERE 1=1                                                                        
             AND GROUP_ID = #{GROUP_ID}

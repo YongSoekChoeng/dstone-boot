@@ -1,19 +1,21 @@
 package net.dstone.sample.dept; 
  
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import net.dstone.common.biz.BaseService;
+import java.util.Map; 
+import java.util.HashMap; 
+import java.util.List; 
+ 
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Service; 
+import org.springframework.transaction.annotation.Transactional; 
+ 
+import net.dstone.common.biz.BaseService; 
 import net.dstone.common.utils.LogUtil; 
  
 @Service 
 public class DeptService extends BaseService { 
-
-    private LogUtil logger = getLogger();
+     
+    LogUtil logger = getLogger(); 
+     
 
     /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/
     @Autowired 
@@ -23,7 +25,6 @@ public class DeptService extends BaseService {
     @Autowired 
     private net.dstone.sample.dept.DeptDao deptDao; 
     /********* DAO 정의부분 끝 *********/
-    
     /** 
      * 샘플부서정보 리스트조회 
      * @param paramVo 
@@ -54,7 +55,7 @@ public class DeptService extends BaseService {
             if ( 1>paramVo.getPAGE_NUM() ) { paramVo.setPAGE_NUM(1); } 
             if ( 1>paramVo.getPAGE_SIZE() ) { paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE); } 
             INT_FROM = (paramVo.getPAGE_NUM() - 1) * paramVo.getPAGE_SIZE(); 
-            INT_TO = paramVo.getPAGE_SIZE(); 
+            INT_TO = (paramVo.getPAGE_NUM()) * paramVo.getPAGE_SIZE(); 
             paramVo.setINT_FROM(INT_FROM);
             paramVo.setINT_TO(INT_TO);
 
@@ -124,13 +125,9 @@ public class DeptService extends BaseService {
             newKeyVo = new net.dstone.sample.dept.cud.vo.SampleDeptCudVo();
             /************************ 변수 정의 끝 **************************/  
              
-            /************************ 비즈니스로직 시작 ************************/              
-            if("ER".equals(paramVo.getDEPT_ID())) {
-            	throw new Exception("임의로 예외발생.");
-            }
+            /************************ 비즈니스로직 시작 ************************/  
             //NEW KEY 생성 부분 구현 
-            //paramVo.setDEPT_ID( deptCudDao.selectSampleDeptNewKey(newKeyVo).getDEPT_ID() ); 
-            paramVo.setDEPT_ID( paramVo.getDEPT_ID() ); 
+            paramVo.setDEPT_ID( deptCudDao.selectSampleDeptNewKey(newKeyVo).getDEPT_ID() ); 
             //DAO 호출부분 구현 
             deptCudDao.insertSampleDept(paramVo);  
             isSuccess = true; 

@@ -9,7 +9,7 @@
     <!--  샘플부서[SAMPLE_DEPT] NEW키값 조회 -->                                                        
     <select id="selectSampleDeptNewKey" parameterType="net.dstone.sample.dept.cud.vo.SampleDeptCudVo" resultType="net.dstone.sample.dept.cud.vo.SampleDeptCudVo">       
         SELECT                                                                        
-            LPAD(( IF( ISNULL(MAX(DEPT_ID)), 0, MAX(DEPT_ID) )+1), 30, '0') DEPT_ID 
+            LPAD((NVL(MAX(DEPT_ID),0)+1), 30, '0') DEPT_ID 
         FROM                                                                          
             SAMPLE_DEPT                                                                       
         WHERE 1=1                                                                     
@@ -27,7 +27,7 @@
                 <trim prefix="" suffixOverrides=",">
                 <if test="DEPT_ID != null and !DEPT_ID.equals('')" >#{DEPT_ID},</if>
                 <if test="DEPT_NAME != null and !DEPT_NAME.equals('')" >#{DEPT_NAME},</if>
-                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >STR_TO_DATE( #{INPUT_DT}, '%Y%m%d%H%i%s' ),</if>
+                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >TO_DATE( #{INPUT_DT}, 'YYYYMMDDHH24MISS'),</if>
                 </trim>
         )                                                                             
     </insert>                                                                       
@@ -39,7 +39,7 @@
                 <trim prefix="" suffixOverrides=",">
                 <if test="DEPT_ID != null and !DEPT_ID.equals('')" >DEPT_ID = #{DEPT_ID},</if>
                 <if test="DEPT_NAME != null and !DEPT_NAME.equals('')" >DEPT_NAME = #{DEPT_NAME},</if>
-                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >INPUT_DT = STR_TO_DATE( #{INPUT_DT}, '%Y%m%d%H%i%s' ),</if>
+                <if test="INPUT_DT != null and !INPUT_DT.equals('')" >INPUT_DT = TO_DATE( #{INPUT_DT}, 'YYYYMMDDHH24MISS'),</if>
                 </trim>
         WHERE 1=1                                                                        
             AND DEPT_ID = #{DEPT_ID}
