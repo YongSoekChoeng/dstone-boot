@@ -2,12 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
+	<!-- lookup parent from repository -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.3.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>2.1.0.RELEASE</version>
+		<relativePath/> 
 	</parent>
+	
 	<groupId>net.dstone</groupId>
 	<artifactId>dstone-boot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -17,70 +20,80 @@
 	<description>dstone-boot project for Spring Boot</description>
 
 	<properties>
+		<!-- Java -->
 		<java-version>1.8</java-version>
-		<org.aspectj-version>1.6.8</org.aspectj-version>
-		<org.slf4j-version>1.5.10</org.slf4j-version>
-		<jackson.version>2.9.2</jackson.version>
-    	<maven.compiler.source>1.8</maven.compiler.source>
-    	<maven.compiler.target>1.8</maven.compiler.target>		
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
-		</dependency>
+		<javax.inject>1</javax.inject>
+		<junit-version>4.12</junit-version>
 		
-		<!-- SPRING -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		<!-- Spring  -->
+		<org.springframework-version>4.3.14.RELEASE</org.springframework-version>
+		<org.aspectj-version>1.8.9</org.aspectj-version>
+		
+		<!-- Web -->
+		<jsp.version>2.2.1</jsp.version>
+		<jstl.version>1.2.1</jstl.version>
+		<servlet.version>3.0.1</servlet.version>
+		
+		<!-- Logging -->
+		<log4j-version>2.17.2</log4j-version>
+		<org.slf4j-version>1.7.30</org.slf4j-version>
+		<log4jdbc-version>1.16</log4jdbc-version>
+		
+		<!-- Maven -->
+		<maven-eclipse-plugin-version>2.10</maven-eclipse-plugin-version>
+		<maven-compiler-plugin-version>3.7.0</maven-compiler-plugin-version>
+		<exec-maven-plugin-version>1.6.0</exec-maven-plugin-version>
+		<maven-war-plugin-version>3.0.0</maven-war-plugin-version>
+	</properties>
+	
+	<dependencies>
+		<!-- SpringBoot -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion><!-- 스프링 부트에서 Log4j2를 사용하기위해선 내부로깅에서 쓰이는 의존성을 제외해주어야 한다. -->
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+	    </dependency> 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+	    <dependency><!-- Log4j2 로깅 구현체를 사용을 위해 Spring Boot Starter에서 지원해주는 log4j2 의존성을 추가 해준다. -->
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-log4j2</artifactId>
+	    </dependency>
+		
+		<!-- Logging -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.mybatis</groupId>
-			<artifactId>mybatis-spring</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mybatis.spring.boot</groupId>
-			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-	
-		<!-- DATABASE -->
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId><!-- Connection Pool -->
-			<version>3.4.0</version>
-		</dependency>	
-        <dependency>
-            <groupId>oracle.jdbc</groupId>
-            <artifactId>ojdbc</artifactId>
-            <version>12.1.0.2.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc8.jar</systemPath>
-        </dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId><!-- MySql JDBC -->
-			<version>8.0.15</version>
+			<groupId>org.bgee.log4jdbc-log4j2</groupId>
+			<artifactId>log4jdbc-log4j2-jdbc4</artifactId>
+		    <version>${log4jdbc-version}</version>
 		</dependency>
 		
+        <!-- @Inject -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+		    <version>${javax.inject}</version>
+        </dependency>
+              
+		<!-- Servlet -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>servlets.com</groupId>
+			<artifactId>cos</artifactId>
+			<version>05Nov2002</version>
+		</dependency>
+
 		<!-- VIEW -->
 		<!-- thymeleaf 와 jasper,jstl 둘중 하나만 선택해야 함. -->
 		<!--  
@@ -94,34 +107,73 @@
 			<artifactId>tomcat-embed-jasper</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
+		    <groupId>javax.servlet.jsp</groupId>
+		    <artifactId>javax.servlet.jsp-api</artifactId>
+		    <version>${jsp.version}</version>
+		    <scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>servlets.com</groupId>
-			<artifactId>cos</artifactId>
-			<version>05Nov2002</version>
+		    <groupId>javax.servlet.jsp.jstl</groupId>
+		    <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+		    <version>${jstl.version}</version>
+		</dependency>
+		
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId><!-- Exclude Commons Logging in favor of SLF4j -->
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		<dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-jdbc</artifactId> 
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 		</dependency>
 		
 		<!-- AspectJ -->
 		<dependency>
 		    <groupId>org.aspectj</groupId>
 		    <artifactId>aspectjrt</artifactId>
-		    <version>${org.aspectj-version}</version>
 		</dependency>    
 		<dependency>
 		    <groupId>org.aspectj</groupId>
 		    <artifactId>aspectjweaver</artifactId>
-		    <version>${org.aspectj-version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.aspectj</groupId>
 		    <artifactId>aspectjtools</artifactId>
-		    <version>${org.aspectj-version}</version>
 		</dependency>
 		
 		<!-- CG Proxy -->
@@ -135,8 +187,55 @@
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
 		</dependency>
-		
+
+		<!-- MyBatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+
+		<!-- Apache and Third Parties -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+		<!-- DATABASE -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId><!-- Connection Pool -->
+		</dependency>	
+        <dependency>
+            <groupId>oracle.jdbc</groupId>
+            <artifactId>ojdbc</artifactId>
+            <version>12.1.0.2.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc8.jar</systemPath>
+        </dependency>
+
 		<!-- JSON -->
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib-ext-spring</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -150,21 +249,8 @@
 	    <dependency>
 	        <groupId>com.fasterxml.jackson.core</groupId>
 	        <artifactId>jackson-databind</artifactId>
-	        <version>${jackson.version}</version>
 	    </dependency>
-		
-		<!-- Apache and Third Parties -->
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.3</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		
+
 		<!-- HTTP Connection -->
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -174,18 +260,42 @@
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpcore</artifactId>
-		    <version>4.4</version>
 		</dependency>
-		
+
 		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.github.benas</groupId>
 			<artifactId>jpopulator</artifactId><!-- JPOPULATOR(테스트데이터제너레이터) -->
 			<version>1.2.0</version>
 		</dependency>
 		
+		<!-- Docker -->
+		<dependency>
+			<groupId>com.spotify</groupId>
+			<artifactId>docker-client</artifactId>
+			<version>8.15.1</version>
+		</dependency>
+		
+		<!-- Build and Validate -->
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.1</version>
+			<type>maven-plugin</type>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator-annotation-processor</artifactId>
+			<version>4.1.0.Final</version>
+		</dependency>
+		
 	</dependencies>
-
+	
 	<build>        
 		<sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -204,25 +314,40 @@
 				</excludes>
                 <filtering>true</filtering>
             </resource>
-            <resource>
-                <directory>resources-${deploy.phase}/</directory>
-                <filtering>true</filtering>
-            </resource>
         </resources>
 		<plugins>
+            <plugin>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>${maven-eclipse-plugin-version}</version>
+                <configuration>
+                    <additionalProjectnatures>
+                        <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+                    </additionalProjectnatures>
+                    <additionalBuildcommands>
+                        <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+                    </additionalBuildcommands>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+            </plugin>			
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
