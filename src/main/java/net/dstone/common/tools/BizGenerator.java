@@ -20,7 +20,7 @@ public class BizGenerator {
 	// SqlSessionTemplate 로 등록된 ID
 	public static String SQL_CLIENT_ID = "sqlMapClientTemplate1";
 	// 프로젝트 루트
-	public static String PROJ_ROOT = "D:/WorkShop/AppHome/FRAMEWORK/dstone";
+	public static String PROJ_ROOT = "D:/AppHome/dstone";
 	// 소스가 생성될 루트
 	public static String SRC_ROOT = PROJ_ROOT + "/src/main/java";
 	// 웹 컨텍스트루트
@@ -36,7 +36,7 @@ public class BizGenerator {
 	// JSP 파일 루트(웹루트로부터 시작되는 JSP파일루트 예:/view
 	public static String JSP_ROOT_PATH = "/sample/view";
 	// RestFul WebService 호출시 웹URL
-	public static String WS_WEB_URL = "http://localhost:8080";
+	public static String WS_WEB_URL = "http://localhost:9080";
 	// RestFul WebService 호출시 루트 Path. WebService Restful통신을 위해서 jersey라이브러리를 사용한다. web.xml에 등록된 com.sun.jersey.spi.spring.container.servlet.SpringServlet에 맵핑될 url-pattern.
 	public static String WS_ROOT_PATH = "/ws";
 
@@ -54,7 +54,7 @@ public class BizGenerator {
 	}
 
 	protected static void debug(Object o) {
-		System.out.println(o);
+		net.dstone.common.utils.LogUtil.sysout(o);
 	}
 
 	protected static String[] getPrimarykeys(String TABLE_NAME) {
@@ -576,7 +576,7 @@ public class BizGenerator {
 			StringBuffer vo = new StringBuffer();
 
 			if (TABLE_NAME == null || "".equals(TABLE_NAME)) {
-				System.out.println("테이블명 입력필수.");
+				net.dstone.common.utils.LogUtil.sysout("테이블명 입력필수.");
 			} else {
 				if (strVoName == null || "".equals(strVoName)) {
 					if (TABLE_NAME != null && !"".equals(TABLE_NAME)) {
@@ -646,18 +646,18 @@ public class BizGenerator {
 
 					}
 					vo.append("}                     ").append("\n");
-					// System.out.println("============================ VO START ============================");
-					// System.out.println(vo);
-					// System.out.println("============================ VO END ============================");
+					// net.dstone.common.utils.LogUtil.sysout("============================ VO START ============================");
+					// net.dstone.common.utils.LogUtil.sysout(vo);
+					// net.dstone.common.utils.LogUtil.sysout("============================ VO END ============================");
 
 					voStr = vo.toString();
 					if (fileGenYn) {
 						net.dstone.common.utils.FileUtil.writeFile(SRC_ROOT + "/" + StringUtil.replace(strVoPackageName, ".", "/"), strVoName + ".java", voStr, CHARSET);
 					}
-					System.out.println("============================ VO START ============================");
-					System.out.println(voStr);
-					System.out.println("============================ VO END ============================");
-					System.out.println("");
+					net.dstone.common.utils.LogUtil.sysout("============================ VO START ============================");
+					net.dstone.common.utils.LogUtil.sysout(voStr);
+					net.dstone.common.utils.LogUtil.sysout("============================ VO END ============================");
+					net.dstone.common.utils.LogUtil.sysout("");
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -689,7 +689,7 @@ public class BizGenerator {
 			StringBuffer vo = new StringBuffer();
 
 			if (strVoName == null || "".equals(strVoName)) {
-				System.out.println("VO 명 입력필수.");
+				net.dstone.common.utils.LogUtil.sysout("VO 명 입력필수.");
 			} else {
 
 				if (!strVoName.endsWith("Vo")) {
@@ -792,19 +792,19 @@ public class BizGenerator {
 						}
 					}
 					vo.append("}                     ").append("\n");
-					// System.out.println("============================ VO START ============================");
-					// System.out.println(vo);
-					// System.out.println("============================ VO END ============================");
+					// net.dstone.common.utils.LogUtil.sysout("============================ VO START ============================");
+					// net.dstone.common.utils.LogUtil.sysout(vo);
+					// net.dstone.common.utils.LogUtil.sysout("============================ VO END ============================");
 
 					voStr = vo.toString();
 					if (fileGenYn) {
 						net.dstone.common.utils.FileUtil.writeFile(SRC_ROOT + "/" + StringUtil.replace(strVoPackageName, ".", "/"), strVoName + ".java", voStr, CHARSET);
 					}
 
-					System.out.println("============================ VO START ============================");
-					System.out.println(voStr);
-					System.out.println("============================ VO END ============================");
-					System.out.println("");
+					net.dstone.common.utils.LogUtil.sysout("============================ VO START ============================");
+					net.dstone.common.utils.LogUtil.sysout(voStr);
+					net.dstone.common.utils.LogUtil.sysout("============================ VO END ============================");
+					net.dstone.common.utils.LogUtil.sysout("");
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -898,7 +898,7 @@ public class BizGenerator {
 			fullFileName = SRC_ROOT + "/" + StringUtil.replace(strDaoPackageName, ".", "/") + "/sql/" + fileName;
 			fileExists = FileUtil.isFileExist(fullFileName);
 
-			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + fileName + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			net.dstone.common.utils.LogUtil.sysout("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + fileName + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
 			xmlH.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                            ").append("\n");
 			xmlH.append("                                                                                      ").append("\n");
@@ -1048,10 +1048,10 @@ public class BizGenerator {
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(fullFileName), FileUtil.getFileName(fullFileName), xmlFileConts, CHARSET);
 			}
 
-			System.out.println("============================ XML START ============================");
-			System.out.println(xmlFileConts);
-			System.out.println("============================ XML END ============================");
-			System.out.println("");
+			net.dstone.common.utils.LogUtil.sysout("============================ XML START ============================");
+			net.dstone.common.utils.LogUtil.sysout(xmlFileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ XML END ============================");
+			net.dstone.common.utils.LogUtil.sysout("");
 
 		}
 
@@ -1112,7 +1112,7 @@ public class BizGenerator {
 			fullFileName = SRC_ROOT + "/" + StringUtil.replace(strDaoPackageName, ".", "/") + "/sql/" + fileName;
 			fileExists = FileUtil.isFileExist(fullFileName);
 
-			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + fileName + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			net.dstone.common.utils.LogUtil.sysout("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + fileName + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
 			xmlH.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                            ").append("\n");
 			xmlH.append("                                                                                      ").append("\n");
@@ -1172,10 +1172,10 @@ public class BizGenerator {
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(fullFileName), FileUtil.getFileName(fullFileName), xmlFileConts, CHARSET);
 			}
 
-			System.out.println("============================ XML START ============================");
-			System.out.println(xmlFileConts);
-			System.out.println("============================ XML END ============================");
-			System.out.println("");
+			net.dstone.common.utils.LogUtil.sysout("============================ XML START ============================");
+			net.dstone.common.utils.LogUtil.sysout(xmlFileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ XML END ============================");
+			net.dstone.common.utils.LogUtil.sysout("");
 
 		}
 		
@@ -1338,6 +1338,7 @@ public class BizGenerator {
 
 			daoName = strDaoName;
 			nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
+			daoFileName = SRC_ROOT + "/" + StringUtil.replace(PACKAGE_NAME + "." + daoName, ".", "/") + ".java";
 
 			daoH.append("package " + PACKAGE_NAME + "; ").append("\n");
 			daoH.append(" ").append("\n");
@@ -1358,11 +1359,24 @@ public class BizGenerator {
 				nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
 				daoH.append("public class " + daoName + " extends net.dstone.common.biz.BaseDao { ").append("\n");
 			}
-			daoH.append("    @Autowired ").append("\n");
-			daoH.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
-			daoH.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
-			daoH.append("     ").append("\n");
-
+			
+			StringBuffer autowiredPart = new StringBuffer();
+			if (!FileUtil.isFileExist(daoFileName)) {
+				autowiredPart.append("    @Autowired ").append("\n");
+				autowiredPart.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
+				autowiredPart.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
+				autowiredPart.append("     ").append("\n");
+			}
+			// 이미 선언이 되어있지 않을 경우에만 생성.
+			String prevFileConts = "";
+			if (FileUtil.isFileExist(daoFileName)) {
+				prevFileConts = net.dstone.common.utils.FileUtil.readFile(daoFileName, CHARSET);
+				prevFileConts = net.dstone.common.utils.StringUtil.replace(prevFileConts, "\r\n", "\n");
+			}
+			if(prevFileConts.indexOf(autowiredPart.toString()) < 0){
+				daoH.append(autowiredPart);
+			}
+			
 			daoConts.append("    /******************************************* " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 시작 *******************************************/ ").append("\n");
 
 			if (!cudOnlyYn) {
@@ -1408,12 +1422,11 @@ public class BizGenerator {
 
 			daoF.append("} ").append("\n");
 
-			System.out.println("============================ DAO START ============================");
+			net.dstone.common.utils.LogUtil.sysout("============================ DAO START ============================");
 			String fileConts = "";
 			if (!fileGenYn) {
 				fileConts = daoH.toString() + daoConts.toString() + daoF.toString();
 			} else {
-				daoFileName = SRC_ROOT + "/" + StringUtil.replace(PACKAGE_NAME + "." + daoName, ".", "/") + ".java";
 				if (!FileUtil.isFileExist(daoFileName)) {
 					net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(daoFileName), FileUtil.getFileName(daoFileName), daoH.toString() + daoF.toString(), CHARSET);
 				}
@@ -1423,9 +1436,9 @@ public class BizGenerator {
 				fileConts = fileContsH + "\n" + daoConts.toString() + "\n" + fileContsF;
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(daoFileName), FileUtil.getFileName(daoFileName), fileConts, CHARSET);
 			}
-			System.out.println(fileConts);
-			System.out.println("============================ DAO END ============================");
-			// System.out.println("");
+			net.dstone.common.utils.LogUtil.sysout(fileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ DAO END ============================");
+			// net.dstone.common.utils.LogUtil.sysout("");
 		}
 
 		/**
@@ -1490,13 +1503,23 @@ public class BizGenerator {
 			daoH.append("@Repository ").append("\n");
 			daoH.append("public class " + daoName + " extends net.dstone.common.biz.BaseDao { ").append("\n");
 			
-			if(!isDaoFileNameExists || !net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + daoName, SQL_CLIENT_ID)){
-				daoConts.append("    @Autowired ").append("\n");
-				daoConts.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
-				daoConts.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
-				daoConts.append("     ").append("\n");
+			StringBuffer autowiredPart = new StringBuffer();
+			if (!isDaoFileNameExists || !net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + daoName, SQL_CLIENT_ID)) {
+				autowiredPart.append("    @Autowired ").append("\n");
+				autowiredPart.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
+				autowiredPart.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
+				autowiredPart.append("     ").append("\n");
 			}
-
+			// 이미 선언이 되어있지 않을 경우에만 생성.
+			String prevFileConts = "";
+			if (FileUtil.isFileExist(daoFileName)) {
+				prevFileConts = net.dstone.common.utils.FileUtil.readFile(daoFileName, CHARSET);
+				prevFileConts = net.dstone.common.utils.StringUtil.replace(prevFileConts, "\r\n", "\n");
+			}
+			if(prevFileConts.indexOf(autowiredPart.toString()) < 0){
+				daoConts.append(autowiredPart);
+			}
+			
 			if (pageYn) {
 				daoConts.append("    /* ").append("\n");
 				daoConts.append("     * " + strMethodComment + "(카운트) ").append("\n");
@@ -1526,12 +1549,11 @@ public class BizGenerator {
 			}
 			daoF.append("} ").append("\n");
 
-			System.out.println("============================ DAO START ============================");
+			net.dstone.common.utils.LogUtil.sysout("============================ DAO START ============================");
 			String fileConts = "";
 			if (!fileGenYn) {
 				fileConts = daoH.toString() + daoConts.toString() + daoF.toString();
 			} else {
-				daoFileName = SRC_ROOT + "/" + StringUtil.replace(PACKAGE_NAME + "." + daoName, ".", "/") + ".java";
 				if (!FileUtil.isFileExist(daoFileName)) {
 					net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(daoFileName), FileUtil.getFileName(daoFileName), daoH.toString() + daoF.toString(), CHARSET);
 				}
@@ -1539,11 +1561,11 @@ public class BizGenerator {
 				String fileContsH = fileConts.substring(0, fileConts.lastIndexOf("}"));
 				String fileContsF = fileConts.substring(fileConts.lastIndexOf("}"));
 				fileConts = fileContsH + "\n" +  daoConts.toString() + "\n" + fileContsF;
-				// System.out.println(fileConts);
+				// net.dstone.common.utils.LogUtil.sysout(fileConts);
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(daoFileName), FileUtil.getFileName(daoFileName), fileConts, CHARSET);
 			}
-			System.out.println(fileConts);
-			System.out.println("============================ DAO END ============================");
+			net.dstone.common.utils.LogUtil.sysout(fileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ DAO END ============================");
 
 		}
 	}
@@ -1667,42 +1689,54 @@ public class BizGenerator {
 				svcH.append("    LogUtil logger = getLogger(); ").append("\n");
 				svcH.append("     ").append("\n");
 
+				StringBuffer autowiredPartCUD = new StringBuffer();
+				StringBuffer autowiredPartR = new StringBuffer();
 				if (!FileUtil.isFileExist(svcFileName)) {
-					svcConts.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/").append("\n");
-					svcConts.append("    @Autowired ").append("\n");
-					svcConts.append("    private " + net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
-					svcConts.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/").append("\n");
+					autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/").append("\n");
+					autowiredPartCUD.append("    @Autowired ").append("\n");
+					autowiredPartCUD.append("    private " + net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
+					autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/").append("\n");
 
 					/* 트랜젝션종류 - 0:다건조회, 1:단건조회 */
 					if (CRUD == 0 || CRUD == 1) {
 						if (!StringUtil.isEmpty(strDaoPackageName) && !StringUtil.isEmpty(strDaoName)) {
-							svcConts.append("    /********* DAO 정의부분 시작 *********/").append("\n");
-							svcConts.append("    @Autowired ").append("\n");
-							svcConts.append("    private " + strDaoPackageName + "." + strDaoName + " " + daoAlias + "; ").append("\n");
-							svcConts.append("    /********* DAO 정의부분 끝 *********/").append("\n");
+							autowiredPartR.append("    /********* DAO 정의부분 시작 *********/").append("\n");
+							autowiredPartR.append("    @Autowired ").append("\n");
+							autowiredPartR.append("    private " + strDaoPackageName + "." + strDaoName + " " + daoAlias + "; ").append("\n");
+							autowiredPartR.append("    /********* DAO 정의부분 끝 *********/").append("\n");
 						}
 					}
-					svcConts.append("    ").append("\n");
 				} else if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + strSvcName, daoAlias)) {
 					if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + strSvcName, commonDaoAlias)) {
-						svcConts.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/").append("\n");
-						svcConts.append("    @Autowired ").append("\n");
-						svcConts.append("    private " + net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
-						svcConts.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/").append("\n");
+						autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/").append("\n");
+						autowiredPartCUD.append("    @Autowired ").append("\n");
+						autowiredPartCUD.append("    private " + net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
+						autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/").append("\n");
 					}
 					/* 트랜젝션종류 - 0:다건조회, 1:단건조회 */
 					if (CRUD == 0 || CRUD == 1) {
 						if (!StringUtil.isEmpty(strDaoPackageName) && !StringUtil.isEmpty(strDaoName)) {
 							if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(strDaoPackageName + "." + strDaoName, daoAlias)) {
-								svcConts.append("    /********* DAO 정의부분 시작 *********/").append("\n");
-								svcConts.append("    @Autowired ").append("\n");
-								svcConts.append("    private " + strDaoPackageName + "." + strDaoName + " " + daoAlias + "; ").append("\n");
-								svcConts.append("    /********* DAO 정의부분 끝 *********/").append("\n");
+								autowiredPartR.append("    /********* DAO 정의부분 시작 *********/").append("\n");
+								autowiredPartR.append("    @Autowired ").append("\n");
+								autowiredPartR.append("    private " + strDaoPackageName + "." + strDaoName + " " + daoAlias + "; ").append("\n");
+								autowiredPartR.append("    /********* DAO 정의부분 끝 *********/").append("\n");
 							}
 						}
 					}
-					svcConts.append("    ").append("\n");
 				}
+				// 이미 선언이 되어있지 않을 경우에만 생성.
+				String prevFileConts = "";
+				if (FileUtil.isFileExist(svcFileName)) {
+					prevFileConts = net.dstone.common.utils.FileUtil.readFile(svcFileName, CHARSET);
+					prevFileConts = net.dstone.common.utils.StringUtil.replace(prevFileConts, "\r\n", "\n");
+				}
+				if(prevFileConts.indexOf(autowiredPartCUD.toString()) < 0){
+					svcConts.append(autowiredPartCUD);
+				}
+				if(prevFileConts.indexOf(autowiredPartR.toString()) < 0){
+					svcConts.append(autowiredPartR);
+				}				
 
 				/* 트랜젝션종류 - 0:다건조회 */
 				if (CRUD == 0) {
@@ -1903,7 +1937,7 @@ public class BizGenerator {
 
 				svcF.append("} ").append("\n");
 
-				System.out.println("============================ SVC START ============================");
+				net.dstone.common.utils.LogUtil.sysout("============================ SVC START ============================");
 
 				if (!FileUtil.isFileExist(svcFileName)) {
 					fileConts = svcH.toString() + svcConts.toString() + svcF.toString();
@@ -1919,7 +1953,7 @@ public class BizGenerator {
 					String fileContsH = fileConts.substring(0, fileConts.lastIndexOf("}"));
 					String fileContsF = fileConts.substring(fileConts.lastIndexOf("}"));
 					fileConts = fileContsH + "\n" + svcConts.toString() + "\n" + fileContsF;
-					// System.out.println(fileConts);
+					// net.dstone.common.utils.LogUtil.sysout(fileConts);
 					net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(svcFileName), FileUtil.getFileName(svcFileName), fileConts, CHARSET);
 				}
 
@@ -1927,8 +1961,8 @@ public class BizGenerator {
 				e.printStackTrace();
 			}
 
-			System.out.println(fileConts);
-			System.out.println("============================ SVC END ============================");
+			net.dstone.common.utils.LogUtil.sysout(fileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ SVC END ============================");
 
 		}
 		
@@ -2052,20 +2086,30 @@ public class BizGenerator {
 			ctrlH.append("public class " + strCtrlName + " extends net.dstone.common.biz.BaseController { ").append("\n");
 			ctrlH.append("    ").append("\n");
 
+			StringBuffer autowiredPart = new StringBuffer();
 			if (!FileUtil.isFileExist(ctrlFileName)) {
-				ctrlConts.append("    /********* SVC 정의부분 시작 *********/").append("\n");
-				ctrlConts.append("    @Autowired ").append("\n");
-				ctrlConts.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
-				ctrlConts.append("    /********* SVC 정의부분 끝 *********/").append("\n");
-				ctrlConts.append("    ").append("\n");
+				autowiredPart.append("    /********* SVC 정의부분 시작 *********/").append("\n");
+				autowiredPart.append("    @Autowired ").append("\n");
+				autowiredPart.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
+				autowiredPart.append("    /********* SVC 정의부분 끝 *********/").append("\n");
+				autowiredPart.append("    ").append("\n");
 			} else {
 				if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + strCtrlName, svcAlias)) {
-					ctrlConts.append("    /********* SVC 정의부분 시작 *********/").append("\n");
-					ctrlConts.append("    @Autowired ").append("\n");
-					ctrlConts.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
-					ctrlConts.append("    /********* SVC 정의부분 끝 *********/").append("\n");
-					ctrlConts.append("    ").append("\n");
+					autowiredPart.append("    /********* SVC 정의부분 시작 *********/").append("\n");
+					autowiredPart.append("    @Autowired ").append("\n");
+					autowiredPart.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
+					autowiredPart.append("    /********* SVC 정의부분 끝 *********/").append("\n");
+					autowiredPart.append("    ").append("\n");
 				}
+			}
+			// 이미 선언이 되어있지 않을 경우에만 생성.
+			String prevFileConts = "";
+			if (FileUtil.isFileExist(ctrlFileName)) {
+				prevFileConts = net.dstone.common.utils.FileUtil.readFile(ctrlFileName, CHARSET);
+				prevFileConts = net.dstone.common.utils.StringUtil.replace(prevFileConts, "\r\n", "\n");
+			}
+			if(prevFileConts.indexOf(autowiredPart.toString()) < 0){
+				ctrlConts.append(autowiredPart);
 			}
 
 			ctrlConts.append("    /** ").append("\n");
@@ -2215,7 +2259,7 @@ public class BizGenerator {
 
 			ctrlF.append("} ").append("\n");
 
-			System.out.println("============================ CTRL START ============================");
+			net.dstone.common.utils.LogUtil.sysout("============================ CTRL START ============================");
 			String fileConts = "";
 
 			if (!FileUtil.isFileExist(ctrlFileName)) {
@@ -2232,12 +2276,12 @@ public class BizGenerator {
 				String fileContsH = fileConts.substring(0, fileConts.lastIndexOf("}"));
 				String fileContsF = fileConts.substring(fileConts.lastIndexOf("}"));
 				fileConts = fileContsH + "\n" + ctrlConts.toString() + "\n" + fileContsF;
-				// System.out.println(fileConts);
+				// net.dstone.common.utils.LogUtil.sysout(fileConts);
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(ctrlFileName), FileUtil.getFileName(ctrlFileName), fileConts, CHARSET);
 			}
 
-			System.out.println(fileConts);
-			System.out.println("============================ CTRL END ============================");
+			net.dstone.common.utils.LogUtil.sysout(fileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ CTRL END ============================");
 
 		}
 
@@ -2328,21 +2372,31 @@ public class BizGenerator {
 			ctrlH.append("public class " + strCtrlName + " extends net.dstone.common.biz.BaseController { ").append("\n");
 			ctrlH.append("    ").append("\n");
 
+			StringBuffer autowiredPart = new StringBuffer();
 			if (!FileUtil.isFileExist(ctrlFileName)) {
-				ctrlConts.append("    /********* SVC 정의부분 시작 *********/").append("\n");
-				ctrlConts.append("    @Autowired ").append("\n");
-				ctrlConts.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
-				ctrlConts.append("    /********* SVC 정의부분 끝 *********/").append("\n");
-				ctrlConts.append("    ").append("\n");
+				autowiredPart.append("    /********* SVC 정의부분 시작 *********/").append("\n");
+				autowiredPart.append("    @Autowired ").append("\n");
+				autowiredPart.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
+				autowiredPart.append("    /********* SVC 정의부분 끝 *********/").append("\n");
+				autowiredPart.append("    ").append("\n");
 			} else {
 				if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + strCtrlName, svcAlias)) {
-					ctrlConts.append("    /********* SVC 정의부분 시작 *********/").append("\n");
-					ctrlConts.append("    @Autowired ").append("\n");
-					ctrlConts.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
-					ctrlConts.append("    /********* SVC 정의부분 끝 *********/").append("\n");
-					ctrlConts.append("    ").append("\n");
+					autowiredPart.append("    /********* SVC 정의부분 시작 *********/").append("\n");
+					autowiredPart.append("    @Autowired ").append("\n");
+					autowiredPart.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
+					autowiredPart.append("    /********* SVC 정의부분 끝 *********/").append("\n");
+					autowiredPart.append("    ").append("\n");
 				}
 			}
+			// 이미 선언이 되어있지 않을 경우에만 생성.
+			String prevFileConts = "";
+			if (FileUtil.isFileExist(ctrlFileName)) {
+				prevFileConts = net.dstone.common.utils.FileUtil.readFile(ctrlFileName, CHARSET);
+				prevFileConts = net.dstone.common.utils.StringUtil.replace(prevFileConts, "\r\n", "\n");
+			}
+			if(prevFileConts.indexOf(autowiredPart.toString()) < 0){
+				ctrlConts.append(autowiredPart);
+			}		
 
 			ctrlConts.append("    /** ").append("\n");
 			ctrlConts.append("     * " + strMethodComment + " ").append("\n");
@@ -2489,7 +2543,7 @@ public class BizGenerator {
 
 			ctrlF.append("} ").append("\n");
 
-			System.out.println("============================ CTRL START ============================");
+			net.dstone.common.utils.LogUtil.sysout("============================ CTRL START ============================");
 			String fileConts = "";
 
 			if (!FileUtil.isFileExist(ctrlFileName)) {
@@ -2506,12 +2560,12 @@ public class BizGenerator {
 				String fileContsH = fileConts.substring(0, fileConts.lastIndexOf("}"));
 				String fileContsF = fileConts.substring(fileConts.lastIndexOf("}"));
 				fileConts = fileContsH + "\n" + ctrlConts.toString() + "\n" + fileContsF;
-				// System.out.println(fileConts);
+				// net.dstone.common.utils.LogUtil.sysout(fileConts);
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(ctrlFileName), FileUtil.getFileName(ctrlFileName), fileConts, CHARSET);
 			}
 
-			System.out.println(fileConts);
-			System.out.println("============================ CTRL END ============================");
+			net.dstone.common.utils.LogUtil.sysout(fileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ CTRL END ============================");
 
 		}
 	}
@@ -2623,22 +2677,32 @@ public class BizGenerator {
 				svcH.append("    LogUtil logger = getLogger();  ").append("\r\n");
 				svcH.append("     ").append("\r\n");
 
+				StringBuffer autowiredPart = new StringBuffer();
 				if (!FileUtil.isFileExist(wsFileName)) {
-					svcH.append("    /********* SVC 정의부분 시작 *********/").append("\n");
-					svcH.append("    @Autowired ").append("\n");
-					svcH.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
-					svcH.append("    /********* SVC 정의부분 끝 *********/").append("\n");
-					svcH.append("    ").append("\n");
+					autowiredPart.append("    /********* SVC 정의부분 시작 *********/").append("\n");
+					autowiredPart.append("    @Autowired ").append("\n");
+					autowiredPart.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
+					autowiredPart.append("    /********* SVC 정의부분 끝 *********/").append("\n");
+					autowiredPart.append("    ").append("\n");
 				} else {
 					if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(strWSPackageName + "." + strWSName, svcAlias)) {
-						svcH.append("    /********* SVC 정의부분 시작 *********/").append("\n");
-						svcH.append("    @Autowired ").append("\n");
-						svcH.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
-						svcH.append("    /********* SVC 정의부분 끝 *********/").append("\n");
-						svcH.append("    ").append("\n");
+						autowiredPart.append("    /********* SVC 정의부분 시작 *********/").append("\n");
+						autowiredPart.append("    @Autowired ").append("\n");
+						autowiredPart.append("    private " + strSvcPackageName + "." + strSvcName + " " + svcAlias + "; ").append("\n");
+						autowiredPart.append("    /********* SVC 정의부분 끝 *********/").append("\n");
+						autowiredPart.append("    ").append("\n");
 					}
 				}
-
+				// 이미 선언이 되어있지 않을 경우에만 생성.
+				String prevFileConts = "";
+				if (FileUtil.isFileExist(wsFileName)) {
+					prevFileConts = net.dstone.common.utils.FileUtil.readFile(wsFileName, CHARSET);
+					prevFileConts = net.dstone.common.utils.StringUtil.replace(prevFileConts, "\r\n", "\n");
+				}
+				if(prevFileConts.indexOf(autowiredPart.toString()) < 0){
+					svcH.append(autowiredPart);
+				}
+				
 				svcH.append("    /**************************** GET으로 호출하는 샘플(필요시 응용하기 바람) 시작  ****************************").append("\r\n");
 				svcH.append("     * GET으로 호출하는 샘플.(필요시 응용하기 바람) ").append("\r\n");
 				svcH.append("     * 예) " + WS_WEB_URL + WEB_CONTEXT_ROOT + "" + WS_ROOT_PATH + "" + strWSPath + "/select/jysn007@hanmail.net ").append("\r\n");
@@ -2650,7 +2714,7 @@ public class BizGenerator {
 				svcH.append("    @GET ").append("\r\n");
 				svcH.append("    @Path(\"/select/{EMAIL}\") ").append("\r\n");
 				svcH.append("    public javax.ws.rs.core.Response getWsSample(@PathParam(\"EMAIL\") String EMAIL){ ").append("\r\n");
-				svcH.append("        System.out.println(\"EMAIL ====>>>[\"+EMAIL+\"]\"); ").append("\r\n");
+				svcH.append("        net.dstone.common.utils.LogUtil.sysout(\"EMAIL ====>>>[\"+EMAIL+\"]\"); ").append("\r\n");
 				svcH.append("        // 변수 선언 시작").append("\r\n");
 				svcH.append("        com.test.biz.sample.vo.SampleVo     sampleVo = null; ").append("\r\n");
 				svcH.append("        // 변수 선언 끝 ").append("\r\n");
@@ -2746,7 +2810,7 @@ public class BizGenerator {
 
 				svcF.append("} ").append("\n");
 
-				System.out.println("\r\n============================ WS Method SRC START ============================");
+				net.dstone.common.utils.LogUtil.sysout("\r\n============================ WS Method SRC START ============================");
 
 				String fileConts = "";
 
@@ -2764,14 +2828,14 @@ public class BizGenerator {
 					String fileContsH = fileConts.substring(0, fileConts.lastIndexOf("}"));
 					String fileContsF = fileConts.substring(fileConts.lastIndexOf("}"));
 					fileConts = fileContsH + "\n" + svcConts.toString() + "\n" + fileContsF;
-					// System.out.println(fileConts);
+					// net.dstone.common.utils.LogUtil.sysout(fileConts);
 					net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(wsFileName), FileUtil.getFileName(wsFileName), fileConts, CHARSET);
 				}
-				System.out.println(fileConts);
+				net.dstone.common.utils.LogUtil.sysout(fileConts);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("============================ WS Method SRC END ============================\r\n");
+			net.dstone.common.utils.LogUtil.sysout("============================ WS Method SRC END ============================\r\n");
 
 		}
 
@@ -2916,7 +2980,7 @@ public class BizGenerator {
 
 			voF.append("} ").append("\n");
 
-			System.out.println("\r\n============================ WS VO SRC START ============================");
+			net.dstone.common.utils.LogUtil.sysout("\r\n============================ WS VO SRC START ============================");
 
 			String fileConts = "";
 
@@ -2934,12 +2998,12 @@ public class BizGenerator {
 				String fileContsH = fileConts.substring(0, fileConts.lastIndexOf("}"));
 				String fileContsF = fileConts.substring(fileConts.lastIndexOf("}"));
 				fileConts = fileContsH + "\n" + voConts.toString() + "\n" + fileContsF;
-				// System.out.println(fileConts);
+				// net.dstone.common.utils.LogUtil.sysout(fileConts);
 				net.dstone.common.utils.FileUtil.writeFile(FileUtil.getFilePath(wsVoFileName), FileUtil.getFileName(wsVoFileName), fileConts, CHARSET);
 			}
 
-			System.out.println(fileConts);
-			System.out.println("============================ WS VO SRC END ============================\r\n");
+			net.dstone.common.utils.LogUtil.sysout(fileConts);
+			net.dstone.common.utils.LogUtil.sysout("============================ WS VO SRC END ============================\r\n");
 
 			return (strWsVoPackageName + "." + strWsVoName);
 		}
@@ -3414,7 +3478,7 @@ public class BizGenerator {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println(buff);
+			net.dstone.common.utils.LogUtil.sysout(buff);
 		}
 
 		/**
@@ -4045,7 +4109,7 @@ public class BizGenerator {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println(buff);
+			net.dstone.common.utils.LogUtil.sysout(buff);
 		}
 
 		/**
@@ -4147,7 +4211,7 @@ public class BizGenerator {
 			tBuff.append("  }); ").append("\r\n");
 			tBuff.append("</script> ").append("\r\n");
 			tBuff.append("============================ JQUERY-TEST SRC END ============================").append("\r\n");
-			System.out.println(tBuff);
+			net.dstone.common.utils.LogUtil.sysout(tBuff);
 
 		}
 
@@ -4215,16 +4279,16 @@ public class BizGenerator {
 				tBuff.append("            bean = (" + strWsVoPackageName + "." + strWsVoName + ")net.dstone.common.utils.BeanUtil.fromJson(outStr, " + strWsVoPackageName + "." + strWsVoName + ".class); ").append("\r\n");
 			}
 			
-			tBuff.append("            System.out.println(\"||========================== bean ==========================||\"); ").append("\r\n");
-			tBuff.append("            System.out.println(bean); ").append("\r\n");
-			tBuff.append("            System.out.println(\"||========================== bean ==========================||\"); ").append("\r\n");
+			tBuff.append("            net.dstone.common.utils.LogUtil.sysout(\"||========================== bean ==========================||\"); ").append("\r\n");
+			tBuff.append("            net.dstone.common.utils.LogUtil.sysout(bean); ").append("\r\n");
+			tBuff.append("            net.dstone.common.utils.LogUtil.sysout(\"||========================== bean ==========================||\"); ").append("\r\n");
 			tBuff.append("        } catch (Exception e) {").append("\r\n");
 			tBuff.append("        	e.printStackTrace();").append("\r\n");
 			tBuff.append("        } ").append("\r\n");
 			tBuff.append("    } ").append("\r\n");
 			tBuff.append("} ").append("\r\n");
 			tBuff.append("============================ JAVA-TEST SRC END ============================").append("\r\n");
-			System.out.println(tBuff);
+			net.dstone.common.utils.LogUtil.sysout(tBuff);
 
 		}
 	}
@@ -4548,13 +4612,13 @@ public class BizGenerator {
 			ctrlBuff.append("   		return mav; ").append("\n");
 			ctrlBuff.append("    } ").append("\n");
 
-			System.out.println("============================ JSP SRC START ============================");
-			System.out.println(jspBuff);
-			System.out.println("============================ JSP SRC END ============================");
-			System.out.println("");
-			System.out.println("============================ CTRL SRC START ============================");
-			System.out.println(ctrlBuff);
-			System.out.println("============================ CTRL SRC END ============================");
+			net.dstone.common.utils.LogUtil.sysout("============================ JSP SRC START ============================");
+			net.dstone.common.utils.LogUtil.sysout(jspBuff);
+			net.dstone.common.utils.LogUtil.sysout("============================ JSP SRC END ============================");
+			net.dstone.common.utils.LogUtil.sysout("");
+			net.dstone.common.utils.LogUtil.sysout("============================ CTRL SRC START ============================");
+			net.dstone.common.utils.LogUtil.sysout(ctrlBuff);
+			net.dstone.common.utils.LogUtil.sysout("============================ CTRL SRC END ============================");
 
 		}
 		public static net.dstone.common.utils.DataSet getCols(String TABLE_NAME) {
@@ -4619,7 +4683,7 @@ public class BizGenerator {
 					sql.append("    AND TABLE_NAME='" + TABLE_NAME + "' ").append("\n");
 					sql.append("ORDER BY ORDINAL_POSITION ").append("\n");
 				}
-
+				
 				db.setQuery(sql.toString());
 				ds = new net.dstone.common.utils.DataSet();
 				ds.buildFromResultSet(db.select(), "COL_LIST");
@@ -4639,14 +4703,15 @@ public class BizGenerator {
 				colTypes = db.columnTypes;
 				
 				for(int i=0; i<ds.getDataSetRowCount("COL_LIST"); i++){
-					for(int k=0; k<colNames.length; k++){
-						if(ds.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME").equals(colNames[k])){
-							ds.getDataSet("COL_LIST", i).setDatum("DATA_TYPE", colTypes[k].trim());
-							break;
+					if(StringUtil.isEmpty(ds.getDataSet("COL_LIST", i).getDatum("DATA_TYPE"))){
+						for(int k=0; k<colNames.length; k++){
+							if(ds.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME").equals(colNames[k])){
+								ds.getDataSet("COL_LIST", i).setDatum("DATA_TYPE", colTypes[k].trim());
+								break;
+							}
 						}
 					}
-				}
-				
+				}			
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -4715,32 +4780,36 @@ public class BizGenerator {
 		
 		public static String getParamByType(DbInfo.ColInfo col, String dbKind){
 			String outStr = "";
+			String colType = col.DATA_TYPE.toUpperCase();
+			if(colType.indexOf(".") > -1){
+				colType = colType.substring(colType.lastIndexOf("."));
+			}
 			if ("ORACLE".equals(dbKind)) {
-				if (col.DATA_TYPE.equals("float") || col.DATA_TYPE.equals("int") ||  col.DATA_TYPE.equals("double")) {
+				if (colType.equals("FLOAT") || colType.equals("INT") || colType.equals("DOUBLE") || colType.equals("NUMBER") || colType.equals("NUMERIC")) {
 					outStr = "#{" + col.COLUMN_NAME + "}";
-				}else if (col.DATA_TYPE.equals("java.sql.Date") || col.DATA_TYPE.equals("java.sql.Time") ||  col.DATA_TYPE.equals("java.sql.Timestamp")) {
-					if ( col.DATA_TYPE.equals("java.sql.Date") ) {
+				}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
+					if ( colType.equals("DATE") ) {
 						outStr = "TO_DATE( #{" + col.COLUMN_NAME + "}, 'YYYYMMDDHH24MISS')";
-					}else if ( col.DATA_TYPE.equals("java.sql.Time") ) {
+					}else if ( colType.equals("Time") ) {
 						outStr = "TO_DATE( #{" + col.COLUMN_NAME + "}, 'YYYYMMDDHH24MISS')";
-					}else if ( col.DATA_TYPE.equals("java.sql.Timestamp") ) {
+					}else if ( colType.equals("Timestamp") ) {
 						outStr = "TO_DATE( #{" + col.COLUMN_NAME + "}, 'YYYYMMDDHH24MISSFF3')";
 					}
 				} else {
 					outStr = "#{" + col.COLUMN_NAME + "}";
 				}
 			} else if ("MSSQL".equals(dbKind)) {
-				if (col.DATA_TYPE.equals("float") || col.DATA_TYPE.equals("int") ||  col.DATA_TYPE.equals("double")) {
+				if (colType.equals("FLOAT") || colType.equals("INT") || colType.equals("DOUBLE") || colType.equals("NUMBER") || colType.equals("NUMERIC")) {
 					outStr = "#{" + col.COLUMN_NAME + "}";
-				}else if (col.DATA_TYPE.equals("java.sql.Date") || col.DATA_TYPE.equals("java.sql.Time") ||  col.DATA_TYPE.equals("java.sql.Timestamp")) {
+				}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
 					outStr = "CONVERT(DATETIME, #{" + col.COLUMN_NAME + "} )";
 				} else {
 					outStr = "#{" + col.COLUMN_NAME + "}";
 				}
 			} else if ("MYSQL".equals(dbKind)) {
-				if (col.DATA_TYPE.equals("float") || col.DATA_TYPE.equals("int") ||  col.DATA_TYPE.equals("double")) {
+				if (colType.equals("FLOAT") || colType.equals("INT") || colType.equals("DOUBLE") || colType.equals("NUMBER") || colType.equals("NUMERIC")) {
 					outStr = "#{" + col.COLUMN_NAME + "}";
-				}else if (col.DATA_TYPE.equals("java.sql.Date") || col.DATA_TYPE.equals("java.sql.Time") ||  col.DATA_TYPE.equals("java.sql.Timestamp")) {
+				}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
 					outStr = "STR_TO_DATE( #{" + col.COLUMN_NAME + "}, '%Y%m%d%H%i%s' )";
 				} else {
 					outStr = "#{" + col.COLUMN_NAME + "}";

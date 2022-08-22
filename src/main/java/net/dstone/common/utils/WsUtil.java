@@ -10,7 +10,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,16 +23,13 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.methods.TraceMethod;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -41,8 +37,13 @@ import org.apache.http.ssl.SSLContexts;
 
 public class WsUtil {
 	
-	public static int HTTP_OK = 200;
-	public static int HTTP_NOT_FOUND = 400;
+	public static int HTTP_OK 			= 200;
+	public static int HTTP_NOT_FOUND 	= 404;
+
+	public static String CONT_TYPE_HTML = "text/html";
+	public static String CONT_TYPE_FORM = "application/x-www-form-urlencoded";
+	public static String CONT_TYPE_XML 	= "text/xml";
+	public static String CONT_TYPE_JSON = "application/json";
 
 	private static LogUtil logger = new LogUtil(WsUtil.class);
 	
@@ -69,6 +70,7 @@ public class WsUtil {
 	public String execute(Bean tBean) {
 		return execute(tBean, null);
 	}
+
 	public String execute(Bean tBean, String charset) {
 
 		this.bean = tBean;
@@ -78,53 +80,31 @@ public class WsUtil {
 				this.response.charset = charset;
 			}
 			
-			if ("GET".equals(bean.method)) {
-				httpMethod = new GetMethod(bean.url);
-				addHeaders(httpMethod);
-			} else if ("POST".equals(bean.method)) {
-				httpMethod = new PostMethod(bean.url);
-				addHeaders(httpMethod);
-				addParams((PostMethod) httpMethod, charset);
-				addTextBody(charset);
-				addJsonBody(charset);
-				RequestEntity re = new StringRequestEntity(bean.body, bean.contentType, charset);
-				((PostMethod) httpMethod).setRequestEntity(re);
-			} else if ("HEAD".equals(bean.method)) {
-				httpMethod = new HeadMethod(bean.url);
-				addHeaders(httpMethod);
-			} else if ("PUT".equals(bean.method)) {
-				httpMethod = new PutMethod(bean.url);
-				addHeaders(httpMethod);
-				addTextBody(charset);
-				addJsonBody(charset);
-				RequestEntity re = new StringRequestEntity(bean.body, bean.contentType, charset);
-				((PutMethod) httpMethod).setRequestEntity(re);
-			} else if ("DELETE".equals(bean.method)) {
-				httpMethod = new DeleteMethod(bean.url);
-				addHeaders(httpMethod);
-
-			} else if ("TRACE".equals(bean.method)) {
-				httpMethod = new TraceMethod(bean.url);
-				addHeaders(httpMethod);
-
-			} else if ("OPTIONS".equals(bean.method)) {
-				httpMethod = new OptionsMethod(bean.url);
-				addHeaders(httpMethod);
-
-			} else {
-				throw new RuntimeException("Method '" + bean.method + "' not implemented.");
+			if(StringUtil.isEmpty(bean.method)) {
+				throw new Exception("Web 전송 메서드(method)를 세팅해 주세요. 현재 세팅된 메서드(method)["+bean.method+"]");
+			}
+			if(StringUtil.isEmpty(bean.contentType)) {
+				throw new Exception("Web 전송 컨텐츠타입(contentType)을 세팅해 주세요. 현재 세팅된 컨텐츠타입(contentType)["+bean.contentType+"]");
 			}
 			
-			doExecute(httpMethod, this.response);
+			// 01.STEP1 - Http 메소드세팅
+			this.getHttpMethod();
+			
+			// 02.STEP2 - 헤더세팅
+			this.setHeaders();
+			
+			// 03.STEP3 - 본문세팅
+			this.setBody(charset);	
+			
+			// 04.STEP4 - 작업처리		
+			this.doExecute(this.httpMethod, this.response);
 
 		} catch (java.io.IOException e) {
 			abort();
 			e.printStackTrace();
-
 		} catch (IllegalArgumentException e) {
 			abort();
 			e.printStackTrace();
-
 		} catch (Exception e) {
 			abort();
 			e.printStackTrace();
@@ -132,35 +112,30 @@ public class WsUtil {
 		return this.response.outputStr.toString();
 	}
 	
-	/**
-	 * Populating PostMethod with parameters
-	 */
-	private void addParams(PostMethod postMethod, String charset) {
-		for (String key : bean.parameters.keySet()) {
-			Collection<String> values = (Collection<String>) bean.parameters.get(key);
-			StringBuilder sb = new StringBuilder();
-			int cnt = 0;
-			for (String val : values) {
-				if (cnt != 0) {
-					sb.append(",");
-				}
-				if(StringUtil.isEmpty(charset)){
-					sb.append(val);
-				}else{
-					sb.append(StringUtil.encodingConv(val, charset));
-				}
-				
-				cnt++;
+	private HttpMethod getHttpMethod() {
+		try {
+			if ("GET".equals(bean.method)) {
+				this.httpMethod = new GetMethod(bean.url);
+			} else if ("POST".equals(bean.method)) {
+				this.httpMethod = new PostMethod(bean.url);
+			} else if ("PUT".equals(bean.method)) {
+				this.httpMethod = new PutMethod(bean.url);
+			} else if ("DELETE".equals(bean.method)) {
+				this.httpMethod = new DeleteMethod(bean.url);
+			} else {
+				throw new RuntimeException("Method '" + bean.method + "' not implemented.");
 			}
-			postMethod.setParameter(key, sb.toString());
-			//postMethod.addParameter(key, sb.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
-	}
 
+		return this.httpMethod;
+	}
 	/**
 	 * Populating HttpMethod with headers
 	 */
-	private void addHeaders(HttpMethod httpMethod) {
+	private void setHeaders() {
 		for (String key : bean.headers.keySet()) {
 			Collection<String> values = (Collection<String>) bean.headers.get(key);
 			StringBuilder sb = new StringBuilder();
@@ -172,37 +147,147 @@ public class WsUtil {
 				sb.append(val);
 				cnt++;
 			}
-			httpMethod.addRequestHeader(key, sb.toString());
+			this.httpMethod.addRequestHeader(key, sb.toString());
 		}
-	}
+		this.httpMethod.addRequestHeader("Content-Type", bean.getContentType());
+	}		
 	
 	/**
 	 * Populating Body
 	 */
-	private void addTextBody(String charset) {
-		if( bean.bodyBuff.length() > 0 ){	
-			if(StringUtil.isEmpty(charset)){
-				bean.body = bean.body + bean.bodyBuff.toString();
-			}else{
-				bean.body = bean.body + StringUtil.encodingConv(bean.bodyBuff.toString(), charset);
-			}
-		}
-	}
+	private void setBody(String charset)throws Exception {
+		
+		if(this.bean != null){
+			
+			/*** 1.파라메터 수집 ***/
+			
+			NameValuePair[] nameValPairArr = new NameValuePair[bean.parameters.getChildrenCount()];
+			int paramsIndex = 0;
+			String[] values = null;
+			for (String key : bean.parameters.getChildrenKeys()) {
+				values = bean.parameters.getDatumArray(key);
+				StringBuilder sb = new StringBuilder();
+				int cnt = 0;
+				for (String val : values) {
+					if (cnt != 0) {
+						sb.append(",");
+					}
+					if(StringUtil.isEmpty(charset)){
+						sb.append(val);
+					}else{
+						sb.append(StringUtil.encodingConv(val, charset));
+					}
+					cnt++;
+				}
+				nameValPairArr[paramsIndex++] = new NameValuePair(key, sb.toString());
+			}		
+			
+			/*** 2.컨텐츠타입별 파라메터 세팅 ***/
+			StringRequestEntity requestEntity = null;
 
-	/**
-	 * Populating Body
-	 */
-	private void addJsonBody(String charset) {
-		if( bean.bodyJsonMap.size() > 0 ){
-			if(StringUtil.isEmpty(charset)){
-				bean.body = bean.body + BeanUtil.toJson( bean.bodyJsonMap );
-			}else{
-				bean.body = bean.body + StringUtil.encodingConv(BeanUtil.toJson( bean.bodyJsonMap ), charset);
+			// HTML 전송일 경우
+			if( WsUtil.CONT_TYPE_HTML.equals(this.bean.getContentType()) ){
+				if ("GET".equals(bean.method)) {
+					GetMethod getMethod = (GetMethod)this.getHttpMethod();
+					getMethod.setQueryString(nameValPairArr);
+				// PUT : 존재하는 자원을 변경 혹은 새로운 자원을 추가. PUT은 단일 자원에만 수행
+				}else if ("PUT".equals(bean.method)) {
+					PutMethod putMethod = (PutMethod)this.getHttpMethod();
+					putMethod.setQueryString(nameValPairArr);
+					String queryString = putMethod.getQueryString(); 
+					putMethod.setQueryString("");
+					requestEntity = new StringRequestEntity( queryString, this.bean.getContentType(), charset);
+					putMethod.setRequestEntity(requestEntity);
+				// DELETE : 자원을 삭제	
+				}else if ("DELETE".equals(bean.method)) { 
+					DeleteMethod deleteMethod = (DeleteMethod)this.getHttpMethod();
+					deleteMethod.setQueryString(nameValPairArr);
+				}else {
+					throw new Exception("컨텐츠타입["+this.bean.getContentType()+"]에서 지원하지 않는 메소드["+bean.method+"] 입니다.");
+				}
+			// FORM 전송일 경우
+			}else if( WsUtil.CONT_TYPE_FORM.equals(this.bean.getContentType()) ){
+				// GET
+				if ("GET".equals(bean.method)) {
+					GetMethod getMethod = (GetMethod)this.getHttpMethod();
+					getMethod.setQueryString(nameValPairArr);		
+				// PUT : 존재하는 자원을 변경 혹은 새로운 자원을 추가. PUT은 단일 자원에만 수행
+				}else if ("PUT".equals(bean.method)) {
+					PutMethod putMethod = (PutMethod)this.getHttpMethod();
+					putMethod.setQueryString(nameValPairArr);
+					String queryString = putMethod.getQueryString(); 
+					putMethod.setQueryString("");
+					requestEntity = new StringRequestEntity( queryString, this.bean.getContentType(), charset);
+					putMethod.setRequestEntity(requestEntity);
+				// POST : 새로운 자원을 추가. POST는 여러개의 자원에 수행	
+				}else if ("POST".equals(bean.method)) { 
+					PostMethod postMethod = (PostMethod)this.getHttpMethod();
+					postMethod.setRequestBody(nameValPairArr);
+				// DELETE : 자원을 삭제	
+				}else if ("DELETE".equals(bean.method)) { 
+					DeleteMethod deleteMethod = (DeleteMethod)this.getHttpMethod();
+					deleteMethod.setQueryString(nameValPairArr);
+				}else {
+					throw new Exception("컨텐츠타입["+this.bean.getContentType()+"]에서 지원하지 않는 메소드["+bean.method+"] 입니다.");
+				}
+			// JSON 전송일 경우
+			}else if( WsUtil.CONT_TYPE_JSON.equals(this.bean.getContentType()) ){
+				if(StringUtil.isEmpty(charset)){
+					this.bean.body = this.bean.parameters.toJson();
+				}else{
+					this.bean.body = StringUtil.encodingConv(this.bean.parameters.toJson(), charset);
+				}
+				requestEntity = new StringRequestEntity( this.bean.body, this.bean.getContentType(), charset);
+				// GET
+				if ("GET".equals(bean.method)) {
+					GetMethod getMethod = (GetMethod)this.getHttpMethod();
+					getMethod.setQueryString(nameValPairArr);				
+				// PUT : 존재하는 자원을 변경 혹은 새로운 자원을 추가. PUT은 단일 자원에만 수행
+				}else if ("PUT".equals(bean.method)) {
+					PutMethod putMethod = (PutMethod)this.getHttpMethod();
+					putMethod.setRequestEntity(requestEntity);
+				// POST : 새로운 자원을 추가. POST는 여러개의 자원에 수행	
+				}else if ("POST".equals(bean.method)) { 
+					PostMethod postMethod = (PostMethod)this.getHttpMethod();
+					postMethod.setRequestEntity(requestEntity);
+				// DELETE : 자원을 삭제	
+				}else if ("DELETE".equals(bean.method)) { 
+					DeleteMethod deleteMethod = (DeleteMethod)this.getHttpMethod();
+					deleteMethod.setQueryString(nameValPairArr);
+				}else {
+					throw new Exception("컨텐츠타입["+this.bean.getContentType()+"]에서 지원하지 않는 메소드["+bean.method+"] 입니다.");
+				}
+			// XML 전송일 경우
+			}else if( WsUtil.CONT_TYPE_XML.equals(this.bean.getContentType()) ){
+				if(StringUtil.isEmpty(charset)){
+					this.bean.body = this.bean.parameters.toXml();
+				}else{
+					this.bean.body = StringUtil.encodingConv(this.bean.parameters.toXml(), charset);
+				}
+				requestEntity = new StringRequestEntity( this.bean.body, this.bean.getContentType(), charset);
+				// GET
+				if ("GET".equals(bean.method)) {
+					GetMethod getMethod = (GetMethod)this.getHttpMethod();
+					getMethod.setQueryString(nameValPairArr);			
+				// PUT : 존재하는 자원을 변경 혹은 새로운 자원을 추가. PUT은 단일 자원에만 수행
+				}else if ("PUT".equals(bean.method)) {
+					PutMethod putMethod = (PutMethod)this.getHttpMethod();
+					putMethod.setRequestEntity(requestEntity);
+				// POST : 새로운 자원을 추가. POST는 여러개의 자원에 수행	
+				}else if ("POST".equals(bean.method)) { 
+					PostMethod postMethod = (PostMethod)this.getHttpMethod();
+					postMethod.setRequestEntity(requestEntity);
+				// DELETE : 자원을 삭제	
+				}else if ("DELETE".equals(bean.method)) { 
+					DeleteMethod deleteMethod = (DeleteMethod)this.getHttpMethod();
+					deleteMethod.setQueryString(nameValPairArr);
+				}else {
+					throw new Exception("컨텐츠타입["+this.bean.getContentType()+"]에서 지원하지 않는 메소드["+bean.method+"] 입니다.");
+				}
 			}
 		}
-	}
+	}	
 	
-
 	/**
 	 * Executing HttpMethod.
 	 */
@@ -210,14 +295,16 @@ public class WsUtil {
 		if( this.bean.url.toLowerCase().startsWith("https") ){
 			Protocol.registerProtocol("https", new Protocol("https", new TrustAllSsLSocketFactory(), 433));
 		}
-		HttpClient client = new HttpClient();
-		long sTime = System.currentTimeMillis();
-		long eTime = 0;
-		boolean debugInOutYn					= true;
-		StringBuffer debugStr = new StringBuffer();
+		
+		HttpClient client 		= null;
+		long sTime 				= System.currentTimeMillis();
+		long eTime 				= 0;
+		boolean debugInOutYn	= true;
+		StringBuffer debugStr 	= new StringBuffer();
 		try {
-			responseReader.outputStr = new StringBuffer();
 
+			client 						= new HttpClient();
+			responseReader.outputStr 	= new StringBuffer();
 			client.executeMethod(httpMethod);	
 			responseReader.read(httpMethod);
 			
@@ -231,9 +318,15 @@ public class WsUtil {
 				debugStr.append("/************************************* WsUtil 호출 END ****************************************************************/").append("\n");
 				debugStr.append("\n");
 				debugStr.append("\n");
+				debugStr.append("/************************************* WsUtil 호출결과 START **************************************************************/").append("\n");
+				debugStr.append(responseReader.outputStr.toString()).append("\n");
+				debugStr.append("/************************************* WsUtil 호출결과 END ****************************************************************/").append("\n");
+				debugStr.append("\n");
+				debugStr.append("\n");
 				logger.info(debugStr.toString());
 			}
-			
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -241,7 +334,7 @@ public class WsUtil {
 		} finally {
 			if (httpMethod != null){
 				httpMethod.releaseConnection();
-			}
+			}		
 		}
 	}
 	
@@ -256,6 +349,7 @@ public class WsUtil {
 			httpMethod.abort();
 			httpMethod = null;
 		} catch (Exception giveup) {
+			giveup.printStackTrace();
 		}
 	}
 
@@ -265,15 +359,23 @@ public class WsUtil {
 	public static class Bean {
 		public String method = "GET";
 		public String url = "";
-		public String body = "";
-		public String contentType = null;
+		private String body = "";
+		private String contentType = CONT_TYPE_HTML;
 		
 		private Map<String, Collection<String>> headers = new HashMap<String, Collection<String>>();
-		private Map<String, Collection<String>> parameters = new HashMap<String, Collection<String>>();
-		private StringBuffer bodyBuff = new StringBuffer();
-		private Map<String, Map<String, Object>> bodyJsonMap = new LinkedHashMap<String, Map<String, Object>>();
+		private DataSet parameters = new DataSet();
+		
+		public String getContentType() {
+			return contentType;
+		}
+		public void setContentType(String contentType) {
+			this.contentType = contentType;
+		}
 
 		public void addHeader(String key, String value) {
+			if( StringUtil.isEmpty(this.contentType)){
+				this.contentType = WsUtil.CONT_TYPE_HTML;
+			}
 			List<String> valuesList = (List<String>) headers.get(key);
 			if (valuesList == null) {
 				valuesList = new ArrayList<String>();
@@ -283,48 +385,20 @@ public class WsUtil {
 		}
 
 		public void addParam(String key, String value) {
-			Collection<String> valuesList = (Collection<String>) parameters.get(key);
-			if (valuesList == null) {
-				valuesList = new ArrayList<String>();
-			}
-			valuesList.add(value);
-			parameters.put(key, valuesList);
+			parameters.addDatum(key, value);
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public void addJsonBody(String key, Object bean) {
-			if( bean != null ){
-				this.contentType = "application/json";
-				Map<String, Object> valuesList = null;
-				Map<String, Object> tempValuesList = null;
-				if( bodyJsonMap.containsKey(key) ){
-					valuesList = bodyJsonMap.get(key);
-				}else{
-					valuesList = new LinkedHashMap<String, Object>();
-				}
-				try {
-					if( java.util.Map.class.isAssignableFrom(bean.getClass()) ){
-						tempValuesList = (java.util.Map)bean;
-					}else{
-						tempValuesList = BeanUtil.bindBeanToMap(bean);
-					}				
-					if( tempValuesList != null ){
-						valuesList.putAll(tempValuesList);
-					}
-					bodyJsonMap.put(key, valuesList);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+		public String getBody() {
+			return body;
 		}
-
-		public void addTextBody(String text) {
-			bodyBuff.append(text);
+		public void setBody(String body) {
+			this.body = body;
 		}
-
+		
 		public String toString() {
-			return "{method=" + method + ",url=" + url + ",headers=" + headers + ",parameters=" + parameters + ",bodyJsonMap=" + bodyJsonMap + "}";
+			return "{method=" + method + ",url=" + url + ",headers=" + headers + ",parameters=" + parameters + "}";
 		}
+
 	}
 
 	/**
@@ -348,6 +422,7 @@ public class WsUtil {
 			try {
 				StatusCd = httpMethod.getStatusCode();
 				Status = httpMethod.getStatusLine();
+				
 				//logger.info("httpMethod.getResponseBodyAsString()["+httpMethod.getResponseBodyAsString()+"]");
 				
 				br = new java.io.BufferedInputStream(httpMethod.getResponseBodyAsStream(), buffLen);
@@ -363,7 +438,8 @@ public class WsUtil {
 				}else{
 					buffStr = new String(sink.toByteArray(), charset);
 				}
-				outputStr = new StringBuffer(buffStr);
+				//outputStr = new StringBuffer(buffStr);
+				outputStr.append(buffStr);
 				
 			} catch (java.io.IOException e) {
 				e.printStackTrace();
@@ -418,6 +494,10 @@ public class WsUtil {
 		public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
 			return getSocketFactory().createSocket(host, port);
 		}
+		
+	}
+
+	private static void getHttpClient(){
 		
 	}
 }
