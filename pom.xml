@@ -8,7 +8,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<!-- JSP는 1.4.2버전 이하는 jar로도 동작하고 1.4.2버전 이상은 war로 패키징 해야 동작 -->
-		<version>2.1.1.RELEASE</version>
+		<version>2.5.2</version>
 		<relativePath/>
 	</parent>
 	
@@ -31,6 +31,7 @@
 		<org.aspectj.version>1.8.9</org.aspectj.version>
 		
 		<!-- Web -->
+		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<jsp.version>2.2.1</jsp.version>
 		<jstl.version>1.2.1</jstl.version>
 		
@@ -41,9 +42,9 @@
 		
 		<!-- Maven -->
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-		<maven-war-plugin.version>3.0.0</maven-war-plugin.version>
+		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
 	</properties>
 	
 	<dependencies>
@@ -86,8 +87,10 @@
 		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
+		    <version>${javax.servlet-api.version}</version>
 		    <scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>servlets.com</groupId>
 			<artifactId>cos</artifactId>
@@ -305,14 +308,7 @@
 			<version>${maven-compiler-plugin.version}</version>
 			<type>maven-plugin</type>
 		</dependency>
-		<!--  
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator-annotation-processor</artifactId>
-			<version>4.1.0.Final</version>
-		</dependency>
-		-->
-
+		
 	</dependencies>
 	
 	<build>        
@@ -329,14 +325,6 @@
                 <targetPath>${project.basedir}/target/classes</targetPath>
 				<excludes>
 					<exclude>**/*.java</exclude>
-				</excludes>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/webapp</directory>
-                <targetPath>META-INF/resources</targetPath>
-				<excludes>
-					<exclude>**/*.jar</exclude>
 				</excludes>
                 <filtering>true</filtering>
             </resource>
@@ -377,6 +365,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
+				<version>${maven-war-plugin.version}</version>
 			</plugin>
  	
 			<!-- JAR (스프링부트형식-BOOT-INF포함구조-으로) 패키징을 위한 플러그인 -->

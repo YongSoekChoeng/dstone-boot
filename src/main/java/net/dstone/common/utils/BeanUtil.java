@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ClassUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -1473,6 +1477,21 @@ public class BeanUtil {
 			}
 			return defaultName;
 		}
+	}
+	
+	public static Object getSpringBean(Class<?> classType) {
+		return ApplicationContextProvider.getApplicationContext().getBean(classType);
+	}
 
+	@Component
+	public static class ApplicationContextProvider implements ApplicationContextAware{
+		private static ApplicationContext applicationContext;
+		@Override
+		public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+			applicationContext = ctx;
+		}
+		public static ApplicationContext getApplicationContext(){
+			return applicationContext;
+		}
 	}
 }
