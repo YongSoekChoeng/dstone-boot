@@ -60,6 +60,7 @@ if(returnObj != null){
                                                                                                                  
 </form>                                                                                                          
 <!--폼 끝-->                                                                                                      
-                                                                                                                 
+
+<%@ include file="../test/dbTest.jsp" %>                                                                                                       
 </body>                                                                                                          
 </html>    

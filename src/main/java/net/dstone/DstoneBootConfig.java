@@ -58,7 +58,7 @@ public class DstoneBootConfig {
 	@Bean
 	public SqlSessionFactory sqlSessionFactory1(DataSource dataSource1) throws Exception {
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-		Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath:**/*Dao.xml");
+		Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath*:**/*Dao.xml");
 		bean.setDataSource(dataSource1);
 		bean.setMapperLocations(mapperLocations);
 		return bean.getObject();
@@ -122,7 +122,7 @@ public class DstoneBootConfig {
 	@Bean
 	public SqlSessionFactory sqlSessionFactory2(DataSource dataSource2) throws Exception {
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-		Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath:**/*Dao.xml");
+		Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath*:**/*Dao.xml");
 		bean.setDataSource(dataSource2);
 		bean.setMapperLocations(mapperLocations);
 		return bean.getObject();

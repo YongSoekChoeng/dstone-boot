@@ -16,6 +16,8 @@ spring:
                 jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:orcl
                 username: system
                 password: db2admin
+            networks: 
+                - backend
     db2: 
         datasource: 
             hikari: 
@@ -23,6 +25,14 @@ spring:
                 jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:orcl
                 username: system
                 password: db2admin
+            networks: 
+                - backend
+    rabbitmq: 
+        host: localhost
+        port: 5672
+        username: jysn007
+        password: db2admin
+                
     mvc: 
         view: 
             prefix: /WEB-INF/views/

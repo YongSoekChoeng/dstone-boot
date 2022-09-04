@@ -1,5 +1,6 @@
 package net.dstone.sample.rest; 
  
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 public class RestDeptController extends net.dstone.common.biz.BaseController { 
@@ -27,10 +27,10 @@ public class RestDeptController extends net.dstone.common.biz.BaseController {
      */ 
 
     @RequestMapping(value = "/rest/dept/listSampleDept/{PAGE_NUM}/{PAGE_SIZE}", method = RequestMethod.GET)
-    public List<net.dstone.sample.dept.vo.SampleDeptVo> listSampleDept(@PathVariable("PAGE_NUM") int pAGE_NUM, @PathVariable("PAGE_SIZE") int pAGE_SIZE) {
+    public Map listSampleDept(@PathVariable("PAGE_NUM") int pAGE_NUM, @PathVariable("PAGE_SIZE") int pAGE_SIZE) {
    		
    		/************************ 변수 선언 시작 ************************/
-    	List<net.dstone.sample.dept.vo.SampleDeptVo>   returnObj = null;
+    	HashMap<String, List<net.dstone.sample.dept.vo.SampleDeptVo>>   returnObj = new HashMap<String, List<net.dstone.sample.dept.vo.SampleDeptVo>>();
    		//파라메터
    		//String										ACTION_MODE;
    		//파라메터로 사용할 VO
@@ -41,7 +41,6 @@ public class RestDeptController extends net.dstone.common.biz.BaseController {
    			/************************ 변수 정의 시작 ************************/
    			paramVo					= null;
    			//paramList				= null;
-   			returnObj				= null;
    			/************************ 변수 정의 끝 ************************/
    			
    			/************************ 컨트롤러 로직 시작 ************************/
@@ -57,7 +56,7 @@ public class RestDeptController extends net.dstone.common.biz.BaseController {
    			paramVo.setPAGE_SIZE(pAGE_SIZE);
    			/*** 페이징파라메터 세팅 끝 ***/
    			// 2. 서비스 호출
-   			returnObj 				= (List<net.dstone.sample.dept.vo.SampleDeptVo>)deptService.listSampleDept(paramVo);
+   			returnObj 				= (HashMap<String, List<net.dstone.sample.dept.vo.SampleDeptVo>>)deptService.listSampleDept(paramVo);
    			// 3. 결과처리
    			/************************ 컨트롤러 로직 끝 ************************/
    		

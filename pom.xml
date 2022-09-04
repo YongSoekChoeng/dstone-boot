@@ -7,15 +7,16 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
+		<!-- JSP는 1.4.2버전 이하는 jar로도 동작하고 1.4.2버전 이상은 war로 패키징 해야 동작 -->
 		<version>2.1.0.RELEASE</version>
-		<relativePath/> 
+		<relativePath/>
 	</parent>
 	
 	<groupId>net.dstone</groupId>
 	<artifactId>dstone-boot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>dstone-boot</name>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	
 	<description>dstone-boot project for Spring Boot</description>
 
@@ -216,15 +217,21 @@
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId><!-- Connection Pool -->
+			<version>4.0.3</version>
 		</dependency>	
-        <dependency>
-            <groupId>oracle.jdbc</groupId>
-            <artifactId>ojdbc</artifactId>
-            <version>12.1.0.2.0</version>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>12.1.0.2.0</version>
             <scope>system</scope>
             <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc8.jar</systemPath>
-        </dependency>
-
+		</dependency>
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>8.0.29</version>
+		</dependency>
+			
 		<!-- JSON -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -296,37 +303,48 @@
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-compiler-plugin</artifactId>
-			<version>3.1</version>
+			<version>${maven-compiler-plugin.version}</version>
 			<type>maven-plugin</type>
 		</dependency>
+		<!--  
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator-annotation-processor</artifactId>
 			<version>4.1.0.Final</version>
 		</dependency>
-		
+		-->
+
 	</dependencies>
 	
 	<build>        
-		<sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-        <outputDirectory>${project.basedir}/target/classes</outputDirectory>     
         <resources>
             <resource>
                 <directory>src/main/java</directory>
+                <targetPath>${project.basedir}/target/classes</targetPath>
 				<includes>
 					<include>**/*.xml</include>
 				</includes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
+                <targetPath>${project.basedir}/target/classes</targetPath>
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <targetPath>META-INF/resources</targetPath>
+				<excludes>
+					<exclude>**/*.jar</exclude>
+				</excludes>
+                <filtering>true</filtering>
+            </resource>
         </resources>
 		<plugins>
+		
+			<!-- 이클립스에서 메이븐 사용하기 위한 플러그인 -->
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <version>${maven-eclipse-plugin.version}</version>
@@ -340,26 +358,38 @@
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>true</downloadJavadocs>
                 </configuration>
-            </plugin>		
+            </plugin>
+		
+			<!-- 컴파일을 위한 플러그인 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-            </plugin>			
+			 
+			<!-- WAR 패키징을 위한 플러그인 -->		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
+ 	
+			<!-- JAR (스프링부트형식-BOOT-INF포함구조-으로) 패키징을 위한 플러그인 -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<includeSystemScope>false</includeSystemScope>
+					<mainClass>net.dstone.DstoneBootApplication</mainClass>
+				</configuration>
+			</plugin>			
+			 
 		</plugins>
 	</build>
 
