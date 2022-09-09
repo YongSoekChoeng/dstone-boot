@@ -1,6 +1,7 @@
 
-set JAVA_OPTS=-Xms512m -Xmx1024m -Djava.ext.dirs=C:/DEV/JDK/1.8/jre/lib/ext;C:/Windows/Sun/Java/lib/ext;D:/AppHome/dstone-boot/extLib
-set CONF_FILE=-Dspring.config.location=file:../conf/application.yml
+set JAVA_OPTS=-Xms512m -Xmx1024m
 set JAR_FILE=../target/dstone-boot-0.0.1-SNAPSHOT.war
-start /B javaw %JAVA_OPTS% %CONF_FILE% -jar %JAR_FILE% net.dstone.DstoneBootApplication
+set CONF_FILE=--spring.config.location=file:../conf/application.yml
 
+rem start /B javaw %JAVA_OPTS% -jar %JAR_FILE% net.dstone.DstoneBootApplication %CONF_FILE%
+java %JAVA_OPTS% -jar %JAR_FILE% net.dstone.DstoneBootApplication %CONF_FILE%
