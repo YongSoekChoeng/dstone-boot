@@ -31,7 +31,6 @@
 		<org.aspectj.version>1.8.9</org.aspectj.version>
 		
 		<!-- Web -->
-		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<jsp.version>2.2.1</jsp.version>
 		<jstl.version>1.2.1</jstl.version>
 		
@@ -44,7 +43,6 @@
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
 		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-		<maven-war-plugin.version>3.2.2</maven-war-plugin.version>
 	</properties>
 	
 	<dependencies>
@@ -120,11 +118,6 @@
 		    <artifactId>javax.servlet-api</artifactId>
 		    <scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>servlets.com</groupId>
-			<artifactId>cos</artifactId>
-			<version>05Nov2002</version>
-		</dependency>
 		<!-- VIEW -->
 		<!-- thymeleaf 와 jasper,jstl 둘중 하나만 선택해야 함. -->
 		<!--  
@@ -147,6 +140,11 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>servlets.com</groupId>
+			<artifactId>cos</artifactId>
+			<version>05Nov2002</version>
 		</dependency>
 		
         <!-- @Inject -->
@@ -186,7 +184,6 @@
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId><!-- Connection Pool -->
-			<version>4.0.3</version>
 		</dependency>	
 		<dependency>
 			<groupId>com.oracle</groupId>
@@ -197,7 +194,7 @@
 		<dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
-		    <version>8.0.29</version>
+		    <scope>provided</scope>
 		</dependency>
 			
 		<!-- MyBatis -->
@@ -344,7 +341,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -358,7 +354,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>${maven-war-plugin.version}</version>
 			</plugin>
  	
 			<!-- JAR (스프링부트형식-BOOT-INF포함구조-으로) 패키징을 위한 플러그인 -->

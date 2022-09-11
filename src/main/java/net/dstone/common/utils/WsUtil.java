@@ -318,11 +318,13 @@ public class WsUtil {
 				debugStr.append("/************************************* WsUtil 호출 END ****************************************************************/").append("\n");
 				debugStr.append("\n");
 				debugStr.append("\n");
-				debugStr.append("/************************************* WsUtil 호출결과 START **************************************************************/").append("\n");
-				debugStr.append(responseReader.outputStr.toString()).append("\n");
-				debugStr.append("/************************************* WsUtil 호출결과 END ****************************************************************/").append("\n");
-				debugStr.append("\n");
-				debugStr.append("\n");
+				
+//				debugStr.append("/************************************* WsUtil 호출결과 START **************************************************************/").append("\n");
+//				debugStr.append(responseReader.outputStr.toString()).append("\n");
+//				debugStr.append("/************************************* WsUtil 호출결과 END ****************************************************************/").append("\n");
+//				debugStr.append("\n");
+//				debugStr.append("\n");
+				
 				logger.info(debugStr.toString());
 			}
 
@@ -395,10 +397,16 @@ public class WsUtil {
 			this.body = body;
 		}
 		
+		public DataSet getParameters() {
+			return parameters;
+		}
+		public void setParameters(DataSet parameters) {
+			this.parameters = parameters;
+		}
+
 		public String toString() {
 			return "{method=" + method + ",url=" + url + ",headers=" + headers + ",parameters=" + parameters + "}";
 		}
-
 	}
 
 	/**
