@@ -1,0 +1,32 @@
+
+String DBID = "DBID_0";
+net.dstone.common.utils.DbUtil db = null;
+net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
+
+StringBuffer sql = new StringBuffer();
+String TABLE_NAME = "HELP";
+net.dstone.common.utils.DateUtil.stopWatchStart("연습장");
+try {
+
+	String DB_URL = net.dstone.common.utils.SystemUtil.getInstance().getProperty(DBID + ".strUrl");
+	
+	sql.append("SELECT ").append("\n"); 
+	sql.append("	* ").append("\n");
+	sql.append("FROM  ").append("\n");
+	sql.append("	SAMPLE_DEPT  ").append("\n");
+	sql.append("WHERE 1=1 ").append("\n");
+	db = new net.dstone.common.utils.DbUtil(DBID);
+	db.getConnection();
+	db.setQuery(sql.toString());
+		ds.buildFromResultSet(db.select(), "");	
+	
+	ds.checkData();
+	
+}catch(Exception e){
+	System.out.println(db.getQuery());
+	e.printStackTrace();
+}finally{
+	if(db != null){
+		db.release();
+	}	net.dstone.common.utils.DateUtil.stopWatchEnd("연습장");
+}
