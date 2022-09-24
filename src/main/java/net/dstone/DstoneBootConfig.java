@@ -48,7 +48,8 @@ public class DstoneBootConfig {
 	
 	// DB1 관련 설정
 	/* 2-1. Datasource Configuration START */
-    @Bean(name = "dataSource1")
+    @Bean
+	@Qualifier("dataSource1")
     @ConfigurationProperties("spring.db1.datasource.hikari")
     public DataSource dataSource1() {
     	//return DataSourceBuilder.create().build();
@@ -112,7 +113,8 @@ public class DstoneBootConfig {
 
 	// DB2 관련 설정
 	/* 2-1. Datasource Configuration START */
-    @Bean(name = "dataSource2")
+    @Bean
+	@Qualifier("dataSource1")
     @ConfigurationProperties("spring.db2.datasource.hikari")
     public DataSource dataSource2() {
     	//return DataSourceBuilder.create().build();

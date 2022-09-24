@@ -28,6 +28,7 @@
 		
 		<!-- Spring  -->
 		<org.springframework.version>4.3.14.RELEASE</org.springframework.version>
+		<org.springframework.batch.version>4.0.4.RELEASE</org.springframework.batch.version>
 		<org.aspectj.version>1.8.9</org.aspectj.version>
 		
 		<!-- Web -->
@@ -111,6 +112,19 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 		</dependency>
+		
+        <!-- SpringBatch -->
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>${org.springframework.batch.version}</version>
+        </dependency>		
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-test</artifactId>
+            <version>${org.springframework.batch.version}</version>
+            <scope>test</scope>
+        </dependency>
 		
 		<!-- Servlet -->
 		<dependency>
@@ -217,6 +231,14 @@
 		    <version>${log4jdbc.version}</version>
 		</dependency>
 		
+		<!-- Lombok -->
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <version>1.18.0</version>
+		    <scope>provided</scope>
+		</dependency>	
+			
 		<!-- Apache and Third Parties -->
 		<dependency>
 			<groupId>commons-beanutils</groupId>

@@ -51,3 +51,5 @@ spring:
             suffix: .jsp
 #    thymeleaf:
 #        cache: false
+
+
