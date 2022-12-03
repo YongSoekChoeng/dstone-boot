@@ -17,8 +17,8 @@ server:
     ssl: 
         key-store: D:/AppHome/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
-        key-store-password: db2admin
-        key-store-alias: dstone-ssl
+        key-store-password: ENC(ew9p/rzrA++q9EeG+AdRlUkbT1LhFhWY)
+        key-store-alias: ENC(wlhFiFQJbwQUk462fiQW4yCNgLkFDzlI)
 
 spring:
     db1: 

@@ -8,6 +8,9 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.aspectj.lang.annotation.Aspect;
+import org.jasypt.encryption.StringEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
+import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.aop.Advisor;
@@ -39,6 +42,11 @@ public class DstoneBootConfig {
 	/********************************************************************************
 	1. Application 설정
 	********************************************************************************/
+	// 1-1. 암복호화 설정.
+	@Bean("jasyptStringEncryptor") 
+	public StringEncryptor stringEncryptor() { 
+        return net.dstone.common.utils.EncUtil.getEncryptor();
+	} 
 
 	/********************************************************************************
 	2. Sql/Datasource/Transaction 설정
