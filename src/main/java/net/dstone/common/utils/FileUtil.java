@@ -31,6 +31,8 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
+import net.dstone.common.utils.FileUtil.LineBufferedReader;
+
 public class FileUtil {
 
 	private static LogUtil logger = new LogUtil(FileUtil.class);
@@ -772,6 +774,7 @@ public class FileUtil {
 		return result;
 	}
 	
+
 	/**
 	 * Given a source file, the charset encoding of the containing text, and the
 	 * maximum split size allowed this method will split the source file into
@@ -862,7 +865,6 @@ public class FileUtil {
 		}
 		return splitFiles;
 	}
-	
 	class LineBufferedReader extends BufferedReader {
 
 		private int defaultExpectedLineLength = 80;
