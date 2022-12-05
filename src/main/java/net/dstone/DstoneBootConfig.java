@@ -30,11 +30,13 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Aspect
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableEncryptableProperties
 public class DstoneBootConfig {
 	
 	/********************************************************************************
@@ -56,7 +58,7 @@ public class DstoneBootConfig {
 	/* 2-1. Datasource Configuration START */
     @Bean
 	@Qualifier("dataSource1")
-    @ConfigurationProperties("spring.db1.datasource.hikari")
+    @ConfigurationProperties("spring.datasource.db1.hikari")
     public DataSource dataSource1() {
     	//return DataSourceBuilder.create().build();
     	return DataSourceBuilder.create().type(HikariDataSource.class).build();
@@ -120,8 +122,8 @@ public class DstoneBootConfig {
 	// DB2 관련 설정
 	/* 2-1. Datasource Configuration START */
     @Bean
-	@Qualifier("dataSource1")
-    @ConfigurationProperties("spring.db2.datasource.hikari")
+	@Qualifier("dataSource2")
+    @ConfigurationProperties("spring.datasource.db2.hikari")
     public DataSource dataSource2() {
     	//return DataSourceBuilder.create().build();
     	return DataSourceBuilder.create().type(HikariDataSource.class).build();

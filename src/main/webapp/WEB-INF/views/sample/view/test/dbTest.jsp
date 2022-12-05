@@ -2,7 +2,7 @@
 <%    
 
 
-String DBID = "DBID_1";
+String DBID = "DBID_0";
 net.dstone.common.utils.DbUtil db = null;
 net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
 
@@ -17,7 +17,7 @@ try {
 	sql.append("SELECT ").append("\n"); 
 	sql.append("	* ").append("\n");
 	sql.append("FROM  ").append("\n");
-	sql.append("	SAMPLE_DEPT  ").append("\n");
+	sql.append("	TEST  ").append("\n");
 	sql.append("WHERE 1=1 ").append("\n");
 
 	db = new net.dstone.common.utils.DbUtil(DBID);
