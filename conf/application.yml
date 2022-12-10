@@ -17,26 +17,25 @@ server:
     ssl: 
         key-store: D:/AppHome/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
-        key-store-password: db2admin
+        key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
         key-store-alias: dstone-ssl
 
 spring:
-    db1: 
-        datasource:
+    datasource: 
+        db1:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:orcl
-                username: system
-                password: db2admin
+                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:xe
+                username: ENC(1Vc8JCXoCl4GBsif5/DgOWd/UaRQGzbDPxdCBTcotwU=)
+                password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
             networks: 
                 - backend
-    db2: 
-        datasource: 
+        db2: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:orcl
-                username: system
-                password: db2admin
+                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:xe
+                username: ENC(1Vc8JCXoCl4GBsif5/DgOWd/UaRQGzbDPxdCBTcotwU=)
+                password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
             networks: 
                 - backend
     rabbitmq: 
@@ -51,3 +50,5 @@ spring:
             suffix: .jsp
 #    thymeleaf:
 #        cache: false
+
+
