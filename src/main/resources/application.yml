@@ -15,6 +15,12 @@ server:
             init-parameters: 
                 development: true
     ssl: 
+        enabled: true
+        protocol: TLS
+        enabled-protocols: 
+        - TLSv1
+        - TLSv1.1
+        - TLSv1.2
         key-store: D:/AppHome/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
