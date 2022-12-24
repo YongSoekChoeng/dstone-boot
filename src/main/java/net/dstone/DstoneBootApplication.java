@@ -16,38 +16,55 @@ public class DstoneBootApplication {
 	
 	public static void main(String[] args) {
 		
+		SpringApplication app = new SpringApplication(DstoneBootApplication.class);
+		app.addListeners(new ApplicationPidFileWriter()); // ApplicationPidFileWriter 설정
+	    app.run(args);
+	    
+	    setSecurity();
+	    
+	}
+	
+	private static void setSecurity() {
+
 		/******************************* 낮은버젼에서 SSL을 사용할 수 있도록 하기위한 조치 시작 *******************************/
 		// JDK1.6-TLSv1사용/JDK1.7-TLSv1.1사용/JDK1.8이상-TLSv1.2사용.
 		// 1. JDK1.8이상은 JAVA Security 에서 TLSv1, TLSv1.1를 사용불가 알고리즘으로 디폴트 세팅되어 있음. 따라서 이 시스템 프러퍼티를 수정.
 		
+		String disabledAlgorithms = "";
 		ArrayList<String> delFromDisabledAlgorithmsList = new ArrayList<String>();
 		delFromDisabledAlgorithmsList.add("TLSv1");
 		delFromDisabledAlgorithmsList.add("TLSv1.1");
-		String disabledAlgorithms = java.security.Security.getProperty("jdk.certpath.disabledAlgorithms");
-		StringBuffer buff = new StringBuffer();
-		if( !StringUtil.isEmpty(disabledAlgorithms) && disabledAlgorithms.indexOf(",") >-1 ) {
-			String[] disabledAlgorithmArr = StringUtil.toStrArray(disabledAlgorithms, ",");
-			for(String disabledAlgorithm : disabledAlgorithmArr) {
-				if(!delFromDisabledAlgorithmsList.contains(disabledAlgorithm)) {
-					if(buff.length() > 0) {
-						buff.append(",");
-					}
-					buff.append(disabledAlgorithm);
-				}
+		// 1. jdk.certpath.disabledAlgorithms
+		disabledAlgorithms = java.security.Security.getProperty("jdk.certpath.disabledAlgorithms");
+		if( !StringUtil.isEmpty(disabledAlgorithms) ) {
+			for(String delFromDisabledAlgorithm : delFromDisabledAlgorithmsList) {
+				disabledAlgorithms = StringUtil.replace(disabledAlgorithms, delFromDisabledAlgorithm+",", "");
 			}
+			java.security.Security.setProperty("jdk.certpath.disabledAlgorithms", disabledAlgorithms);	
 		}
-		java.security.Security.setProperty("jdk.certpath.disabledAlgorithms", buff.toString());	
+
+		// 2. jdk.jar.disabledAlgorithms
+		disabledAlgorithms = java.security.Security.getProperty("jdk.jar.disabledAlgorithms");
+		if( !StringUtil.isEmpty(disabledAlgorithms) ) {
+			for(String delFromDisabledAlgorithm : delFromDisabledAlgorithmsList) {
+				disabledAlgorithms = StringUtil.replace(disabledAlgorithms, delFromDisabledAlgorithm+",", "");
+			}
+			java.security.Security.setProperty("jdk.jar.disabledAlgorithms", disabledAlgorithms);	
+		}
+
+		// 3. jdk.tls.disabledAlgorithms
+		disabledAlgorithms = java.security.Security.getProperty("jdk.tls.disabledAlgorithms");
+		if( !StringUtil.isEmpty(disabledAlgorithms) ) {
+			for(String delFromDisabledAlgorithm : delFromDisabledAlgorithmsList) {
+				disabledAlgorithms = StringUtil.replace(disabledAlgorithms, delFromDisabledAlgorithm+",", "");
+			}
+			java.security.Security.setProperty("jdk.tls.disabledAlgorithms", disabledAlgorithms);	
+		}
 		
-		/*
 		System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 		System.setProperty("jdk.tls.client.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 		System.setProperty("jsse.enableSNIExtension", "false");		
-		*/
 		/******************************* 낮은버젼에서 SSL을 사용할 수 있도록 하기위한 조치 끝 *********************************/
 
-		SpringApplication app = new SpringApplication(DstoneBootApplication.class);
-		app.addListeners(new ApplicationPidFileWriter()); // ApplicationPidFileWriter 설정
-	    app.run(args);
 	}
-	
 }
