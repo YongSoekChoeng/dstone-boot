@@ -34,6 +34,7 @@ public class DstoneBootApplication {
 		ArrayList<String> delFromDisabledAlgorithmsList = new ArrayList<String>();
 		delFromDisabledAlgorithmsList.add("TLSv1");
 		delFromDisabledAlgorithmsList.add("TLSv1.1");
+		
 		// 1. jdk.certpath.disabledAlgorithms
 		disabledAlgorithms = java.security.Security.getProperty("jdk.certpath.disabledAlgorithms");
 		if( !StringUtil.isEmpty(disabledAlgorithms) ) {
