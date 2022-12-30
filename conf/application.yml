@@ -14,11 +14,17 @@ server:
         jsp: 
             init-parameters: 
                 development: true
-    ssl: 
-        key-store: /app-home/apps/dstone-boot/ssl/dstone-keystore.p12
-        key-store-type: PKCS12
-        key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
-        key-store-alias: dstone-ssl
+#    ssl: 
+#        enabled: true
+#        protocol: TLS
+#        enabled-protocols: 
+#        - TLSv1
+#        - TLSv1.1
+#        - TLSv1.2
+#        key-store: /app-home/apps/dstone-boot/ssl/dstone-keystore.p12
+#        key-store-type: PKCS12
+#        key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
+#        key-store-alias: dstone-ssl
 
 spring:
     datasource: 
