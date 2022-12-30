@@ -50,7 +50,3 @@ spring:
             suffix: .jsp
 #    thymeleaf:
 #        cache: false
-
-logging:
-  config: file:./log4j2.yml
-  log-path: /app-home/logs/dstone-boot
