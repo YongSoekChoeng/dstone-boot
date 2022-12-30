@@ -346,6 +346,10 @@
                 <targetPath>${project.basedir}/target/classes</targetPath>
 				<excludes>
 					<exclude>**/*.java</exclude>
+					<!-- Resources Replacement(Ones in conf directory should be used instead.) Start  -->
+					<exclude>application.yml</exclude>
+					<exclude>log4j2.xml</exclude>
+					<!-- Resources Replacement(Ones in conf directory should be used instead.) End  -->
 				</excludes>
                 <filtering>true</filtering>
             </resource>
