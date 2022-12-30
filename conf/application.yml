@@ -15,7 +15,7 @@ server:
             init-parameters: 
                 development: true
     ssl: 
-        key-store: D:/AppHome/dstone-boot/ssl/dstone-keystore.p12
+        key-store: /app-home/apps/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
         key-store-alias: dstone-ssl
@@ -51,4 +51,6 @@ spring:
 #    thymeleaf:
 #        cache: false
 
-
+logging:
+  config: file:./log4j2.yml
+  log-path: /app-home/logs/dstone-boot

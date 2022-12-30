@@ -57,4 +57,6 @@ spring:
 #    thymeleaf:
 #        cache: false
 
-
+logging:
+  config: file:./log4j2.yml
+  log-path: D:/AppHome/LOGS/dstone-boot

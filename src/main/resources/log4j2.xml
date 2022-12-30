@@ -8,8 +8,8 @@
         </Console>
 
         <RollingFile name ="rollingFile">
-            <FileName>D:/AppHome/LOGS/dstone-boot/execution/execution.log</FileName>
-            <FilePattern>D:/AppHome/LOGS/dstone-boot/execution/%d{yyyy-MM-dd}/execution.zip</FilePattern>
+            <FileName>${log-path}/execution/execution.log</FileName>
+            <FilePattern>${log-path}/execution/%d{yyyy-MM-dd}/execution.zip</FilePattern>
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [%c] %m%n</Pattern>
             </PatternLayout>
