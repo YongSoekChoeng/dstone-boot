@@ -59,8 +59,6 @@ if(returnObj != null){
 	</table>                                                                                                      
                                                                                                                  
 </form>                                                                                                          
-<!--폼 끝-->                                                                                                      
-
-<%@ include file="../test/dbTest.jsp" %>                                                                                                       
+<!--폼 끝-->                                                                                                                                    
 </body>                                                                                                          
 </html>    

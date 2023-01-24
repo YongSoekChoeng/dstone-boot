@@ -119,67 +119,67 @@ public class DstoneBootConfig {
 	}
 	
 
-	// DB2 관련 설정
-	/* 2-1. Datasource Configuration START */
-    @Bean
-	@Qualifier("dataSource2")
-    @ConfigurationProperties("spring.datasource.db2.hikari")
-    public DataSource dataSource2() {
-    	//return DataSourceBuilder.create().build();
-    	return DataSourceBuilder.create().type(HikariDataSource.class).build();
-    }
-	/* 2-2. SqlMap Configuration START */
-	@Bean
-	public SqlSessionFactory sqlSessionFactory2(DataSource dataSource2) throws Exception {
-		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-		Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath*:**/*Dao.xml");
-		bean.setDataSource(dataSource2);
-		bean.setMapperLocations(mapperLocations);
-		return bean.getObject();
-	}
-	@Bean
-	public SqlSessionTemplate sqlSession2(SqlSessionFactory sqlSessionFactory2) {
-		return new SqlSessionTemplate(sqlSessionFactory2);
-	}
-	/* 2-3. Transaction Configuration START */
-	@Bean
-	@Qualifier("txManager2")
-	public DataSourceTransactionManager txManager2() {
-		DataSourceTransactionManager txManager2 = new DataSourceTransactionManager(dataSource2());
-	    return txManager2;
-	}
-	@Bean
-	@Qualifier("txAdvice2")
-	public TransactionInterceptor txAdvice2() {
-	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
-		Properties txAttributes = new Properties();
-		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
-		/** If need to add additionall exception, add here **/
-		rollbackRules.add(new RollbackRuleAttribute(Exception.class));
-		// read-only
-		DefaultTransactionAttribute readOnlyAttribute = new DefaultTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED);
-		readOnlyAttribute.setReadOnly(true);
-		readOnlyAttribute.setTimeout(TX_METHOD_TIMEOUT);
-		String readOnlyTransactionAttributesDefinition = readOnlyAttribute.toString();
-		txAttributes.setProperty("get*", readOnlyTransactionAttributesDefinition);
-		txAttributes.setProperty("list*", readOnlyTransactionAttributesDefinition);
-		// write rollback-rule
-		RuleBasedTransactionAttribute writeAttribute = new RuleBasedTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED, rollbackRules);
-		writeAttribute.setTimeout(TX_METHOD_TIMEOUT);
-		String writeTransactionAttributesDefinition = writeAttribute.toString();
-		txAttributes.setProperty("insert*", writeTransactionAttributesDefinition);
-		txAttributes.setProperty("update*", writeTransactionAttributesDefinition);
-		txAttributes.setProperty("delete", writeTransactionAttributesDefinition);
-		
-		transactionInterceptor.setTransactionAttributes(txAttributes);
-		transactionInterceptor.setTransactionManager(txManager2());
-	    return transactionInterceptor;
-	}
-	@Bean
-	public Advisor transactionAdvisor2() {
-		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
-		return new DefaultPointcutAdvisor(pointcut, txAdvice2());
-	}
+//	// DB2 관련 설정
+//	/* 2-1. Datasource Configuration START */
+//    @Bean
+//	@Qualifier("dataSource2")
+//    @ConfigurationProperties("spring.datasource.db2.hikari")
+//    public DataSource dataSource2() {
+//    	//return DataSourceBuilder.create().build();
+//    	return DataSourceBuilder.create().type(HikariDataSource.class).build();
+//    }
+//	/* 2-2. SqlMap Configuration START */
+//	@Bean
+//	public SqlSessionFactory sqlSessionFactory2(DataSource dataSource2) throws Exception {
+//		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+//		Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath*:**/*Dao.xml");
+//		bean.setDataSource(dataSource2);
+//		bean.setMapperLocations(mapperLocations);
+//		return bean.getObject();
+//	}
+//	@Bean
+//	public SqlSessionTemplate sqlSession2(SqlSessionFactory sqlSessionFactory2) {
+//		return new SqlSessionTemplate(sqlSessionFactory2);
+//	}
+//	/* 2-3. Transaction Configuration START */
+//	@Bean
+//	@Qualifier("txManager2")
+//	public DataSourceTransactionManager txManager2() {
+//		DataSourceTransactionManager txManager2 = new DataSourceTransactionManager(dataSource2());
+//	    return txManager2;
+//	}
+//	@Bean
+//	@Qualifier("txAdvice2")
+//	public TransactionInterceptor txAdvice2() {
+//	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+//		Properties txAttributes = new Properties();
+//		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
+//		/** If need to add additionall exception, add here **/
+//		rollbackRules.add(new RollbackRuleAttribute(Exception.class));
+//		// read-only
+//		DefaultTransactionAttribute readOnlyAttribute = new DefaultTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED);
+//		readOnlyAttribute.setReadOnly(true);
+//		readOnlyAttribute.setTimeout(TX_METHOD_TIMEOUT);
+//		String readOnlyTransactionAttributesDefinition = readOnlyAttribute.toString();
+//		txAttributes.setProperty("get*", readOnlyTransactionAttributesDefinition);
+//		txAttributes.setProperty("list*", readOnlyTransactionAttributesDefinition);
+//		// write rollback-rule
+//		RuleBasedTransactionAttribute writeAttribute = new RuleBasedTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED, rollbackRules);
+//		writeAttribute.setTimeout(TX_METHOD_TIMEOUT);
+//		String writeTransactionAttributesDefinition = writeAttribute.toString();
+//		txAttributes.setProperty("insert*", writeTransactionAttributesDefinition);
+//		txAttributes.setProperty("update*", writeTransactionAttributesDefinition);
+//		txAttributes.setProperty("delete", writeTransactionAttributesDefinition);
+//		
+//		transactionInterceptor.setTransactionAttributes(txAttributes);
+//		transactionInterceptor.setTransactionManager(txManager2());
+//	    return transactionInterceptor;
+//	}
+//	@Bean
+//	public Advisor transactionAdvisor2() {
+//		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+//		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
+//		return new DefaultPointcutAdvisor(pointcut, txAdvice2());
+//	}
 	
 }

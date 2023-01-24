@@ -1,5 +1,5 @@
 server: 
-    port: 7080
+    port: 7081
     connection-timeout: 10s
     tomcat: 
         accept-count: 100
