@@ -109,16 +109,19 @@ public class TaskHandler {
 	public TaskItem doTheTask(TaskConfig conf, TaskItem item) throws Exception{
 		ExecutorService executorService = null;
 		Future<TaskItem> future = null;
-		if(conf.taskMode == TaskHandler.CACHED){
-			executorService = Executors.newCachedThreadPool();
-		}else if(conf.taskMode == TaskHandler.FIXED){
-			executorService = Executors.newFixedThreadPool(conf.threadNumWhenFixed);
-		}else{
-			executorService = Executors.newSingleThreadExecutor();
-		}
-		
 		try {
-			future = executorService.submit(item);
+			
+			if(conf.taskMode == TaskHandler.CACHED){
+				executorService = Executors.newCachedThreadPool();
+				future = executorService.submit(item);
+			}else if(conf.taskMode == TaskHandler.FIXED){
+				executorService = Executors.newFixedThreadPool(conf.threadNumWhenFixed);
+				future = executorService.submit(item);
+			}else{
+				executorService = Executors.newSingleThreadExecutor();
+				future = executorService.submit(item);
+			}
+			
 			if(future != null){
 				item = future.get();
 			}
