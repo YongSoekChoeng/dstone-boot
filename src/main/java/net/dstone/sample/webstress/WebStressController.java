@@ -60,6 +60,7 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 
 			/* DB데이터생성 테스트 일경우 시작 */
 			paramVo.setDEPT_NAME("부서-"+(new net.dstone.common.utils.GuidUtil()).getNewGuid());
+			paramVo.setINPUT_DT(net.dstone.common.utils.DateUtil.getToDate("yyyyMMdd"));
 			deptService.insertSampleDept(paramVo);
 			/* DB데이터생성 테스트 일경우 끝 */
 
@@ -109,6 +110,7 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 
 			/* DB데이터생성 테스트 일경우 시작 */
 			paramVo.setDEPT_NAME("부서-"+(new net.dstone.common.utils.GuidUtil()).getNewGuid());
+			paramVo.setINPUT_DT(net.dstone.common.utils.DateUtil.getToDate("yyyyMMdd"));
 			
 			net.dstone.sample.webstress.WebStressDbQueueItem item = new net.dstone.sample.webstress.WebStressDbQueueItem();
 			item.setObj("deptService", deptService);
