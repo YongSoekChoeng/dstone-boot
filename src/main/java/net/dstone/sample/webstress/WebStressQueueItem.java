@@ -16,6 +16,8 @@ public class WebStressQueueItem extends QueueItem {
 
 			String fileConts = net.dstone.common.utils.DateUtil.getToDate("yyyyMMdd-HH:mm:ss") + "에 파일내용.";
 			net.dstone.common.utils.FileUtil.writeFile(filePath, fileName, fileConts);
+			
+			net.dstone.common.utils.FileUtil.deleteFile(filePath + "/" + fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
