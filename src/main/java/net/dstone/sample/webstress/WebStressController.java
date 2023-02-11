@@ -32,16 +32,15 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 		net.dstone.common.utils.RequestUtil requestUtil = null;
    		/************************ 변수 선언 끝 **************************/
    		try {
-System.out.println("filePath=============>>>" + filePath);   			
+getLogger().info("filePath=============>>>" + filePath);
+
    			/************************ 컨트롤러 로직 시작 ************************/
    			requestUtil = new net.dstone.common.utils.RequestUtil(request, response);		
    			net.dstone.common.utils.FileUtil.makeDir(filePath);
 			String id = "TEST-" + net.dstone.common.utils.DateUtil.getToDate("HHmmss-") + new net.dstone.common.utils.GuidUtil().getNewGuid();
 			String fileName = id + ".log";
-			String fileConts = net.dstone.common.utils.DateUtil.getToDate("yyyyMMdd-HH:mm:ss") + "에 파일내용.";
-			net.dstone.common.utils.FileUtil.writeFile(filePath, fileName, fileConts);
 
-System.out.println("line =============>>>44");   
+getLogger().info("line =============>>>44");   
 			net.dstone.sample.webstress.WebStressQueueItem item = new net.dstone.sample.webstress.WebStressQueueItem();
 			item.setId(id);
 			item.setProperty("filePath", filePath);
@@ -54,7 +53,6 @@ System.out.println("line =============>>>44");
    			/************************ 컨트롤러 로직 끝 ************************/
    		
    		} catch (Exception e) {
- e.printStackTrace();			
    			handleException(request, response, e);
    			mav.setViewName(null);
    		}
