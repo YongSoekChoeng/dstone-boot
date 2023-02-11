@@ -3,7 +3,7 @@
 
      <Properties>
         <Property name="level.default">INFO</Property>
-        <Property name="level.dstone">INFO</Property>
+        <Property name="level.dstone">DEBUG</Property>
     </Properties>
     
     <Appenders>
