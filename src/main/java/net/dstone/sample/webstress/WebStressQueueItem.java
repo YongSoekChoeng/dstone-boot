@@ -7,6 +7,8 @@ public class WebStressQueueItem extends QueueItem {
 
 	@Override
 	public void doTheJob() {
+		System.out.println("doTheJob :: line =============>>>10");   
+		
 		String filePath = this.getProperty("filePath");
 		String fileName = this.getProperty("fileName");
 		
