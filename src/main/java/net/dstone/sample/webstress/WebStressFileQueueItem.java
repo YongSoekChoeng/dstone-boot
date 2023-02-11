@@ -3,7 +3,7 @@ package net.dstone.sample.webstress;
 import net.dstone.common.queue.QueueItem;
 import net.dstone.common.utils.LogUtil;
 
-public class WebStressQueueItem extends QueueItem {
+public class WebStressFileQueueItem extends QueueItem {
 
 	@Override
 	public void doTheJob() {
@@ -23,6 +23,7 @@ public class WebStressQueueItem extends QueueItem {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 }
