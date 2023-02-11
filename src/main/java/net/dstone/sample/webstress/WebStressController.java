@@ -32,7 +32,6 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 		net.dstone.common.utils.RequestUtil requestUtil = null;
    		/************************ 변수 선언 끝 **************************/
    		try {
-getLogger().info("filePath=============>>>" + filePath);
 
    			/************************ 컨트롤러 로직 시작 ************************/
    			requestUtil = new net.dstone.common.utils.RequestUtil(request, response);		
@@ -40,7 +39,6 @@ getLogger().info("filePath=============>>>" + filePath);
 			String id = "TEST-" + net.dstone.common.utils.DateUtil.getToDate("HHmmss-") + new net.dstone.common.utils.GuidUtil().getNewGuid();
 			String fileName = id + ".log";
 
-getLogger().info("line =============>>>44");   
 			net.dstone.sample.webstress.WebStressQueueItem item = new net.dstone.sample.webstress.WebStressQueueItem();
 			item.setId(id);
 			item.setProperty("filePath", filePath);
