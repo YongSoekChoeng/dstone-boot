@@ -86,8 +86,7 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 			msg.append("||============================== 스트레스테스트 설정값 끝 ==============================||");
 			msg.append("\n");
 			
-System.out.println(msg.toString());	
-			this.getLogger().info(msg.toString());
+			this.getLogger().sysout(msg.toString());
 			
 			ArrayList<TaskItem> taskList = new ArrayList<TaskItem>();
 			for(int i=0; i<conf.getThreadNumWhenFixed(); i++){
