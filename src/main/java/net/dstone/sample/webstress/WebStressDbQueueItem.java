@@ -14,7 +14,7 @@ public class WebStressDbQueueItem extends QueueItem {
 		try {
 			deptService = (net.dstone.sample.dept.DeptService)this.getObj("deptService");
 			paramVo = (net.dstone.sample.dept.cud.vo.SampleDeptCudVo)this.getObj("paramVo");
-			
+			Thread.sleep(500);
 			deptService.insertSampleDept(paramVo);
 			
 		} catch (Exception e) {
