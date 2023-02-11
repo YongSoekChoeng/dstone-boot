@@ -11,7 +11,7 @@ public class WebStressQueueItem extends QueueItem {
 		String fileName = this.getProperty("fileName");
 		
 		try {
-			net.dstone.sample.dept.DeptService svc = (net.dstone.sample.dept.DeptService)net.dstone.common.utils.BeanUtil.getSpringBean(net.dstone.sample.dept.DeptService.class);
+			//net.dstone.sample.dept.DeptService svc = (net.dstone.sample.dept.DeptService)net.dstone.common.utils.BeanUtil.getSpringBean(net.dstone.sample.dept.DeptService.class);
 			Thread.sleep(500);
 			
 			net.dstone.common.utils.FileUtil.deleteFile(filePath + "/" + fileName);
