@@ -1,7 +1,6 @@
 package net.dstone.sample.webstress;
 
 import net.dstone.common.queue.QueueItem;
-import net.dstone.common.utils.LogUtil;
 
 public class WebStressFileQueueItem extends QueueItem {
 
