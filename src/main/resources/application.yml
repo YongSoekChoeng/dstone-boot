@@ -31,7 +31,7 @@ spring:
         db1:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:xe
+                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:9521:xe
                 username: ENC(1Vc8JCXoCl4GBsif5/DgOWd/UaRQGzbDPxdCBTcotwU=)
                 password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
                 maximum-pool-size: 50
