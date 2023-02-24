@@ -4,6 +4,20 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <테스트코드>
+	java.util.List<String> list = new java.util.ArrayList<String>();
+	for(int i=0; i<tryNum; i++){
+		list.add(String.valueOf(i));
+	}
+	java.util.List<java.util.List<String>> subListArr = net.dstone.common.utils.PartitionUtil.ofSize(list, 20);
+	
+	System.out.println("subListArr.size():" + subListArr.size());
+	for(int i=0; i<subListArr.size(); i++){
+		java.util.List<String> subList = subListArr.get(i);
+		System.out.println("subList.size()" + subList.size());
+	}
+ */
 public class PartitionUtil<T> extends AbstractList<List<T>> {
 	
 	private final List<T> list;
