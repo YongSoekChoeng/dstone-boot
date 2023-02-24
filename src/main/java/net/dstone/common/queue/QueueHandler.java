@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import net.dstone.common.task.TaskItem;
+import net.dstone.common.utils.StringUtil;
 
 public class QueueHandler {
 	
@@ -11,7 +12,7 @@ public class QueueHandler {
 	/**
 	 * 큐를 감시할 시간간격.
 	 */
-	public static int QUEUE_CHECK_INTERVAL = 500; 
+	public static int QUEUE_CHECK_INTERVAL = 1000; 
 	/**
 	 * 큐에 아이템이 있을 경우 Fetch해올 큐아이템 갯수. -1 이면 큐의 모든 아이템을 Fetch해온다.
 	 */
@@ -19,7 +20,7 @@ public class QueueHandler {
 	/**
 	 * Fetch해온  큐아이템을 처리 할 쓰레드 갯수.
 	 */
-	public static int THREAD_NUM_PER_ONE_FETCH = 100;
+	public static int THREAD_NUM_PER_ONE_FETCH = 10;
 	/****************************  설정 끝   ****************************/
 	
 	protected static QueueHandler queueHandler = null;
@@ -54,9 +55,8 @@ public class QueueHandler {
 	public void addQueue(QueueItem queueItem) {
 		try {
 			
-			debug("||======================================= Adding QueueItem Start... =======================================||");
+			debug("||======================================= Adding QueueItem ["+queueItem.getId()+"] =======================================||");
 			queue.offer(queueItem);
-			debug("||======================================= Adding QueueItem End... =======================================||");
 			
 		} catch (Exception e) {
 			debug(e);
@@ -151,10 +151,9 @@ public class QueueHandler {
 					java.util.ArrayList<net.dstone.common.task.TaskItem> workList = new java.util.ArrayList<net.dstone.common.task.TaskItem>();
 					for(int i=0; i<queueToBeWorked.size(); i++) {
 						QueueItem queueItem = queueToBeWorked.get(i);
-						workList.add(new net.dstone.common.task.TaskItem(){
+						net.dstone.common.task.TaskItem taskItem = new net.dstone.common.task.TaskItem(){
 							@Override
-							public TaskItem doTheTask() {
-								debug("<<<<<<<<<<<<<<<<<<<< ["+queueItem.getId()+"] doTheJob 시작 >>>>>>>>>>>>>>>>>>>>>>>");
+							public net.dstone.common.task.TaskItem doTheTask(){
 								try {
 									queueItem.doTheJob();
 								} catch (Exception e) {
@@ -162,11 +161,13 @@ public class QueueHandler {
 								} finally {
 									workingQueueCount--;
 								}
-								debug("<<<<<<<<<<<<<<<<<<<< ["+queueItem.getId()+"] doTheJob 종료 >>>>>>>>>>>>>>>>>>>>>>>");
-								
 								return this;
 							}
-						});
+						};
+						if(StringUtil.isEmpty(taskItem.getId())) {
+							taskItem.setId("TaskItem-" + i);
+						}
+						workList.add(taskItem);
 					}
 					workList = net.dstone.common.task.TaskHandler.getInstance().doTheTasks(conf, workList);
 
