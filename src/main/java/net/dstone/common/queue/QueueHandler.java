@@ -12,11 +12,11 @@ public class QueueHandler {
 	/**
 	 * 큐를 감시할 시간간격.
 	 */
-	public static int QUEUE_CHECK_INTERVAL = 1000; 
+	public static int QUEUE_CHECK_INTERVAL 		= 1000; 
 	/**
 	 * 큐에 아이템이 있을 경우 Fetch해올 큐아이템 갯수. -1 이면 큐의 모든 아이템을 Fetch해온다.
 	 */
-	public static int FETCH_SIZE_BY_ONE = 150; 
+	public static int FETCH_SIZE_BY_ONE 		= 150; 
 	/****************************  큐관련 설정 끝   ****************************/
 
 	/**************************** 쓰레드풀관련 설정 시작 ****************************/
@@ -31,31 +31,31 @@ public class QueueHandler {
 	/**
 	 * 쓰레드풀아이디.
 	 */
-	public static String EXECUTOR_SERVICE_ID = "QHANDLER_THREAD_POOL";
+	public static String EXECUTOR_SERVICE_ID 	= "QHANDLER_THREAD_POOL";
 	/**
 	 * 기본풀사이즈.
 	 */
-	public static int CORE_POOL_SIZE = 10; 
+	public static int CORE_POOL_SIZE 			= 10; 
 	/**
 	 * 최대퓰사이즈.
 	 */
-	public static int MAXIMUM_POOL_SIZE = 200;
+	public static int MAXIMUM_POOL_SIZE 		= 200;
 	/**
 	 * 큐용량.
 	 * -corePoolSize보다 쓰레드요청이 많아졌을 경우 이 수치만큼 큐잉한다. 이 수치가 넘어가게 되면 maximumPoolSize까지 쓰레드가 생성됨. corePoolSize+queueCapacity+maximumPoolSize 를 넘어가는 요청이 발생 시 RejectedExecutionException이 발생.
 	 */
-	public static int QUEUE_CAPACITY = 50;
+	public static int QUEUE_CAPACITY 			= 50;
 	/**
 	 * corePoolSize를 초과하여 생성된 쓰레드에 대해서 미사용시 제거대기시간(초단위).
 	 *  -corePoolSize보다 쓰레드요청이 많아졌을 경우 queueCapacity까지 큐잉되다가 큐잉초과시 maximumPoolSize까지 쓰레드가 생성되는데 keepAliveTime시간만큼 유지했다가 다시 corePoolSize로 돌아가는동안 유지되는 시간을 의미.
 	 */
-	public static int KEEP_ALIVE_TIME = 1000;
+	public static int KEEP_ALIVE_TIME 			= 1000;
 	
 	// TaskHandler-Fixed 쓰레드풀 타입일때 사용할 설정
 	/**
 	 * Fixed 쓰레드풀 생성 시 풀사이즈.
 	 */
-	public static int POOL_SIZE_WHEN_FIXED = 30;
+	public static int POOL_SIZE_WHEN_FIXED 		= 30;
 	/****************************  쓰레드풀관련 설정 끝   ****************************/
 	
 	protected static QueueHandler queueHandler = null;

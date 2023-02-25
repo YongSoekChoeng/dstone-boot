@@ -91,7 +91,8 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 		try {
    			/************************ 컨트롤러 로직 시작 ************************/
 			requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
-			
+
+System.out.println("net.dstone.sample.webstress.WebStressController.insertWebStressByAsync =======================================>>> line 95");
    			/* 파일생성 테스트 일경우 시작 */
    			/*
 			net.dstone.common.utils.FileUtil.makeDir(filePath);
@@ -111,10 +112,11 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 			/* DB데이터생성 테스트 일경우 시작 */
 			paramVo.setDEPT_NAME("부서-"+(new net.dstone.common.utils.GuidUtil()).getNewGuid());
 			paramVo.setINPUT_DT(net.dstone.common.utils.DateUtil.getToDate("yyyyMMdd"));
-			
+System.out.println("net.dstone.sample.webstress.WebStressController.insertWebStressByAsync =======================================>>> line 114");
 			net.dstone.sample.webstress.WebStressDbQueueItem item = new net.dstone.sample.webstress.WebStressDbQueueItem();
 			item.setObj("deptService", deptService);
 			item.setObj("paramVo", paramVo);
+System.out.println("net.dstone.sample.webstress.WebStressController.insertWebStressByAsync =======================================>>> line 118");
 			net.dstone.common.queue.QueueHandler.getInstance().addQueue(item);
 			/* DB데이터생성 테스트 일경우 끝 */
 			
