@@ -77,20 +77,11 @@
             <AppenderRef ref="rollingFile"/>
 	    </Logger>
 	    
-	    <!--  
-	    <Logger name="java.sql" level="INFO" additivity="false">
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="rollingFile"/>
-	    </Logger>   
-	    <Logger name="org.springframework" level="INFO" additivity="false">
+	    <Logger name="net.dstone" level="${level.dstone}" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>
 	    </Logger>
-	    <Logger name="java.sql" level="DEBUG" additivity="false">
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="rollingFile"/>
-	    </Logger>
-	    -->
+	    
     </Loggers>
     
 </Configuration>
