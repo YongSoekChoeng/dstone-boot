@@ -1,8 +1,6 @@
 package net.dstone.common.task;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import net.dstone.common.utils.StringUtil;
