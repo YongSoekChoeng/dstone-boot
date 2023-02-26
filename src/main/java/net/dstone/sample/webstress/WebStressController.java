@@ -118,12 +118,14 @@ getLogger().info("net.dstone.sample.webstress.WebStressController.insertWebStres
 			item.setObj("paramVo", paramVo);
 getLogger().info("net.dstone.sample.webstress.WebStressController.insertWebStressByAsync =======================================>>> line 118");
 			net.dstone.common.queue.QueueHandler.getInstance().addQueue(item);
+getLogger().info("net.dstone.sample.webstress.WebStressController.insertWebStressByAsync =======================================>>> line 121");
 			/* DB데이터생성 테스트 일경우 끝 */
 			
 			mav.setViewName("/sample/view/webstress/webStress");
 			/************************ 컨트롤러 로직 끝 ************************/
 
 		} catch (Exception e) {
+			e.printStackTrace();
    			handleException(request, response, e);
    			mav.setViewName(null);
    		}
