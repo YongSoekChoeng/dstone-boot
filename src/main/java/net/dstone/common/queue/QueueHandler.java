@@ -3,10 +3,11 @@ package net.dstone.common.queue;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.task.TaskHandler;
 import net.dstone.common.utils.StringUtil;
 
-public class QueueHandler {
+public class QueueHandler extends BaseObject {
 	
 	/****************************  큐관련 설정 시작 ****************************/
 	/**
@@ -77,7 +78,7 @@ public class QueueHandler {
 	}
 
 	private void debug(Object o){
-		net.dstone.common.utils.LogUtil.sysout(o);
+		getLogger().info(o);
 	}
 	protected void init(){
 		try {

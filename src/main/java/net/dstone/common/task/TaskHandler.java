@@ -15,7 +15,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class TaskHandler {
+import net.dstone.common.core.BaseObject;
+
+public class TaskHandler extends BaseObject{
 	
 	private Map<String, ExecutorService> EXECUTOR_SERVICE_MAP;
 
@@ -129,7 +131,7 @@ public class TaskHandler {
 	}
 
 	private void debug(Object o){
-		net.dstone.common.utils.LogUtil.sysout(o);
+		getLogger().info(o);
 	}
 	protected void init(){
 		EXECUTOR_SERVICE_MAP = new HashMap<String, ExecutorService>();
