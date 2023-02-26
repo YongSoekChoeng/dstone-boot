@@ -590,12 +590,11 @@ public class DateUtil {
 		Calendar before = Calendar.getInstance();
 		SimpleDateFormat hhmmssSSS = new SimpleDateFormat("HH:mm:ss.SSS");
 		STOPWATCH_MAP.put(stopWatchId, before);
-		logger.sysout( "||====================================== ["+stopWatchId+"]START [시작시간 "+hhmmssSSS.format(before.getTime())+"] ======================================||" );
+		logger.info( "||====================================== ["+stopWatchId+"]START [시작시간 "+hhmmssSSS.format(before.getTime())+"] ======================================||" );
 	}
 	public static void stopWatchEnd(String stopWatchId) {
-		StringBuffer buff = new StringBuffer();
 		if(!STOPWATCH_MAP.containsKey(stopWatchId)){
-			LogUtil.sysout("["+stopWatchId+"]는 존재하지않은 정보입니다.");
+			logger.info("["+stopWatchId+"]는 존재하지않은 정보입니다.");
 		}
 		try {
 			Calendar before = STOPWATCH_MAP.get(stopWatchId);
@@ -624,7 +623,7 @@ public class DateUtil {
 			}
 			
 			String elapsedTime = StringUtil.filler(String.valueOf(hh), 2, "0")+"시간  "+StringUtil.filler(String.valueOf(mm), 2, "0")+"분 "+StringUtil.filler(String.valueOf(ss), 2, "0")+"."+StringUtil.filler(String.valueOf(SSS), 3, "0")+"초";
-			logger.sysout( "||====================================== ["+stopWatchId+"]END   [종료시간 "+hhmmssSSS.format(after.getTime())+" 소요시간 "+elapsedTime+"] ======================================||" );
+			logger.info( "||====================================== ["+stopWatchId+"]END   [종료시간 "+hhmmssSSS.format(after.getTime())+" 소요시간 "+elapsedTime+"] ======================================||" );
 			
 		} catch (Exception e) {
 			e.printStackTrace();
