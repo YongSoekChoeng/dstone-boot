@@ -3,6 +3,7 @@
 
      <Properties>
         <Property name="level.default">debug</Property>
+        <Property name="level.jdbc">debug</Property>
         <Property name="level.dstone">debug</Property>
     </Properties>
     
@@ -43,35 +44,35 @@
 		</Logger>  	
 		    
 		<!--Log4jdbc logger-->
-		<Logger name="jdbc" level="OFF" additivity="false">   
+		<Logger name="jdbc" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	
-		<Logger name="jdbc.connection" level="OFF" additivity="false">   
+		<Logger name="jdbc.connection" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	
-		<Logger name="jdbc.sqlonly" level="OFF" additivity="false">   
+		<Logger name="jdbc.sqlonly" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>
-		<Logger name="jdbc.sqltiming" level="${level.default}" additivity="false">   
+		<Logger name="jdbc.sqltiming" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>
-		<Logger name="jdbc.audit" level="OFF" additivity="false">   
+		<Logger name="jdbc.audit" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	
-		<Logger name="jdbc.resultset" level="OFF" additivity="false">   
+		<Logger name="jdbc.resultset" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	
-		<Logger name="jdbc.resultsettable" level="${level.default}" additivity="false">   
+		<Logger name="jdbc.resultsettable" level="${level.jdbc}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	
-	    <Logger name="com.zaxxer.hikari" level="OFF" additivity="false">
+	    <Logger name="com.zaxxer.hikari" level="${level.jdbc}" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>
 	    </Logger>
