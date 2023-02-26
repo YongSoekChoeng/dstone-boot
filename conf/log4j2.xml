@@ -2,8 +2,8 @@
 <Configuration>
 
      <Properties>
-        <Property name="level.default">info</Property>
-        <Property name="level.dstone">info</Property>
+        <Property name="level.default">error</Property>
+        <Property name="level.dstone">error</Property>
     </Properties>
     
     <Appenders>
