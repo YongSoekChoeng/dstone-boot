@@ -2,24 +2,29 @@
 <Configuration>
 
      <Properties>
-        <Property name="level.default">ERROR</Property>
-        <Property name="level.dstone">ERROR</Property>
+        <Property name="level.default">info</Property>
+        <Property name="level.dstone">info</Property>
     </Properties>
     
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MM-dd hh:mm:ss} %5p [%c] %m%n"/>
         </Console>
-        <RollingFile name ="rollingFile">
+        <RollingFile name ="rollingFile" filePermissions="rwxrwxr--">
             <FileName>/app-home/logs/dstone-boot/execution/execution.log</FileName>
-            <FilePattern>/app-home/logs/dstone-boot/execution/%d{yyyy-MM-dd}/execution.zip</FilePattern>
+            <FilePattern>/app-home/logs/dstone-boot/execution/backup/%d{yyyy-MM-dd}-execution.zip</FilePattern>
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [%c] %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
             </Policies>
-            <DefaultRolloverStrategy max="10" fileIndex="min"/>
+			<DefaultRolloverStrategy max="7" fileIndex="max" >
+			  	<Delete basePath = "/app-home/logs/dstone-boot/execution/backup" maxDepth = "1">
+			  		<!-- 3일이 경과한 로그파일은 자동 삭제 -->
+			  		<IfLastModified age = "3d"/>
+			  	</Delete>
+		  	</DefaultRolloverStrategy>
         </RollingFile>
     </Appenders>
 
