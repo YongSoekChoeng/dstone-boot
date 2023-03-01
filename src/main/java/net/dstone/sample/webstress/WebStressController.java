@@ -87,10 +87,16 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 		String filePath = TEST_FILE_ROOT;
 		net.dstone.common.utils.RequestUtil requestUtil = null;
 		net.dstone.sample.dept.cud.vo.SampleDeptCudVo paramVo = new net.dstone.sample.dept.cud.vo.SampleDeptCudVo();
+
+		net.dstone.common.queue.QueueHandler.Config conf = net.dstone.common.queue.QueueHandler.getInstance().newConfig();
+		conf.setQueueCheckInterval(1000);
+		conf.setQueueFetchSizeByOne(500);
+		conf.setExecutorServiceId("THREAD_POOL_1");
    		/************************ 변수 선언 끝 **************************/
 		try {
    			/************************ 컨트롤러 로직 시작 ************************/
 			requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
+			net.dstone.common.queue.QueueHandler.getInstance().addQueueService("QHANDLER_SERVICE_1", conf);
 
    			/* 파일생성 테스트 일경우 시작 */
    			/*
@@ -114,7 +120,8 @@ public class WebStressController extends net.dstone.common.biz.BaseController {
 			net.dstone.sample.webstress.WebStressDbQueueItem item = new net.dstone.sample.webstress.WebStressDbQueueItem();
 			item.setObj("deptService", deptService);
 			item.setObj("paramVo", paramVo);
-			net.dstone.common.queue.QueueHandler.getInstance().addQueue(item);
+			
+			net.dstone.common.queue.QueueHandler.getInstance().getQueueService("QHANDLER_SERVICE_1").addQueue(item);
 			/* DB데이터생성 테스트 일경우 끝 */
 			
 			mav.setViewName("/sample/view/webstress/webStress");
