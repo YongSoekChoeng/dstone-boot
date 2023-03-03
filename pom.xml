@@ -377,7 +377,7 @@
 					<!-- Resources Replacement(Ones in conf directory should be used instead.) Start  -->
 					<!-- 로컬환경에서는 필요하지만 서버환경에서는 필요없는 부분(설정파일이 war에 들어가게 되면 conf안의 파일보다 해당 설정을 먼저 읽어버리는 경우가 있음.)  시작 -->
 					<exclude>application.xml</exclude>
-					<exclude>log4j2.xml</exclude>
+					<exclude>log4j2.xml</exclude> 
 					<!-- 로컬환경에서는 필요하지만 서버환경에서는 필요없는 부분(설정파일이 war에 들어가게 되면 conf안의 파일보다 해당 설정을 먼저 읽어버리는 경우가 있음.)  끝 -->
 					<!-- Resources Replacement(Ones in conf directory should be used instead.) End  -->
 				</excludes>
