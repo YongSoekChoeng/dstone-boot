@@ -171,10 +171,11 @@ public class TaskHandler extends BaseObject{
 		ExecutorService executorService = null;
 		ArrayList<TaskItem> returnVal = new ArrayList<TaskItem>();
 		List<Future<TaskItem>> futureList = new ArrayList<Future<TaskItem>>();
-		String msg = "TaskHandler["+executorServiceId+"].doTheTasks(TaskItem갯수:"+itemList.size()+"). Active Thread Count["+Thread.activeCount()+"]";
+		String msg = "TaskHandler["+executorServiceId+"].doTheTasks(TaskItem갯수:"+itemList.size()+")";
 		
 		try {
 			net.dstone.common.utils.DateUtil.stopWatchStart(msg);
+			int startThreadCount = Thread.activeCount();
 			executorService = getExecutorService(executorServiceId);
 			futureList = executorService.invokeAll(itemList);
 			if(futureList != null){
@@ -188,6 +189,7 @@ public class TaskHandler extends BaseObject{
 				    }
 				}
 			}
+			getLogger().info("Active 쓰레드갯수[doTheTasks시작시점:"+startThreadCount+"개 ==>> doTheTasks종료시점:"+Thread.activeCount()+"개]");
 		} catch (Exception e) {
 			getLogger().info( this.getClass().getName() + ".doTheTasks() 작없중 예외발생. 상세내용:" + e.toString());
 			throw e;
