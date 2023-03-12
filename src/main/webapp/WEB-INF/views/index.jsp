@@ -4,7 +4,6 @@
 
 String memoryInfo = SystemUtil.getMemoryInfo("<br>");
 String sysInfo = SystemUtil.getAllSystemProperties("<br>");
-int queueSize = net.dstone.common.queue.QueueHandler.getInstance().getQueueSize();
 
 %>   
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -17,8 +16,7 @@ int queueSize = net.dstone.common.queue.QueueHandler.getInstance().getQueueSize(
 <h2 style="color: blue">【Spring Boot】</h2>
 <h3 style="color: blue">◈시스템메모리정보</h3>
 <%=memoryInfo %>
-<h3 style="color: blue">◈미완료큐아이템정보</h3>
-<%=queueSize %>
+
 <h3 style="color: blue">◈환경변수정보</h3>
 <%=sysInfo %>
 </body>
