@@ -21,20 +21,24 @@ server:
         - TLSv1
         - TLSv1.1
         - TLSv1.2
-        key-store: D:/AppHome/dstone-boot/ssl/dstone-keystore.p12
+        key-store: D:/AppHome/framework/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
         key-store-alias: dstone-ssl
 
 spring:
+    main:
+        allow-bean-definition-overriding: true
     datasource: 
         db1:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:9521:xe
-                username: ENC(1Vc8JCXoCl4GBsif5/DgOWd/UaRQGzbDPxdCBTcotwU=)
-                password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
+                jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
+                username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
+                password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 maximum-pool-size: 50
+                use-jndi-lookup: N
+                jndi-lookup-name: java:comp/env/sampleDB
             networks: 
                 - backend
         db2: 
@@ -44,6 +48,8 @@ spring:
                 username: ENC(1Vc8JCXoCl4GBsif5/DgOWd/UaRQGzbDPxdCBTcotwU=)
                 password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
                 maximum-pool-size: 50
+                use-jndi-lookup: N
+                jndi-lookup-name: java:comp/env/xe
             networks: 
                 - backend
     rabbitmq: 
@@ -51,11 +57,8 @@ spring:
         port: 5672
         username: jysn007
         password: db2admin
-                
-    mvc: 
-        view: 
-            prefix: /WEB-INF/views/
-            suffix: .jsp
-#    thymeleaf:
-#        cache: false
+
+resources: 
+    fileUp: 
+        path: D:/Temp
 

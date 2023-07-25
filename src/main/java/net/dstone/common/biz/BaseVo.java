@@ -2,6 +2,7 @@ package net.dstone.common.biz;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+@SuppressWarnings("serial")
 @XmlRootElement( name="MemberVo" ) 
 public class BaseVo implements java.io.Serializable{
 

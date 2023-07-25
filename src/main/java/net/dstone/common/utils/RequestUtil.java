@@ -1,5 +1,7 @@
 package net.dstone.common.utils;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -94,23 +96,28 @@ public class RequestUtil {
 			buff.append(strT).append("strClientIP [" + requestUtil.strClientIP + "]").append("\r\n");
 			buff.append(strT).append("strContentsType [" + requestUtil.strContentsType + "]").append("\r\n");
 			buff.append(strT).append("strRealPath [" + requestUtil.strRealPath + "]").append("\r\n");
+			buff.append(strT).append("isAjax(Ajax여부) [" + RequestUtil.isAjax(requestUtil.request) + "]").append("\r\n");
 		}
 		// buff.append("< 메모리정보 >").append("\r\n");
 		buff.append(strT).append("< 파라메터 정보 >").append("\r\n");
 		// 일반 request 일때
 		if (!requestUtil.boolUploadYn) {
-			enumObj = requestUtil.request.getParameterNames();
-			while (enumObj.hasMoreElements()) {
-				strTempParamName = (String) enumObj.nextElement();
-				if (requestUtil.request.getParameterValues(strTempParamName).length == 1) {
-					buff.append(strT).append(strTempParamName + " [" + requestUtil.request.getParameter(strTempParamName) + "]").append("\r\n");
-				} else {
-					String[] strParams = requestUtil.request.getParameterValues(strTempParamName);
-					buff.append(strT).append(strTempParamName).append("\r\n");
-					for (int i = 0; i < strParams.length; i++) {
-						buff.append(strT).append("\t" + i + " [" + strParams[i] + "]").append("\r\n");
+			if(requestUtil.isAjax(request)) {
+				buff.append(populateJson(true, buff));
+			}else {
+				enumObj = requestUtil.request.getParameterNames();
+				while (enumObj.hasMoreElements()) {
+					strTempParamName = (String) enumObj.nextElement();
+					if (requestUtil.request.getParameterValues(strTempParamName).length == 1) {
+						buff.append(strT).append(strTempParamName + " [" + requestUtil.request.getParameter(strTempParamName) + "]").append("\r\n");
+					} else {
+						String[] strParams = requestUtil.request.getParameterValues(strTempParamName);
+						buff.append(strT).append(strTempParamName).append("\r\n");
+						for (int i = 0; i < strParams.length; i++) {
+							buff.append(strT).append("\t" + i + " [" + strParams[i] + "]").append("\r\n");
+						}
+						buff.append(strT).append(strTempParamName + " [" + requestUtil.request.getParameter(strTempParamName) + "]").append("\r\n");
 					}
-					buff.append(strT).append(strTempParamName + " [" + requestUtil.request.getParameter(strTempParamName) + "]").append("\r\n");
 				}
 			}
 		// multipart 일때
@@ -142,18 +149,18 @@ public class RequestUtil {
 		}
 
 		buff.append(strT).append("/").append(MAST_BAR_2).append(" " + requestUtil.getClass().getName() + ".parseRequest ").append(MAST_BAR_2).append("/\r\n");
-		logger.info(buff.toString());
+		logger.debug(buff.toString());
 	}
 	
 	private boolean populateJson(){
+		return this.populateJson(false, new StringBuffer());
+	}
+	
+	private boolean populateJson(boolean parseYn, StringBuffer buff){
 		if(!jsonMapPopulatedYn){
 			try {
+				String strT = "";
 				java.util.Enumeration params = getParameterNames();
-				if(this.boolUploadYn){
-					
-				}else{
-					
-				}
 				String name = "";
 				String value = null;
 				String[] values = null;
@@ -180,6 +187,21 @@ public class RequestUtil {
 									value = java.net.URLDecoder.decode((String)jObj.get(name), getStrCharacterEncoding()) ;
 									values = new String[1];
 									values[0] = value;
+								}
+								if(parseYn) {
+									if(values.length < 2) {
+										buff.append(strT).append(name + " [" + values[0] + "]").append("\r\n");
+									}else {
+										StringBuffer arrBuff = new StringBuffer();
+										for(String str : values) {
+											if(arrBuff.length() > 0) {
+												arrBuff.append("|");
+											}
+											arrBuff.append(str);
+										}
+										buff.append(strT).append(name + " [" + arrBuff.toString() + "]").append("\r\n");
+									}
+									
 								}
 								this.jsonMap.put(name, values);
 							}
@@ -470,4 +492,9 @@ public class RequestUtil {
 	public void setStrCharacterEncoding(String strCharacterEncoding) {
 		this.strCharacterEncoding = strCharacterEncoding;
 	}
+
+	public static boolean isAjax(HttpServletRequest request) {
+		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+	}
+
 }

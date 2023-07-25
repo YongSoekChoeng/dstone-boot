@@ -1,6 +1,8 @@
 package net.dstone.common.tools;
 
-public class CallHierarchyAnalyzer {
+import net.dstone.common.core.BaseObject;
+
+public class CallHierarchyAnalyzer extends BaseObject {
 	
 	private static CallHierarchyAnalyzer call = null;
 	

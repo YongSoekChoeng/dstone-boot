@@ -2,12 +2,10 @@ package net.dstone.common.queue;
 
 import java.util.Properties;
 
-public abstract class QueueItem {
+import net.dstone.common.core.BaseObject;
 
-	protected void debug(Object o){
-		net.dstone.common.utils.LogUtil.sysout(o);
-	}
-	
+public abstract class QueueItem extends BaseObject {
+
 	private String strId = "";
 	private Properties prop = new Properties();
 	

@@ -2,17 +2,11 @@ package net.dstone.common.tools;
 
 import io.github.benas.jpopulator.api.Populator;
 import io.github.benas.jpopulator.impl.PopulatorImpl;
+import net.dstone.common.core.BaseObject;
 
-
-
-
-public class DataGenerator {
+public class DataGenerator extends BaseObject {
 	
 	public static Populator populator = new PopulatorImpl();
-	
-	private static void debug(Object msg){
-		net.dstone.common.utils.LogUtil.sysout(msg);
-	}
 	
 	public static Object genRandomData(String className){
 		int size = (new java.util.Random().nextInt())%10;

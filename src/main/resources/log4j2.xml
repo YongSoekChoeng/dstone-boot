@@ -2,8 +2,8 @@
 <Configuration>
  
      <Properties>
-        <Property name="level.default">info</Property>
-        <Property name="level.dstone">info</Property>
+        <Property name="level.default">INFO</Property>
+        <Property name="level.dstone">INFO</Property>
     </Properties>
     
     <Appenders>
@@ -31,14 +31,19 @@
 
     <Loggers>
     	<!-- You can specify loggers down here ! -->
-    	
-        <Root level="INFO" additivity="false">
+        <Root level="${level.default}" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>
         </Root>        
     	
 		<!--Spring logger-->
-	    <Logger name="org.springframework" level="INFO" additivity="false">   
+	    <Logger name="org.springframework" level="${level.default}" additivity="false">   
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="rollingFile"/>	
+		</Logger>  	
+    	
+		<!--Spring logger-->
+	    <Logger name="org.springframework" level="${level.default}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	

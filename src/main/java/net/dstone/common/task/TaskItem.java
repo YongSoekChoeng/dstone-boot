@@ -3,19 +3,11 @@ package net.dstone.common.task;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.StringUtil;
 
-public abstract class TaskItem implements Callable<TaskItem>{
+public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 
-	private Logger logger = LoggerFactory.getLogger(TaskItem.class);
-	
-	protected void debug(Object o){
-		logger.debug(o.toString());
-	}
-	
 	public abstract TaskItem doTheTask();
 	
 	@Override

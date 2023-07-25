@@ -1,0 +1,27 @@
+package net.dstone.common.security;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
+
+import net.dstone.common.config.ConfigSecurity;
+import net.dstone.common.utils.LogUtil;
+
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+
+	private static final LogUtil logger = new LogUtil(CustomAccessDeniedHandler.class);
+	
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
+    	logger.info(this.getClass().getName() + ".handle() =================>>>> has been called !!!");
+    	String deniedUrl = ConfigSecurity.ACCESS_DENIED_ACTION;
+    	request.getRequestDispatcher(deniedUrl).forward(request, response);
+        //httpServletResponse.sendRedirect(deniedUrl);
+    }
+
+}

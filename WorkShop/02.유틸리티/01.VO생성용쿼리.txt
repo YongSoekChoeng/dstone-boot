@@ -1,0 +1,5 @@
+        SELECT                                                            
+            *
+        FROM                                               
+            SAMPLE_MEMBER
+        WHERE 1=1 

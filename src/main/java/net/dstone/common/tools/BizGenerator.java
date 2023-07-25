@@ -1,11 +1,11 @@
 package net.dstone.common.tools;
 
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.FileUtil;
-import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.SystemUtil;
 
-public class BizGenerator {
+public class BizGenerator extends BaseObject {
 
 	/******************************************* 공통세팅 시작 *******************************************/
 
@@ -20,13 +20,15 @@ public class BizGenerator {
 	// SqlSessionTemplate 로 등록된 ID
 	public static String SQL_CLIENT_ID = "sqlMapClientTemplate1";
 	// 프로젝트 루트
-	public static String PROJ_ROOT = "D:/AppHome/dstone";
+	public static String PROJ_ROOT = "D:/AppHome/framework/dstone-boot";
 	// 소스가 생성될 루트
 	public static String SRC_ROOT = PROJ_ROOT + "/src/main/java";
+	// SQL이 생성될 루트
+	public static String SQL_ROOT = PROJ_ROOT + "/src/main/resources/sqlmap";
 	// 웹 컨텍스트루트
 	public static String WEB_CONTEXT_ROOT = "/";
 	// 쿼리파일 위치. Vo 생성시 genVoBySql 일 경우 참조. DB에서 돌아가게 쿼리를 작성한 후 파일로 저장하면 자동으로 읽음.
-	public static String SQL_LOCATION = PROJ_ROOT + "/WorkShop/01.유틸리티/01.VO생성용쿼리.txt";
+	public static String SQL_LOCATION = PROJ_ROOT + "/WorkShop/02.유틸리티/01.VO생성용쿼리.txt";
 
 	// CUD(입력/수정/삭제)용 공통VO,공통SQL,공통DAO 이 위치할 패키지명. 전체테이블에 대한 CUD는 공통VO,공통SQL,공통DAO에 구현해놓고 개별 비즈니스는 공통DAO를 상속하여 해당기능을 이용한다.
 	public static String COMM_CUD_PACKAGE_NAME = "net.dstone.common.biz.cud";
@@ -34,7 +36,7 @@ public class BizGenerator {
 	public static String COMM_CUD_DAO_NAME = "BaseCudDao";
 
 	// JSP 파일 루트(웹루트로부터 시작되는 JSP파일루트 예:/view
-	public static String JSP_ROOT_PATH = "/sample/view";
+	public static String JSP_ROOT_PATH = "views";
 	// RestFul WebService 호출시 웹URL
 	public static String WS_WEB_URL = "http://localhost:9080";
 	// RestFul WebService 호출시 루트 Path. WebService Restful통신을 위해서 jersey라이브러리를 사용한다. web.xml에 등록된 com.sun.jersey.spi.spring.container.servlet.SpringServlet에 맵핑될 url-pattern.
@@ -108,24 +110,20 @@ public class BizGenerator {
 				}
 			} else if ("MYSQL".equals(db.currentDbKind)) {
 				db.getConnection();
+				ds = new net.dstone.common.utils.DataSet();
 				String DB_URL = net.dstone.common.utils.SystemUtil.getInstance().getProperty(DBID + ".strUrl");
-				String DB_SID = "MYDB";
-				if(DB_URL.indexOf("/") != -1){
-					DB_SID =  DB_URL.substring(DB_URL.lastIndexOf("/")+1);
-					if( DB_SID.indexOf("?") != -1 ) {
-						DB_SID =  DB_SID.substring(0, DB_SID.lastIndexOf("?"));
-					}
-				}
-				keySql.append("SELECT ").append("\n"); 
-				keySql.append("	   TABLE_NAME, COLUMN_NAME ").append("\n");
-				keySql.append("FROM  ").append("\n");
-				keySql.append("	   INFORMATION_SCHEMA.COLUMNS  ").append("\n");
-				keySql.append("WHERE 1=1 ").append("\n");
-				keySql.append("	   AND COLUMN_KEY = 'PRI'  ").append("\n");
-				keySql.append("	   AND TABLE_SCHEMA='" + DB_SID + "'  ").append("\n");
-				keySql.append("    AND TABLE_NAME='" + TABLE_NAME + "' ").append("\n");
-				keySql.append("ORDER BY ORDINAL_POSITION ").append("\n");
-
+				keySql.append("SELECT DISTINCT ").append("\n"); 
+				keySql.append("	   A.* ").append("\n"); 
+				keySql.append("FROM (").append("\n"); 
+				keySql.append("	   SELECT ").append("\n"); 
+				keySql.append("	   	   TABLE_NAME, COLUMN_NAME ").append("\n");
+				keySql.append("	   FROM  ").append("\n");
+				keySql.append("	   	   INFORMATION_SCHEMA.COLUMNS  ").append("\n");
+				keySql.append("	   WHERE 1=1 ").append("\n");
+				keySql.append("	   	   AND COLUMN_KEY = 'PRI'  ").append("\n");
+				keySql.append("	       AND TABLE_NAME='" + TABLE_NAME + "' ").append("\n");
+				keySql.append("	   ORDER BY ORDINAL_POSITION ").append("\n");
+				keySql.append(") A").append("\n"); 
 				db.setQuery(keySql.toString());
 				ds.buildFromResultSet(db.select(), "PK_LIST");
 				primarykeys = new String[ds.getDataSetRowCount("PK_LIST")];
@@ -185,11 +183,12 @@ public class BizGenerator {
 	 * 
 	 * @param TABLE_NAME (물리테이블명. 필수.)
 	 * @param TABLE_HAN_NAME (논리테이블명. 필수.)
+	 * @param strModuleName (모듈명. 필수.)
 	 * @param cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.)
-	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlForCud("TB_EVT_INFO", "이벤트정보", true, false);
+	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlForCud("TB_EVT_INFO", "이벤트정보", "event", true, false);
 	 */
-	public static void genSqlForCud(String TABLE_NAME, String TABLE_HAN_NAME, boolean cudOnlyYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, COMM_CUD_PACKAGE_NAME, COMM_CUD_DAO_NAME, cudOnlyYn, fileGenYn);
+	public static void genSqlForCud(String TABLE_NAME, String TABLE_HAN_NAME, String strModuleName, boolean cudOnlyYn, boolean fileGenYn) {
+		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, COMM_CUD_PACKAGE_NAME, COMM_CUD_DAO_NAME, strModuleName, cudOnlyYn, fileGenYn);
 	}
 
 	/**
@@ -199,11 +198,12 @@ public class BizGenerator {
 	 * @param TABLE_HAN_NAME (논리테이블명. 필수.)
 	 * @param strDaoPackageName (DAO 패키지명. 필수.)
 	 * @param strDaoName (DAO 명. 필수.)
+	 * @param strModuleName (모듈명. 필수.)
 	 * @param cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.)
-	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlByTable("TB_EVT_INFO", "이벤트정보", "com.test.biz.event", "EventDao", false, false);
+	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlByTable("TB_EVT_INFO", "이벤트정보", "com.test.biz.event", "EventDao", "event", false, false);
 	 */
-	public static void genSqlByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, boolean cudOnlyYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, strDaoPackageName, strDaoName, cudOnlyYn, fileGenYn);
+	public static void genSqlByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, String strModuleName, boolean cudOnlyYn, boolean fileGenYn) {
+		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, strDaoPackageName, strDaoName, strModuleName, cudOnlyYn, fileGenYn);
 	}
 
 	/**
@@ -215,11 +215,12 @@ public class BizGenerator {
 	 * @param strMethodComment (DAO 메소드설명. 필수.)
 	 * @param strVoPackageName (VO 패키지명. 필수.)
 	 * @param strVoName (VO 명-파라메터 및 반환값타입. 필수.)
+	 * @param strModuleName (모듈명. 필수.)
 	 * @param pageYn (카운트 SQL을 생성할지 여부.)
-	 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlBySql( "com.test.biz.event", "EventDao", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", true, false);
+	 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlBySql( "com.test.biz.event", "EventDao", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", "event", true, false);
 	 */
-	public static void genSqlBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlBySql(strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, pageYn, fileGenYn);
+	public static void genSqlBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, String strModuleName, boolean pageYn, boolean fileGenYn) {
+		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlBySql(strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, strModuleName, pageYn, fileGenYn);
 	}
 
 	/**
@@ -600,12 +601,15 @@ public class BizGenerator {
 					vo.append("package " + strVoPackageName + ";  ").append("\n");
 					vo.append("                      ").append("\n");
 					vo.append("import javax.xml.bind.annotation.XmlRootElement;").append("\n");
+					vo.append("                      ").append("\n");
+					vo.append("import com.fasterxml.jackson.annotation.JsonProperty;").append("\n");
 					vo.append("").append("\n");
 					vo.append("@XmlRootElement( name=\"" + strVoName + "\" ) ").append("\n");
 					vo.append("public class " + strVoName + " extends net.dstone.common.biz.BaseVo implements java.io.Serializable { ").append("\n");
 					if (cols != null) {
 						for (int i = 0; i < cols.length; i++) {
 							col = cols[i];
+							vo.append("\t@JsonProperty(\"" + col.COLUMN_NAME + "\") ").append("\n");
 							vo.append("\tprivate String " + col.COLUMN_NAME + "; ").append("\n");
 						}
 						String javaType = "String";
@@ -714,12 +718,15 @@ public class BizGenerator {
 					vo.append("package " + strVoPackageName + ";  ").append("\n");
 					vo.append("                      ").append("\n");
 					vo.append("import javax.xml.bind.annotation.XmlRootElement;").append("\n");
+					vo.append("                      ").append("\n");
+					vo.append("import com.fasterxml.jackson.annotation.JsonProperty;").append("\n");
 					vo.append("").append("\n");
 					vo.append("@XmlRootElement( name=\"" + strVoName + "\" ) ").append("\n");
 					vo.append("public class " + strVoName + " extends net.dstone.common.biz.BaseVo implements java.io.Serializable { ").append("\n");
 					if (cols != null) {
 						for (int i = 0; i < cols.length; i++) {
 							col = cols[i];
+							vo.append("\t@JsonProperty(\"" + col + "\") ").append("\n");
 							vo.append("\tprivate String " + col + "; ").append("\n");
 						}
 						String javaType = "String";
@@ -730,10 +737,11 @@ public class BizGenerator {
 							int lenght = col.length();
 							StringBuffer sb = new StringBuffer();
 							for (int k = 0; k < lenght; k++) {
-								if (k == 0)
+								if (k == 0) {
 									sb.append(String.valueOf(col.charAt(k)).toUpperCase());
-								else
+								}else {
 									sb.append(col.charAt(k));
+								}
 							}
 							capColumnName = sb.toString();
 
@@ -825,21 +833,24 @@ public class BizGenerator {
 		 * @param TABLE_HAN_NAME (논리테이블명. 필수.)
 		 * @param strDaoPackageName (DAO 패키지명. 필수.)
 		 * @param strDaoName (DAO 명. 필수.)
+		 * @param strModuleName (모듈명. 필수.)
 		 * @param cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.)
-		 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) (new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable("TB_EVT_INFO", "이벤트정보", "com.test.biz.event", "EventDao", false, false);
+		 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) (new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable("TB_EVT_INFO", "이벤트정보", "com.test.biz.event", "EventDao", "event", false, false);
 		 */
-		protected void genSqlByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, boolean cudOnlyYn, boolean fileGenYn) {
+		protected void genSqlByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, String strModuleName, boolean cudOnlyYn, boolean fileGenYn) {
 
 			debug("||==================== genSqlByTable(테이블명으로 SQL 생성하는 메소드) ====================||");
 			debug("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
 			debug("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
 			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
 			debug("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
+			debug("strModuleName (모듈명. 필수.) [" + strModuleName + "]");
 			debug("cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.) [" + cudOnlyYn + "]");
 			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
 			debug("||====================================================================================||");
 
 			String PACKAGE_NAME = strDaoPackageName;
+			String MODULE_NAME = strModuleName;
 
 			StringBuffer xmlH = new StringBuffer();
 			StringBuffer xmlVo = new StringBuffer();
@@ -893,9 +904,9 @@ public class BizGenerator {
 			voName = net.dstone.common.utils.StringUtil.getHungarianName(TABLE_NAME, " ").trim() + "CudVo";
 			sVoName = net.dstone.common.utils.StringUtil.getHungarianName(TABLE_NAME, "").trim() + "CudVo";
 			fileName = tableName + "CudDao.xml";
-			nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
+			nameSpace = PACKAGE_NAME + "." + strDaoName;
 
-			fullFileName = SRC_ROOT + "/" + StringUtil.replace(strDaoPackageName, ".", "/") + "/sql/" + fileName;
+			fullFileName = SQL_ROOT + "/" + MODULE_NAME + "/cud/" + fileName;
 			fileExists = FileUtil.isFileExist(fullFileName);
 
 			net.dstone.common.utils.LogUtil.sysout("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + fileName + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -1049,6 +1060,7 @@ public class BizGenerator {
 			}
 
 			net.dstone.common.utils.LogUtil.sysout("============================ XML START ============================");
+			net.dstone.common.utils.LogUtil.sysout("<<"+fullFileName+">>");
 			net.dstone.common.utils.LogUtil.sysout(xmlFileConts);
 			net.dstone.common.utils.LogUtil.sysout("============================ XML END ============================");
 			net.dstone.common.utils.LogUtil.sysout("");
@@ -1064,10 +1076,11 @@ public class BizGenerator {
 		 * @param strMethodComment (DAO 메소드설명. 필수.)
 		 * @param strVoPackageName (VO 패키지명. 필수.)
 		 * @param strVoName (VO명. 필수.)
+		 * @param strModuleName (모듈명. 필수.)
 		 * @param pageYn (카운트 SQL을 생성할지 여부.)
-		 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) (new net.dstone.common.tools.BizGenerator()).new sqlGen().genSqlBySql("com.test.biz.event", "EventDao", "listEvent", "이벤트리스트", "com.test.biz.event.vo", "EventListVo", true, false);
+		 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) (new net.dstone.common.tools.BizGenerator()).new sqlGen().genSqlBySql("com.test.biz.event", "EventDao", "listEvent", "이벤트리스트", "com.test.biz.event.vo", "EventListVo", "event", true, false);
 		 */
-		protected void genSqlBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, boolean pageYn, boolean fileGenYn) {
+		protected void genSqlBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, String strModuleName, boolean pageYn, boolean fileGenYn) {
 
 			debug("||======================== genSqlBySql(SQL로 SQL 생성하는 메소드) ========================||");
 			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
@@ -1076,12 +1089,14 @@ public class BizGenerator {
 			debug("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
 			debug("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
 			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
+			debug("strModuleName (모듈명. 필수.) [" + strModuleName + "]");
 			debug("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
 			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
 			debug("||====================================================================================||");
 
 			String sql = "";
 			String PACKAGE_NAME = strDaoPackageName;
+			String MODULE_NAME = strModuleName;
 
 			sql = net.dstone.common.utils.FileUtil.readFile(SQL_LOCATION, CHARSET);
 
@@ -1106,10 +1121,10 @@ public class BizGenerator {
 			voName = strVoName;
 			sVoName = strVoName.substring(0, 1).toLowerCase() + strVoName.substring(1);
 
-			nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
+			nameSpace = PACKAGE_NAME + "." + strDaoName;
 			fileName = strDaoName + ".xml";
 
-			fullFileName = SRC_ROOT + "/" + StringUtil.replace(strDaoPackageName, ".", "/") + "/sql/" + fileName;
+			fullFileName = SQL_ROOT + "/" + MODULE_NAME + "/" + fileName;
 			fileExists = FileUtil.isFileExist(fullFileName);
 
 			net.dstone.common.utils.LogUtil.sysout("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + fileName + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -1173,6 +1188,7 @@ public class BizGenerator {
 			}
 
 			net.dstone.common.utils.LogUtil.sysout("============================ XML START ============================");
+			net.dstone.common.utils.LogUtil.sysout("<<"+fullFileName+">>");
 			net.dstone.common.utils.LogUtil.sysout(xmlFileConts);
 			net.dstone.common.utils.LogUtil.sysout("============================ XML END ============================");
 			net.dstone.common.utils.LogUtil.sysout("");
@@ -1337,7 +1353,7 @@ public class BizGenerator {
 			tableName = net.dstone.common.utils.StringUtil.getHungarianName(TABLE_NAME, " ").trim();
 
 			daoName = strDaoName;
-			nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
+			nameSpace = PACKAGE_NAME + "." + daoName;
 			daoFileName = SRC_ROOT + "/" + StringUtil.replace(PACKAGE_NAME + "." + daoName, ".", "/") + ".java";
 
 			daoH.append("package " + PACKAGE_NAME + "; ").append("\n");
@@ -1353,20 +1369,20 @@ public class BizGenerator {
 			daoH.append("@Repository ").append("\n");
 
 			if ((PACKAGE_NAME + "." + daoName).equals(COMM_CUD_PACKAGE_NAME + "." + COMM_CUD_DAO_NAME + "")) {
-				nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
+				nameSpace = PACKAGE_NAME + "." + daoName;
 				daoH.append("public class " + daoName + " extends net.dstone.common.biz.BaseDao { ").append("\n");
 			} else {
-				nameSpace = StringUtil.replace((PACKAGE_NAME + "." + strDaoName).toUpperCase(), ".", "_");
+				nameSpace = PACKAGE_NAME + "." + daoName;
 				daoH.append("public class " + daoName + " extends net.dstone.common.biz.BaseDao { ").append("\n");
 			}
 			
 			StringBuffer autowiredPart = new StringBuffer();
-			if (!FileUtil.isFileExist(daoFileName)) {
-				autowiredPart.append("    @Autowired ").append("\n");
-				autowiredPart.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
-				autowiredPart.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
-				autowiredPart.append("     ").append("\n");
-			}
+//			if (!FileUtil.isFileExist(daoFileName)) {
+//				autowiredPart.append("    @Autowired ").append("\n");
+//				autowiredPart.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
+//				autowiredPart.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
+//				autowiredPart.append("     ").append("\n");
+//			}
 			// 이미 선언이 되어있지 않을 경우에만 생성.
 			String prevFileConts = "";
 			if (FileUtil.isFileExist(daoFileName)) {
@@ -1403,20 +1419,20 @@ public class BizGenerator {
 			daoConts.append("    /* ").append("\n");
 			daoConts.append("     * " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 입력 ").append("\n");
 			daoConts.append("     */  ").append("\n");
-			daoConts.append("    public void insert" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
-			daoConts.append("        "+SQL_CLIENT_ID+".insert(\"" + nameSpace + ".insert" + tableName + "\", " + sVoName + "); ").append("\n");
+			daoConts.append("    public int insert" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
+			daoConts.append("        return "+SQL_CLIENT_ID+".insert(\"" + nameSpace + ".insert" + tableName + "\", " + sVoName + "); ").append("\n");
 			daoConts.append("    } ").append("\n");
 			daoConts.append("    /* ").append("\n");
 			daoConts.append("     * " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 수정 ").append("\n");
 			daoConts.append("     */  ").append("\n");
-			daoConts.append("    public void update" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
-			daoConts.append("        "+SQL_CLIENT_ID+".update(\"" + nameSpace + ".update" + tableName + "\", " + sVoName + "); ").append("\n");
+			daoConts.append("    public int update" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
+			daoConts.append("        return "+SQL_CLIENT_ID+".update(\"" + nameSpace + ".update" + tableName + "\", " + sVoName + "); ").append("\n");
 			daoConts.append("    } ").append("\n");
 			daoConts.append("    /* ").append("\n");
 			daoConts.append("     * " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 삭제 ").append("\n");
 			daoConts.append("     */ ").append("\n");
-			daoConts.append("    public void delete" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
-			daoConts.append("        "+SQL_CLIENT_ID+".delete(\"" + nameSpace + ".delete" + tableName + "\", " + sVoName + "); ").append("\n");
+			daoConts.append("    public int delete" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
+			daoConts.append("        return "+SQL_CLIENT_ID+".delete(\"" + nameSpace + ".delete" + tableName + "\", " + sVoName + "); ").append("\n");
 			daoConts.append("    } ").append("\n");
 			daoConts.append("    /******************************************* " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 끝 *******************************************/ ").append("\n\n");
 
@@ -1485,7 +1501,7 @@ public class BizGenerator {
 			sVoName = strVoName.substring(0, 1).toLowerCase() + strVoName.substring(1);
 
 			daoName = strDaoName;
-			nameSpace = StringUtil.replace((PACKAGE_NAME + "." + daoName).toUpperCase(), ".", "_");
+			nameSpace = PACKAGE_NAME + "." + daoName;
 
 			daoFileName = SRC_ROOT + "/" + StringUtil.replace(PACKAGE_NAME + "." + daoName, ".", "/") + ".java";
 			isDaoFileNameExists = FileUtil.isFileExist(daoFileName);
@@ -1504,12 +1520,12 @@ public class BizGenerator {
 			daoH.append("public class " + daoName + " extends net.dstone.common.biz.BaseDao { ").append("\n");
 			
 			StringBuffer autowiredPart = new StringBuffer();
-			if (!isDaoFileNameExists || !net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + daoName, SQL_CLIENT_ID)) {
-				autowiredPart.append("    @Autowired ").append("\n");
-				autowiredPart.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
-				autowiredPart.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
-				autowiredPart.append("     ").append("\n");
-			}
+//			if (!isDaoFileNameExists || !net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + daoName, SQL_CLIENT_ID)) {
+//				autowiredPart.append("    @Autowired ").append("\n");
+//				autowiredPart.append("    @Qualifier(\""+SQL_CLIENT_ID+"\") ").append("\n");
+//				autowiredPart.append("    private SqlSessionTemplate "+SQL_CLIENT_ID+"; ").append("\n");
+//				autowiredPart.append("     ").append("\n");
+//			}
 			// 이미 선언이 되어있지 않을 경우에만 생성.
 			String prevFileConts = "";
 			if (FileUtil.isFileExist(daoFileName)) {
@@ -1680,6 +1696,8 @@ public class BizGenerator {
 				svcH.append("import org.springframework.transaction.annotation.Transactional; ").append("\n");
 				svcH.append(" ").append("\n");
 				svcH.append("import net.dstone.common.biz.BaseService; ").append("\n");
+				svcH.append("import net.dstone.common.conts.ErrCd; ").append("\n");
+				svcH.append("import net.dstone.common.exception.BizException;").append("\n");
 				svcH.append("import net.dstone.common.utils.LogUtil; ").append("\n");
 				svcH.append(" ").append("\n");
 				//svcH.append("@Transactional(propagation=Propagation.REQUIRED, noRollbackFor=Exception.class)").append("\n");
@@ -1747,7 +1765,7 @@ public class BizGenerator {
 					svcConts.append("     * @return ").append("\n");
 					svcConts.append("     * @throws Exception ").append("\n");
 					svcConts.append("     */ ").append("\n");
-					svcConts.append("    public Map " + strMethodName + "(" + strVoPackageName + "." + strVoName + " paramVo) throws Exception{ ").append("\n");
+					svcConts.append("    public Map " + strMethodName + "(" + strVoPackageName + "." + strVoName + " paramVo) throws BizException{ ").append("\n");
 					svcConts.append("        // 필요없는 주석들은 제거하시고 사용하시면 됩니다.").append("\n");
 					svcConts.append("        /************************ 변수 선언 시작 ************************/ ").append("\n");
 					svcConts.append("        HashMap returnMap;                                        // 반환대상 맵 ").append("\n");
@@ -1789,8 +1807,9 @@ public class BizGenerator {
 
 					svcConts.append("            /************************ 비즈니스로직 끝 **************************/ ").append("\n");
 					svcConts.append("        } catch (Exception e) { ").append("\n");
-					svcConts.append("            logger.error(this.getClass().getName() + \"." + strMethodName + " 수행중 예외발생. 상세사항:\" + e.toString()); ").append("\n");
-					svcConts.append("            throw new Exception( \"" + strMethodComment + " 수행중 예외발생\" );").append("\n");
+					svcConts.append("            String errDetailMsg = this.getClass().getName() + \"." + strMethodName + " 수행중 예외발생. 상세사항:\" + e.toString(); ").append("\n");
+					svcConts.append("            logger.error(errDetailMsg); ").append("\n");
+					svcConts.append("            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);").append("\n");
 					svcConts.append("        } ").append("\n");
 					svcConts.append("        return returnMap; ").append("\n");
 					svcConts.append("    } ").append("\n");
@@ -1804,7 +1823,7 @@ public class BizGenerator {
 					svcConts.append("     * @return ").append("\n");
 					svcConts.append("     * @throws Exception ").append("\n");
 					svcConts.append("     */ ").append("\n");
-					svcConts.append("    public " + strVoPackageName + "." + strVoName + " " + strMethodName + "(" + strVoPackageName + "." + strVoName + " paramVo) throws Exception{ ").append("\n");
+					svcConts.append("    public " + strVoPackageName + "." + strVoName + " " + strMethodName + "(" + strVoPackageName + "." + strVoName + " paramVo) throws BizException{ ").append("\n");
 					svcConts.append("        // 필요없는 주석들은 제거하시고 사용하시면 됩니다.").append("\n");
 					svcConts.append("        /************************ 변수 선언 시작 ************************/ ").append("\n");
 					svcConts.append("        " + strVoPackageName + "." + strVoName + " returnObj;            // 반환객체 ").append("\n");
@@ -1822,8 +1841,9 @@ public class BizGenerator {
 
 					svcConts.append("            /************************ 비즈니스로직 끝 **************************/ ").append("\n");
 					svcConts.append("        } catch (Exception e) { ").append("\n");
-					svcConts.append("            logger.error(this.getClass().getName() + \"." + strMethodName + " 수행중 예외발생. 상세사항:\" + e.toString()); ").append("\n");
-					svcConts.append("            throw new Exception( \"" + strMethodComment + " 수행중 예외발생\" );").append("\n");
+					svcConts.append("            String errDetailMsg = this.getClass().getName() + \"." + strMethodName + " 수행중 예외발생. 상세사항:\" + e.toString(); ").append("\n");
+					svcConts.append("            logger.error(errDetailMsg); ").append("\n");
+					svcConts.append("            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);").append("\n");
 					svcConts.append("        } ").append("\n");
 					svcConts.append("        return returnObj; ").append("\n");
 					svcConts.append("    } ").append("\n");
@@ -1837,7 +1857,7 @@ public class BizGenerator {
 					svcConts.append("     * @return boolean ").append("\n");
 					svcConts.append("     * @throws Exception  ").append("\n");
 					svcConts.append("    */  ").append("\n");
-					svcConts.append("    public boolean " + strMethodName + "(" + tableVoPackageName + "." + tableVoName + " paramVo) throws Exception{  ").append("\n");
+					svcConts.append("    public boolean " + strMethodName + "(" + tableVoPackageName + "." + tableVoName + " paramVo) throws BizException{  ").append("\n");
 					svcConts.append("        // 필요없는 주석들은 제거하시고 사용하시면 됩니다. ").append("\n");
 					svcConts.append("        /************************ 변수 선언 시작 ************************/  ").append("\n");
 					svcConts.append("        boolean isSuccess = false; ").append("\n");
@@ -1865,8 +1885,9 @@ public class BizGenerator {
 					svcConts.append("            isSuccess = true; ").append("\n");
 					svcConts.append("            /************************ 비즈니스로직 끝 **************************/  ").append("\n");
 					svcConts.append("        } catch (Exception e) { ").append("\n");
-					svcConts.append("            logger.error(this.getClass().getName() + \"." + strMethodName + "(\"+paramVo+\") 수행중 예외발생. 상세사항:\" + e.toString());  ").append("\n");
-					svcConts.append("            throw new Exception( \"" + strMethodComment + " 수행중 예외발생\" ); ").append("\n");
+					svcConts.append("            String errDetailMsg = this.getClass().getName() + \"." + strMethodName + "(\"+paramVo+\") 수행중 예외발생. 상세사항:\" + e.toString(); ").append("\n");
+					svcConts.append("            logger.error(errDetailMsg); ").append("\n");
+					svcConts.append("            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);").append("\n");
 					svcConts.append("        }  ").append("\n");
 					svcConts.append("        return isSuccess;  ").append("\n");
 					svcConts.append("    } ").append("\n");
@@ -1880,7 +1901,7 @@ public class BizGenerator {
 					svcConts.append("     * @return boolean ").append("\n");
 					svcConts.append("     * @throws Exception  ").append("\n");
 					svcConts.append("    */  ").append("\n");
-					svcConts.append("    public boolean " + strMethodName + "(" + tableVoPackageName + "." + tableVoName + " paramVo) throws Exception{  ").append("\n");
+					svcConts.append("    public boolean " + strMethodName + "(" + tableVoPackageName + "." + tableVoName + " paramVo) throws BizException{  ").append("\n");
 					svcConts.append("        // 필요없는 주석들은 제거하시고 사용하시면 됩니다. ").append("\n");
 					svcConts.append("        /************************ 변수 선언 시작 ************************/  ").append("\n");
 					svcConts.append("        boolean isSuccess = false; ").append("\n");
@@ -1896,8 +1917,9 @@ public class BizGenerator {
 					svcConts.append("            isSuccess = true; ").append("\n");
 					svcConts.append("            /************************ 비즈니스로직 끝 **************************/  ").append("\n");
 					svcConts.append("        } catch (Exception e) { ").append("\n");
-					svcConts.append("            logger.error(this.getClass().getName() + \"." + strMethodName + "(\"+paramVo+\") 수행중 예외발생. 상세사항:\" + e.toString());  ").append("\n");
-					svcConts.append("            throw new Exception( \"" + strMethodComment + " 수행중 예외발생\" ); ").append("\n");
+					svcConts.append("            String errDetailMsg = this.getClass().getName() + \"." + strMethodName + "(\"+paramVo+\") 수행중 예외발생. 상세사항:\" + e.toString(); ").append("\n");
+					svcConts.append("            logger.error(errDetailMsg); ").append("\n");
+					svcConts.append("            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);").append("\n");
 					svcConts.append("        }  ").append("\n");
 					svcConts.append("        return isSuccess;  ").append("\n");
 					svcConts.append("    } ").append("\n");
@@ -1911,7 +1933,7 @@ public class BizGenerator {
 					svcConts.append("     * @return boolean ").append("\n");
 					svcConts.append("     * @throws Exception  ").append("\n");
 					svcConts.append("    */  ").append("\n");
-					svcConts.append("    public boolean " + strMethodName + "(" + tableVoPackageName + "." + tableVoName + " paramVo) throws Exception{  ").append("\n");
+					svcConts.append("    public boolean " + strMethodName + "(" + tableVoPackageName + "." + tableVoName + " paramVo) throws BizException{  ").append("\n");
 					svcConts.append("        // 필요없는 주석들은 제거하시고 사용하시면 됩니다. ").append("\n");
 					svcConts.append("        /************************ 변수 선언 시작 ************************/  ").append("\n");
 					svcConts.append("        boolean isSuccess = false; ").append("\n");
@@ -1927,8 +1949,9 @@ public class BizGenerator {
 					svcConts.append("            isSuccess = true; ").append("\n");
 					svcConts.append("            /************************ 비즈니스로직 끝 **************************/  ").append("\n");
 					svcConts.append("        } catch (Exception e) { ").append("\n");
-					svcConts.append("            logger.error(this.getClass().getName() + \"." + strMethodName + "(\"+paramVo+\") 수행중 예외발생. 상세사항:\" + e.toString());  ").append("\n");
-					svcConts.append("            throw new Exception( \"" + strMethodComment + " 수행중 예외발생\" ); ").append("\n");
+					svcConts.append("            String errDetailMsg = this.getClass().getName() + \"." + strMethodName + "(\"+paramVo+\") 수행중 예외발생. 상세사항:\" + e.toString(); ").append("\n");
+					svcConts.append("            logger.error(errDetailMsg); ").append("\n");
+					svcConts.append("            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);").append("\n");
 					svcConts.append("        }  ").append("\n");
 					svcConts.append("        return isSuccess;  ").append("\n");
 					svcConts.append("    } ").append("\n");
@@ -2076,9 +2099,10 @@ public class BizGenerator {
 			ctrlH.append("import org.springframework.web.servlet.ModelAndView;").append("\n");
 			ctrlH.append("import org.springframework.web.bind.annotation.RequestMapping;").append("\n");
 			ctrlH.append("").append("\n");
-			ctrlH.append("import net.dstone.common.utils.DateUtil;").append("\n");
-			ctrlH.append("import net.dstone.common.utils.StringUtil;").append("\n");
 			ctrlH.append("import net.dstone.common.utils.BeanUtil;").append("\n");
+			ctrlH.append("import net.dstone.common.utils.DateUtil;").append("\n");
+			ctrlH.append("import net.dstone.common.utils.RequestUtil;").append("\n");
+			ctrlH.append("import net.dstone.common.utils.StringUtil;").append("\n");
 
 			ctrlH.append("@Controller").append("\n");
 			ctrlH.append("@RequestMapping(value = \"" + strPrefix + "/*\")").append("\n");
@@ -2119,18 +2143,18 @@ public class BizGenerator {
 			ctrlConts.append("     * @return ").append("\n");
 			ctrlConts.append("     */ ").append("\n");
 			ctrlConts.append("    @RequestMapping(value = \"" + strUri + "\") ").append("\n");
-			ctrlConts.append("    public ModelAndView " + strMethodName + "(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) {").append("\n");
+			ctrlConts.append("    public ModelAndView " + strMethodName + "(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {").append("\n");
 			ctrlConts.append("   		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.").append("\n");
-			ctrlConts.append("   		/************************ 세션체크 시작 ************************/").append("\n");
-			ctrlConts.append("   		loginCheck(request, response);").append("\n");
-			ctrlConts.append("   		/************************ 세션체크 끝 **************************/").append("\n");
+			ctrlConts.append("   		/************************ 뷰생성 시작 ************************/").append("\n");
+			ctrlConts.append("   		if(isAjax(request)) { mav = new ModelAndView(\"jsonView\"); }").append("\n");
+			ctrlConts.append("   		/************************ 뷰생성 끝 **************************/").append("\n");
 			ctrlConts.append("   		").append("\n");
 
 			// 트랜젝션종류 - 0:다건조회
 			if (CRUD == 0) {
 
 				ctrlConts.append("   		/************************ 변수 선언 시작 ************************/").append("\n");
-				ctrlConts.append("   		net.dstone.common.utils.RequestUtil 					requestUtil;").append("\n");
+				ctrlConts.append("   		RequestUtil 									requestUtil;").append("\n");
 				ctrlConts.append("   		Map 											returnObj;").append("\n");
 				ctrlConts.append("   		//파라메터").append("\n");
 				ctrlConts.append("   		//String										ACTION_MODE;").append("\n");
@@ -2138,39 +2162,36 @@ public class BizGenerator {
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + " 					paramVo;").append("\n");
 				ctrlConts.append("   		//" + strVoPackageName + "." + strVoName + "[] 				paramList;").append("\n");
 				ctrlConts.append("   		/************************ 변수 선언 끝 **************************/").append("\n");
-				ctrlConts.append("   		try {").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 시작 ************************/").append("\n");
-				ctrlConts.append("   			requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-				ctrlConts.append("   			paramVo					= null;").append("\n");
-				ctrlConts.append("   			//paramList				= null;").append("\n");
-				ctrlConts.append("   			returnObj				= null;").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 끝 ************************/").append("\n");
-				ctrlConts.append("   			").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 시작 ************************/").append("\n");
-				ctrlConts.append("   			// 1. 파라메터 바인딩").append("\n");
-				ctrlConts.append("   			// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   			//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\", \"LIST_PLAIN\");").append("\n");
-				ctrlConts.append("   			// 싱글 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
-				ctrlConts.append("   			// 멀티 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 시작 ************************/").append("\n");
+				ctrlConts.append("   		requestUtil 			= new RequestUtil(request, response);").append("\n");
+				ctrlConts.append("   		paramVo					= null;").append("\n");
+				ctrlConts.append("   		//paramList				= null;").append("\n");
+				ctrlConts.append("   		returnObj				= null;").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
+				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
+				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\", \"LIST_PLAIN\");").append("\n");
+				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
+				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
 				if (pageYn) {
-					ctrlConts.append("   			/*** 페이징파라메터 세팅 시작 ***/").append("\n");
-					ctrlConts.append("   			if(!net.dstone.common.utils.StringUtil.isEmpty(requestUtil.getParameter(\"PAGE_NUM\", \"\"))){").append("\n");
-					ctrlConts.append("   				paramVo.setPAGE_NUM(requestUtil.getIntParameter(\"PAGE_NUM\"));").append("\n");
-					ctrlConts.append("   				paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE);").append("\n");
-					ctrlConts.append("   			}").append("\n");
-					ctrlConts.append("   			/*** 페이징파라메터 세팅 끝 ***/").append("\n");
+					ctrlConts.append("   		/*** 페이징파라메터 세팅 시작 ***/").append("\n");
+					ctrlConts.append("   		if(!net.dstone.common.utils.StringUtil.isEmpty(requestUtil.getParameter(\"PAGE_NUM\", \"\"))){").append("\n");
+					ctrlConts.append("   			paramVo.setPAGE_NUM(requestUtil.getIntParameter(\"PAGE_NUM\"));").append("\n");
+					ctrlConts.append("   			paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE);").append("\n");
+					ctrlConts.append("   		}").append("\n");
+					ctrlConts.append("   		/*** 페이징파라메터 세팅 끝 ***/").append("\n");
 				}
-				ctrlConts.append("   			// 2. 서비스 호출").append("\n");
-				ctrlConts.append("   			returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
-				ctrlConts.append("   			// 3. 결과처리").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"RETURN_CD\"	, net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"RETURN_MSG\"	, \"\" );").append("\n");
-				ctrlConts.append("   			//request.setAttribute(\"ACTION_MODE\"	, ACTION_MODE	);").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"returnObj\"	, returnObj	);").append("\n");
-				ctrlConts.append("   			mav.setViewName(\"" + net.dstone.common.tools.BizGenerator.JSP_ROOT_PATH + strPrefix + "/" + strReturnJsp + "\");").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 끝 ************************/").append("\n");
+				ctrlConts.append("   		// 2. 서비스 호출").append("\n");
+				ctrlConts.append("   		returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
+				ctrlConts.append("   		// 3. 결과처리").append("\n");
+				ctrlConts.append("   		//request.setAttribute(\"ACTION_MODE\"	, ACTION_MODE	);").append("\n");
+				ctrlConts.append("   		request.setAttribute(\"returnObj\"	, returnObj	);").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 끝 ************************/").append("\n");
 
 				// 트랜젝션종류 - 1:단건조회
 			} else if (CRUD == 1) {
@@ -2184,31 +2205,28 @@ public class BizGenerator {
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + " 					paramVo;").append("\n");
 				ctrlConts.append("   		//" + strVoPackageName + "." + strVoName + "[] 				paramList;").append("\n");
 				ctrlConts.append("   		/************************ 변수 선언 끝 **************************/").append("\n");
-				ctrlConts.append("   		try {").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 시작 ************************/").append("\n");
-				ctrlConts.append("   			requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-				ctrlConts.append("   			paramVo					= null;").append("\n");
-				ctrlConts.append("   			//paramList				= null;").append("\n");
-				ctrlConts.append("   			returnObj				= null;").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 끝 ************************/").append("\n");
-				ctrlConts.append("   			").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 시작 ************************/").append("\n");
-				ctrlConts.append("   			// 1. 파라메터 바인딩").append("\n");
-				ctrlConts.append("   			// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   			//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\", \"LIST_PLAIN\");").append("\n");
-				ctrlConts.append("   			// 싱글 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
-				ctrlConts.append("   			// 멀티 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
-				ctrlConts.append("   			// 2. 서비스 호출").append("\n");
-				ctrlConts.append("   			returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
-				ctrlConts.append("   			// 3. 결과처리").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"RETURN_CD\"	, net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"RETURN_MSG\"	, \"\" );").append("\n");
-				ctrlConts.append("   			//request.setAttribute(\"ACTION_MODE\"	, ACTION_MODE	);").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"returnObj\"	, returnObj	);").append("\n");
-				ctrlConts.append("   			mav.setViewName(\"" + net.dstone.common.tools.BizGenerator.JSP_ROOT_PATH + strPrefix + "/" + strReturnJsp + "\");").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 시작 ************************/").append("\n");
+				ctrlConts.append("   		requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
+				ctrlConts.append("   		paramVo					= null;").append("\n");
+				ctrlConts.append("   		//paramList				= null;").append("\n");
+				ctrlConts.append("   		returnObj				= null;").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
+				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
+				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\", \"LIST_PLAIN\");").append("\n");
+				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
+				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
+				ctrlConts.append("   		// 2. 서비스 호출").append("\n");
+				ctrlConts.append("   		returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
+				ctrlConts.append("   		// 3. 결과처리").append("\n");
+				ctrlConts.append("   		//request.setAttribute(\"ACTION_MODE\"	, ACTION_MODE	);").append("\n");
+				ctrlConts.append("   		request.setAttribute(\"returnObj\"	, returnObj	);").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 끝 ************************/").append("\n");
 
 				// 트랜젝션종류 - 2:입력, 3:수정, 4:삭제
 			} else if (CRUD == 2 || CRUD == 3 || CRUD == 4) {
@@ -2221,39 +2239,30 @@ public class BizGenerator {
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + " 							paramVo;").append("\n");
 				ctrlConts.append("   		//" + strVoPackageName + "." + strVoName + "[] 							paramList;").append("\n");
 				ctrlConts.append("   		/************************ 변수 선언 끝 **************************/").append("\n");
-				ctrlConts.append("   		try {").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 시작 ************************/").append("\n");
-				ctrlConts.append("   			requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-				ctrlConts.append("   			paramVo					= null;").append("\n");
-				ctrlConts.append("   			//paramList				= null;").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 끝 ************************/").append("\n");
-				ctrlConts.append("   			").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 시작 ************************/").append("\n");
-				ctrlConts.append("   			// 1. 파라메터 바인딩").append("\n");
-				ctrlConts.append("   			// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   			//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\", \"LIST_PLAIN\");").append("\n");
-				ctrlConts.append("   			// 싱글 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
-				ctrlConts.append("   			// 멀티 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
-				ctrlConts.append("   			// 2. 서비스 호출").append("\n");
-				ctrlConts.append("   			boolean result 			= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
-				ctrlConts.append("   			// 3. 결과처리").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"RETURN_CD\"	, net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"RETURN_MSG\"	, \"\" );").append("\n");
-				ctrlConts.append("   			//request.setAttribute(\"ACTION_MODE\"	, ACTION_MODE	);").append("\n");
-				ctrlConts.append("   			request.setAttribute(\"returnObj\"	, new Boolean(result) );").append("\n");
-				ctrlConts.append("   			mav.setViewName(\"" + net.dstone.common.tools.BizGenerator.JSP_ROOT_PATH + strPrefix + "/" + strReturnJsp + "\");").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 시작 ************************/").append("\n");
+				ctrlConts.append("   		requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
+				ctrlConts.append("   		paramVo					= null;").append("\n");
+				ctrlConts.append("   		//paramList				= null;").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
+				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
+				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\", \"LIST_PLAIN\");").append("\n");
+				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
+				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
+				ctrlConts.append("   		// 2. 서비스 호출").append("\n");
+				ctrlConts.append("   		boolean result 			= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
+				ctrlConts.append("   		// 3. 결과처리").append("\n");
+				ctrlConts.append("   		//request.setAttribute(\"ACTION_MODE\"	, ACTION_MODE	);").append("\n");
+				ctrlConts.append("   		request.setAttribute(\"returnObj\"	, new Boolean(result) );").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 끝 ************************/").append("\n");
 
 			}
-			ctrlConts.append("   		").append("\n");
-			ctrlConts.append("   		} catch (Exception e) {").append("\n");
-			ctrlConts.append("   			handleException(request, response, e);").append("\n");
-			ctrlConts.append("   			request.setAttribute(\"RETURN_CD\"	, net.dstone.common.biz.BaseController.RETURN_FAIL );").append("\n");
-			ctrlConts.append("   			request.setAttribute(\"RETURN_MSG\"	, e.toString() );").append("\n");
-			ctrlConts.append("   			mav.setViewName(\"" + net.dstone.common.tools.BizGenerator.JSP_ROOT_PATH + strPrefix + "/" + strReturnJsp + "\");").append("\n");
-			ctrlConts.append("   		}").append("\n");
+
 			ctrlConts.append("   		return mav;").append("\n");
 			ctrlConts.append("    } ").append("\n");
 
@@ -2362,9 +2371,10 @@ public class BizGenerator {
 			ctrlH.append("import org.springframework.web.servlet.ModelAndView;").append("\n");
 			ctrlH.append("import org.springframework.web.bind.annotation.RequestMapping;").append("\n");
 			ctrlH.append("").append("\n");
-			ctrlH.append("import net.dstone.common.utils.DateUtil;").append("\n");
-			ctrlH.append("import net.dstone.common.utils.StringUtil;").append("\n");
 			ctrlH.append("import net.dstone.common.utils.BeanUtil;").append("\n");
+			ctrlH.append("import net.dstone.common.utils.DateUtil;").append("\n");
+			ctrlH.append("import net.dstone.common.utils.RequestUtil;").append("\n");
+			ctrlH.append("import net.dstone.common.utils.StringUtil;").append("\n");
 
 			ctrlH.append("@Controller").append("\n");
 			ctrlH.append("@RequestMapping(value = \"" + strPrefix + "/*\")").append("\n");
@@ -2405,18 +2415,18 @@ public class BizGenerator {
 			ctrlConts.append("     * @return ").append("\n");
 			ctrlConts.append("     */ ").append("\n");
 			ctrlConts.append("    @RequestMapping(value = \"" + strUri + "\") ").append("\n");
-			ctrlConts.append("    public ModelAndView " + strMethodName + "(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) {").append("\n");
+			ctrlConts.append("    public ModelAndView " + strMethodName + "(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {").append("\n");
 			ctrlConts.append("   		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.").append("\n");
-			ctrlConts.append("   		/************************ 세션체크 시작 ************************/").append("\n");
-			ctrlConts.append("   		loginCheck(request, response);").append("\n");
-			ctrlConts.append("   		/************************ 세션체크 끝 **************************/").append("\n");
+			ctrlConts.append("   		/************************ 뷰생성 시작 ************************/").append("\n");
+			ctrlConts.append("   		if(isAjax(request)) { mav = new ModelAndView(\"jsonView\"); }").append("\n");
+			ctrlConts.append("   		/************************ 뷰생성 끝 **************************/").append("\n");
 			ctrlConts.append("   		").append("\n");
 
 			// 트랜젝션종류 - 0:다건조회
 			if (CRUD == 0) {
 
 				ctrlConts.append("   		/************************ 변수 선언 시작 ************************/").append("\n");
-				ctrlConts.append("   		net.dstone.common.utils.RequestUtil 					requestUtil;").append("\n");
+				ctrlConts.append("   		RequestUtil 									requestUtil;").append("\n");
 				ctrlConts.append("   		Map 											returnObj;").append("\n");
 				ctrlConts.append("   		//파라메터").append("\n");
 				ctrlConts.append("   		//String										ACTION_MODE;").append("\n");
@@ -2424,48 +2434,46 @@ public class BizGenerator {
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + " 					paramVo;").append("\n");
 				ctrlConts.append("   		//" + strVoPackageName + "." + strVoName + "[] 				paramList;").append("\n");
 				ctrlConts.append("   		/************************ 변수 선언 끝 **************************/").append("\n");
-				ctrlConts.append("   		try {").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 시작 ************************/").append("\n");
-				ctrlConts.append("   			requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-				ctrlConts.append("   			paramVo					= null;").append("\n");
-				ctrlConts.append("   			//paramList				= null;").append("\n");
-				ctrlConts.append("   			returnObj				= null;").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 끝 ************************/").append("\n");
-				ctrlConts.append("   			").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 시작 ************************/").append("\n");
-				ctrlConts.append("   			// 1. 파라메터 바인딩").append("\n");
-				ctrlConts.append("   			// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   			//ACTION_MODE				= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
-				ctrlConts.append("   			// 싱글 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleJsonObj(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
-				ctrlConts.append("   			// 멀티 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiJsonObjs(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 시작 ************************/").append("\n");
+				ctrlConts.append("   		requestUtil 			= new RequestUtil(request, response);").append("\n");
+				ctrlConts.append("   		paramVo					= null;").append("\n");
+				ctrlConts.append("   		//paramList				= null;").append("\n");
+				ctrlConts.append("   		returnObj				= null;").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
+				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
+				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
+				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
+				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
 				if (pageYn) {
-					ctrlConts.append("   			/*** 페이징파라메터 세팅 시작 ***/").append("\n");
-					ctrlConts.append("   			if(!net.dstone.common.utils.StringUtil.isEmpty(requestUtil.getJsonParameterValue(\"PAGE_NUM\"))){").append("\n");
-					ctrlConts.append("   				paramVo.setPAGE_NUM(Integer.parseInt(requestUtil.getJsonParameterValue(\"PAGE_NUM\")));").append("\n");
-					ctrlConts.append("   				paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE);").append("\n");
-					ctrlConts.append("   			}").append("\n");
-					ctrlConts.append("   			/*** 페이징파라메터 세팅 끝 ***/").append("\n");
+					ctrlConts.append("   		/*** 페이징파라메터 세팅 시작 ***/").append("\n");
+					ctrlConts.append("   		if(!net.dstone.common.utils.StringUtil.isEmpty(requestUtil.getJsonParameterValue(\"PAGE_NUM\"))){").append("\n");
+					ctrlConts.append("   			paramVo.setPAGE_NUM(Integer.parseInt(requestUtil.getJsonParameterValue(\"PAGE_NUM\")));").append("\n");
+					ctrlConts.append("   			paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE);").append("\n");
+					ctrlConts.append("   		}").append("\n");
+					ctrlConts.append("   		/*** 페이징파라메터 세팅 끝 ***/").append("\n");
 				}
-				ctrlConts.append("   			// 2. 서비스 호출").append("\n");
-				ctrlConts.append("   			returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
-				ctrlConts.append("   			// 3. 결과처리").append("\n");
-				ctrlConts.append("   			mav.addObject(\"RETURN_CD\", net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
-				ctrlConts.append("   			mav.addObject(\"returnObj\", returnObj	);").append("\n");
+				ctrlConts.append("   		// 2. 서비스 호출").append("\n");
+				ctrlConts.append("   		returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
+				ctrlConts.append("   		// 3. 결과처리").append("\n");
+				ctrlConts.append("   		mav.addObject(\"returnObj\", returnObj	);").append("\n");
 				if (pageYn) {
-					ctrlConts.append("   			/*** 페이징객체 세팅 시작 ***/").append("\n");
-					ctrlConts.append("   			mav.addObject(\"pageHTML\", ((net.dstone.common.utils.PageUtil) returnObj.get(\"pageUtil\")).htmlPostPage(request, \"MAIN_FORM\", \"PAGE_NUM\", \"goPage\")	);").append("\n");
-					ctrlConts.append("   			/*** 페이징객체 세팅 끝 ***/").append("\n");
+					ctrlConts.append("   		/*** 페이징객체 세팅 시작 ***/").append("\n");
+					ctrlConts.append("   		mav.addObject(\"pageHTML\", ((net.dstone.common.utils.PageUtil) returnObj.get(\"pageUtil\")).htmlPostPage(request, \"MAIN_FORM\", \"PAGE_NUM\", \"goPage\")	);").append("\n");
+					ctrlConts.append("   		/*** 페이징객체 세팅 끝 ***/").append("\n");
 				}
-				ctrlConts.append("   			mav.setViewName(\"jsonView\");").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 끝 ************************/").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 끝 ************************/").append("\n");
 
 				// 트랜젝션종류 - 1:단건조회
 			} else if (CRUD == 1) {
 
 				ctrlConts.append("   		/************************ 변수 선언 시작 ************************/").append("\n");
-				ctrlConts.append("   		net.dstone.common.utils.RequestUtil 					requestUtil;").append("\n");
+				ctrlConts.append("   		RequestUtil 					requestUtil;").append("\n");
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + "					returnObj;").append("\n");
 				ctrlConts.append("   		//파라메터").append("\n");
 				ctrlConts.append("   		//String										ACTION_MODE;").append("\n");
@@ -2473,71 +2481,63 @@ public class BizGenerator {
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + " 					paramVo;").append("\n");
 				ctrlConts.append("   		//" + strVoPackageName + "." + strVoName + "[] 				paramList;").append("\n");
 				ctrlConts.append("   		/************************ 변수 선언 끝 **************************/").append("\n");
-				ctrlConts.append("   		try {").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 시작 ************************/").append("\n");
-				ctrlConts.append("   			requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-				ctrlConts.append("   			paramVo					= null;").append("\n");
-				ctrlConts.append("   			//paramList				= null;").append("\n");
-				ctrlConts.append("   			returnObj				= null;").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 끝 ************************/").append("\n");
-				ctrlConts.append("   			").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 시작 ************************/").append("\n");
-				ctrlConts.append("   			// 1. 파라메터 바인딩").append("\n");
-				ctrlConts.append("   			// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   			//ACTION_MODE				= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
-				ctrlConts.append("   			// 싱글 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleJsonObj(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
-				ctrlConts.append("   			// 멀티 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiJsonObjs(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
-				ctrlConts.append("   			// 2. 서비스 호출").append("\n");
-				ctrlConts.append("   			returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
-				ctrlConts.append("   			// 3. 결과처리").append("\n");
-				ctrlConts.append("   			mav.addObject(\"RETURN_CD\", net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
-				ctrlConts.append("   			mav.addObject(\"returnObj\", returnObj	);").append("\n");
-				ctrlConts.append("   			mav.setViewName(\"jsonView\");").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 시작 ************************/").append("\n");
+				ctrlConts.append("   		requestUtil 			= new RequestUtil(request, response);").append("\n");
+				ctrlConts.append("   		paramVo					= null;").append("\n");
+				ctrlConts.append("   		//paramList				= null;").append("\n");
+				ctrlConts.append("   		returnObj				= null;").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
+				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
+				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
+				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
+				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
+				ctrlConts.append("   		// 2. 서비스 호출").append("\n");
+				ctrlConts.append("   		returnObj 				= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
+				ctrlConts.append("   		// 3. 결과처리").append("\n");
+				ctrlConts.append("   		mav.addObject(\"returnObj\", returnObj	);").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 끝 ************************/").append("\n");
 
 				// 트랜젝션종류 - 2:입력, 3:수정, 4:삭제
 			} else if (CRUD == 2 || CRUD == 3 || CRUD == 4) {
 
 				ctrlConts.append("   		/************************ 변수 선언 시작 ************************/").append("\n");
-				ctrlConts.append("   		net.dstone.common.utils.RequestUtil 					requestUtil;").append("\n");
+				ctrlConts.append("   		RequestUtil 					requestUtil;").append("\n");
 				ctrlConts.append("   		//파라메터").append("\n");
 				ctrlConts.append("   		//String										ACTION_MODE;").append("\n");
 				ctrlConts.append("   		//파라메터로 사용할 VO").append("\n");
 				ctrlConts.append("   		" + strVoPackageName + "." + strVoName + " 				paramVo;").append("\n");
 				ctrlConts.append("   		//" + strVoPackageName + "." + strVoName + "[] 			paramList;").append("\n");
 				ctrlConts.append("   		/************************ 변수 선언 끝 **************************/").append("\n");
-				ctrlConts.append("   		try {").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 시작 ************************/").append("\n");
-				ctrlConts.append("   			requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-				ctrlConts.append("   			paramVo					= null;").append("\n");
-				ctrlConts.append("   			//paramList				= null;").append("\n");
-				ctrlConts.append("   			/************************ 변수 정의 끝 ************************/").append("\n");
-				ctrlConts.append("   			").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 시작 ************************/").append("\n");
-				ctrlConts.append("   			// 1. 파라메터 바인딩").append("\n");
-				ctrlConts.append("   			// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   			//ACTION_MODE			= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
-				ctrlConts.append("   			// 싱글 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleJsonObj(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
-				ctrlConts.append("   			// 멀티 VALUE 맵핑일 경우").append("\n");
-				ctrlConts.append("   			//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiJsonObjs(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
-				ctrlConts.append("   			// 2. 서비스 호출").append("\n");
-				ctrlConts.append("   			boolean result 			= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
-				ctrlConts.append("   			// 3. 결과처리").append("\n");
-				ctrlConts.append("   			mav.addObject(\"RETURN_CD\", net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
-				ctrlConts.append("   			mav.addObject(\"returnObj\", new Boolean(result)	);").append("\n");
-				ctrlConts.append("   			mav.setViewName(\"jsonView\");").append("\n");
-				ctrlConts.append("   			/************************ 컨트롤러 로직 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 시작 ************************/").append("\n");
+				ctrlConts.append("   		requestUtil 			= new RequestUtil(request, response);").append("\n");
+				ctrlConts.append("   		paramVo					= null;").append("\n");
+				ctrlConts.append("   		//paramList				= null;").append("\n");
+				ctrlConts.append("   		/************************ 변수 정의 끝 ************************/").append("\n");
+				ctrlConts.append("   		").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
+				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
+				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
+				ctrlConts.append("   		//ACTION_MODE			= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
+				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
+				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
+				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
+				ctrlConts.append("   		// 2. 서비스 호출").append("\n");
+				ctrlConts.append("   		boolean result 			= " + svcAlias + "." + strMethodName + "(paramVo);").append("\n");
+				ctrlConts.append("   		// 3. 결과처리").append("\n");
+				ctrlConts.append("   		mav.addObject(\"RETURN_CD\", net.dstone.common.biz.BaseController.RETURN_SUCCESS );").append("\n");
+				ctrlConts.append("   		mav.addObject(\"returnObj\", new Boolean(result)	);").append("\n");
+				ctrlConts.append("   		/************************ 컨트롤러 로직 끝 ************************/").append("\n");
 
 			}
 
-			ctrlConts.append("   		").append("\n");
-			ctrlConts.append("   		} catch (Exception e) {").append("\n");
-			ctrlConts.append("   			handleException(request, response, e);").append("\n");
-			ctrlConts.append("   			mav.addObject(\"RETURN_CD\", net.dstone.common.biz.BaseController.RETURN_FAIL );").append("\n");
-			ctrlConts.append("   		}").append("\n");
 			ctrlConts.append("   		return mav;").append("\n");
 			ctrlConts.append("    } ").append("\n");
 
@@ -3105,7 +3105,7 @@ public class BizGenerator {
 					buff.append("<%                                                                                                              ").append("\n");
 					buff.append("/******************************************* 변수 선언 시작 *******************************************/        	  ").append("\n");
 					buff.append("net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-					buff.append("String                                                         RETURN_CD;                                       ").append("\n");
+					buff.append("String                                                         SUCCESS_YN;                                       ").append("\n");
 					buff.append("java.util.HashMap                                              returnObj;                                       ").append("\n");
 					buff.append("java.util.List<" + strVoPackageName + "." + strVoName + ">                  returnVoList;                       ").append("\n");
 					buff.append("" + strVoPackageName + "." + strVoName + "                                  " + strVoAlias + ";                ").append("\n");
@@ -3115,7 +3115,7 @@ public class BizGenerator {
 					buff.append("/******************************************* 변수 선언 끝 *********************************************/           ").append("\n");
 					buff.append("                                                                                                                ").append("\n");
 					buff.append("/******************************************* 변수 정의 시작 *******************************************/           ").append("\n");
-					buff.append("RETURN_CD           = (String)requestUtil.getAttribute(\"RETURN_CD\");                                             ").append("\n");
+					buff.append("SUCCESS_YN           = net.dstone.common.utils.StringUtil.nullCheck(response.getHeader(\"SUCCESS_YN\"), \"\");			").append("\n");
 					buff.append("returnObj           = (java.util.HashMap)requestUtil.getAttribute(\"returnObj\");                                   ").append("\n");
 					buff.append("" + strVoAlias + "            = null;                                                                          ").append("\n");
 					buff.append("returnVoList        = null;                                                                          ").append("\n");
@@ -3197,12 +3197,12 @@ public class BizGenerator {
 					buff.append("<%                                                                                                              ").append("\n");
 					buff.append("/******************************************* 변수 선언 시작 *******************************************/        	  ").append("\n");
 					buff.append("net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-					buff.append("String                                                         RETURN_CD;                                       ").append("\n");
+					buff.append("String                                                         SUCCESS_YN;                                       ").append("\n");
 					buff.append("" + strVoPackageName + "." + strVoName + "                                      returnObj;                                       ").append("\n");
 					buff.append("/******************************************* 변수 선언 끝 *********************************************/           ").append("\n");
 					buff.append("                                                                                                                ").append("\n");
 					buff.append("/******************************************* 변수 정의 시작 *******************************************/           ").append("\n");
-					buff.append("RETURN_CD           = (String)requestUtil.getAttribute(\"RETURN_CD\");                                             ").append("\n");
+					buff.append("SUCCESS_YN           = net.dstone.common.utils.StringUtil.nullCheck(response.getHeader(\"SUCCESS_YN\"), \"\");                                             ").append("\n");
 					buff.append("returnObj           = (" + strVoPackageName + "." + strVoName + ")requestUtil.getAttribute(\"returnObj\");                                   ").append("\n");
 					buff.append("/******************************************* 변수 정의 끝 *********************************************/        ").append("\n");
 					buff.append("%>                                                                                                              ").append("\n");
@@ -3270,12 +3270,12 @@ public class BizGenerator {
 					buff.append("<%                                                                                                              ").append("\n");
 					buff.append("/******************************************* 변수 선언 시작 *******************************************/        	  ").append("\n");
 					buff.append("net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-					buff.append("String                                               RETURN_CD;                                       ").append("\n");
+					buff.append("String                                               SUCCESS_YN;                                       ").append("\n");
 					buff.append("Boolean                                              returnObj;                                                 ").append("\n");
 					buff.append("/******************************************* 변수 선언 끝 *********************************************/           ").append("\n");
 					buff.append("                                                                                                                ").append("\n");
 					buff.append("/******************************************* 변수 정의 시작 *******************************************/           ").append("\n");
-					buff.append("RETURN_CD           = (String)requestUtil.getAttribute(\"RETURN_CD\");                                             ").append("\n");
+					buff.append("SUCCESS_YN           = net.dstone.common.utils.StringUtil.nullCheck(response.getHeader(\"SUCCESS_YN\"), \"\");                                             ").append("\n");
 					buff.append("returnObj           = (Boolean)requestUtil.getAttribute(\"returnObj\");                                            ").append("\n");
 					buff.append("/******************************************* 변수 정의 끝 *********************************************/        ").append("\n");
 					buff.append("%>                                                                                                              ").append("\n");
@@ -3288,8 +3288,8 @@ public class BizGenerator {
 					buff.append("	                                                                                                             ").append("\n");
 					buff.append("	function init(){                                                                                             ").append("\n");
 					buff.append("		<%                                                                                                       ").append("\n");
-					buff.append("		if( RETURN_CD != null ){                                                                                 ").append("\n");
-					buff.append("			if(RETURN_CD.equals(net.dstone.common.biz.BaseController.RETURN_SUCCESS)){                                                                                   ").append("\n");
+					buff.append("		if( SUCCESS_YN != null ){                                                                                 ").append("\n");
+					buff.append("			if(SUCCESS_YN.equals(\"Y\")){                                                                                   ").append("\n");
 					buff.append("		%>	                                                                                                     ").append("\n");
 					buff.append("			alert('SUCCESS');                                                                                    ").append("\n");
 					buff.append("		<%                                                                                                       ").append("\n");
@@ -3335,12 +3335,12 @@ public class BizGenerator {
 					buff.append("<%                                                                                                              ").append("\n");
 					buff.append("/******************************************* 변수 선언 시작 *******************************************/        	  ").append("\n");
 					buff.append("net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-					buff.append("String                                               RETURN_CD;                                       ").append("\n");
+					buff.append("String                                               SUCCESS_YN;                                       ").append("\n");
 					buff.append("Boolean                                              returnObj;                                                 ").append("\n");
 					buff.append("/******************************************* 변수 선언 끝 *********************************************/           ").append("\n");
 					buff.append("                                                                                                                ").append("\n");
 					buff.append("/******************************************* 변수 정의 시작 *******************************************/           ").append("\n");
-					buff.append("RETURN_CD           = (String)requestUtil.getAttribute(\"RETURN_CD\");                                             ").append("\n");
+					buff.append("SUCCESS_YN           = net.dstone.common.utils.StringUtil.nullCheck(response.getHeader(\"SUCCESS_YN\"), \"\");                                             ").append("\n");
 					buff.append("returnObj           = (Boolean)requestUtil.getAttribute(\"returnObj\");                                   ").append("\n");
 					buff.append("/******************************************* 변수 정의 끝 *********************************************/        ").append("\n");
 					buff.append("%>                                                                                                              ").append("\n");
@@ -3353,8 +3353,8 @@ public class BizGenerator {
 					buff.append("	                                                                                                             ").append("\n");
 					buff.append("	function init(){                                                                                             ").append("\n");
 					buff.append("		<%                                                                                                       ").append("\n");
-					buff.append("		if( RETURN_CD != null ){                                                                                 ").append("\n");
-					buff.append("			if(RETURN_CD.equals(net.dstone.common.biz.BaseController.RETURN_SUCCESS)){                                                                                   ").append("\n");
+					buff.append("		if( SUCCESS_YN != null ){                                                                                 ").append("\n");
+					buff.append("			if(SUCCESS_YN.equals(\"Y\")){                                                                                   ").append("\n");
 					buff.append("		%>	                                                                                                     ").append("\n");
 					buff.append("			alert('SUCCESS');                                                                                    ").append("\n");
 					buff.append("		<%                                                                                                       ").append("\n");
@@ -3415,12 +3415,12 @@ public class BizGenerator {
 					buff.append("<%                                                                                                              ").append("\n");
 					buff.append("/******************************************* 변수 선언 시작 *******************************************/        	  ").append("\n");
 					buff.append("net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);").append("\n");
-					buff.append("String                                               RETURN_CD;                                       ").append("\n");
+					buff.append("String                                               SUCCESS_YN;                                       ").append("\n");
 					buff.append("Boolean                                              returnObj;                                                 ").append("\n");
 					buff.append("/******************************************* 변수 선언 끝 *********************************************/           ").append("\n");
 					buff.append("                                                                                                                ").append("\n");
 					buff.append("/******************************************* 변수 정의 시작 *******************************************/           ").append("\n");
-					buff.append("RETURN_CD           = (String)requestUtil.getAttribute(\"RETURN_CD\");                                             ").append("\n");
+					buff.append("SUCCESS_YN           = net.dstone.common.utils.StringUtil.nullCheck(response.getHeader(\"SUCCESS_YN\"), \"\");                                             ").append("\n");
 					buff.append("returnObj           = (Boolean)requestUtil.getAttribute(\"returnObj\");                                   ").append("\n");
 					buff.append("/******************************************* 변수 정의 끝 *********************************************/        ").append("\n");
 					buff.append("%>                                                                                                              ").append("\n");
@@ -3433,8 +3433,8 @@ public class BizGenerator {
 					buff.append("	                                                                                                             ").append("\n");
 					buff.append("	function init(){                                                                                             ").append("\n");
 					buff.append("		<%                                                                                                       ").append("\n");
-					buff.append("		if( RETURN_CD != null ){                                                                                 ").append("\n");
-					buff.append("			if(RETURN_CD.equals(net.dstone.common.biz.BaseController.RETURN_SUCCESS)){                                                                                   ").append("\n");
+					buff.append("		if( SUCCESS_YN != null ){                                                                                 ").append("\n");
+					buff.append("			if(SUCCESS_YN.equals(\"Y\")){                                                                                   ").append("\n");
 					buff.append("		%>	                                                                                                     ").append("\n");
 					buff.append("			alert('SUCCESS');                                                                                    ").append("\n");
 					buff.append("		<%                                                                                                       ").append("\n");
