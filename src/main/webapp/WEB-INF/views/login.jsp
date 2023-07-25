@@ -99,7 +99,7 @@
 	<br>
 	<br>
 	
-	폼서밋 로그인<%=("Y".equals(SUCCESS_YN)?"성공":("N".equals(SUCCESS_YN)?"실패":"")) %><br>
+	폼서밋 로그인<br>
 	<form name="SUBMIT_FORM" method="post" action="">
 	<table border=1>
 		<tr>
