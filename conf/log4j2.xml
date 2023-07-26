@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
-
+ 
      <Properties>
-        <Property name="level.default">error</Property>
-        <Property name="level.dstone">error</Property>
+        <Property name="level.default">INFO</Property>
+        <Property name="level.dstone">INFO</Property>
     </Properties>
     
     <Appenders>
@@ -11,8 +11,8 @@
             <PatternLayout pattern="%d{yyyy-MM-dd hh:mm:ss} %5p [%c] %m%n"/>
         </Console>
         <RollingFile name ="rollingFile" filePermissions="rwxrwxr--">
-            <FileName>/app-home/logs/dstone-boot/execution/execution.log</FileName>
-            <FilePattern>/app-home/logs/dstone-boot/execution/backup/%d{yyyy-MM-dd}-execution.zip</FilePattern>
+            <FileName>D:/AppHome/LOGS/dstone-boot/execution/execution.log</FileName>
+            <FilePattern>D:/AppHome/LOGS/dstone-boot/execution/backup/%d{yyyy-MM-dd}-execution.zip</FilePattern>
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [%c] %m%n</Pattern>
             </PatternLayout>
@@ -20,24 +20,30 @@
                 <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
             </Policies>
 			<DefaultRolloverStrategy max="7" fileIndex="max" >
-			  	<Delete basePath = "/app-home/logs/dstone-boot/execution/backup" maxDepth = "1">
+			  	<Delete basePath = "D:/AppHome/LOGS/dstone-boot/execution/backup" maxDepth = "1">
 			  		<!-- 3일이 경과한 로그파일은 자동 삭제 -->
 			  		<IfLastModified age = "3d"/>
 			  	</Delete>
 		  	</DefaultRolloverStrategy>
         </RollingFile>
+        
     </Appenders>
 
     <Loggers>
     	<!-- You can specify loggers down here ! -->
-    	
-        <Root level="INFO" additivity="false">
+        <Root level="${level.default}" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>
         </Root>        
     	
 		<!--Spring logger-->
-	    <Logger name="org.springframework" level="INFO" additivity="false">   
+	    <Logger name="org.springframework" level="${level.default}" additivity="false">   
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="rollingFile"/>	
+		</Logger>  	
+    	
+		<!--Spring logger-->
+	    <Logger name="org.springframework" level="${level.default}" additivity="false">   
             <AppenderRef ref="console"/>
             <AppenderRef ref="rollingFile"/>	
 		</Logger>  	
