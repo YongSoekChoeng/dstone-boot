@@ -1,23 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%  
 /******************************************* 변수 선언 시작 *******************************************/        	  
-net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
-String                                                         SUCCESS_YN;                                       
-java.util.HashMap                                              returnObj;                                       
-java.util.List<net.dstone.sample.vo.UserVo>                  returnVoList;                       
-net.dstone.sample.vo.UserVo                                  userVo;                
-net.dstone.common.utils.PageUtil                                      pageUtil;                                        
+net.dstone.common.utils.RequestUtil 				requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
+String                                            	SUCCESS_YN;                                       
+java.util.HashMap                                 	returnObj;                                       
+java.util.List<net.dstone.sample.vo.UserVo>       	returnVoList;                       
+net.dstone.sample.vo.UserVo                       	userVo;                
+net.dstone.common.utils.PageUtil             		pageUtil;                                        
 /******************************************* 변수 선언 끝 *********************************************/           
                                                                                                                 
 /******************************************* 변수 정의 시작 *******************************************/           
-SUCCESS_YN           = net.dstone.common.utils.StringUtil.nullCheck(response.getHeader("SUCCESS_YN"), "");			
-returnObj           = (java.util.HashMap)requestUtil.getAttribute("returnObj");                                   
-userVo            = null;                                                                          
-returnVoList        = null;                                                                          
-pageUtil            = null;                                                                          
-if(returnObj != null){                                                                                          
-    returnVoList    = (java.util.List<net.dstone.sample.vo.UserVo>)returnObj.get("returnObj"); 
-    pageUtil        = (net.dstone.common.utils.PageUtil)returnObj.get("pageUtil");                                   
+SUCCESS_YN           								= net.dstone.common.utils.StringUtil.nullCheck(response.getHeader("SUCCESS_YN"), "");			
+returnObj           								= (java.util.HashMap)requestUtil.getAttribute("returnObj");                                   
+userVo            									= null;                                                                          
+returnVoList        								= null;                                                                          
+pageUtil            								= null;                                                                          
+if(returnObj != null){ 
+	if( returnObj.get("returnObj") instanceof java.util.List ){
+		returnVoList    							= (java.util.List<net.dstone.sample.vo.UserVo>)returnObj.get("returnObj"); 
+		pageUtil        							= (net.dstone.common.utils.PageUtil)returnObj.get("pageUtil");           
+	}
 }                                                                                                             
 /******************************************* 변수 정의 끝 *********************************************/     
 %>                                                                                                              
@@ -82,7 +84,7 @@ if(returnObj != null){
 					var lineStr = ""; 
 					for(var i=0; i<returnList.length; i++){ 
 						lineStr = ""; 
-						lineStr = lineStr + "<tr>"; 
+						lineStr = lineStr + "<tr id='TR_AJAX_"+ i +"' onclick='javascript:setDetail(\"AJAX\", "+i+")' >"; 
 						lineStr = lineStr + "<td>"+returnList[i].GROUP_ID+"</td>"; 
 						lineStr = lineStr + "<td>"+returnList[i].USER_ID+"</td>"; 
 						lineStr = lineStr + "<td>"+returnList[i].USER_PW+"</td>"; 
@@ -115,10 +117,38 @@ if(returnObj != null){
 			} 
 		}); 
 	} 
+	
+	function setDetail(gubun, idx){
+		var formObj = $("#MANAGE_FORM");
+		var inputList = formObj.find(':input');
+		var trObj = $("#TR_"+gubun+"_" + idx);
+		var tdList = trObj.children();
+		for(var i = 0; i<tdList.length; i++){
+			var td = $(tdList[i]);
+			var input = $(inputList[i]);
+			if(td.text() == 'null'){
+				input.val("");
+			}else{
+				input.val(td.text().replace(/-/gi, ""));
+			}
+		}
+	}
     
-	function goForInsert(){                                                                                          
-		document.INSERT_FORM.submit();                                                                             
-	}                                                                                                            
+	function goForInsert(){  
+		document.MANAGE_FORM.action = "/sample/admin/insertUser.do";
+		document.MANAGE_FORM.submit();                                                                             
+	}
+
+	function goForUpdate(){        
+		document.MANAGE_FORM.action = "/sample/admin/updateUser.do";                                                                                  
+		document.MANAGE_FORM.submit();                                                                             
+	}
+
+	function goForDelete(){        
+		document.MANAGE_FORM.action = "/sample/admin/deleteUser.do";                                                                                  
+		document.MANAGE_FORM.submit();                                                                             
+	}
+	
 </script>                                                                                                       
 </head>                                                                                                         
 <body onload='javascript:init();' >                                                                             
@@ -134,7 +164,7 @@ if(returnObj != null){
 		<table border=1>                                                                                              
 			<thead>                                                                                             
 				<tr>                                                                                                      
-					<th>GROUP_ID&nbsp;</th><th>USER_ID&nbsp;</th><th>USER_PW&nbsp;</th><th>MEMBER_NAME&nbsp;</th><th>AGE&nbsp;</th><th>DUTY&nbsp;</th><th>REGION&nbsp;</th><th>ADDRESS&nbsp;</th><th>ADDRESS_DTL&nbsp;</th><th>JUMINNO&nbsp;</th><th>GENDER&nbsp;</th><th>TEL&nbsp;</th><th>HP&nbsp;</th><th>EMAIL&nbsp;</th><th>INPUT_DT&nbsp;</th><th>UPDATE_DT&nbsp;</th>
+					<th>GROUP_ID</th><th>USER_ID</th><th>USER_PW</th><th>MEMBER_NAME</th><th>AGE</th><th>DUTY</th><th>REGION</th><th>ADDRESS</th><th>ADDRESS_DTL</th><th>JUMINNO</th><th>GENDER</th><th>TEL</th><th>HP</th><th>EMAIL</th><th>INPUT_DT</th><th>UPDATE_DT</th>
 				</tr>   
 			</thead>  
 			<tbody>                                                                                                 
@@ -143,15 +173,15 @@ if(returnObj != null){
 				for(int i=0; i<returnVoList.size(); i++){                                                             
 					userVo = returnVoList.get(i);                                                         
 			%>                                                                                                        
-			<tr>                                                                                                      
-				<td><%=userVo.getGROUP_ID() %>&nbsp;</td><td><%=userVo.getUSER_ID() %>&nbsp;</td><td><%=userVo.getUSER_PW() %>&nbsp;</td><td><%=userVo.getMEMBER_NAME() %>&nbsp;</td><td><%=userVo.getAGE() %>&nbsp;</td><td><%=userVo.getDUTY() %>&nbsp;</td><td><%=userVo.getREGION() %>&nbsp;</td><td><%=userVo.getADDRESS() %>&nbsp;</td><td><%=userVo.getADDRESS_DTL() %>&nbsp;</td><td><%=userVo.getJUMINNO() %>&nbsp;</td><td><%=userVo.getGENDER() %>&nbsp;</td><td><%=userVo.getTEL() %>&nbsp;</td><td><%=userVo.getHP() %>&nbsp;</td><td><%=userVo.getEMAIL() %>&nbsp;</td><td><%=userVo.getINPUT_DT() %>&nbsp;</td><td><%=userVo.getUPDATE_DT() %>&nbsp;</td>
+			<tr id="TR_FORM_<%= i %>"  onclick="javascript:setDetail('FORM', <%= i %>)"  >                                                                                                      
+				<td><%=userVo.getGROUP_ID() %></td><td><%=userVo.getUSER_ID() %></td><td><%=userVo.getUSER_PW() %></td><td><%=userVo.getMEMBER_NAME() %></td><td><%=userVo.getAGE() %></td><td><%=userVo.getDUTY() %></td><td><%=userVo.getREGION() %></td><td><%=userVo.getADDRESS() %></td><td><%=userVo.getADDRESS_DTL() %></td><td><%=userVo.getJUMINNO() %></td><td><%=userVo.getGENDER() %></td><td><%=userVo.getTEL() %></td><td><%=userVo.getHP() %></td><td><%=userVo.getEMAIL() %></td><td><%=userVo.getINPUT_DT() %></td><td><%=userVo.getUPDATE_DT() %></td>
 			</tr>	                                                                                                  
 			<%                                                                                                        
 				}                                                                                                     
 			}                                                                                                         
 			%>                                                                                                        
 			<tr>                                                                                                      
-				<td colspan=16 &nbsp; ><%= (pageUtil != null ? pageUtil.htmlPostPage(request, "SUBMIT_SELECT_FORM", "PAGE_NUM" ) : "" ) %></td> 
+				<td colspan=16  ><%= (pageUtil != null ? pageUtil.htmlPostPage(request, "SUBMIT_SELECT_FORM", "PAGE_NUM" ) : "" ) %></td> 
 			</tr> 
 			</tbody>                                                                                                  
 		</table>                                                                                                      
@@ -168,13 +198,13 @@ if(returnObj != null){
 		<table border=1>      
 			<thead>                                                                                             
 				<tr>                                                                                                      
-					<th>GROUP_ID&nbsp;</th><th>USER_ID&nbsp;</th><th>USER_PW&nbsp;</th><th>MEMBER_NAME&nbsp;</th><th>AGE&nbsp;</th><th>DUTY&nbsp;</th><th>REGION&nbsp;</th><th>ADDRESS&nbsp;</th><th>ADDRESS_DTL&nbsp;</th><th>JUMINNO&nbsp;</th><th>GENDER&nbsp;</th><th>TEL&nbsp;</th><th>HP&nbsp;</th><th>EMAIL&nbsp;</th><th>INPUT_DT&nbsp;</th><th>UPDATE_DT&nbsp;</th>
+					<th>GROUP_ID</th><th>USER_ID</th><th>USER_PW</th><th>MEMBER_NAME</th><th>AGE</th><th>DUTY</th><th>REGION</th><th>ADDRESS</th><th>ADDRESS_DTL</th><th>JUMINNO</th><th>GENDER</th><th>TEL</th><th>HP</th><th>EMAIL</th><th>INPUT_DT</th><th>UPDATE_DT</th>
 				</tr>   
 			</thead>  
 			<tbody id="AJAX_TBL">
 			</tbody>                                                                                                                    
 			<tr>                                                                                                      
-				<td colspan=16 &nbsp; ><div id="paging" ></div> </td> 
+				<td colspan=16  ><div id="paging" ></div> </td> 
 			</tr>	                                                                                                  
 		</table>                                                                                                      
 	</form>                                                                                                          
@@ -183,59 +213,61 @@ if(returnObj != null){
 	                 
 	폼서밋 방식 입력<br>                                                                                               
 	<!--폼 시작-->                                                                                                    
-	<form name="INSERT_FORM" method="post" action="/sample/admin/insertUser.do">                      		 
-		<input type='button' name='' value='INSERT' onclick='javascript:goForInsert();' >                                 
-		<table border=1>                                                                                              
+	<form name="MANAGE_FORM" id="MANAGE_FORM"  method="post" action="">                                          
+		<table id="TB_INSERT" border=1>                                                                                              
 			<tr>                                                                                                  
-				<td>GROUP_ID&nbsp;</td><td><input type='text' name='GROUP_ID' value=''></td>                
+				<td>GROUP_ID</td><td><input type='text' name='GROUP_ID' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>USER_ID&nbsp;</td><td><input type='text' name='USER_ID' value=''></td>                
+				<td>USER_ID</td><td><input type='text' name='USER_ID' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>USER_PW&nbsp;</td><td><input type='text' name='USER_PW' value=''></td>                
+				<td>USER_PW</td><td><input type='text' name='USER_PW' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>MEMBER_NAME&nbsp;</td><td><input type='text' name='MEMBER_NAME' value=''></td>                
+				<td>MEMBER_NAME</td><td><input type='text' name='MEMBER_NAME' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>AGE&nbsp;</td><td><input type='text' name='AGE' value=''></td>                
+				<td>AGE</td><td><input type='text' name='AGE' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>DUTY&nbsp;</td><td><input type='text' name='DUTY' value=''></td>                
+				<td>DUTY</td><td><input type='text' name='DUTY' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>REGION&nbsp;</td><td><input type='text' name='REGION' value=''></td>                
+				<td>REGION</td><td><input type='text' name='REGION' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>ADDRESS&nbsp;</td><td><input type='text' name='ADDRESS' value=''></td>                
+				<td>ADDRESS</td><td><input type='text' name='ADDRESS' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>ADDRESS_DTL&nbsp;</td><td><input type='text' name='ADDRESS_DTL' value=''></td>                
+				<td>ADDRESS_DTL</td><td><input type='text' name='ADDRESS_DTL' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>JUMINNO&nbsp;</td><td><input type='text' name='JUMINNO' value=''></td>                
+				<td>JUMINNO</td><td><input type='text' name='JUMINNO' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>GENDER&nbsp;</td><td><input type='text' name='GENDER' value=''></td>                
+				<td>GENDER</td><td><input type='text' name='GENDER' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>TEL&nbsp;</td><td><input type='text' name='TEL' value=''></td>                
+				<td>TEL</td><td><input type='text' name='TEL' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>HP&nbsp;</td><td><input type='text' name='HP' value=''></td>                
+				<td>HP</td><td><input type='text' name='HP' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>EMAIL&nbsp;</td><td><input type='text' name='EMAIL' value=''></td>                
+				<td>EMAIL</td><td><input type='text' name='EMAIL' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>INPUT_DT&nbsp;</td><td><input type='text' name='INPUT_DT' value=''></td>                
+				<td>INPUT_DT</td><td><input type='text' name='INPUT_DT' value=''></td>                
 			</tr>                                                                                                 
 			<tr>                                                                                                  
-				<td>UPDATE_DT&nbsp;</td><td><input type='text' name='UPDATE_DT' value=''></td>                
+				<td>UPDATE_DT</td><td><input type='text' name='UPDATE_DT' value=''></td>                
 			</tr>                                                                                                 
-		</table>                                                                                                      
-	                                                                                                                
+		</table>    
+		<br>                                                                                                  
+		<input type='button' name='' value='INSERT' onclick='javascript:goForInsert();' >                     
+		<input type='button' name='' value='UPDATE' onclick='javascript:goForUpdate();' >                     
+		<input type='button' name='' value='DELETE' onclick='javascript:goForDelete();' >                                                                                                   
 	</form>                                                                                                         
 	<!--폼 끝-->                                                                                                    
 	                                                                                                                

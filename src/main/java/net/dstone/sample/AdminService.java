@@ -46,6 +46,7 @@ public class AdminService extends BaseService {
             //paramVo.setUSER_ID( sampleCudDao.selectSampleMemberNewKey(newKeyVo).getUSER_ID() ); 
             //DAO 호출부분 구현 
             sampleCudDao.insertSampleMember(paramVo);  
+            
             isSuccess = true; 
             /************************ 비즈니스로직 끝 **************************/  
         } catch (Exception e) { 
@@ -56,6 +57,62 @@ public class AdminService extends BaseService {
         return isSuccess;  
     } 
 
+    /**  
+     * 샘플사용자정보 수정 
+     * @param paramVo  
+     * @return boolean 
+     * @throws Exception  
+    */  
+    public boolean updateUser(net.dstone.sample.cud.vo.SampleMemberCudVo paramVo) throws BizException{  
+        // 필요없는 주석들은 제거하시고 사용하시면 됩니다. 
+        /************************ 변수 선언 시작 ************************/  
+        boolean isSuccess = false; 
+        /************************ 변수 선언 끝 **************************/  
+        try {  
+            /************************ 변수 정의 시작 ************************/  
+            
+            /************************ 변수 정의 끝 **************************/  
+             
+            /************************ 비즈니스로직 시작 ************************/  
+            //DAO 호출부분 구현 
+            sampleCudDao.updateSampleMember(paramVo);  
+            isSuccess = true; 
+            /************************ 비즈니스로직 끝 **************************/  
+        } catch (Exception e) { 
+            String errDetailMsg = this.getClass().getName() + ".updateUser("+paramVo+") 수행중 예외발생. 상세사항:" + e.toString(); 
+            logger.error(errDetailMsg); 
+            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
+        }  
+        return isSuccess;  
+    } 
+    /**  
+     * 샘플사용자정보 삭제 
+     * @param paramVo  
+     * @return boolean 
+     * @throws Exception  
+    */  
+    public boolean deleteUser(net.dstone.sample.cud.vo.SampleMemberCudVo paramVo) throws BizException{  
+        // 필요없는 주석들은 제거하시고 사용하시면 됩니다. 
+        /************************ 변수 선언 시작 ************************/  
+        boolean isSuccess = false; 
+        /************************ 변수 선언 끝 **************************/  
+        try {  
+            /************************ 변수 정의 시작 ************************/  
+            
+            /************************ 변수 정의 끝 **************************/  
+             
+            /************************ 비즈니스로직 시작 ************************/  
+            //DAO 호출부분 구현 
+            sampleCudDao.deleteSampleMember(paramVo);  
+            isSuccess = true; 
+            /************************ 비즈니스로직 끝 **************************/  
+        } catch (Exception e) { 
+            String errDetailMsg = this.getClass().getName() + ".deleteUser("+paramVo+") 수행중 예외발생. 상세사항:" + e.toString(); 
+            logger.error(errDetailMsg); 
+            throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
+        }  
+        return isSuccess;  
+    } 
 
     /********* DAO 정의부분 시작 *********/
     @Autowired 
