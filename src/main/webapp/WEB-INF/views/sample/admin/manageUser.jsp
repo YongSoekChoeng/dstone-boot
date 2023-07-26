@@ -134,17 +134,17 @@ if(returnObj != null){
 		}
 	}
     
-	function goForInsert(){  
+	function goForInsert(){
 		document.MANAGE_FORM.action = "/sample/admin/insertUser.do";
 		document.MANAGE_FORM.submit();                                                                             
 	}
 
-	function goForUpdate(){        
+	function goForUpdate(){
 		document.MANAGE_FORM.action = "/sample/admin/updateUser.do";                                                                                  
 		document.MANAGE_FORM.submit();                                                                             
 	}
 
-	function goForDelete(){        
+	function goForDelete(){
 		document.MANAGE_FORM.action = "/sample/admin/deleteUser.do";                                                                                  
 		document.MANAGE_FORM.submit();                                                                             
 	}
