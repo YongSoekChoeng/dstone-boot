@@ -133,9 +133,24 @@ public class ConfigSecurity {
 		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authReq = http.authorizeRequests();
 		/*** 기본설정-권한허용자원 ***/
 		authReq.antMatchers(
+				
+			/*** 정적자원 ***/	
+			// CSS	
 			"/css/**"
+			, "/**/*.css"
+			// IMAGE
 			, "/images/**"
+			, "/**/*.bmp"
+			, "/**/*.jpg"
+			, "/**/*.gif"
+			, "/**/*.ico"
+			, "/**/*.png"
+			, "/**/*.tif"
+			// JS
 			, "/js/**"
+			, "/**/*.js"
+
+			/*** 동적자원중 권한체크가 필요없는 자원들 ***/	
 			, "/defaultLink.do*"
 			, "/test/**"
 			, MAIN_PAGE
