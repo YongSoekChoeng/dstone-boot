@@ -63,7 +63,7 @@ public class CustomSecurityController extends BaseController {
 	@RequestMapping(value = "/loginGo.do")
 	public ModelAndView loginGo(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) throws Exception{
 		if(isAjax(request)) { 
-			mav = new ModelAndView("jsonView"); 
+			mav = new ModelAndView("jsonView");
 			this.setForcedToUrl(response, ConfigSecurity.LOGIN_PAGE);
 		}else {
 			mav.setViewName(ConfigSecurity.LOGIN_PAGE);

@@ -74,8 +74,8 @@ if(returnObj != null){
 			dataType:"json", 
 			success:function(data, status, request){
 				var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-				var ERR_CD = data['ERR_CD'];
-				var ERR_MSG = data['ERR_MSG'];
+				var ERR_CD = request.getResponseHeader('ERR_CD');
+				var ERR_MSG = request.getResponseHeader('ERR_MSG');
 				if( 'Y' == SUCCESS_YN ){
 					console.log('success ===>>> data:' + (JSON.stringify(data)));
 					var tbody = $("#AJAX_TBL"); 

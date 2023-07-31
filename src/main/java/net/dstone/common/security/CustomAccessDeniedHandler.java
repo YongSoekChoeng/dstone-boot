@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
+import net.dstone.common.biz.BaseController;
 import net.dstone.common.config.ConfigSecurity;
+import net.dstone.common.conts.ErrCd;
 import net.dstone.common.utils.LogUtil;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
@@ -19,6 +21,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
     	logger.info(this.getClass().getName() + ".handle() =================>>>> has been called !!!");
+    	BaseController.setErrCd(response, ErrCd.ACCESS_DENIED);
     	String deniedUrl = ConfigSecurity.ACCESS_DENIED_ACTION;
     	request.getRequestDispatcher(deniedUrl).forward(request, response);
         //httpServletResponse.sendRedirect(deniedUrl);

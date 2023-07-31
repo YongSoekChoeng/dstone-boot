@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
+import net.dstone.common.biz.BaseController;
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.conts.ErrCd;
 import net.dstone.common.exception.SecException;
@@ -31,6 +32,7 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
         }else {
         	secException = new SecException(ErrCd.SYS_ERR);
         }
+        BaseController.setErrCd(response, secException.getErrCd());
         request.setAttribute("SecException", secException);
         super.setUseForward(true);
         super.setDefaultFailureUrl(ConfigSecurity.LOGIN_PROCESS_FAILURE_ACTION);

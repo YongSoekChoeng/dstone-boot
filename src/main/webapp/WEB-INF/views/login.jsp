@@ -46,8 +46,8 @@
 			dataType:"json", 
 			success:function(data, status, request){
 				var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-				var ERR_CD = data['ERR_CD'];
-				var ERR_MSG = data['ERR_MSG'];
+				var ERR_CD = request.getResponseHeader('ERR_CD');
+				var ERR_MSG = request.getResponseHeader('ERR_MSG');
 				if( 'Y' == SUCCESS_YN ){
 					console.log('success ===>>> data:' + (JSON.stringify(data)));
 					$("#SUCCESS_YN").text("성공");
@@ -103,7 +103,7 @@
 	<form name="SUBMIT_FORM" method="post" action="">
 	<table border=1>
 		<tr>
-			<td>ID</td><td><input type="text" name="<%=net.dstone.common.config.ConfigSecurity.USERNAME_PARAMETER%>" value="USER01" ></td>
+			<td>ID</td><td><input type="text" name="<%=net.dstone.common.config.ConfigSecurity.USERNAME_PARAMETER%>" value="ADMIN01" ></td>
 		</tr>
 		<tr>
 			<td>PASSWORD</td><td><input type="password" name="<%=net.dstone.common.config.ConfigSecurity.PASSWORD_PARAMETER%>" value="12345678" ></td>

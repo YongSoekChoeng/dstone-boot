@@ -38,7 +38,7 @@ public class ConfigAspect {
 		Object[] args = joinPoint.getArgs();
 		if(args != null) {
 			for(Object arg : args) {
-				if(arg instanceof HttpServletResponse) {
+				if(arg instanceof HttpServletResponse) {			
 					((HttpServletResponse)arg).setHeader("SUCCESS_YN", "Y");
 					break;
 				}

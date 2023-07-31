@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import net.dstone.common.conts.ErrCd;
 import net.dstone.common.utils.RequestUtil;
 
 @Controller
@@ -166,11 +167,30 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 	}
 
 	protected boolean isAjax(HttpServletRequest request) {
-		return RequestUtil.isAjax(request);
+		boolean isAjax = false;
+		if(RequestUtil.isAjax(request)) {
+			isAjax = true;
+		}
+		return isAjax;
 	}
 
 	protected void setForcedToUrl(HttpServletResponse response, String forcedToUrl) {
 		response.setHeader("FORCED_TO_URL", forcedToUrl);
+	}
+	
+	public static void setErrCd(HttpServletResponse response, ErrCd errCd) {
+		response.setHeader("SUCCESS_YN", "N");
+		response.setHeader("ERR_CD", errCd.getErrCd());
+		response.setHeader("ERR_MSG", errCd.getErrMsg());
+	}
+	
+	public static void setErrCd(HttpServletResponse response, String strErrCd) {
+		response.setHeader("SUCCESS_YN", "N");
+		ErrCd errCd = ErrCd.getErrCdByCd(strErrCd);
+		if( errCd != null ) {
+			response.setHeader("ERR_CD", errCd.getErrCd());
+			response.setHeader("ERR_MSG", errCd.getErrMsg());
+		}
 	}
 	
 }

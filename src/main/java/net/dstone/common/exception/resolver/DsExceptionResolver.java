@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import net.dstone.common.biz.BaseController;
 import net.dstone.common.conts.ErrCd;
 import net.dstone.common.exception.BizException;
 import net.dstone.common.exception.SecException;
@@ -62,28 +63,14 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 	private void applyErrCdToResponse(HttpServletResponse response, Exception ex) {
 		try {
 			if(ex instanceof SecException) {
-				this.setErrCd(response, ((SecException)ex).getErrCd());
+				BaseController.setErrCd(response, ((SecException)ex).getErrCd());
 			}else if(ex instanceof BizException) {
-				this.setErrCd(response, ((BizException)ex).getErrCd());
+				BaseController.setErrCd(response, ((BizException)ex).getErrCd());
 			}else {
-				this.setErrCd(response, ErrCd.SYS_ERR);
+				BaseController.setErrCd(response, ErrCd.SYS_ERR);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-		}
-	}
-
-	private void setErrCd(HttpServletResponse response, ErrCd errCd) throws Exception {
-		response.setHeader("SUCCESS_YN", "N");
-		response.setHeader("ERR_CD", errCd.getErrCd());
-		response.setHeader("ERR_MSG", errCd.getErrMsg());
-	}
-	private void setErrCd(HttpServletResponse response, String strErrCd) throws Exception {
-		response.setHeader("SUCCESS_YN", "N");
-		ErrCd errCd = ErrCd.getErrCdByCd(strErrCd);
-		if( errCd != null ) {
-			response.setHeader("ERR_CD", errCd.getErrCd());
-			response.setHeader("ERR_MSG", errCd.getErrMsg());
 		}
 	}
 

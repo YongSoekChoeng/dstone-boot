@@ -13,6 +13,7 @@ public enum ErrCd {
 	, ACCESS_DENIED		("ECOM0003", "접근권한이 없습니다.")
 	, MUST_LOGIN		("ECOM0004", "로그인을 하셔야 합니다.")
 	, ALREADY_LOGIN		("ECOM0005", "이미 로그인이 되어있습니다.")
+	, LOGIN_FAIL		("ECOM0006", "로그인수행시 예외가 발생했습니다.")
 	;
 
 	private String errCd;

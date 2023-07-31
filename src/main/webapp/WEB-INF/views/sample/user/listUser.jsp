@@ -63,37 +63,42 @@ if(returnObj != null){
 			dataType:"json", 
 			success:function(data, status, request){
 				var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-				var ERR_CD = data['ERR_CD'];
-				var ERR_MSG = data['ERR_MSG'];
+				var ERR_CD = request.getResponseHeader('ERR_CD');
+				var ERR_MSG = request.getResponseHeader('ERR_MSG');
 				if( 'Y' == SUCCESS_YN ){
-					console.log('success ===>>> data:' + (JSON.stringify(data)));
-					var tbody = $("#AJAX_TBL"); 
-					tbody.empty(); 
-					var returnList = data.returnObj.returnObj; 
-					var lineStr = ""; 
-					for(var i=0; i<returnList.length; i++){ 
-						lineStr = ""; 
-						lineStr = lineStr + "<tr>"; 
-						lineStr = lineStr + "<td>"+returnList[i].GROUP_ID+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].USER_ID+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].USER_PW+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].MEMBER_NAME+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].AGE+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].DUTY+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].REGION+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].ADDRESS+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].ADDRESS_DTL+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].JUMINNO+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].GENDER+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].TEL+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].HP+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].EMAIL+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].INPUT_DT+"</td>"; 
-						lineStr = lineStr + "<td>"+returnList[i].UPDATE_DT+"</td>"; 
-						lineStr = lineStr + "</tr>"; 
-						tbody.append(lineStr); 
-					} 
-					document.getElementById("paging").innerHTML = data.pageHTML; 
+					var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL');
+					if(FORCED_TO_URL && "" != FORCED_TO_URL){
+						location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL;
+					}else{
+						console.log('success ===>>> data:' + (JSON.stringify(data)));
+						var tbody = $("#AJAX_TBL"); 
+						tbody.empty(); 
+						var returnList = data.returnObj.returnObj; 
+						var lineStr = ""; 
+						for(var i=0; i<returnList.length; i++){ 
+							lineStr = ""; 
+							lineStr = lineStr + "<tr>"; 
+							lineStr = lineStr + "<td>"+returnList[i].GROUP_ID+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].USER_ID+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].USER_PW+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].MEMBER_NAME+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].AGE+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].DUTY+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].REGION+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].ADDRESS+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].ADDRESS_DTL+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].JUMINNO+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].GENDER+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].TEL+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].HP+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].EMAIL+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].INPUT_DT+"</td>"; 
+							lineStr = lineStr + "<td>"+returnList[i].UPDATE_DT+"</td>"; 
+							lineStr = lineStr + "</tr>"; 
+							tbody.append(lineStr); 
+						} 
+						document.getElementById("paging").innerHTML = data.pageHTML; 
+					}
 				}else{
 					console.log('failure ===>>> data:' + (JSON.stringify(data)));
 					alert("failure ERR_MSG:" + ERR_MSG);
