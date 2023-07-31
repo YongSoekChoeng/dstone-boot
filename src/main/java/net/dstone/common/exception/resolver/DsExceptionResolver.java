@@ -17,8 +17,6 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 
 	private static final LogUtil logger = new LogUtil(DsExceptionResolver.class);
 
-	private String exceptionAttribute = DEFAULT_EXCEPTION_ATTRIBUTE;
-	
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 		logger.info(this.getClass().getName() + ".doResolveException() has been called !!!");

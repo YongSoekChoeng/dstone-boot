@@ -2,6 +2,7 @@ package net.dstone.common.exception;
 
 import net.dstone.common.conts.ErrCd;
 
+@SuppressWarnings("serial")
 public class BizException extends Exception{
 	private ErrCd errCd;
 	private String errDetailMsg;
