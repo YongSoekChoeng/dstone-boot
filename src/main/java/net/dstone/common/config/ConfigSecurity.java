@@ -149,6 +149,10 @@ public class ConfigSecurity {
 			// JS
 			, "/js/**"
 			, "/**/*.js"
+			// HTML
+			, "/html/**"
+			, "/**/*.html"
+			, "/**/*.htm"
 
 			/*** 동적자원중 권한체크가 필요없는 자원들 ***/	
 			, "/defaultLink.do*"
