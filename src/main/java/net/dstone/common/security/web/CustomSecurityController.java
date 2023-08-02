@@ -101,7 +101,7 @@ public class CustomSecurityController extends BaseController {
 		}
 		Map<String, String> loginUpdate = new HashMap<String, String>();
 		CustomUserDetails userDetails = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getDetails();
-		loginUpdate.put("id", userDetails.getUsername());
+		loginUpdate.put( ConfigSecurity.USERNAME_PARAMETER, userDetails.getUsername() );
 		customUserService.updateUserLoginTime(loginUpdate);	
 		mav.addObject("successYn", "Y");
 		return mav;
