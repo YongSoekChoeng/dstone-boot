@@ -32,7 +32,7 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
         }else {
         	secException = new SecException(ErrCd.SYS_ERR);
         }
-        BaseController.setErrCd(response, secException.getErrCd());
+        BaseController.setErrCd(request, response, secException.getErrCd());
         request.setAttribute("SecException", secException);
         super.setUseForward(true);
         super.setDefaultFailureUrl(ConfigSecurity.LOGIN_PROCESS_FAILURE_ACTION);

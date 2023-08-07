@@ -1,5 +1,7 @@
 package net.dstone.common.biz;
 
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -173,18 +175,28 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 		response.setHeader("FORCED_TO_URL", forcedToUrl);
 	}
 	
-	public static void setErrCd(HttpServletResponse response, ErrCd errCd) {
+	@SuppressWarnings("deprecation")
+	public static void setErrCd(HttpServletRequest request, HttpServletResponse response, ErrCd errCd) {
 		response.setHeader("SUCCESS_YN", "N");
 		response.setHeader("ERR_CD", errCd.getErrCd());
-		response.setHeader("ERR_MSG", errCd.getErrMsg());
+		if( RequestUtil.isAjax(request) ) {
+			response.setHeader("ERR_MSG", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
+		}else {
+			response.setHeader("ERR_MSG", errCd.getErrMsg());
+		}
 	}
 	
-	public static void setErrCd(HttpServletResponse response, String strErrCd) {
+	@SuppressWarnings("deprecation")
+	public static void setErrCd(HttpServletRequest request, HttpServletResponse response, String strErrCd) {
 		response.setHeader("SUCCESS_YN", "N");
 		ErrCd errCd = ErrCd.getErrCdByCd(strErrCd);
 		if( errCd != null ) {
 			response.setHeader("ERR_CD", errCd.getErrCd());
-			response.setHeader("ERR_MSG", errCd.getErrMsg());
+			if( RequestUtil.isAjax(request) ) {
+				response.setHeader("ERR_MSG", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
+			}else {
+				response.setHeader("ERR_MSG", errCd.getErrMsg());
+			}
 		}
 	}
 	

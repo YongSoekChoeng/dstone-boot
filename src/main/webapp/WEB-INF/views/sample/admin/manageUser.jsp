@@ -75,7 +75,7 @@ if(returnObj != null){
 			success:function(data, status, request){
 				var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
 				var ERR_CD = request.getResponseHeader('ERR_CD');
-				var ERR_MSG = request.getResponseHeader('ERR_MSG');
+				var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG'));
 				if( 'Y' == SUCCESS_YN ){
 					var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL');
 					if(FORCED_TO_URL && "" != FORCED_TO_URL){

@@ -21,7 +21,7 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 		logger.info(this.getClass().getName() + ".doResolveException() has been called !!!");
 		ModelAndView mav = null;
-		this.applyErrCdToResponse(response, ex);
+		this.applyErrCdToResponse(request, response, ex);
 		String viewName = this.determineViewName(ex, request);
 		if( viewName != null ) {
 			mav = this.getModelAndView(viewName, ex, request);
@@ -58,14 +58,14 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 		return mav;
 	}
 
-	private void applyErrCdToResponse(HttpServletResponse response, Exception ex) {
+	private void applyErrCdToResponse(HttpServletRequest request, HttpServletResponse response, Exception ex) {
 		try {
 			if(ex instanceof SecException) {
-				BaseController.setErrCd(response, ((SecException)ex).getErrCd());
+				BaseController.setErrCd(request, response, ((SecException)ex).getErrCd());
 			}else if(ex instanceof BizException) {
-				BaseController.setErrCd(response, ((BizException)ex).getErrCd());
+				BaseController.setErrCd(request, response, ((BizException)ex).getErrCd());
 			}else {
-				BaseController.setErrCd(response, ErrCd.SYS_ERR);
+				BaseController.setErrCd(request, response, ErrCd.SYS_ERR);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
