@@ -1,9 +1,14 @@
 package net.dstone.common.utils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class RequestUtil {
 
@@ -13,8 +18,11 @@ public class RequestUtil {
 	private boolean boolRequestParseYn = true;
 	private boolean boolRequestDetailParseYn = true;
 
+	@SuppressWarnings("unused")
 	private static final String MAST_BAR_1 = "*****************************************";
+	@SuppressWarnings("unused")
 	private static final String MAST_BAR_2 = "========================================";
+	@SuppressWarnings("unused")
 	private static final String MAST_BAR_3 = "#########################################";
 
 	private javax.servlet.http.HttpServletRequest request;
@@ -38,8 +46,8 @@ public class RequestUtil {
 	
 	java.util.ArrayList<java.util.Properties> uploadList = new java.util.ArrayList<java.util.Properties>();
 	java.util.HashMap<String, String[]> jsonMap = new java.util.HashMap<String, String[]>();
-	private boolean jsonMapPopulatedYn = false;
 
+	@SuppressWarnings("unchecked")
 	public RequestUtil(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
 
 		this.request = request;
@@ -71,11 +79,15 @@ public class RequestUtil {
 		} else {
 			this.fileup = null;
 		}
+		if(isAjax(this.request) || isJson(this.request)) {
+			this.populateJson();
+		}
 		if (boolRequestParseYn) {
 			parseRequest(this);
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void parseRequest(RequestUtil requestUtil) {
 
 		java.util.Enumeration enumObj = null;
@@ -98,45 +110,26 @@ public class RequestUtil {
 			buff.append(strT).append("strRealPath [" + requestUtil.strRealPath + "]").append("\r\n");
 			buff.append(strT).append("isAjax(Ajax여부) [" + RequestUtil.isAjax(requestUtil.request) + "]").append("\r\n");
 		}
+		
 		// buff.append("< 메모리정보 >").append("\r\n");
 		buff.append(strT).append("< 파라메터 정보 >").append("\r\n");
-		// 일반 request 일때
-		if (!requestUtil.boolUploadYn) {
-			if(requestUtil.isAjax(request)) {
-				buff.append(populateJson(true, buff));
-			}else {
-				enumObj = requestUtil.request.getParameterNames();
-				while (enumObj.hasMoreElements()) {
-					strTempParamName = (String) enumObj.nextElement();
-					if (requestUtil.request.getParameterValues(strTempParamName).length == 1) {
-						buff.append(strT).append(strTempParamName + " [" + requestUtil.request.getParameter(strTempParamName) + "]").append("\r\n");
-					} else {
-						String[] strParams = requestUtil.request.getParameterValues(strTempParamName);
-						buff.append(strT).append(strTempParamName).append("\r\n");
-						for (int i = 0; i < strParams.length; i++) {
-							buff.append(strT).append("\t" + i + " [" + strParams[i] + "]").append("\r\n");
-						}
-						buff.append(strT).append(strTempParamName + " [" + requestUtil.request.getParameter(strTempParamName) + "]").append("\r\n");
-					}
+		enumObj = this.getParameterNames();
+		while (enumObj.hasMoreElements()) {
+			strTempParamName = (String) enumObj.nextElement();
+			if (this.getParameterValues(strTempParamName).length == 1) {
+				buff.append(strT).append(strTempParamName + " [" + this.getParameter(strTempParamName) + "]").append("\r\n");
+			} else {
+				String[] strParams = this.getParameterValues(strTempParamName);
+				buff.append(strT).append(strTempParamName).append("\r\n");
+				for (int i = 0; i < strParams.length; i++) {
+					buff.append(strT).append("\t" + i + " [" + strParams[i] + "]").append("\r\n");
 				}
+				buff.append(strT).append(strTempParamName + " [" + this.getParameter(strTempParamName) + "]").append("\r\n");
 			}
+		}
+		
 		// multipart 일때
-		} else {
-			enumObj = this.fileup.getParameterNames();
-			while (enumObj.hasMoreElements()) {
-				strTempParamName = (String) enumObj.nextElement();
-				//buff.append(strTempParamName + " [" + this.fileup.getParameter(strTempParamName) + "]").append("\r\n");
-				if(this.fileup.getParameterValues(strTempParamName).length == 1){
-					buff.append(strT).append(strTempParamName + " [" + this.fileup.getParameter(strTempParamName) + "]").append("\r\n");
-				}else{
-					String[] strParams = fileup.getParameterValues(strTempParamName);
-					buff.append(strT).append(strTempParamName ).append("\r\n");
-					for(int i=0; i < strParams.length; i++){
-						buff.append(strT).append("\t" + i +" [" + strParams[i] + "]").append("\r\n");
-					}						
-					buff.append(strT).append(strTempParamName + " [" + this.fileup.getParameter(strTempParamName) + "]").append("\r\n");
-				}            	                	   
-			}	
+		if (requestUtil.boolUploadYn) {
 			if(getFileCount() > 0){
 				buff.append(strT).append("<<< Attached File Start >>>\r\n");
 				for(int i=0; i<getFileCount(); i++){
@@ -152,72 +145,61 @@ public class RequestUtil {
 		logger.debug(buff.toString());
 	}
 	
-	private boolean populateJson(){
-		return this.populateJson(false, new StringBuffer());
-	}
-	
-	private boolean populateJson(boolean parseYn, StringBuffer buff){
-		if(!jsonMapPopulatedYn){
-			try {
-				String strT = "";
-				java.util.Enumeration params = getParameterNames();
-				String name = "";
-				String value = null;
-				String[] values = null;
-				boolean isArray = false;
-				if(params != null){
-					if ( params.hasMoreElements() ) {
-						String jsonStr = (String) params.nextElement();
-						if(jsonStr.startsWith("{") && jsonStr.endsWith("}")){
-							JSONParser parser = new JSONParser();
-							JSONObject jObj    = (JSONObject)parser.parse(jsonStr);
-							java.util.Iterator iter = jObj.keySet().iterator();
-							org.json.simple.JSONArray jArray = null;
-							while(iter.hasNext()){
-								name = (String)iter.next();
-								if( jObj.get(name) instanceof org.json.simple.JSONArray ){
-									jArray = (org.json.simple.JSONArray)jObj.get(name);
-									for(int i=0; i<jArray.size(); i++){
-										jArray.set(i, java.net.URLDecoder.decode(jArray.get(i).toString(), getStrCharacterEncoding()));
-									}
-									values = new String[jArray.size()];
-									jArray.toArray(values);jArray.clear();
+	@SuppressWarnings("unchecked")
+	private void populateJson(){
+		String name = "";
+		String value = null;
+		String[] values = null;
+		try {
+			
+			java.util.Enumeration<String> params = this.request.getParameterNames();
+			if(params != null){
+				if ( params.hasMoreElements() ) {
+					String jsonStr = (String) params.nextElement();
+					if(jsonStr.startsWith("{") && jsonStr.endsWith("}")){
+						JSONParser parser = new JSONParser();
+						JSONObject jObj    = (JSONObject)parser.parse(jsonStr);
+						java.util.Iterator<String> iter = jObj.keySet().iterator();
+						org.json.simple.JSONArray jArray = null;
+						while(iter.hasNext()){
+							name = (String)iter.next();
+							if( jObj.get(name) instanceof org.json.simple.JSONArray ){
+								jArray = (org.json.simple.JSONArray)jObj.get(name);
+								for(int i=0; i<jArray.size(); i++){
+									jArray.set(i, java.net.URLDecoder.decode(jArray.get(i).toString(), getStrCharacterEncoding()));
+								}
+								values = new String[jArray.size()];
+								jArray.toArray(values);jArray.clear();
 
-								}else{
-									value = java.net.URLDecoder.decode((String)jObj.get(name), getStrCharacterEncoding()) ;
-									values = new String[1];
-									values[0] = value;
-								}
-								if(parseYn) {
-									if(values.length < 2) {
-										buff.append(strT).append(name + " [" + values[0] + "]").append("\r\n");
-									}else {
-										StringBuffer arrBuff = new StringBuffer();
-										for(String str : values) {
-											if(arrBuff.length() > 0) {
-												arrBuff.append("|");
-											}
-											arrBuff.append(str);
-										}
-										buff.append(strT).append(name + " [" + arrBuff.toString() + "]").append("\r\n");
-									}
-									
-								}
-								this.jsonMap.put(name, values);
+							}else{
+								value = java.net.URLDecoder.decode((String)jObj.get(name), getStrCharacterEncoding()) ;
+								values = new String[1];
+								values[0] = value;
 							}
+							this.jsonMap.put(name, values);
 						}
 					}
 				}
-			}catch(Exception e){
-				logger.info(e);
 			}
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.info(e);
 		}
-		jsonMapPopulatedYn = true;
-		return jsonMapPopulatedYn;
 	}
 	
-	public String getJsonParameterValue(String name) {
-		populateJson();
+	private java.util.Enumeration<String> getJsonParameterNames() {
+		java.util.Vector<String> v = new java.util.Vector<String>();
+		if( this.jsonMap.size() > 0 ){
+			java.util.Iterator<String> keys = this.jsonMap.keySet().iterator();
+			while(keys.hasNext()) {
+				v.add(keys.next());
+			}
+		}
+		return v.elements();
+	}
+	
+	
+	private String getJsonParameter(String name) {
 		String paramVal = "";
 		if( this.jsonMap.size() > 0 && this.jsonMap.containsKey(name) ){
 			if(this.jsonMap.get(name).length > 0){
@@ -227,8 +209,7 @@ public class RequestUtil {
 		return paramVal;
 	}
 
-	public String[] getJsonParameterValues(String name) {
-		populateJson();
+	private String[] getJsonParameterValues(String name) {
 		String[] paramVals = null;
 		if( this.jsonMap.size() > 0 && this.jsonMap.containsKey(name) ){
 			if(this.jsonMap.get(name).length > 0){
@@ -302,7 +283,11 @@ public class RequestUtil {
 
 	public String getParameter(String name) {
 		if (this.fileup == null) {
-			return nullCheck(request.getParameter(name), "");
+			if(isAjax(this.request) || isJson(this.request)) {
+				return nullCheck(this.getJsonParameter(name), "");
+			}else {
+				return nullCheck(this.request.getParameter(name), "");
+			}
 		} else {
 			return nullCheck(fileup.getParameter(name), "");
 		}
@@ -310,15 +295,23 @@ public class RequestUtil {
 
 	public String getParameter(String name, String defaultVal) {
 		if (this.fileup == null) {
-			return nullCheck(request.getParameter(name), defaultVal);
+			if(isAjax(this.request) || isJson(this.request)) {
+				return nullCheck(this.getJsonParameter(name), defaultVal);
+			}else {
+				return nullCheck(this.request.getParameter(name), defaultVal);
+			}
 		} else {
 			return nullCheck(fileup.getParameter(name), defaultVal);
 		}
 	}
 
-	public java.util.Enumeration getParameterNames() {
+	public java.util.Enumeration<String> getParameterNames() {
 		if (this.fileup == null) {
-			return request.getParameterNames();
+			if(isAjax(this.request) || isJson(this.request)) {
+				return this.getJsonParameterNames();
+			}else {
+				return request.getParameterNames();
+			}
 		} else {
 			return fileup.getParameterNames();
 		}
@@ -326,7 +319,11 @@ public class RequestUtil {
 
 	public String[] getParameterValues(String name) {
 		if (this.fileup == null) {
-			return request.getParameterValues(name);
+			if(isAjax(this.request) || isJson(this.request)) {
+				return this.getJsonParameterValues(name);
+			}else {
+				return request.getParameterValues(name);
+			}
 		} else {
 			return fileup.getParameterValues(name);
 		}
@@ -334,7 +331,11 @@ public class RequestUtil {
 
 	public int getIntParameter(String name) {
 		if (this.fileup == null) {
-			return Integer.parseInt(request.getParameter(name));
+			if(isAjax(this.request) || isJson(this.request)) {
+				return Integer.parseInt(this.getJsonParameter(name));
+			}else {
+				return Integer.parseInt(request.getParameter(name));
+			}
 		} else {
 			return Integer.parseInt(fileup.getParameter(name));
 		}
@@ -495,6 +496,15 @@ public class RequestUtil {
 
 	public static boolean isAjax(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+	}
+	public static boolean isJson(HttpServletRequest request) {
+		boolean isJson = false;
+		if( request.getHeader("Content-Type") != null ) {
+			if(request.getHeader("Content-Type").indexOf("application/json") > -1) {
+				isJson = true;
+			}
+		}
+		return isJson;
 	}
 
 }

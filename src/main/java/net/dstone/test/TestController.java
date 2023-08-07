@@ -22,7 +22,7 @@ public class TestController extends BaseController {
 		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
 		
 		// 강제에러발생의 경우
-		if( "Y".equals(requestUtil.getJsonParameterValue("FORCE_EXCEPTION_YN")) ) {
+		if( "Y".equals(requestUtil.getParameter("FORCE_EXCEPTION_YN")) ) {
 			"".substring(5);
 		}
 

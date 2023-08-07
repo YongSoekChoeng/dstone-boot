@@ -35,7 +35,7 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 				}
 			}
 			mav.addObject("ERR_MSG_DETAIL", errMsgDetail.toString());
-			if(RequestUtil.isAjax(request)) {
+			if(RequestUtil.isAjax(request) || RequestUtil.isJson(request)) {
 				Integer statusCode = this.determineStatusCode(request, viewName);
 				if( statusCode != null ) {
 					this.addStatusCode(viewName, statusCode);
@@ -52,7 +52,7 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 	@Override
 	protected ModelAndView getModelAndView(String viewName, Exception ex, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(viewName);
-		if(RequestUtil.isAjax(request)) { 
+		if(RequestUtil.isAjax(request) || RequestUtil.isJson(request)) { 
 			mav = new ModelAndView("jsonView"); 
 		}
 		return mav;

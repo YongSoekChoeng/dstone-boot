@@ -38,11 +38,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 	
 	public String getParamFromDataRequest(HttpServletRequest request, String paramName){
 		String paramVal = null;
-		if(net.dstone.common.utils.RequestUtil.isAjax(request)) {
-			paramVal = requestUtil.getJsonParameterValue(paramName);
-		}else {
-			paramVal = request.getParameter(paramName);
-		}
+		paramVal = request.getParameter(paramName);
 		return paramVal;
 	}
 

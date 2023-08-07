@@ -42,17 +42,9 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 					fieldName = field.getName();					
 					isArray = bean.getClass().getDeclaredField(fieldName).getType().isArray();
 					if(isArray){
-						if(RequestUtil.isAjax(request.getRequest())){
-							fieldValue = request.getJsonParameterValues(fieldName);
-						}else {
-							fieldValue = request.getParameterValues(fieldName);
-						}
+						fieldValue = request.getParameterValues(fieldName);
 					}else{
-						if(RequestUtil.isAjax(request.getRequest())){
-							fieldValue = request.getJsonParameterValue(fieldName);
-						}else {
-							fieldValue = request.getParameter(fieldName);
-						}
+						fieldValue = request.getParameter(fieldName);
 					}
 					BeanUtils.setProperty(bean, fieldName, fieldValue);
 				}
@@ -91,11 +83,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 				for(int i=0; i<fields.length; i++ ){
 					field = fields[i];
 					paramName = field.getName();
-					if(RequestUtil.isAjax(request.getRequest())){
-						paramValues = request.getJsonParameterValues(paramName);
-					}else {
-						paramValues = request.getParameterValues(paramName);
-					}
+					paramValues = request.getParameterValues(paramName);
 					if(paramValues != null){
 						fieldProp.put(paramName, paramValues);
 						if(paramValues.length>maxArrayNum){
@@ -167,6 +155,13 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 	}
 
 	protected boolean isAjax(HttpServletRequest request) {
+		boolean isAjax = false;
+		if(RequestUtil.isAjax(request)) {
+			isAjax = true;
+		}
+		return isAjax;
+	}
+	protected boolean isJson(HttpServletRequest request) {
 		boolean isAjax = false;
 		if(RequestUtil.isAjax(request)) {
 			isAjax = true;
