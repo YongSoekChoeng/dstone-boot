@@ -36,7 +36,7 @@ public class FileUpUtil {
 	private HttpServletRequest request;
 	private String encoding = "utf-8"; // utf-8 euc-kr 환경에 맞게 수정.
 
-	public FileUpUtil(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public FileUpUtil(HttpServletRequest request) throws Exception {
 		java.util.ArrayList<java.util.Properties> uploadList = new java.util.ArrayList<java.util.Properties>();
 		String FILEUP_WEB_DIR = net.dstone.common.utils.PropUtil.getInstance().getProp("app", "FILEUP_WEB_DIR");
 		try {

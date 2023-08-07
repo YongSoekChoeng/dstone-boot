@@ -48,10 +48,20 @@ public class RequestUtil {
 	java.util.HashMap<String, String[]> jsonMap = new java.util.HashMap<String, String[]>();
 
 	@SuppressWarnings("unchecked")
+	public RequestUtil(javax.servlet.http.HttpServletRequest request) throws Exception {
+		this.init(request, null);
+	}
+	
+	@SuppressWarnings("unchecked")
 	public RequestUtil(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
-
+		this.init(request, response);
+	}
+	
+	private void init(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
 		this.request = request;
-		this.response = response;
+		if(response != null) {
+			this.response = response;
+		}
 		this.session = this.request.getSession(true);
 		
 		this.scheme = this.request.getScheme();
@@ -70,7 +80,7 @@ public class RequestUtil {
 		if ((this.strContentsType != null) && (this.strContentsType.toUpperCase().startsWith("MULTIPART"))) {
 			try {
 				boolUploadYn = true;
-				this.fileup = new net.dstone.common.utils.FileUpUtil(request, response);
+				this.fileup = new net.dstone.common.utils.FileUpUtil(request);
 				this.uploadList = (java.util.ArrayList<java.util.Properties>) this.fileup.getUploadInfo().get("UPLOAD_LIST");
 			} catch (Exception e) {
 				logger.info(e);

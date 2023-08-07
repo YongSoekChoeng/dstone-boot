@@ -18,11 +18,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-		try {
-			requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return super.attemptAuthentication(request, response);
 	}
 	
@@ -36,9 +31,14 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		return this.getParamFromDataRequest(request, this.getPasswordParameter());
 	}
 	
-	public String getParamFromDataRequest(HttpServletRequest request, String paramName){
+	private String getParamFromDataRequest(HttpServletRequest request, String paramName){
 		String paramVal = null;
-		paramVal = request.getParameter(paramName);
+		try {
+			requestUtil = new net.dstone.common.utils.RequestUtil(request);
+			paramVal = requestUtil.getParameter(paramName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return paramVal;
 	}
 

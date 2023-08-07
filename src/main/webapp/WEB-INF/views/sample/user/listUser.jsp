@@ -111,7 +111,12 @@ if(returnObj != null){
 			} 
 		}); 
 	} 
-    
+
+	function goPageAjax(page){
+		$(document.AJAX_FORM.PAGE_NUM).val(page);
+		goForAjax();
+	}
+	
 	function goForSubmit(){                                                                                          
 		document.SUBMIT_FORM.submit();                                                                             
 	}         
