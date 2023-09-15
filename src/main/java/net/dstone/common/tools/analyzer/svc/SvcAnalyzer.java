@@ -247,34 +247,11 @@ public class SvcAnalyzer extends BaseObject{
 				file = fileList[i];
 				if( isValidSvcFile(file) ) {
 					mtdVo = new MtdVo();
-					// 패키지ID
-					mtdVo.setPkg(ClassFactory.getPackageId(file));
-					if( !isValidSvcPackage(mtdVo.getPkg()) ) {
-						continue;
-					}
-					if( !PACKAGE_LIST.contains(mtdVo.getPkg()) ) {
-						PACKAGE_LIST.add(mtdVo.getPkg());
-					}
-					// 클래스ID
-					mtdVo.setClassId(ClassFactory.getClassId(file));
-					if( !CLASS_LIST.contains(mtdVo.getClassId()) ) {
-						CLASS_LIST.add(mtdVo.getClassId());
-					}
-					if( !PACKAGE_CLASS_LIST.contains(mtdVo.getPkg() + "." + mtdVo.getClassId()) ) {
-						PACKAGE_CLASS_LIST.add(mtdVo.getPkg() + "." + mtdVo.getClassId());
-					}
-					// 클래스명
-					mtdVo.setClassName(ClassFactory.getClassName(file));
-					// 기능종류
-					mtdVo.setClassKind(ClassFactory.getClassKind(file));
-					// 파일명
-					mtdVo.setFileName(file);
-					// 파일저장
-					ParseUtil.writeClassVo(mtdVo, AppAnalyzer.WRITE_PATH + "/class");
+
 				}
 			}
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. file["+file+"]");
+			getLogger().sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
