@@ -17,7 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import net.dstone.common.config.ConfigSecurity;
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.SecException;
 import net.dstone.common.security.svc.CustomUserService;
 import net.dstone.common.utils.LogUtil;

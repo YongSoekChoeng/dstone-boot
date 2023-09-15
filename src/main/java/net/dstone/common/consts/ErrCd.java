@@ -1,4 +1,4 @@
-package net.dstone.common.conts;
+package net.dstone.common.consts;
 
 public enum ErrCd {
 	

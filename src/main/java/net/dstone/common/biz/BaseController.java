@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.utils.RequestUtil;
 
 @Controller

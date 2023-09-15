@@ -1696,7 +1696,7 @@ public class BizGenerator extends BaseObject {
 				svcH.append("import org.springframework.transaction.annotation.Transactional; ").append("\n");
 				svcH.append(" ").append("\n");
 				svcH.append("import net.dstone.common.biz.BaseService; ").append("\n");
-				svcH.append("import net.dstone.common.conts.ErrCd; ").append("\n");
+				svcH.append("import net.dstone.common.consts.ErrCd; ").append("\n");
 				svcH.append("import net.dstone.common.exception.BizException;").append("\n");
 				svcH.append("import net.dstone.common.utils.LogUtil; ").append("\n");
 				svcH.append(" ").append("\n");
@@ -4684,200 +4684,15 @@ public class BizGenerator extends BaseObject {
 
 		}
 		public static net.dstone.common.utils.DataSet getCols(String TABLE_NAME) {
-			net.dstone.common.utils.DbUtil db = null;
-			net.dstone.common.utils.DataSet ds = null;
-			String[] colNames = null;
-			String[] colTypes = null;
-			StringBuffer sql = new StringBuffer();
-			java.util.HashMap<String, java.util.Properties> colInfo = null;
-			java.util.Properties colInfoItem = new java.util.Properties();
-
-			try {
-				db = new net.dstone.common.utils.DbUtil(DBID);
-				db.getConnection();
-				
-				// 1. 컬럼 기본정보 조회.
-				if ("ORACLE".equals(db.currentDbKind)) {
-					sql.append("SELECT  ").append("\n");
-					sql.append("    C.TABLE_NAME ").append("\n");
-					sql.append("    , C.COLUMN_NAME ").append("\n");
-					sql.append("    , D.COMMENTS COLUMN_COMMENT ").append("\n");
-					sql.append("    , C.DATA_TYPE ").append("\n");
-					sql.append("    , C.DATA_LENGTH ").append("\n");
-					sql.append("FROM  ").append("\n");
-					sql.append("    USER_TAB_COLUMNS C ").append("\n");
-					sql.append("    , USER_COL_COMMENTS D ").append("\n");
-					sql.append("WHERE 1=1 ").append("\n");
-					sql.append("    AND C.TABLE_NAME = D.TABLE_NAME ").append("\n");
-					sql.append("    AND C.COLUMN_NAME = D.COLUMN_NAME ").append("\n");
-					sql.append("	AND C.TABLE_NAME = '" + TABLE_NAME + "' ").append("\n");
-				} else if ("MSSQL".equals(db.currentDbKind)) {
-					sql.append("SELECT   ").append("\n");
-					sql.append("	A.TABLE_NAME  ").append("\n");
-					sql.append("	, A.COLUMN_NAME  ").append("\n");
-					sql.append("	, '' COLUMN_COMMENT ").append("\n");
-					sql.append("	, A.DATA_TYPE  ").append("\n");
-					sql.append("	, ISNULL(CAST(A.CHARACTER_MAXIMUM_LENGTH AS VARCHAR), CAST(A.NUMERIC_PRECISION AS VARCHAR) + ',' + CAST(A.NUMERIC_SCALE AS VARCHAR)) AS DATA_LENGTH  ").append("\n");
-					sql.append("FROM   ").append("\n");
-					sql.append("	INFORMATION_SCHEMA.COLUMNS A  ").append("\n");
-					sql.append("WHERE   ").append("\n");
-					sql.append("	A.TABLE_NAME = '" + TABLE_NAME + "'  ").append("\n");
-					sql.append("ORDER BY A.TABLE_NAME, A.ORDINAL_POSITION ").append("\n");
-				} else if ("MYSQL".equals(db.currentDbKind)) {
-					String DB_URL = SystemUtil.getInstance().getProperty(DBID + ".strUrl");
-					String DB_SID = "MYDB";
-					if(DB_URL.indexOf("/") != -1){
-						DB_SID =  DB_URL.substring(DB_URL.lastIndexOf("/")+1);
-						if( DB_SID.indexOf("?") != -1 ){
-							DB_SID =  DB_SID.substring(0, DB_SID.indexOf("?"));
-						}
-					}
-					sql.append("SELECT ").append("\n"); 
-					sql.append("	TABLE_NAME ").append("\n");
-					sql.append("	, COLUMN_NAME ").append("\n");
-					sql.append("	, COLUMN_COMMENT ").append("\n");
-					sql.append("	, DATA_TYPE ").append("\n");
-					sql.append("	, (CASE WHEN character_maximum_length IS NULL THEN NUMERIC_PRECISION ELSE character_maximum_length END) AS DATA_LENGTH ").append("\n");
-					sql.append("FROM  ").append("\n");
-					sql.append("	INFORMATION_SCHEMA.COLUMNS  ").append("\n");
-					sql.append("WHERE 1=1 ").append("\n");
-					sql.append("	AND TABLE_SCHEMA='"+DB_SID+"'  ").append("\n");
-					sql.append("    AND TABLE_NAME='" + TABLE_NAME + "' ").append("\n");
-					sql.append("ORDER BY ORDINAL_POSITION ").append("\n");
-				}
-				
-				db.setQuery(sql.toString());
-				ds = new net.dstone.common.utils.DataSet();
-				ds.buildFromResultSet(db.select(), "COL_LIST");
-				
-				sql = new StringBuffer();
-				if ("ORACLE".equals(db.currentDbKind)) {
-					sql.append(" SELECT * FROM " + TABLE_NAME + " WHERE ROWNUM < 2");
-				} else if ("MSSQL".equals(db.currentDbKind)) {
-					sql.append(" SELECT TOP 1 * FROM " + TABLE_NAME + " ");
-				} else if ("MYSQL".equals(db.currentDbKind)) {
-					sql.append(" SELECT  * FROM " + TABLE_NAME + " LIMIT 1 ");
-				}
-				
-				db.setQuery(sql.toString());
-				db.select();
-				colNames = db.columnNames;
-				colTypes = db.columnTypes;
-				
-				for(int i=0; i<ds.getDataSetRowCount("COL_LIST"); i++){
-					if(StringUtil.isEmpty(ds.getDataSet("COL_LIST", i).getDatum("DATA_TYPE"))){
-						for(int k=0; k<colNames.length; k++){
-							if(ds.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME").equals(colNames[k])){
-								ds.getDataSet("COL_LIST", i).setDatum("DATA_TYPE", colTypes[k].trim());
-								break;
-							}
-						}
-					}
-				}			
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				db.release();
-			}
-			return ds;
+			return net.dstone.common.utils.DbUtil.SqlGen.getCols(DBID, TABLE_NAME);
 		}
 		
 		public static net.dstone.common.utils.DataSet getKeys(String TABLE_NAME) {
-			net.dstone.common.utils.DbUtil db = null;
-			net.dstone.common.utils.DataSet ds = null;
-			StringBuffer keySql = new StringBuffer();
-
-			try {
-				db = new net.dstone.common.utils.DbUtil(DBID);
-				db.getConnection();
-				
-				if ("ORACLE".equals(db.currentDbKind)) {
-					keySql.append("SELECT COLS.TABLE_NAME, COLS.COLUMN_NAME, COLS.POSITION, CONS.STATUS, CONS.OWNER ").append("\n");
-					keySql.append("FROM ALL_CONSTRAINTS CONS, ALL_CONS_COLUMNS COLS ").append("\n");
-					keySql.append("WHERE COLS.TABLE_NAME = '" + TABLE_NAME + "' ").append("\n");
-					keySql.append("AND CONS.CONSTRAINT_TYPE = 'P' ").append("\n");
-					keySql.append("AND CONS.CONSTRAINT_NAME = COLS.CONSTRAINT_NAME ").append("\n");
-					keySql.append("AND CONS.OWNER = COLS.OWNER ").append("\n");
-					keySql.append("ORDER BY COLS.TABLE_NAME, COLS.POSITION ").append("\n");
-				} else if ("MSSQL".equals(db.currentDbKind)) {
-					keySql.append("SELECT KU.TABLE_NAME AS TABLENAME,COLUMN_NAME AS COLUMN_NAME ").append("\n");
-					keySql.append("FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC ").append("\n");
-					keySql.append("INNER JOIN ").append("\n");
-					keySql.append("INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU ").append("\n");
-					keySql.append("ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' AND ").append("\n");
-					keySql.append("TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME ").append("\n");
-					keySql.append("AND KU.TABLE_NAME='" + TABLE_NAME + "' ").append("\n");
-					keySql.append("ORDER BY KU.TABLE_NAME, KU.ORDINAL_POSITION ").append("\n");
-				} else if ("MYSQL".equals(db.currentDbKind)) {
-					String DB_URL = SystemUtil.getInstance().getProperty(DBID + ".strUrl");
-					String DB_SID = "MYDB";
-					if(DB_URL.indexOf("/") != -1){
-						DB_SID =  DB_URL.substring(DB_URL.lastIndexOf("/")+1);
-						if(DB_SID.indexOf("?") != -1){
-							DB_SID = DB_SID.substring(0, DB_SID.lastIndexOf("?"));
-						}
-					}
-					keySql.append("SELECT ").append("\n"); 
-					keySql.append("	   TABLE_NAME, COLUMN_NAME ").append("\n");
-					keySql.append("FROM  ").append("\n");
-					keySql.append("	   INFORMATION_SCHEMA.COLUMNS  ").append("\n");
-					keySql.append("WHERE 1=1 ").append("\n");
-					keySql.append("	   AND COLUMN_KEY = 'PRI'  ").append("\n");
-					keySql.append("	   AND TABLE_SCHEMA='" + DB_SID + "'  ").append("\n");
-					keySql.append("    AND TABLE_NAME='" + TABLE_NAME + "' ").append("\n");
-					keySql.append("ORDER BY ORDINAL_POSITION ").append("\n");
-
-				}
-				db.setQuery(keySql.toString());
-				ds = new net.dstone.common.utils.DataSet();
-				ds.buildFromResultSet(db.select(), "KEY_LIST");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				db.release();
-			}
-			return ds;
+			return net.dstone.common.utils.DbUtil.SqlGen.getKeys(DBID, TABLE_NAME);
 		}
 		
 		public static String getParamByType(DbInfo.ColInfo col, String dbKind){
-			String outStr = "";
-			String colType = col.DATA_TYPE.toUpperCase();
-			if(colType.indexOf(".") > -1){
-				colType = colType.substring(colType.lastIndexOf("."));
-			}
-			if ("ORACLE".equals(dbKind)) {
-				if (colType.equals("FLOAT") || colType.equals("INT") || colType.equals("DOUBLE") || colType.equals("NUMBER") || colType.equals("NUMERIC")) {
-					outStr = "#{" + col.COLUMN_NAME + "}";
-				}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
-					if ( colType.equals("DATE") ) {
-						outStr = "TO_DATE( #{" + col.COLUMN_NAME + "}, 'YYYYMMDDHH24MISS')";
-					}else if ( colType.equals("Time") ) {
-						outStr = "TO_DATE( #{" + col.COLUMN_NAME + "}, 'YYYYMMDDHH24MISS')";
-					}else if ( colType.equals("Timestamp") ) {
-						outStr = "TO_DATE( #{" + col.COLUMN_NAME + "}, 'YYYYMMDDHH24MISSFF3')";
-					}
-				} else {
-					outStr = "#{" + col.COLUMN_NAME + "}";
-				}
-			} else if ("MSSQL".equals(dbKind)) {
-				if (colType.equals("FLOAT") || colType.equals("INT") || colType.equals("DOUBLE") || colType.equals("NUMBER") || colType.equals("NUMERIC")) {
-					outStr = "#{" + col.COLUMN_NAME + "}";
-				}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
-					outStr = "CONVERT(DATETIME, #{" + col.COLUMN_NAME + "} )";
-				} else {
-					outStr = "#{" + col.COLUMN_NAME + "}";
-				}
-			} else if ("MYSQL".equals(dbKind)) {
-				if (colType.equals("FLOAT") || colType.equals("INT") || colType.equals("DOUBLE") || colType.equals("NUMBER") || colType.equals("NUMERIC")) {
-					outStr = "#{" + col.COLUMN_NAME + "}";
-				}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
-					outStr = "STR_TO_DATE( #{" + col.COLUMN_NAME + "}, '%Y%m%d%H%i%s' )";
-				} else {
-					outStr = "#{" + col.COLUMN_NAME + "}";
-				}
-			}
-			return outStr;
+			return net.dstone.common.utils.DbUtil.SqlGen.getParamByType(col.DATA_TYPE, col.COLUMN_NAME, dbKind);
 		}
 		
 		public static String getPagingQuery(String dbKind, int upOrDown){

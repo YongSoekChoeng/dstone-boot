@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import net.dstone.common.biz.BaseController;
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.BizException;
 import net.dstone.common.exception.SecException;
 import net.dstone.common.utils.LogUtil;

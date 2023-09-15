@@ -9,7 +9,7 @@ public interface CustomUserService {
 	 * 인증 로그인 처리. 사용자ID, 사용자PASSWORD를 파라메터로 받아서 사용자정보를 조회.
 	 * net.dstone.common.security.CustomAuthenticationProvider.authenticate(Authentication) 에서 호출
 	 * @param param
-	 * @return 값이 있을 경우 정상적인로그인 진행. 값이 없거나 NULL일 경우 net.dstone.common.conts.ErrCd.USER_NOT_REG 예외 발생.
+	 * @return 값이 있을 경우 정상적인로그인 진행. 값이 없거나 NULL일 경우 net.dstone.common.consts.ErrCd.USER_NOT_REG 예외 발생.
 	 */
 	public Map<String, Object> loginProcess(Map<String, String> param) throws Exception;
 

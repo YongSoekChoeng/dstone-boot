@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import net.dstone.common.biz.BaseController;
 import net.dstone.common.config.ConfigSecurity;
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.SecException;
 import net.dstone.common.security.CustomUserDetails;
 import net.dstone.common.security.svc.CustomUserService;

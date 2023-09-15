@@ -11,7 +11,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 
 import net.dstone.common.biz.BaseController;
 import net.dstone.common.config.ConfigSecurity;
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.utils.LogUtil;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {

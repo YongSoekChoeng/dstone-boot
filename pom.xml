@@ -124,7 +124,14 @@
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-		</dependency>
+		</dependency>	
+        <dependency>
+            <groupId>oracle.jdbc</groupId>
+            <artifactId>ojdbc</artifactId>
+            <version>12.1.0.2.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc8-12.2.0.1.jar</systemPath>
+        </dependency>	
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId><!-- JNDI설정을 위한 dbcp -->

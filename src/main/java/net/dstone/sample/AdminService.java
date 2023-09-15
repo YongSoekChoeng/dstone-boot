@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service; 
 import org.springframework.transaction.annotation.Transactional; 
  
-import net.dstone.common.biz.BaseService; 
-import net.dstone.common.conts.ErrCd; 
+import net.dstone.common.biz.BaseService;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.BizException;
 import net.dstone.common.utils.LogUtil; 
  

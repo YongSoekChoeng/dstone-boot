@@ -1,6 +1,6 @@
 package net.dstone.common.exception;
 
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 
 @SuppressWarnings("serial")
 public class BizException extends Exception{

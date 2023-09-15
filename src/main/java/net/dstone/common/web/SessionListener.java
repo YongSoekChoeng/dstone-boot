@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import net.dstone.common.conts.ErrCd;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.exception.SecException;
 import net.dstone.common.security.CustomUserDetails;
