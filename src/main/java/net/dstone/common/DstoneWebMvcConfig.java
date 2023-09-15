@@ -35,13 +35,13 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 	 */
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		// Welcome Page 설정. 잘 동작하지 않는듯...
+		// Welcome Page 설정.
 		/*
-		registry.addViewController("/").setViewName("forward:/" + ConfigSecurity.MAIN_PAGE );
+		registry.addViewController("/").setViewName("forward:/index.html" );
 		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		*/
-		// Welcome Page 설정.
-		registry.addRedirectViewController("/", "forward:/" + ConfigSecurity.MAIN_PAGE );
+		registry.addViewController("/").setViewName("forward:/index.html" );
+		//registry.addViewController("/").setViewName("forward:/defaultLink.do?defaultLink=main" );
 		super.addViewControllers(registry);
 	}
 
