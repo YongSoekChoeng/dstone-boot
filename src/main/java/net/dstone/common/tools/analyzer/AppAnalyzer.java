@@ -20,7 +20,7 @@ public class AppAnalyzer extends BaseObject{
 	/**
 	 * 분석패키지 루트(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
 	 */
-	public static String ANALYSIS_PACKAGE_ROOT;
+	public static String[] ANALYSIS_PACKAGE_ROOT;
 	/**
 	 * 웹 루트 디렉토리
 	 */
@@ -39,7 +39,7 @@ public class AppAnalyzer extends BaseObject{
 		System.out.println(o);
 	}
 	
-	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String analPackageRoot){
+	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String[] analPackageRoot){
 		if(analizer == null){
 			analizer = new AppAnalyzer();
 			AppAnalyzer.ROOT_PATH = StringUtil.replace(rootPath, "\\", "/");

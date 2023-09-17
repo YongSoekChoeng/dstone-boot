@@ -7,18 +7,18 @@ import net.dstone.common.tools.analyzer.consts.ClzzKind;
 
 public class ClzzVo {
 	
-	protected String pkg;
+	protected String packageId;
 	protected String classId;
 	protected String className;
 	protected ClzzKind classKind; /* 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */
 	protected String fileName;
 	private List<Map<String, String>> callClassAlias;
 
-	public String getPkg() {
-		return pkg;
+	public String getPackageId() {
+		return packageId;
 	}
-	public void setPkg(String pkg) {
-		this.pkg = pkg;
+	public void setPackageId(String pkg) {
+		this.packageId = pkg;
 	}
 	public String getClassId() {
 		return classId;
@@ -52,7 +52,7 @@ public class ClzzVo {
 	}
 	@Override
 	public String toString() {
-		return "ClzzVo [pkg=" + pkg + ", classId=" + classId + ", className=" + className + ", classKind=" + classKind + ", fileName="
+		return "ClzzVo [packageId=" + packageId + ", classId=" + classId + ", className=" + className + ", classKind=" + classKind + ", fileName="
 				+ fileName + ", callClassAlias=" + callClassAlias + "]";
 	}
 }

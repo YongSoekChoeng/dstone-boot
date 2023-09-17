@@ -208,13 +208,14 @@ public class ParseUtil {
 		String fileName = "";
 		StringBuffer fileConts = new StringBuffer();
 		StringBuffer callClassAliasConts = new StringBuffer();
+		String div = "|";
 		try {
-			fileName = (StringUtil.isEmpty(vo.getPkg()) ? "" : vo.getPkg() + ".") + vo.getClassId()+ ".txt";
-			fileConts.append("패키지:"+ StringUtil.nullCheck(vo.getPkg(), "")).append("\n");
-			fileConts.append("클래스ID:"+ StringUtil.nullCheck(vo.getClassId(), "")).append("\n");
-			fileConts.append("클래스명:"+ StringUtil.nullCheck(vo.getClassName(), "")).append("\n");
-			fileConts.append("기능종류:"+ StringUtil.nullCheck(vo.getClassKind(), "")).append("\n");
-			fileConts.append("파일명:"+ StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
+			fileName = (StringUtil.isEmpty(vo.getPackageId()) ? "" : vo.getPackageId() + ".") + vo.getClassId()+ ".txt";
+			fileConts.append("패키지" + div + StringUtil.nullCheck(vo.getPackageId(), "")).append("\n");
+			fileConts.append("클래스ID" + div + StringUtil.nullCheck(vo.getClassId(), "")).append("\n");
+			fileConts.append("클래스명" + div + StringUtil.nullCheck(vo.getClassName(), "")).append("\n");
+			fileConts.append("기능종류" + div + StringUtil.nullCheck(vo.getClassKind(), "")).append("\n");
+			fileConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
 			List<Map<String, String>> callClassAlias = vo.getCallClassAlias();
 			if(callClassAlias != null) {
 				for(Map<String, String> item : callClassAlias) {
@@ -224,7 +225,7 @@ public class ParseUtil {
 					callClassAliasConts.append(item.get("FULL_CLASS")+"-"+item.get("ALIAS"));
 				}
 			}
-			fileConts.append("호출알리아스:" + callClassAliasConts.toString() ).append("\n");
+			fileConts.append("호출알리아스" + div  + callClassAliasConts.toString() ).append("\n");
 			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
 		} catch (Exception e) {
 			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
@@ -235,43 +236,44 @@ public class ParseUtil {
 	public static ClzzVo readClassVo(String packageClassId, String readFilePath) {
 		ClzzVo vo = new ClzzVo();
 		String fileName = "";
+		String div = "|";
 		try {
 			fileName = readFilePath + "/" + packageClassId+ ".txt";
 			if(FileUtil.isFileExist(fileName)) {
 				String[] lines = FileUtil.readFileByLines(fileName);
 				for(String line : lines) {
-					if(line.startsWith("패키지:")) {
-						String[] words = StringUtil.toStrArray(line, ":");
+					if(line.startsWith("패키지" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
-							vo.setPkg(words[1]);
+							vo.setPackageId(words[1]);
 						}
 					}
-					if(line.startsWith("클래스ID:")) {
-						String[] words = StringUtil.toStrArray(line, ":");
+					if(line.startsWith("클래스ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setClassId(words[1]);
 						}
 					}
-					if(line.startsWith("클래스명:")) {
-						String[] words = StringUtil.toStrArray(line, ":");
+					if(line.startsWith("클래스명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setClassName(words[1]);
 						}
 					}
-					if(line.startsWith("기능종류:")) {
-						String[] words = StringUtil.toStrArray(line, ":");
+					if(line.startsWith("기능종류" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setClassKind(ClzzKind.getClzzKindCd(words[1]));
 						}
 					}
-					if(line.startsWith("파일명:")) {
-						String[] words = StringUtil.toStrArray(line, ":");
+					if(line.startsWith("파일명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setFileName(words[1]);
 						}
 					}
-					if(line.startsWith("호출알리아스:")) {
-						String[] words = StringUtil.toStrArray(line, ":");
+					if(line.startsWith("호출알리아스" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<Map<String, String>> callClassAlias = new ArrayList<Map<String, String>>();
 							String[] classAliasStrList = StringUtil.toStrArray(words[1], ",");

@@ -40,8 +40,11 @@ public class SvcAnalyzer extends BaseObject{
 
 	private static boolean isValidSvcPackage(String packageId) {
 		boolean isValid = false;
-		if( packageId.startsWith(AppAnalyzer.ANALYSIS_PACKAGE_ROOT) ) {
-			isValid = true;
+		for(String packageRoot : AppAnalyzer.ANALYSIS_PACKAGE_ROOT) {
+			if( packageId.startsWith(packageRoot) ) {
+				isValid = true;
+				break;
+			}
 		}
 		return isValid;
 	}
@@ -163,30 +166,37 @@ public class SvcAnalyzer extends BaseObject{
 			for(int i=0; i<fileList.length; i++) {
 				file = fileList[i];
 				if( isValidSvcFile(file) ) {
+					
 					clzzVo = new ClzzVo();
+					
 					// 패키지ID
-					clzzVo.setPkg(ClassFactory.getPackageId(file));
-					if( !isValidSvcPackage(clzzVo.getPkg()) ) {
+					clzzVo.setPackageId(ClassFactory.getPackageId(file));
+					if( !isValidSvcPackage(clzzVo.getPackageId()) ) {
 						continue;
 					}
-					if( !PACKAGE_LIST.contains(clzzVo.getPkg()) ) {
-						PACKAGE_LIST.add(clzzVo.getPkg());
+					if( !PACKAGE_LIST.contains(clzzVo.getPackageId()) ) {
+						PACKAGE_LIST.add(clzzVo.getPackageId());
 					}
+					
 					// 클래스ID
 					clzzVo.setClassId(ClassFactory.getClassId(file));
 					if( !CLASS_LIST.contains(clzzVo.getClassId()) ) {
 						CLASS_LIST.add(clzzVo.getClassId());
 					}
-					if( !PACKAGE_CLASS_LIST.contains(clzzVo.getPkg() + "." + clzzVo.getClassId()) ) {
-						PACKAGE_CLASS_LIST.add(clzzVo.getPkg() + "." + clzzVo.getClassId());
+					if( !PACKAGE_CLASS_LIST.contains(clzzVo.getPackageId() + "." + clzzVo.getClassId()) ) {
+						PACKAGE_CLASS_LIST.add(clzzVo.getPackageId() + "." + clzzVo.getClassId());
 					}
+					
 					// 클래스명
 					clzzVo.setClassName(ClassFactory.getClassName(file));
+					
 					// 기능종류
 					clzzVo.setClassKind(ClassFactory.getClassKind(file));
+					
 					// 파일명
 					clzzVo.setFileName(file);
-					// 파일저장
+					
+					// 파일저장			
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 				}
 			}
@@ -221,11 +231,12 @@ public class SvcAnalyzer extends BaseObject{
 					if( !isValidSvcPackage(pkg) ) {
 						continue;
 					}
-					
 					clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
+					
 					// 호출알리아스
 					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(file));
-					// 파일저장
+					
+					// 파일저장	
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 				}
 			}

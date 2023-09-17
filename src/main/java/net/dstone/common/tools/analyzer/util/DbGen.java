@@ -140,7 +140,7 @@ public class DbGen {
 			String funcId = "";
 			
 			if( clzzVo != null ) {
-				funcId = funcId + (funcId.length() > 0 ? "." : "") + clzzVo.getPkg();
+				funcId = funcId + (funcId.length() > 0 ? "." : "") + clzzVo.getPackageId();
 			}
 			if( clzzVo != null ) {
 				funcId = funcId + (funcId.length() > 0 ? "." : "") + clzzVo.getClassId();
@@ -162,8 +162,8 @@ public class DbGen {
 				db.pstmt.setNull(++parameterIndex, java.sql.Types.NULL); /* 기능종류(U:UI/C:컨트롤러/S:서비스/D:DAO) */
 			}
 
-			if( clzzVo != null && clzzVo.getPkg() != null) {
-				db.pstmt.setString(++parameterIndex, clzzVo.getPkg()); /* 패키지 */
+			if( clzzVo != null && clzzVo.getPackageId() != null) {
+				db.pstmt.setString(++parameterIndex, clzzVo.getPackageId()); /* 패키지 */
 			}else {
 				db.pstmt.setNull(++parameterIndex, java.sql.Types.NULL); /* 패키지 */
 			}
