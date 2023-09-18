@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
+import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -317,6 +318,72 @@ public class ParseUtil {
 			}
 		}
 		return isValid;
+	}
+	
+	public static void writeMethodVo(MtdVo vo, String writeFilePath) {
+		String fileName = "";
+		StringBuffer fileConts = new StringBuffer();
+		String div = "|";
+		try {
+			fileName = vo.getFunctionId() + ".txt";
+			fileConts.append("기능ID" + div + StringUtil.nullCheck(vo.getFunctionId(), "")).append("\n");
+			fileConts.append("메서드ID" + div + StringUtil.nullCheck(vo.getMethodId(), "")).append("\n");
+			fileConts.append("메서드명" + div + StringUtil.nullCheck(vo.getMethodName(), "")).append("\n");
+			fileConts.append("메서드URL" + div + StringUtil.nullCheck(vo.getMethodUrl(), "")).append("\n");
+			fileConts.append("메서드내용" + div + StringUtil.nullCheck(vo.getMethodBody(), "")).append("\n");
+			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
+		} catch (Exception e) {
+			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
+			e.printStackTrace();
+		}
+	}
+	
+	public static MtdVo readMethodVo(String functionId, String readFilePath) {
+		MtdVo vo = new MtdVo();
+		String fileName = "";
+		String div = "|";
+		try {
+			fileName = readFilePath + "/" + functionId+ ".txt";
+			if(FileUtil.isFileExist(fileName)) {
+				String[] lines = FileUtil.readFileByLines(fileName);
+				for(String line : lines) {
+					if(line.startsWith("기능ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setFunctionId(words[1]);
+						}
+					}
+					if(line.startsWith("메서드ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setMethodId(words[1]);
+						}
+					}
+					if(line.startsWith("메서드명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setMethodName(words[1]);
+						}
+					}
+					if(line.startsWith("메서드URL" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setMethodUrl(words[1]);
+						}
+					}
+					if(line.startsWith("메서드내용" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setMethodBody(words[1]);
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vo;
 	}
 	
 

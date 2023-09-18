@@ -142,12 +142,14 @@ public class SvcAnalyzer extends BaseObject{
 				fileList = FileUtil.readFileListAll(filePath);
 
 				/*** A. 클래스 단위 정보 추출 ***/
-				// A-1. 패키지/클래스ID/클래스명/기능종류 추출
+				// A-1. 패키지ID/클래스ID/클래스명/기능종류 추출
 				this.analyzeClass(fileList);
 				// A-2. 호출알리아스 추출
 				this.analyzeClassAlias(fileList);
 				
 				/*** B. 메소드 단위 정보 추출 ***/
+				// B-1. 기능ID/메소드ID/메소드명/메서드내용 추출
+				this.analyzeMtd(fileList);
 
 			}
 		} catch (Exception e) {
@@ -259,6 +261,10 @@ public class SvcAnalyzer extends BaseObject{
 				if( isValidSvcFile(file) ) {
 					mtdVo = new MtdVo();
 
+					// 기능ID
+					
+					// 메소드ID/메소드명/메서드내용 추출
+					
 				}
 			}
 		} catch (Exception e) {
