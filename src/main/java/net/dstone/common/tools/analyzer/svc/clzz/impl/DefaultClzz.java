@@ -17,13 +17,13 @@ public class DefaultClzz extends BaseObject implements Clzz {
 
 	/**
 	 * 패키지ID 추출
-	 * @param src
+	 * @param classFile
 	 * @return
 	 */
 	@Override
-	public String getPackageId(String src) {
+	public String getPackageId(String classFile) {
 		String pkg = "";
-		String[] lines = FileUtil.readFileByLines(src);
+		String[] lines = FileUtil.readFileByLines(classFile);
 		if(lines != null) {
 			String keyword = "package";
 			for(String line : lines) {
@@ -41,26 +41,26 @@ public class DefaultClzz extends BaseObject implements Clzz {
 
 	/**
 	 * 클래스ID 추출
-	 * @param src
+	 * @param classFile
 	 * @return
 	 */
 	@Override
-	public String getClassId(String src) {
+	public String getClassId(String classFile) {
 		String classId = "";
-		classId = FileUtil.getFileName(src, false);
+		classId = FileUtil.getFileName(classFile, false);
 		return classId;
 	}
 
 	/**
 	 * 클래스명 추출
-	 * @param src
+	 * @param classFile
 	 * @return
 	 */
 	@Override
-	public String getClassName(String src) {
+	public String getClassName(String classFile) {
 		String className = "";
-		String fileExt = FileUtil.getFileExt(src);
-		String fileConts = FileUtil.readFile(src);
+		String fileExt = FileUtil.getFileExt(classFile);
+		String fileConts = FileUtil.readFile(classFile);
 		
 		if("java".equals(fileExt)) {
 			if(fileConts.indexOf("public class") != -1) {
@@ -89,19 +89,20 @@ public class DefaultClzz extends BaseObject implements Clzz {
 
 	/**
 	 * 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) 추출
-	 * @param src
+	 * @param classFile
 	 * @return
 	 */
 	@Override
-	public ClzzKind getClassKind(String src) {
+	public ClzzKind getClassKind(String classFile) {
 		ClzzKind classKind = ClzzKind.OT;
-		String fileExt = FileUtil.getFileExt(src);
+		String fileExt = FileUtil.getFileExt(classFile);
 		if("jsp".equals(fileExt)) {
 			classKind = ClzzKind.UI;
 		}else if("js".equals(fileExt)) {
 			classKind = ClzzKind.JS;
 		}else if("java".equals(fileExt)) {
-			String fileConts = FileUtil.readFile(src);
+			String fileConts = FileUtil.readFile(classFile);
+			fileConts = ParseUtil.adjustConts(fileConts);
 			if(fileConts.indexOf("@Controller") != -1 || fileConts.indexOf("@RestController") != -1) {
 				classKind = ClzzKind.CT;
 			}else if(fileConts.indexOf("@Service") != -1) {
@@ -115,27 +116,24 @@ public class DefaultClzz extends BaseObject implements Clzz {
 
 	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
-	 * @param src
+	 * @param classFile
 	 * @return
 	 */
 	@Override
-	public List<Map<String, String>> getCallClassAlias(String src) {
+	public List<Map<String, String>> getCallClassAlias(String classFile) {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 
-		String fileConts = FileUtil.readFile(src);
-		fileConts = StringUtil.replace(fileConts, "\t", " ");
-		fileConts = StringUtil.replace(fileConts, "   ", " ");
-		fileConts = StringUtil.replace(fileConts, "  ", " ");
-		fileConts = StringUtil.replace(fileConts, " ;", ";");
+		String fileConts = FileUtil.readFile(classFile);
+		fileConts = ParseUtil.adjustConts(fileConts);
 		String[] lines = StringUtil.toStrArray(fileConts, "\n");
 
 		boolean isAliasExists = false;
 		boolean isUsed = false;
 		String alias = "";
 		String[] div = {" ", ";", "=", " ="};
-		String selfPkg = this.getPackageId(src);
-		String selfClassId = this.getClassId(src);
+		String selfPkg = this.getPackageId(classFile);
+		String selfClassId = this.getClassId(classFile);
 		int lineNum = 0;
 		
 		for(String packageClassId : SvcAnalyzer.PACKAGE_CLASS_LIST) {
@@ -167,7 +165,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 					}
 				}
 				if (isAliasExists) {
-					//getLogger().sysout(src + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias1=============>>>[" + alias + "]");
+					//getLogger().sysout(classFile + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias1=============>>>[" + alias + "]");
 					if (fileConts.indexOf(alias + ".")>-1) {
 						isUsed = true;
 					}
@@ -190,7 +188,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 						}
 					}
 					if (isAliasExists) {
-						//getLogger().sysout(src + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
+						//getLogger().sysout(classFile + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
 						if (fileConts.indexOf(alias + ".")>-1) {
 							isUsed = true;
 						}
@@ -199,7 +197,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			}
 			
 			if(isUsed) {
-				//getLogger().sysout(src + " packageClassId["+packageClassId + "] alias3=============>>>[" + alias + "]");
+				//getLogger().sysout(classFile + " packageClassId["+packageClassId + "] alias3=============>>>[" + alias + "]");
 				callClassAlias = new HashMap<String, String>();
 				callClassAlias.put("FULL_CLASS",packageClassId);
 				callClassAlias.put("ALIAS",alias);

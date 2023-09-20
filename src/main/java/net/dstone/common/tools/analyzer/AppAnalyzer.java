@@ -18,9 +18,17 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static String CLASS_ROOT_PATH;
 	/**
-	 * 분석패키지 루트(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
+	 * 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
 	 */
-	public static String[] ANALYSIS_PACKAGE_ROOT;
+	public static String[] INCLUDE_PACKAGE_ROOT;
+	/**
+	 * 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.)
+	 */
+	public static String[] EXCLUDE_PACKAGE_PATTERN;
+	/**
+	 * 쿼리 루트 디렉토리
+	 */
+	public static String QUERY_ROOT_PATH;
 	/**
 	 * 웹 루트 디렉토리
 	 */
@@ -39,14 +47,25 @@ public class AppAnalyzer extends BaseObject{
 		System.out.println(o);
 	}
 	
-	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String[] analPackageRoot){
+	/**
+	 * @param rootPath - 프로젝트 루트 디렉토리
+	 * @param classRootPath - 클래스 루트 디렉토리
+	 * @param webRootPath - 웹 루트 디렉토리
+	 * @param includePackageRoot - 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
+	 * @param excludePackagePattern - 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.)
+	 * @param queryRootPath - 쿼리 루트 디렉토리
+	 * @return
+	 */
+	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath){
 		if(analizer == null){
 			analizer = new AppAnalyzer();
 			AppAnalyzer.ROOT_PATH = StringUtil.replace(rootPath, "\\", "/");
 			AppAnalyzer.CLASS_ROOT_PATH = StringUtil.replace(classRootPath, "\\", "/");
 			AppAnalyzer.WEB_ROOT_PATH = StringUtil.replace(webRootPath, "\\", "/");
-			AppAnalyzer.ANALYSIS_PACKAGE_ROOT = analPackageRoot;
+			AppAnalyzer.INCLUDE_PACKAGE_ROOT = includePackageRoot;
+			AppAnalyzer.EXCLUDE_PACKAGE_PATTERN = excludePackagePattern;
 			AppAnalyzer.WRITE_PATH = "D:/Temp/anlaysis/" + DateUtil.getToDate("yyyyMMddHHmmss");
+			AppAnalyzer.QUERY_ROOT_PATH = StringUtil.replace(queryRootPath, "\\", "/");
 		}
 		return analizer;
 	}
@@ -63,26 +82,4 @@ public class AppAnalyzer extends BaseObject{
 		}
 	}
 	
-//	private void analyzeSvc(String file) {
-//		PackageVo packageVo = null;
-//		ClzzVo clzzVo = null;
-//		try {
-//			//debug("file:" + file);
-//			/*** 패키지 ***/
-//			packageVo = svcAnalyzer.getPackageVo(file);
-//			/*** 클래스 ***/
-//			clzzVo = svcAnalyzer.getClassVo(file, packageVo);
-//			/*** 메소드 ***/
-//			List<MtdVo> mtdVoList = clzzVo.getMtdVoList();
-//			if(mtdVoList != null) {
-//				for(MtdVo mtdVo : mtdVoList) {
-//					/*** 메소드-참조메소드 ***/
-//				}
-//			}
-//			debug(clzzVo);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			throw e;
-//		}
-//	}
 }

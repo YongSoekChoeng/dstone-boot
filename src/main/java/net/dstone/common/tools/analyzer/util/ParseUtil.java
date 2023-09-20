@@ -5,14 +5,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
+import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class ParseUtil {
+
+	/**
+	 * 파일내용을 파싱하기 편하게 변환.(탭을 스페이스로 변환, 다중스페이스를 단일스페이스로 변환)
+	 * @param conts
+	 * @return
+	 */
+	public static String adjustConts(String conts) {
+		conts = StringUtil.replace(conts, "\t", " ");
+		conts = StringUtil.replace(conts, "   ", " ");
+		conts = StringUtil.replace(conts, "  ", " ");
+		conts = StringUtil.replace(conts, " ;", ";");
+		conts = StringUtil.replace(conts, " (", "(");
+		conts = StringUtil.replace(conts, " )", ")");
+		conts = StringUtil.replace(conts, " {", "{");
+		conts = StringUtil.replace(conts, " }", "}");
+		return conts;
+	}
 	
+	/**
+	 * 주석에서 기능명을 추출하는 메소드.
+	 * @param comment
+	 * @return
+	 */
 	public static String getFnNameFromComment(String comment) {
 		String fnName = "";
 		if(!StringUtil.isEmpty(comment)) {
@@ -77,6 +102,11 @@ public class ParseUtil {
 		return fnName;
 	}
 
+	/**
+	 *  파일내용으로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
+	 * @param fileConts
+	 * @return
+	 */
 	public static List<Map<String, String>> getMtdListFromJava(String fileConts){
 		List<Map<String, String>> mList = new ArrayList<Map<String, String>>();
 		
@@ -96,6 +126,9 @@ public class ParseUtil {
 		int tgtLevel = 1;
 		String startDiv = "{";
 		String endDiv = "}";
+
+		String classMappingUrl = "";
+		String methodMappingUrl = "";
 		
 		String line = "";
 		
@@ -105,20 +138,21 @@ public class ParseUtil {
 
 			for(int i=0; i<lines.length; i++) {
 				line = lines[i];
-				
-				/*** 레벨조정 시작 ***/
-				// A.구분자 레벨 UP
+				if(line.trim().startsWith("//")) {continue;}
+
+				/*** A.레벨조정 시작 ***/
+				// 구분자 레벨 UP
 				if(line.indexOf(startDiv) > -1) {
 					level = level + StringUtil.countString(line, startDiv);
 				}
-				// B.구분자 레벨 DOWN
+				// 구분자 레벨 DOWN
 				if(line.indexOf(endDiv) > -1) {
 					level = level - StringUtil.countString(line, endDiv);
 				}
 				//System.out.println("level["+level+"] line["+line+"]");
-				/*** 레벨조정 끝 ***/
+				/*** A.레벨조정 끝 ***/
 				
-				/*** C.주석관련 수집 시작 ***/
+				/*** B.주석관련 수집 시작 ***/
 				if(level == (tgtLevel-1)){ // tgtLevel 바로위의 레벨에 있는 내용을 수집.
 					if(line.startsWith("/*")) {
 						isCommentStart = true;
@@ -134,8 +168,46 @@ public class ParseUtil {
 						isCommentEnd = true;
 					}
 				}
-				/*** C.주석관련 수집 끝 ***/
+				/*** B.주석관련 수집 끝 ***/
 
+				/*** C.맵핑URL 수집 시작 ***/
+				if( line.indexOf("@")>-1 && line.indexOf("Mapping")>-1 ) {
+					if(level == -1) {
+						String signLine = line;					
+						signLine = StringUtil.replace(signLine, " ", "");
+						if( signLine.indexOf("value=\"")>-1  ) {
+							String[] div = {"\""};
+							classMappingUrl = StringUtil.nextWord(signLine, "value=\"", div);
+						}else {
+							String[] div = {"\""};
+							classMappingUrl = StringUtil.nextWord(signLine, "(\"", div);
+						}
+						if(classMappingUrl.endsWith("*")) {
+							classMappingUrl = classMappingUrl.substring(0, classMappingUrl.lastIndexOf("*"));
+						}
+						if(classMappingUrl.endsWith("/")) {
+							classMappingUrl = classMappingUrl.substring(0, classMappingUrl.lastIndexOf("/"));
+						}
+					}
+					if(level == 0) {
+						methodMappingUrl = "";
+						String signLine = line;					
+						signLine = StringUtil.replace(signLine, " ", "");
+						if( signLine.indexOf("value=\"")>-1  ) {
+							String[] div = {"\""};
+							methodMappingUrl = StringUtil.nextWord(signLine, "value=\"", div);
+						}else {
+							String[] div = {"\""};
+							methodMappingUrl = StringUtil.nextWord(signLine, "(\"", div);
+						}
+						if(!StringUtil.isEmpty(classMappingUrl)) {
+							methodMappingUrl = classMappingUrl + methodMappingUrl;
+						}
+					}
+				}
+
+				/*** C.맵핑URL 수집 끝 ***/
+				
 				/*** D.시그니쳐 수집 시작 ***/
 				// 메서드ID 는 startDiv과 동일한 라인에 존재할 수도 있고 다음라인에 존재할 수도 있기 때문에 level로 검색할 수 없음.
 				if(line.indexOf("(")>-1 && (line.startsWith("public ") || line.startsWith("protected ") || line.startsWith("private "))) {
@@ -191,6 +263,8 @@ public class ParseUtil {
 					/*** 메서드명 세팅 ***/
 					item.put("METHOD_NAME", ParseUtil.getFnNameFromComment(comment.toString()));
 					comment = new StringBuffer();
+					/*** 메서드URL 세팅 ***/
+					item.put("METHOD_URL", methodMappingUrl);
 					/*** 메서드바디 세팅 ***/
 					item.put("METHOD_BODY", body.toString());
 					body = new StringBuffer();
@@ -205,6 +279,11 @@ public class ParseUtil {
 		return mList;
 	}
 	
+	/**
+	 * 클래스VO를 특정디렉토리에 파일로 저장하는 메소드
+	 * @param vo
+	 * @param writeFilePath
+	 */
 	public static void writeClassVo(ClzzVo vo, String writeFilePath) {
 		String fileName = "";
 		StringBuffer fileConts = new StringBuffer();
@@ -234,6 +313,12 @@ public class ParseUtil {
 		}
 	}
 	
+	/**
+	 * 페키지ID+클래스ID로 특정디렉토리에서 클래스VO를 복원하는 메소드
+	 * @param packageClassId
+	 * @param readFilePath
+	 * @return
+	 */
 	public static ClzzVo readClassVo(String packageClassId, String readFilePath) {
 		ClzzVo vo = new ClzzVo();
 		String fileName = "";
@@ -299,6 +384,11 @@ public class ParseUtil {
 		return vo;
 	}
 	
+	/**
+	 * 클래스ID의 알리아스를 추출하기 위해 해당 소스 라인이 적합한지 조사하는 메소드.(클래스 시작부분, 주석부분은 적합하지 않으므로 false반환)
+	 * @param line
+	 * @return
+	 */
 	public static boolean isValidAliasLine(String line) {
 		boolean isValid = true;
 		ArrayList<String> inValidCaseList = new ArrayList<String>();
@@ -320,17 +410,35 @@ public class ParseUtil {
 		return isValid;
 	}
 	
+	/**
+	 * 메소드VO를 특정디렉토리에 파일로 저장하는 메소드
+	 * @param vo
+	 * @param writeFilePath
+	 */
 	public static void writeMethodVo(MtdVo vo, String writeFilePath) {
 		String fileName = "";
 		StringBuffer fileConts = new StringBuffer();
 		String div = "|";
+		StringBuffer callMtdVoListConts = new StringBuffer();
 		try {
 			fileName = vo.getFunctionId() + ".txt";
 			fileConts.append("기능ID" + div + StringUtil.nullCheck(vo.getFunctionId(), "")).append("\n");
 			fileConts.append("메서드ID" + div + StringUtil.nullCheck(vo.getMethodId(), "")).append("\n");
 			fileConts.append("메서드명" + div + StringUtil.nullCheck(vo.getMethodName(), "")).append("\n");
 			fileConts.append("메서드URL" + div + StringUtil.nullCheck(vo.getMethodUrl(), "")).append("\n");
+			fileConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
+			List<String> callMtdVoList = vo.getCallMtdVoList();
+			if(callMtdVoList != null) {
+				for(String item : callMtdVoList) {
+					if(callMtdVoListConts.length() > 0) {
+						callMtdVoListConts.append(",");
+					}
+					callMtdVoListConts.append(item);
+				}
+			}
+			fileConts.append("호출메서드" + div + StringUtil.nullCheck(callMtdVoListConts, "")).append("\n");
 			fileConts.append("메서드내용" + div + StringUtil.nullCheck(vo.getMethodBody(), "")).append("\n");
+			
 			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
 		} catch (Exception e) {
 			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
@@ -338,6 +446,12 @@ public class ParseUtil {
 		}
 	}
 	
+	/**
+	 * 기능ID(페키지ID+클래스ID+메소드ID) 로 특정디렉토리에서 메소드VO를 복원하는 메소드
+	 * @param functionId
+	 * @param readFilePath
+	 * @return
+	 */
 	public static MtdVo readMethodVo(String functionId, String readFilePath) {
 		MtdVo vo = new MtdVo();
 		String fileName = "";
@@ -371,11 +485,180 @@ public class ParseUtil {
 							vo.setMethodUrl(words[1]);
 						}
 					}
-					if(line.startsWith("메서드내용" + div)) {
+					if(line.startsWith("파일명" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
-							vo.setMethodBody(words[1]);
+							vo.setFileName(words[1]);
 						}
+					}
+					if(line.startsWith("호출메서드" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							List<String> callMtdVoList = new ArrayList<String>();
+							String[] callMtdVoStrList = StringUtil.toStrArray(words[1], ",");
+							for(String callMtdVoStr : callMtdVoStrList) {
+								callMtdVoList.add(callMtdVoStr);
+							}
+							vo.setCallMtdVoList(callMtdVoList);
+						}
+					}
+					if(line.startsWith("메서드내용" + div)) {
+						String methodBody = FileUtil.readFile(fileName);
+						methodBody = methodBody.substring(methodBody.indexOf("메서드내용" + div));
+						vo.setMethodBody(methodBody);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vo;
+	}
+	
+	/**
+	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
+	 * @param node
+	 * @param sqlKind
+	 * @return
+	 */
+	public static String simplifySql(Node node, String sqlKind) {
+
+		String sqlBody = "";
+		org.w3c.dom.NodeList nodeList = node.getChildNodes();
+		for(int i=0; i< nodeList.getLength(); i++ ){
+			org.w3c.dom.Node cNode = nodeList.item(i);
+			if( org.w3c.dom.Node.ELEMENT_NODE == cNode.getNodeType() ){
+				node.removeChild(cNode);
+			}
+		}
+		sqlBody = node.getTextContent();
+		
+		String keyword = "";
+		String tableName = "";
+		String[] div = {" ", "\n"};
+		sqlBody = sqlBody.trim();
+		sqlBody = ParseUtil.adjustConts(sqlBody);
+		
+		if( sqlKind.equals("SELECT")) {
+			HashMap<String, String> replMap = new HashMap<String, String>();
+			replMap.put("<![CDATA[", "");
+			replMap.put("]]>", "");
+			replMap.put("#{", "'");
+			replMap.put("}", "'");
+			replMap.put("${", "'");
+			replMap.put("}", "'");
+			sqlBody = StringUtil.replace(sqlBody, replMap);
+		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UDATE") || sqlKind.equals("DELETE")  ) {
+			keyword = "INSERT INTO";
+			if( sqlBody.startsWith(keyword) ) {
+				tableName = StringUtil.nextWord(sqlBody, keyword, div);
+				sqlBody = keyword + " " + tableName + "( AAA ) VALUES ( 'AAA' )";
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "UDATE ";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " SET AA='AAA' WHERE 1=1";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "DELETE ";
+				if( sqlBody.startsWith(keyword) ) {
+					sqlBody = StringUtil.replace(sqlBody, "\n", "");
+					sqlBody = ParseUtil.adjustConts(sqlBody);
+					sqlBody = StringUtil.replace(sqlBody, "DELETE * FROM", "DELETE FROM");
+					keyword = "DELETE FROM";
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " WHERE 1=1";
+				}
+			}
+		}
+		return sqlBody;
+	}
+	
+	/**
+	 * 쿼리VO를 특정디렉토리에 파일로 저장하는 메소드
+	 * @param vo
+	 * @param writeFilePath
+	 */
+	public static void writeQueryVo(QueryVo vo, String writeFilePath) {
+		String fileName = "";
+		StringBuffer queryInfoConts = new StringBuffer();
+		String div = "|";
+		StringBuffer tblListConts = new StringBuffer();
+		try {
+			fileName = vo.getQueryId() + ".txt";
+			queryInfoConts.append("쿼리ID" + div + StringUtil.nullCheck(vo.getQueryId(), "")).append("\n");
+			queryInfoConts.append("쿼리종류" + div + StringUtil.nullCheck(vo.getQueryKind(), "")).append("\n");
+			queryInfoConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
+			List<String> callTblList = vo.getCallTblList();
+			if(callTblList != null) {
+				for(String item : callTblList) {
+					if(tblListConts.length() > 0) {
+						tblListConts.append(",");
+					}
+					tblListConts.append(item);
+				}
+			}
+			queryInfoConts.append("호출테이블" + div + StringUtil.nullCheck(tblListConts, "")).append("\n");
+			queryInfoConts.append("쿼리내용" + div + StringUtil.nullCheck(vo.getQueryBody(), "")).append("\n");
+			
+			FileUtil.writeFile(writeFilePath, fileName, queryInfoConts.toString()); 
+		} catch (Exception e) {
+			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 쿼리ID로 특정디렉토리에서 쿼리VO를 복원하는 메소드
+	 * @param queryId
+	 * @param readFilePath
+	 * @return
+	 */
+	public static QueryVo readQueryVo(String queryId, String readFilePath) {
+		QueryVo vo = new QueryVo();
+		String fileName = "";
+		String div = "|";
+		try {
+			fileName = readFilePath + "/" + queryId+ ".txt";
+			if(FileUtil.isFileExist(fileName)) {
+				String[] lines = FileUtil.readFileByLines(fileName);
+				for(String line : lines) {
+					if(line.startsWith("쿼리ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setQueryId(words[1]);
+						}
+					}
+					if(line.startsWith("쿼리종류" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setQueryKind(words[1]);
+						}
+					}
+					if(line.startsWith("파일명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setFileName(words[1]);
+						}
+					}
+					if(line.startsWith("호출테이블" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							List<String> callTblList = new ArrayList<String>();
+							String[] callTblStrList = StringUtil.toStrArray(words[1], ",");
+							for(String callTblStr : callTblStrList) {
+								callTblList.add(callTblStr);
+							}
+							vo.setCallTblList(callTblList);
+						}
+					}
+					if(line.startsWith("쿼리내용" + div)) {
+						String queryBody = FileUtil.readFile(fileName);
+						queryBody = queryBody.substring(queryBody.indexOf("쿼리내용" + div));
+						vo.setQueryBody(queryBody);
 					}
 				}
 			}

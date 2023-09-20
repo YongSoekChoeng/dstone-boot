@@ -1,0 +1,48 @@
+package net.dstone.common.tools.analyzer.vo;
+
+import java.util.List;
+
+public class QueryVo {
+	private String queryId;
+	private String queryKind;
+	private List<String> callTblList;
+	protected String fileName;
+	private String queryBody;
+	
+	public String getQueryId() {
+		return queryId;
+	}
+	public void setQueryId(String queryId) {
+		this.queryId = queryId;
+	}
+	public String getQueryKind() {
+		return queryKind;
+	}
+	public void setQueryKind(String queryKind) {
+		this.queryKind = queryKind;
+	}
+	public String getQueryBody() {
+		return queryBody;
+	}
+	public void setQueryBody(String queryBody) {
+		this.queryBody = queryBody;
+	}
+	public List<String> getCallTblList() {
+		return callTblList;
+	}
+	public void setCallTblList(List<String> callTblList) {
+		this.callTblList = callTblList;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	@Override
+	public String toString() {
+		return "QueryVo [queryId=" + queryId + ", queryKind=" + queryKind + ", callTblList=" + callTblList + ", fileName="
+				+ fileName + ", queryBody=" + queryBody + "]";
+	}
+
+}

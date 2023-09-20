@@ -9,9 +9,10 @@ public class MtdVo {
 	protected String methodName;
 	protected String methodUrl;
 	protected String methodBody;
+	protected String fileName;
 
-	protected List<CallsMtdVo> callsMtdVoList;
-	protected List<CallsTblVo> callsTblVoList;
+	protected List<String> callMtdVoList;
+	protected List<String> callTblVoList;
 	
 	public String getFunctionId() {
 		return functionId;
@@ -43,24 +44,30 @@ public class MtdVo {
 	public void setMethodBody(String methodBody) {
 		this.methodBody = methodBody;
 	}
-	public List<CallsMtdVo> getCallsMtdVoList() {
-		return callsMtdVoList;
+	public List<String> getCallMtdVoList() {
+		return callMtdVoList;
 	}
-	public void setCallsMtdVoList(List<CallsMtdVo> callsMtdVoList) {
-		this.callsMtdVoList = callsMtdVoList;
+	public void setCallMtdVoList(List<String> callsMtdVoList) {
+		this.callMtdVoList = callsMtdVoList;
 	}
-	public List<CallsTblVo> getCallsTblVoList() {
-		return callsTblVoList;
+	public List<String> getCallTblVoList() {
+		return callTblVoList;
 	}
-	public void setCallsTblVoList(List<CallsTblVo> callsTblVoList) {
-		this.callsTblVoList = callsTblVoList;
+	public void setCallTblVoList(List<String> callsTblVoList) {
+		this.callTblVoList = callsTblVoList;
 	}
 	
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 	@Override
 	public String toString() {
 		return "MtdVo [functionId=" + functionId + ", methodId=" + methodId + ", methodName=" + methodName
-				+ ", methodUrl=" + methodUrl + ", methodBody=" + methodBody + ", callsMtdVoList=" + callsMtdVoList
-				+ ", callsTblVoList=" + callsTblVoList + "]";
+				+ ", methodUrl=" + methodUrl + ", methodBody=" + methodBody + ", fileName=" + fileName
+				+ ", callMtdVoList=" + callMtdVoList + ", callTblVoList=" + callTblVoList + "]";
 	}
 	
 }

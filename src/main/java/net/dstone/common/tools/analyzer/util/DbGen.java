@@ -1,9 +1,5 @@
 package net.dstone.common.tools.analyzer.util;
 
-import java.util.List;
-
-import net.dstone.common.tools.analyzer.vo.CallsMtdVo;
-import net.dstone.common.tools.analyzer.vo.CallsTblVo;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 
@@ -192,15 +188,15 @@ public class DbGen {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
 			
-			if( mtdVo.getMethodId() != null && mtdVo.getCallsMtdVoList() != null ) {
-				List<CallsMtdVo> callsMtdVoList = mtdVo.getCallsMtdVoList();
-				for(CallsMtdVo callsMtdVo : callsMtdVoList) {
-					db.setQuery(QUERY.INSERT_TB_FUNC_MAPPING.toString());					
-					parameterIndex = 0;
-					db.pstmt.setString(++parameterIndex, callsMtdVo.getFunctionId()); /* 기능ID */
-					db.pstmt.setString(++parameterIndex, callsMtdVo.getCallFunctionId()); /* 호출기능ID */
-					db.insert();
-				}
+			if( mtdVo.getMethodId() != null && mtdVo.getCallMtdVoList() != null ) {
+//				List<CallsMtdVo> callsMtdVoList = mtdVo.getCallMtdVoList();
+//				for(CallsMtdVo callsMtdVo : callsMtdVoList) {
+//					db.setQuery(QUERY.INSERT_TB_FUNC_MAPPING.toString());					
+//					parameterIndex = 0;
+//					db.pstmt.setString(++parameterIndex, callsMtdVo.getFunctionId()); /* 기능ID */
+//					db.pstmt.setString(++parameterIndex, callsMtdVo.getCallFunctionId()); /* 호출기능ID */
+//					db.insert();
+//				}
 			}
 			
 		} catch (Exception e) {
@@ -219,16 +215,16 @@ public class DbGen {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
 			
-			if( mtdVo.getMethodId() != null && mtdVo.getCallsTblVoList() != null ) {
-				List<CallsTblVo> callsMtdVoList = mtdVo.getCallsTblVoList();
-				for(CallsTblVo tblVo : callsMtdVoList) {
-					db.setQuery(QUERY.INSERT_TB_FUNC_TBL_MAPPING.toString());					
-					parameterIndex = 0;
-					db.pstmt.setString(++parameterIndex, tblVo.getFunctionId()); /* 기능ID */
-					db.pstmt.setString(++parameterIndex, tblVo.getCallTblId()); /* 테이블ID */
-					/* 테이블명 ? */
-					db.insert();
-				}
+			if( mtdVo.getMethodId() != null && mtdVo.getCallTblVoList() != null ) {
+//				List<CallsTblVo> callsMtdVoList = mtdVo.getCallTblVoList();
+//				for(CallsTblVo tblVo : callsMtdVoList) {
+//					db.setQuery(QUERY.INSERT_TB_FUNC_TBL_MAPPING.toString());					
+//					parameterIndex = 0;
+//					db.pstmt.setString(++parameterIndex, tblVo.getFunctionId()); /* 기능ID */
+//					db.pstmt.setString(++parameterIndex, tblVo.getCallTblId()); /* 테이블ID */
+//					/* 테이블명 ? */
+//					db.insert();
+//				}
 			}
 			
 		} catch (Exception e) {

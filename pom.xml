@@ -311,6 +311,13 @@
 			<version>1.2.0</version>
 		</dependency>
 		
+		<!-- Query Parser -->
+		<dependency>
+		    <groupId>com.github.jsqlparser</groupId>
+		    <artifactId>jsqlparser</artifactId>
+		    <version>4.7</version>
+		</dependency>
+
 	</dependencies>
 
 
