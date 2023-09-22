@@ -256,7 +256,7 @@ public class SqlUtil extends BaseObject {
 						if(i > 0 ) {
 							sql.append(", ");
 						}
-						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
+						sql.append(COLUMN_NAME).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
 				}
 				sql.append("FROM").append("\n");
@@ -447,5 +447,158 @@ public class SqlUtil extends BaseObject {
 			e.printStackTrace();
 		}
 		return sql.toString();
+	}
+	
+
+	/**
+	 * 테이블명으로 Mybatis 용 CUD 쿼리를 생성하는 메소드.
+	 * @param DBID
+	 * @param TABLE_NAME
+	 * @return
+	 */
+	public static String getCudSqlForMybatis(String DBID, String TABLE_NAME) {
+		
+		StringBuffer sql = new StringBuffer();
+		
+		net.dstone.common.tools.BizGenerator.DBID = DBID;
+		
+		net.dstone.common.tools.BizGenerator.DbInfo.TabInfo table = null;
+		net.dstone.common.tools.BizGenerator.DbInfo.ColInfo[] cols = null;
+		net.dstone.common.tools.BizGenerator.DbInfo.ColInfo[] keys = null;
+		java.util.HashMap<String, net.dstone.common.tools.BizGenerator.DbInfo.ColInfo> keyMap = new java.util.HashMap<String, net.dstone.common.tools.BizGenerator.DbInfo.ColInfo>();
+		
+		try {
+		
+			table = net.dstone.common.tools.BizGenerator.DbInfo.getTab(TABLE_NAME);
+			cols = table.getCols();
+			keys = table.getKey();
+			if(keys != null){
+				for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
+					keyMap.put(key.COLUMN_NAME, key);
+				}
+			}
+			String div = "\n";
+			int index = 0;
+		
+			sql.append("/********* 1. MERGE *********/").append(div);
+			sql.append("MERGE INTO ").append(table.TABLE_NAME).append(div);
+			sql.append("USING DUAL").append(div);
+			sql.append("ON (").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
+				if(index == 0 ){
+					sql.append("    ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
+				}else{
+					sql.append("    AND ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
+				}
+				index++;
+			}
+			sql.append(")").append(div);
+			sql.append("WHEN MATCH THEN ").append(div);
+			sql.append("UPDATE SET ").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
+				if(!keyMap.containsKey(col.COLUMN_NAME)){
+					if(index == 0 ){
+						sql.append("    ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
+					}else{
+						sql.append("    , ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
+					}
+					index++;
+				}
+			}
+			sql.append("WHEN NOT MATCH THEN ").append(div);
+			sql.append("INSERT (").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
+				if(index == 0 ){
+					sql.append("    ").append(col.COLUMN_NAME).append(div);
+				}else{
+					sql.append("    , ").append(col.COLUMN_NAME).append(div);
+				}
+				index++;
+			}	
+			sql.append(") VALUES (").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
+				if(index == 0 ){
+					sql.append("    #{").append(col.COLUMN_NAME).append("}").append(div);
+				}else{
+					sql.append("    , #{").append(col.COLUMN_NAME).append("}").append(div);
+				}
+				index++;
+			}	
+			sql.append(")").append(div);
+			sql.append(div);
+		
+			sql.append("/********* 2. INSERT *********/").append(div);
+			sql.append("INSERT INTO ").append(table.TABLE_NAME).append("(").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
+				if(index == 0 ){
+					sql.append("    ").append(col.COLUMN_NAME).append(div);
+				}else{
+					sql.append("    , ").append(col.COLUMN_NAME).append(div);
+				}
+				index++;
+			}	
+			sql.append(") VALUES (").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
+				if(index == 0 ){
+					sql.append("    #{").append(col.COLUMN_NAME).append("}").append(div);
+				}else{
+					sql.append("    , #{").append(col.COLUMN_NAME).append("}").append(div);
+				}
+				index++;
+			}	
+			sql.append(")").append(div);
+			sql.append(div);
+		
+			sql.append("/********* 3. UPDATE *********/").append(div);
+			sql.append("UPDATE ").append(table.TABLE_NAME).append(" ").append(div);
+			sql.append("SET ").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
+				if(!keyMap.containsKey(col.COLUMN_NAME)){
+					if(index == 0 ){
+						sql.append("    ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
+					}else{
+						sql.append("    , ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
+					}
+					index++;
+				}
+			}	
+			sql.append("WHERE ").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
+				if(index == 0 ){
+					sql.append("    ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
+				}else{
+					sql.append("    AND ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
+				}
+				index++;
+			}
+			sql.append(div);
+		
+			sql.append("/********* 4. DELETE *********/").append(div);
+			sql.append("DELETE FROM ").append(table.TABLE_NAME).append(" ").append(div);
+			sql.append("WHERE ").append(div);
+			index = 0;
+			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
+				if(index == 0 ){
+					sql.append("    ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
+				}else{
+					sql.append("    AND ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
+				}
+				index++;
+			}
+			sql.append(div);
+		
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return sql.toString();
+
 	}
 }
