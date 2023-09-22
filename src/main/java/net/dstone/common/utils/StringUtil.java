@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1370,5 +1371,25 @@ public class StringUtil {
 			}
 		}
 		return outStr;
+	}
+	
+	/**
+	 * 스트링배열을 원하는 서브배열로 나누는 메소드.
+	 * @param sData
+	 * @param numMaps
+	 * @return
+	 */
+	public static String[][] splitStringArray(String[] sData, int numMaps) {
+		int nbInstances = sData.length;
+		int partitionSize = nbInstances / numMaps;
+		String[][] splits = new String[numMaps][];
+		if(sData != null) {
+			for (int partition = 0; partition < numMaps; partition++) {
+				int from = partition * partitionSize;
+				int to = partition == (numMaps - 1) ? nbInstances : (partition + 1) * partitionSize;
+				splits[partition] = Arrays.copyOfRange(sData, from, to);
+			}
+		}
+		return splits;
 	}
 }
