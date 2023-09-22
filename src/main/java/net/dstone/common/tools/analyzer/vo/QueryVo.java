@@ -3,12 +3,27 @@ package net.dstone.common.tools.analyzer.vo;
 import java.util.List;
 
 public class QueryVo {
+
+	private String key;
+	private String namespace;
 	private String queryId;
 	private String queryKind;
 	private List<String> callTblList;
 	protected String fileName;
 	private String queryBody;
-	
+
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public String getNamespace() {
+		return namespace;
+	}
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 	public String getQueryId() {
 		return queryId;
 	}
@@ -41,8 +56,8 @@ public class QueryVo {
 	}
 	@Override
 	public String toString() {
-		return "QueryVo [queryId=" + queryId + ", queryKind=" + queryKind + ", callTblList=" + callTblList + ", fileName="
-				+ fileName + ", queryBody=" + queryBody + "]";
+		return "QueryVo [key=" + key + ", namespace=" + namespace + ", queryId=" + queryId + ", queryKind=" + queryKind
+				+ ", callTblList=" + callTblList + ", fileName=" + fileName + ", queryBody=" + queryBody + "]";
 	}
 
 }

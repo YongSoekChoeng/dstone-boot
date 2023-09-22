@@ -12,29 +12,29 @@ public interface Clzz {
 	 * @param classFile
 	 * @return
 	 */
-	public String getPackageId(String classFile);
+	public String getPackageId(String classFile) throws Exception ;
 	/**
 	 * 클래스ID 추출
 	 * @param classFile
 	 * @return
 	 */
-	public String getClassId(String classFile);
+	public String getClassId(String classFile) throws Exception ;
 	/**
 	 * 클래스명 추출
 	 * @param classFile
 	 * @return
 	 */
-	public String getClassName(String classFile);
+	public String getClassName(String classFile) throws Exception ;
 	/**
 	 * 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) 추출
 	 * @param classFile
 	 * @return
 	 */
-	public ClzzKind getClassKind(String classFile);
+	public ClzzKind getClassKind(String classFile) throws Exception ;
 	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 	 * @param classFile
 	 * @return
 	 */
-	public List<Map<String, String>> getCallClassAlias(String classFile);
+	public List<Map<String, String>> getCallClassAlias(String classFile) throws Exception ;
 }

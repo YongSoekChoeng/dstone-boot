@@ -319,14 +319,26 @@ public class FileUtil {
 	}
 
 	public static String[] readFileList(String filePath) {
-		
+		return readFileList(filePath, false);
+	}
+	
+	public static String[] readFileList(String filePath, boolean extInclude) {
 		String[] result = null;
-
+		String fileName = null;
 		try {
 			java.io.File f = new java.io.File(filePath);
 			if (f.exists()) {
 				if (f.isDirectory()) {
 					result = f.list();
+					if( result != null && !extInclude ) {
+						for(int i=0; i<result.length ; i++) {
+							fileName = result[i];
+							if (fileName.indexOf(".") != -1) {
+								fileName = fileName.substring(0, fileName.lastIndexOf("."));
+							}
+							result[i] = fileName;
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -335,6 +347,7 @@ public class FileUtil {
 		}
 		return result;
 	}
+	
 	
 	public static String[] readDirList(String filePath) {
 		File[] dirs = null;

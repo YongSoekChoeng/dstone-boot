@@ -12,6 +12,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -158,6 +159,130 @@ public class XmlUtil {
 		return nodeList;
 	}
 	
+	public String getNodeTextByExp(String nodeExp) {
+		StringBuffer outBuff = new StringBuffer();
+		Node node = this.getNodeByExp(nodeExp);
+		if(node != null) {
+			NodeList nodeList = node.getChildNodes();
+			if(nodeList != null) {
+				Node cNode = null;
+				String refid = "";
+				String cNodeExp = "";
+				String[] refidArr = null;
+				for(int i=0; i<nodeList.getLength(); i++) {
+					cNode = nodeList.item(i);
+					
+					/*******************************************************
+					멤버필드이름							정수값	노드종류
+					Node.ELEMENT_NODE					1		Element
+					Node.ATTRIBUTE_NODE					2		Attr
+					Node.TEXT_NODE						3		Text
+					Node.CDATA_SECTION_NODE				4		CDATASection
+					Node.ENTITY_REFERENCE_NODE			5		EntityReference
+					Node.ENTITY_NODE					6		Entity
+					Node.PROCESSING_INSTRUCTION_NODE	7		ProcessingInstruction
+					Node.COMMENT_NODE					8		Comment
+					Node.DOCUMENT_NODE					9		Document
+					Node.DOCUMENT_TYPE_NODE				10		DocumentType
+					Node.DOCUMENT_FRAGMENT_NODE			11		DocumentFragment
+					Node.NOTATION_NODE					12		Notation
+					*******************************************************/
+					System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
+					
+					if (cNode.getNodeType() == Node.TEXT_NODE) {
+						outBuff.append(cNode.getNodeValue());
+					}else if( cNode.getNodeType() == Node.ELEMENT_NODE) {
+						outBuff.append(cNode.getTextContent());
+					}else if(cNode.getNodeType() == Node.COMMENT_NODE) {
+						outBuff.append("");
+					}else {
+						outBuff.append(cNode.getTextContent());
+					}
+				}
+			}
+		}
+		return outBuff.toString();
+	}
+	public String getNodeTextByExpForMybatis(String nodeExp, boolean recursivelyYn) {
+		StringBuffer outBuff = new StringBuffer();
+		Node node = this.getNodeByExp(nodeExp);
+		if(node != null) {
+			NodeList nodeList = node.getChildNodes();
+			if(nodeList != null) {
+				Node cNode = null;
+				String refid = "";
+				String cNodeExp = "";
+				String[] refidArr = null;
+				for(int i=0; i<nodeList.getLength(); i++) {
+					cNode = nodeList.item(i);
+					
+					/*******************************************************
+					멤버필드이름							정수값	노드종류
+					Node.ELEMENT_NODE					1		Element
+					Node.ATTRIBUTE_NODE					2		Attr
+					Node.TEXT_NODE						3		Text
+					Node.CDATA_SECTION_NODE				4		CDATASection
+					Node.ENTITY_REFERENCE_NODE			5		EntityReference
+					Node.ENTITY_NODE					6		Entity
+					Node.PROCESSING_INSTRUCTION_NODE	7		ProcessingInstruction
+					Node.COMMENT_NODE					8		Comment
+					Node.DOCUMENT_NODE					9		Document
+					Node.DOCUMENT_TYPE_NODE				10		DocumentType
+					Node.DOCUMENT_FRAGMENT_NODE			11		DocumentFragment
+					Node.NOTATION_NODE					12		Notation
+					*******************************************************/
+					//System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
+					
+					if (cNode.getNodeType() == Node.TEXT_NODE) {
+						outBuff.append(cNode.getNodeValue());
+					}else if( cNode.getNodeType() == Node.ELEMENT_NODE) {
+						if("include".equals(cNode.getNodeName())) {
+							if( recursivelyYn) {
+								refid = cNode.getAttributes().getNamedItem("refid").getTextContent();
+								if( this.hasNodeById(refid)) {
+									 cNodeExp = "//*[@id='"+refid+"']";
+									 outBuff.append(getNodeTextByExpForMybatis(cNodeExp, recursivelyYn));
+								}else {
+									if(refid.indexOf(".") > -1) {
+										refidArr = StringUtil.toStrArray(refid, ".");
+										refid = refidArr[refidArr.length-1];
+										if( this.hasNodeById(refid)) {
+											cNodeExp = "//*[@id='"+refid+"']";
+											outBuff.append(getNodeTextByExpForMybatis(cNodeExp, recursivelyYn));
+										}
+									}
+								}
+							}else {
+								outBuff.append(cNode.getTextContent());
+							}
+						}else if("where".equals(cNode.getNodeName())) {
+							outBuff.append( " WHERE ");
+							if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
+								outBuff.append( " 1=1 ");
+							}
+							outBuff.append( cNode.getTextContent());
+						}else if("trim".equals(cNode.getNodeName())) {
+							if( cNode.getAttributes().getNamedItem("prefix") != null && "WHERE".equalsIgnoreCase(cNode.getAttributes().getNamedItem("prefix").getTextContent())) {
+								outBuff.append( " WHERE ");
+								if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
+									outBuff.append( " 1=1 ");
+								}
+							}
+						}else {
+							outBuff.append(cNode.getTextContent());
+						}
+
+					}else if(cNode.getNodeType() == Node.COMMENT_NODE) {
+						outBuff.append("");
+					}else {
+						outBuff.append(cNode.getTextContent());
+					}
+				}
+			}
+		}
+		return outBuff.toString();
+	}
+	
 	public boolean hasNode(String nodeNm) {
 		boolean isHasNode = false;
 		if(getNode(nodeNm) != null){
@@ -190,10 +315,24 @@ public class XmlUtil {
 		return isHasNode;
 	}
 
-
-
-	
-
+	/**
+	 * XML내의 주석을 제거한다.
+	 * @param sql
+	 * @return
+	 */
+	public static String removeCommentsFromXml(String xml){
+		String returnXml = xml; 
+		String rexp = "";
+		try {
+			if(!StringUtil.isEmpty(xml)) {
+				rexp = "<!--(?!<!)[^\\[>][\\s\\S]*?-->";
+				returnXml = returnXml.replaceAll(rexp, "");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnXml;
+	}
 	
 	public void save() {
 		try {

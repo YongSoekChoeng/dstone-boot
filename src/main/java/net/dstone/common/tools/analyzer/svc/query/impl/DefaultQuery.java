@@ -5,9 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.query.Query;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
+import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.XmlUtil;
@@ -25,17 +31,31 @@ public class DefaultQuery implements Query {
 		if(FileUtil.isFileExist(queryFile)) {
 			XmlUtil xml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
 			String namespace = xml.getNode("mapper").getAttributes().getNamedItem("namespace").getTextContent();
-			org.w3c.dom.NodeList nodeList = xml.getNodeListByExp("//mapper/*");
+			String nodeExp = "/mapper/*";
+			NodeList nodeList = xml.getNodeListByExp(nodeExp);
+			StringBuffer sqlBuff = new StringBuffer();
+			
+			NodeList childNodeList = null;
+			Node childNode = null;
+			Node sqlChildNode = null;
+			String keyword = "";
+			String refid = "";
+			
 			if( nodeList != null ){
 				Map<String, String> row = new HashMap<String, String>();
+				String sqlBody = "";
 				for(int i=0; i<nodeList.getLength(); i++){
-					org.w3c.dom.Node item =	nodeList.item(i);
+					Node item =	nodeList.item(i);
 					row = new HashMap<String, String>();
 					
 					row.put("SQL_NAMESPACE", namespace);
 					row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
 					row.put("SQL_KIND", item.getNodeName().toUpperCase());
-					row.put("SQL_BODY", ParseUtil.simplifySql(item, row.get("SQL_KIND")));
+					
+					nodeExp = "/mapper/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
+					sqlBody = xml.getNodeTextByExpForMybatis(nodeExp, true);
+					sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
+					row.put("SQL_BODY", sqlBody);
 
 					if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
 						qList.add(row);
@@ -53,9 +73,18 @@ public class DefaultQuery implements Query {
 	 * @return
 	 */
 	@Override
-	public List<String> getTblInfoList(String queryInfoFile) {
-		String query = net.dstone.common.utils.FileUtil.readFile(queryInfoFile);
-		return SqlUtil.getTableNames(query);
+	public List<String> getTblInfoList(String queryInfoFile) throws Exception {
+		List<String> tblNameList = new ArrayList<String>();
+		QueryVo queryVo = ParseUtil.readQueryVo(FileUtil.getFileName(queryInfoFile, false), AppAnalyzer.WRITE_PATH + "/query");
+		if(queryVo != null) {
+			if(!StringUtil.isEmpty(queryVo.getQueryBody())) {
+				tblNameList = SqlUtil.getTableNames(queryVo.getQueryBody());
+			}
+			if(tblNameList.isEmpty()) {
+				LogUtil.sysout(this.getClass().getName() + ".getTblInfoList :: 파일["+queryInfoFile+"] 을 분석하였으나 테이블명 조회 하지 못함.");
+			}
+		}
+		return tblNameList;
 	}
 
 }

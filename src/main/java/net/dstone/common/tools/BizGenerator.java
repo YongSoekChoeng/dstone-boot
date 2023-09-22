@@ -4684,109 +4684,19 @@ public class BizGenerator extends BaseObject {
 
 		}
 		public static net.dstone.common.utils.DataSet getCols(String TABLE_NAME) {
-			return net.dstone.common.utils.DbUtil.SqlGen.getCols(DBID, TABLE_NAME);
+			return net.dstone.common.utils.DbUtil.getCols(DBID, TABLE_NAME);
 		}
 		
 		public static net.dstone.common.utils.DataSet getKeys(String TABLE_NAME) {
-			return net.dstone.common.utils.DbUtil.SqlGen.getKeys(DBID, TABLE_NAME);
+			return net.dstone.common.utils.DbUtil.getKeys(DBID, TABLE_NAME);
 		}
 		
 		public static String getParamByType(DbInfo.ColInfo col, String dbKind){
-			return net.dstone.common.utils.DbUtil.SqlGen.getParamByType(col.DATA_TYPE, col.COLUMN_NAME, dbKind);
+			return net.dstone.common.utils.SqlUtil.getParamByType(col.DATA_TYPE, col.COLUMN_NAME, dbKind);
 		}
 		
 		public static String getPagingQuery(String dbKind, int upOrDown){
-			String pagingQuery = "";
-			StringBuffer pagingUpConts = new StringBuffer();
-			StringBuffer pagingLowConts = new StringBuffer();
-			
-			if ("ORACLE".equals(dbKind)) {
-				// 상단 쿼리
-				if(upOrDown == 0){
-
-					pagingUpConts.append("		SELECT  ").append("\n");
-					pagingUpConts.append("			RNUM ").append("\n");
-					pagingUpConts.append("			,P.* ").append("\n");
-					pagingUpConts.append("		FROM  ").append("\n");
-					pagingUpConts.append("		    (  ").append("\n");
-					pagingUpConts.append("		    SELECT  ").append("\n");
-					pagingUpConts.append("		        ROWNUM RNUM, P1.*  ").append("\n");
-					pagingUpConts.append("		    FROM  ").append("\n");
-					pagingUpConts.append("		        (  ").append("\n");
-					pagingUpConts.append("                /**********************************************************************************************************************************/ ").append("\n");
-
-					// 하단 쿼리
-				}else if(upOrDown == 1){
-
-					pagingLowConts.append("                /**********************************************************************************************************************************/ ").append("\n");
-					pagingLowConts.append("		        ) P1 ").append("\n");
-					pagingLowConts.append("		    )   P ").append("\n");
-					pagingLowConts.append("		WHERE 2>1 ").append("\n");
-					pagingLowConts.append("		    AND RNUM <![CDATA[>=]]> #{INT_FROM} ").append("\n");
-					pagingLowConts.append("		    AND RNUM <![CDATA[<=]]> #{INT_TO} ").append("\n");
-					pagingLowConts.append("		    AND ROWNUM <![CDATA[<=]]> #{PAGE_SIZE} ");
-
-				}
-			} else if ("MSSQL".equals(dbKind)) {
-
-				// 상단 쿼리
-				if(upOrDown == 0){
-
-					pagingUpConts.append("		SELECT  ").append("\n");
-					pagingUpConts.append("			RNUM ").append("\n");
-					pagingUpConts.append("			,P.* ").append("\n");
-					pagingUpConts.append("		FROM  ").append("\n");
-					pagingUpConts.append("		    (  ").append("\n");
-					pagingUpConts.append("		    SELECT  ").append("\n");
-					pagingUpConts.append("		        /* 페이징의 기준이 되는 KEY값을 반드시 넣어주시기 바랍니다. */  ").append("\n");
-					pagingUpConts.append("		        ROW_NUMBER() OVER(ORDER BY @KEY값@ DESC) AS ROWNUM RNUM, P1.*  ").append("\n");
-					pagingUpConts.append("		    FROM  ").append("\n");
-					pagingUpConts.append("		        (  ").append("\n");
-					pagingUpConts.append("                /**********************************************************************************************************************************/ ").append("\n");
-				
-				// 하단 쿼리
-				}else if(upOrDown == 1){
-
-					pagingLowConts.append("                /**********************************************************************************************************************************/ ").append("\n");
-					pagingLowConts.append("		        ) P1 ").append("\n");
-					pagingLowConts.append("		    )   P ").append("\n");
-					pagingLowConts.append("		WHERE 2>1 ").append("\n");
-					pagingLowConts.append("		    AND RNUM <![CDATA[>=]]> #{INT_FROM} ").append("\n");
-					pagingLowConts.append("		    AND RNUM <![CDATA[<=]]> #{INT_TO} ").append("\n");
-					pagingLowConts.append("		    AND ROWNUM <![CDATA[<=]]> #{PAGE_SIZE} ");
-
-				}
-			} else if ("MYSQL".equals(dbKind)) {
-				// 상단 쿼리
-				if(upOrDown == 0){
-
-					pagingUpConts.append("		SELECT  ").append("\n");
-					pagingUpConts.append("			P.* ").append("\n");
-					pagingUpConts.append("		FROM  ").append("\n");
-					pagingUpConts.append("		    (  ").append("\n");
-					pagingUpConts.append("            /**********************************************************************************************************************************/ ").append("\n");
-				
-				// 하단 쿼리
-				}else if(upOrDown == 1){
-
-					pagingLowConts.append("            /**********************************************************************************************************************************/ ").append("\n");
-					pagingLowConts.append("		    )   P ").append("\n");
-					pagingLowConts.append("		WHERE 2>1 ").append("\n");
-					pagingLowConts.append("		    /* 페이징의 기준이 되는 KEY값을 반드시 넣어주시기 바랍니다. */  ").append("\n");
-					pagingLowConts.append("		ORDER BY @KEY값@ LIMIT #{INT_FROM}, #{INT_TO} ").append("\n");
-
-				}
-			}
-			
-			// 상단 쿼리
-			if(upOrDown == 0){
-				pagingQuery = pagingUpConts.toString();
-			// 하단 쿼리
-			}else if(upOrDown == 1){
-				pagingQuery = pagingLowConts.toString();
-			}
-
-			return pagingQuery;
+			return net.dstone.common.utils.SqlUtil.getPagingQuery(dbKind, upOrDown);
 		}
 
 	}

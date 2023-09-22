@@ -90,8 +90,52 @@ public class DefaultMtd extends BaseObject implements Mtd {
 	 */
 	@Override
 	public List<String> getCallTblList(String methodFile) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> callTblList = new ArrayList<String>();
+		
+		// 메소드VO 정보 획득
+		String functionId = FileUtil.getFileName(methodFile, false);
+		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+
+		// 쿼리목록 정보 획득
+		String[] queryFileArr = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/query", false);
+		List<String> queryKeyList = new ArrayList<String>();
+		if(queryFileArr != null) {
+			for(String item : queryFileArr) {
+				queryKeyList.add(item);
+			}
+		}
+
+		QueryVo queryVo = null;
+		String mtdBody = "";
+		String keyword = "";
+		
+		if( !StringUtil.isEmpty(mtdVo.getMethodBody()) ) {
+			mtdBody = mtdVo.getMethodBody();
+			String[] lines = StringUtil.toStrArray(mtdBody, "\n");
+			for(String line : lines) {
+				keyword = "";
+				for(String queryKey : queryKeyList) {
+					keyword = queryKey;
+					if( keyword.indexOf("_")>-1 ) {
+						keyword = keyword.substring(0, keyword.lastIndexOf("_")) + "." + keyword.substring(keyword.lastIndexOf("_")+1);
+					}
+					keyword = "\"" + keyword + "\"";
+					if( line.indexOf(keyword) > -1 ) {
+						queryVo = ParseUtil.readQueryVo(queryKey, AppAnalyzer.WRITE_PATH + "/query");
+						if(queryVo != null && queryVo.getCallTblList() != null && queryVo.getCallTblList().size() > 0) {
+							for(String callTbl : queryVo.getCallTblList()) {
+								if( !callTblList.contains(callTbl) ) {
+									callTblList.add(callTbl);
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		return callTblList;
 	}
 
 }

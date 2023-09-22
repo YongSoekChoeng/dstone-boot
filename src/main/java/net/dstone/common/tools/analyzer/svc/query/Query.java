@@ -9,12 +9,12 @@ public interface Query {
 	 * @param file
 	 * @return
 	 */
-	public List<Map<String, String>> getQueryInfoList(String queryFile);
+	public List<Map<String, String>> getQueryInfoList(String queryFile) throws Exception ;
 	/**
 	 * 쿼리정보파일로부터 테이블ID정보목록 추출
 	 * @param file
 	 * @return
 	 */
-	public List<String> getTblInfoList(String queryInfoFile);
+	public List<String> getTblInfoList(String queryInfoFile) throws Exception ;
 	
 }

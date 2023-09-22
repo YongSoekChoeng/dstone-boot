@@ -15,6 +15,7 @@ import net.dstone.common.tools.analyzer.svc.query.impl.DefaultQuery;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
+import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -86,7 +87,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param classFile
 		 * @return
 		 */
-		static String getPackageId(String classFile) {
+		static String getPackageId(String classFile) throws Exception {
 			Clzz clzz = new DefaultClzz();
 			return clzz.getPackageId(classFile);
 		}
@@ -95,7 +96,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param classFile
 		 * @return
 		 */
-		static String getClassId(String classFile) {
+		static String getClassId(String classFile) throws Exception {
 			Clzz clzz = new DefaultClzz();
 			return clzz.getClassId(classFile);
 		}
@@ -104,7 +105,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param classFile
 		 * @return
 		 */
-		static String getClassName(String classFile) {
+		static String getClassName(String classFile) throws Exception {
 			Clzz clzz = new DefaultClzz();
 			return clzz.getClassName(classFile);
 		}
@@ -113,7 +114,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param classFile
 		 * @return
 		 */
-		static ClzzKind getClassKind(String classFile) {
+		static ClzzKind getClassKind(String classFile) throws Exception {
 			Clzz clzz = new DefaultClzz();
 			return clzz.getClassKind(classFile);
 		}
@@ -122,7 +123,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param classFile
 		 * @return
 		 */
-		static List<Map<String, String>> getCallClassAlias(String classFile) {
+		static List<Map<String, String>> getCallClassAlias(String classFile) throws Exception {
 			Clzz clzz = new DefaultClzz();
 			return clzz.getCallClassAlias(classFile);
 		}
@@ -133,12 +134,13 @@ public class SvcAnalyzer extends BaseObject{
 	 * @author jysn007
 	 */
 	private static class MethodFactory {
+		
 		/**
 		 * 메서드ID/메서드명/메서드URL/메서드내용 추출
 		 * @param classFile
 		 * @return
 		 */
-		static List<Map<String, String>> getMtdInfoList(String classFile) {
+		static List<Map<String, String>> getMtdInfoList(String classFile) throws Exception {
 			Mtd mtd = new DefaultMtd();
 			return mtd.getMtdInfoList(classFile);
 		}
@@ -148,9 +150,19 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param methodFile
 		 * @return
 		 */
-		static List<String> getCallMtdList(String methodFile){
+		static List<String> getCallMtdList(String methodFile) throws Exception {
 			Mtd mtd = new DefaultMtd();
 			return mtd.getCallMtdList(methodFile);
+		}
+
+		/**
+		 * 호출테이블 목록 추출
+		 * @param methodFile
+		 * @return
+		 */
+		static List<String> getCallTblList(String methodFile) throws Exception {
+			Mtd mtd = new DefaultMtd();
+			return mtd.getCallTblList(methodFile);
 		}
 
 	}
@@ -166,7 +178,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param classFile
 		 * @return
 		 */
-		static List<Map<String, String>> getQueryInfoList(String queryFile) {
+		static List<Map<String, String>> getQueryInfoList(String queryFile) throws Exception {
 			DefaultQuery query = new DefaultQuery();
 			return query.getQueryInfoList(queryFile);
 		}
@@ -176,7 +188,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param queryInfoFile
 		 * @return
 		 */
-		static List<String> getTblInfoList(String queryInfoFile) {
+		static List<String> getCallTblList(String queryInfoFile) throws Exception {
 			DefaultQuery query = new DefaultQuery();
 			return query.getTblInfoList(queryInfoFile);
 		}
@@ -184,12 +196,40 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	/*********************** Factory 끝 ***********************/
 	
-	public void analyze(String subPath) {
+	public void analyze() {
 		String[] fileList = null;
 		ArrayList<String> filteredFileList = null;
 		try {
 
-			/**************************************** 쿼리 소스 분석 시작 ****************************************/
+			/**************************************** 클래스 분석 시작 ****************************************/
+			
+			/*** 클래스 파일추출 시작 ***/
+			String[] classFileList = null;
+			fileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
+			filteredFileList = new ArrayList<String>();
+			for(String file : fileList) {
+				if( !isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
+					continue;
+				}
+				filteredFileList.add(file);
+			}
+			classFileList = new String[filteredFileList.size()];
+			filteredFileList.toArray(classFileList);
+			filteredFileList.clear();
+			filteredFileList = null;
+			/*** 클래스 파일추출 끝 ***/
+			
+			/*** 클래스 단위 정보 추출 시작 ***/
+			// 패키지ID/클래스ID/클래스명/기능종류 추출
+			this.analyzeClass(classFileList);
+			// 호출알리아스 추출
+			this.analyzeClassAlias(classFileList);
+			/*** 클래스 단위 정보 추출 끝 ***/
+			
+			/**************************************** 클래스 분석 끝 ****************************************/
+
+			/**************************************** 쿼리 분석 시작 ****************************************/
+
 			/*** 쿼리 파일추출 시작 ***/
 			String[] queryFileList = null;
 			fileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
@@ -206,51 +246,32 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList = null;
 			/*** 쿼리 파일추출 끝 ***/
 
-			/**************************************** 쿼리 소스 분석 끝 ****************************************/
+			/*** 쿼리 단위 정보 추출 시작 ***/
+			// KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 추출
+			queryFileList = this.analyzeQuery(queryFileList);
+			if(queryFileList != null && queryFileList.length > 0) {
+				// 쿼리정보파일로부터 호출테이블ID정보목록 추출
+				this.analyzeQueryCallTbl(queryFileList);
+			}
+			/*** 쿼리 단위 정보 추출 끝 ***/
 
-			/**************************************** SVC 소스 분석 시작 ****************************************/
-			
-			String filePath = AppAnalyzer.ROOT_PATH;
-			if(!StringUtil.isEmpty(subPath)) {
-				filePath = filePath + "/" + subPath;
+			/**************************************** 쿼리 분석 끝 ****************************************/
+
+			/**************************************** 메소드 분석 시작 ****************************************/
+
+			/*** 메소드 단위 정보 추출 시작 ***/
+			String[] methodFileList = null;
+			// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 추출
+			methodFileList = this.analyzeMtd(classFileList);
+			if(methodFileList != null && methodFileList.length > 0) {
+				// 메소드내 타 호출메소드 목록 추출
+				this.analyzeMtdCallMtd(methodFileList);
+				// 메소드내 호출테이블 목록 추출
+				this.analyzeMtdCallTbl(methodFileList);
 			}
-			//debug("filePath:" + filePath);
-			if( FileUtil.isFileExist(filePath) && FileUtil.isDirectory(filePath) ) {
-				
-				/*** 클래스 파일추출 시작 ***/
-				String[] classFileList = null;
-				fileList = FileUtil.readFileListAll(filePath);
-				filteredFileList = new ArrayList<String>();
-				for(String file : fileList) {
-					if( !isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
-						continue;
-					}
-					filteredFileList.add(file);
-				}
-				classFileList = new String[filteredFileList.size()];
-				filteredFileList.toArray(classFileList);
-				filteredFileList.clear();
-				filteredFileList = null;
-				/*** 클래스 파일추출 끝 ***/
-				
-				/*** 클래스 단위 정보 추출 시작 ***/
-				// 패키지ID/클래스ID/클래스명/기능종류 추출
-				this.analyzeClass(classFileList);
-				// 호출알리아스 추출
-				this.analyzeClassAlias(classFileList);
-				/*** 클래스 단위 정보 추출 끝 ***/
-				
-				/*** 메소드 단위 정보 추출 시작 ***/
-				String[] methodFileList = null;
-				// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 추출
-				methodFileList = this.analyzeMtd(classFileList);
-				if(methodFileList != null && methodFileList.length > 0) {
-					// 메소드내 타 호출메소드 목록 추출
-					this.analyzeMtdCallMtd(methodFileList);
-				}
-				/*** 메소드 단위 정보 추출 끝 ***/
-			}
-			/**************************************** SVC 소스 분석 끝 ****************************************/
+			/*** 메소드 단위 정보 추출 끝 ***/
+
+			/**************************************** 메소드 분석 끝 ****************************************/
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -261,7 +282,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스의 패키지/클래스ID/클래스명/기능종류 추출
 	 * @param fileList
 	 */
-	private void analyzeClass(String[] fileList) {
+	private void analyzeClass(String[] fileList)throws Exception {
 		ClzzVo clzzVo = null;
 		String file= "";
 		try {
@@ -314,7 +335,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스의 호출알리아스 추출
 	 * @param fileList
 	 */
-	private void analyzeClassAlias(String[] fileList) {
+	private void analyzeClassAlias(String[] fileList) throws Exception {
 		ClzzVo clzzVo = null;
 		String pkgClassId = "";
 		String file= "";
@@ -349,7 +370,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param fileList
 	 * @return 메소드파일목록
 	 */
-	private String[] analyzeMtd(String[] fileList) {
+	private String[] analyzeMtd(String[] fileList) throws Exception {
 		String[] methodFileList = null;
 		MtdVo mtdVo = null;
 		List<Map<String, String>> methodInfoList = null;
@@ -399,7 +420,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 메소드내 타 호출메소드 목록 추출
 	 * @param fileList
 	 */
-	private void analyzeMtdCallMtd(String[] fileList) {
+	private void analyzeMtdCallMtd(String[] fileList) throws Exception {
 		MtdVo mtdVo = null;
 		String functionId = "";
 		String file = "";
@@ -430,36 +451,119 @@ public class SvcAnalyzer extends BaseObject{
 			throw e;
 		}
 	}
-	
-	private void analyzeQuery(String queryRootPath) {
-		String[] fileList = null;
-
-		if(!StringUtil.isEmpty(queryRootPath)) {
-			if( FileUtil.isFileExist(queryRootPath) && FileUtil.isDirectory(queryRootPath) ) {
-				
-				/*** A. 파일추출 시작 ***/
-				fileList = FileUtil.readFileListAll(queryRootPath);
-				ArrayList<String> filteredFileList = new ArrayList<String>();
-				for(String file : fileList) {
-					if( !isValidQueryFile(file) ) {
-						continue;
-					}
-					filteredFileList.add(file);
-				}
-				fileList = new String[filteredFileList.size()];
-				filteredFileList.toArray(fileList);
-				filteredFileList.clear();
-				filteredFileList = null;
-				/*** A. 파일추출 끝 ***/
-				
-			}
-		}
-
+	/**
+	 * 메소드내 호출테이블 목록 추출
+	 * @param fileList
+	 */
+	private void analyzeMtdCallTbl(String[] fileList) throws Exception {
+		MtdVo mtdVo = null;
+		String functionId = "";
+		String file = "";
 		
 		try {
+			if(fileList != null) {
+				for(int i=0; i<fileList.length; i++) {
+					file = fileList[i];
+					String fileNoExt = file.substring(0, file.lastIndexOf("."));
+					functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
+					if(functionId.startsWith("/")) {
+						functionId = functionId.substring(1);
+					}
+					functionId = StringUtil.replace(functionId, "/", ".");
+					mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+					
+					// 호출테이블
+					mtdVo.setCallTblVoList(MethodFactory.getCallTblList(file));
+					
+					// 파일저장	
+					ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+				}
+			}
 
 		} catch (Exception e) {
-//			getLogger().sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
+			getLogger().sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. file["+file+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	/**
+	 * KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 추출
+	 * @param fileList
+	 * @return
+	 */
+	private String[] analyzeQuery(String[] fileList) throws Exception {
+		String[] queryFileList = null;
+		QueryVo queryVo = null;
+		List<Map<String, String>> queryInfoList = null;
+		String file= "";
+		String key = "";
+		try {
+			for(int i=0; i<fileList.length; i++) {
+				file = fileList[i];
+				if( isValidQueryFile(file) ) {
+					// KEY/네임스페이스/쿼리ID/쿼리종류 추출
+					queryInfoList = QueryFactory.getQueryInfoList(file);
+					if( queryInfoList != null ) {
+						for(Map<String, String> queryInfo : queryInfoList) {
+							queryVo = new QueryVo();
+
+							// KEY
+							if(StringUtil.isEmpty(queryInfo.get("SQL_NAMESPACE"))) {
+								key = "NO_NAMESPACE" + "_" + queryInfo.get("SQL_ID");
+							}else {
+								key = queryInfo.get("SQL_NAMESPACE") + "_" + queryInfo.get("SQL_ID");
+							}
+							queryVo.setKey(key);
+							// 네임스페이스
+							queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
+							// 쿼리ID
+							queryVo.setQueryId(queryInfo.get("SQL_ID"));
+							// 쿼리종류
+							queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
+							// 파일명
+							queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + key + ".txt");
+							// 쿼리내용
+							queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
+
+							// 파일저장			
+							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+						}
+					}
+					
+				}
+			}
+			queryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
+		} catch (Exception e) {
+			getLogger().sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
+			e.printStackTrace();
+			throw e;
+		}
+		return queryFileList;
+	}
+	
+	/**
+	 * 쿼리정보파일로부터 호출테이블ID정보목록 추출
+	 * @param fileList
+	 */
+	private void analyzeQueryCallTbl(String[] fileList) throws Exception {
+		QueryVo queryVo = null;
+		String key = "";
+		String file= "";
+		try {
+			for(int i=0; i<fileList.length; i++) {
+				file = fileList[i];
+				key = FileUtil.getFileName(file, false);
+				queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
+				
+				// 테이블ID정보목록
+				queryVo.setCallTblList(QueryFactory.getCallTblList(file));
+				
+				// 파일저장	
+				ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+			}
+		} catch (Exception e) {
+			getLogger().sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}

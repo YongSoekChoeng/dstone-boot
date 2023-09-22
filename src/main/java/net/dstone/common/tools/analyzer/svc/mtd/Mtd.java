@@ -11,19 +11,19 @@ public interface Mtd {
 	 * @param file
 	 * @return
 	 */
-	public List<Map<String, String>> getMtdInfoList(String classFile);
+	public List<Map<String, String>> getMtdInfoList(String classFile) throws Exception ;
 
 	/**
 	 * 호출메소드 목록 추출
 	 * @param methodFile
 	 * @return
 	 */
-	public List<String> getCallMtdList(String methodFile);
+	public List<String> getCallMtdList(String methodFile) throws Exception ;
 	
 	/**
 	 * 호출테이블 목록 추출
 	 * @param methodFile
 	 * @return
 	 */
-	public List<String> getCallTblList(String methodFile);
+	public List<String> getCallTblList(String methodFile) throws Exception ;
 }

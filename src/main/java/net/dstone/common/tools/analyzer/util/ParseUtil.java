@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
+import net.dstone.common.utils.XmlUtil;
 
 public class ParseUtil {
 
@@ -328,6 +328,7 @@ public class ParseUtil {
 			if(FileUtil.isFileExist(fileName)) {
 				String[] lines = FileUtil.readFileByLines(fileName);
 				for(String line : lines) {
+					if(StringUtil.isEmpty(line.trim())) {continue;}
 					if(line.startsWith("패키지" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
@@ -419,6 +420,7 @@ public class ParseUtil {
 		String fileName = "";
 		StringBuffer fileConts = new StringBuffer();
 		String div = "|";
+		StringBuffer callTblVoListConts = new StringBuffer();
 		StringBuffer callMtdVoListConts = new StringBuffer();
 		try {
 			fileName = vo.getFunctionId() + ".txt";
@@ -437,6 +439,16 @@ public class ParseUtil {
 				}
 			}
 			fileConts.append("호출메서드" + div + StringUtil.nullCheck(callMtdVoListConts, "")).append("\n");
+			List<String> callTblVoList = vo.getCallTblVoList();
+			if(callTblVoList != null) {
+				for(String item : callTblVoList) {
+					if(callTblVoListConts.length() > 0) {
+						callTblVoListConts.append(",");
+					}
+					callTblVoListConts.append(item);
+				}
+			}
+			fileConts.append("호출테이블" + div + StringUtil.nullCheck(callTblVoListConts, "")).append("\n");
 			fileConts.append("메서드내용" + div + StringUtil.nullCheck(vo.getMethodBody(), "")).append("\n");
 			
 			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
@@ -461,6 +473,7 @@ public class ParseUtil {
 			if(FileUtil.isFileExist(fileName)) {
 				String[] lines = FileUtil.readFileByLines(fileName);
 				for(String line : lines) {
+					if(StringUtil.isEmpty(line.trim())) {continue;}
 					if(line.startsWith("기능ID" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
@@ -502,9 +515,21 @@ public class ParseUtil {
 							vo.setCallMtdVoList(callMtdVoList);
 						}
 					}
+					if(line.startsWith("호출테이블" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							List<String> callTblVoList = new ArrayList<String>();
+							String[] callTblVoStrList = StringUtil.toStrArray(words[1], ",");
+							for(String callTblVoStr : callTblVoStrList) {
+								callTblVoList.add(callTblVoStr);
+							}
+							vo.setCallTblVoList(callTblVoList);
+						}
+					}
 					if(line.startsWith("메서드내용" + div)) {
 						String methodBody = FileUtil.readFile(fileName);
-						methodBody = methodBody.substring(methodBody.indexOf("메서드내용" + div));
+						String keyword = "메서드내용" + div;
+						methodBody = methodBody.substring(methodBody.indexOf(keyword)+keyword.length());
 						vo.setMethodBody(methodBody);
 					}
 				}
@@ -518,64 +543,74 @@ public class ParseUtil {
 	
 	/**
 	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
-	 * @param node
+	 * @param sqlBody
 	 * @param sqlKind
 	 * @return
 	 */
-	public static String simplifySql(Node node, String sqlKind) {
-
-		String sqlBody = "";
-		org.w3c.dom.NodeList nodeList = node.getChildNodes();
-		for(int i=0; i< nodeList.getLength(); i++ ){
-			org.w3c.dom.Node cNode = nodeList.item(i);
-			if( org.w3c.dom.Node.ELEMENT_NODE == cNode.getNodeType() ){
-				node.removeChild(cNode);
-			}
-		}
-		sqlBody = node.getTextContent();
+	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
 		
+		String sqlBody = inputSql;
 		String keyword = "";
 		String tableName = "";
-		String[] div = {" ", "\n"};
+		String[] div = {" ", "(", "\n"};
 		sqlBody = sqlBody.trim();
+
+		// 주석제거 및 쿼리정리
+		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
+		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
 		sqlBody = ParseUtil.adjustConts(sqlBody);
 		
-		if( sqlKind.equals("SELECT")) {
-			HashMap<String, String> replMap = new HashMap<String, String>();
-			replMap.put("<![CDATA[", "");
-			replMap.put("]]>", "");
-			replMap.put("#{", "'");
-			replMap.put("}", "'");
-			replMap.put("${", "'");
-			replMap.put("}", "'");
-			sqlBody = StringUtil.replace(sqlBody, replMap);
-		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UDATE") || sqlKind.equals("DELETE")  ) {
-			keyword = "INSERT INTO";
-			if( sqlBody.startsWith(keyword) ) {
-				tableName = StringUtil.nextWord(sqlBody, keyword, div);
-				sqlBody = keyword + " " + tableName + "( AAA ) VALUES ( 'AAA' )";
-			}
+		HashMap<String, String> replMap = new HashMap<String, String>();
+		// XML의 CDATA 태그제거
+		replMap.put("<![CDATA[", "");
+		replMap.put("]]>", "");
+		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
+		replMap.put("#{", "'");
+		replMap.put("}", "'");
+		replMap.put("${", "'");
+		replMap.put("}", "'");
+		// 내용없는 연속쉼표 랜덤스트링값으로 치환
+		replMap.put(", ,", ", 'AAA',");
+		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
+		
+		// 프로시저는 지원하지 않음.
+		if(sqlBody.toUpperCase().startsWith("BEGIN")) {
+			sqlBody = "";
+		// INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 단순화.
+		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UPDATE") || sqlKind.equals("DELETE")  ) {
 			if(StringUtil.isEmpty(tableName)) {
-				keyword = "UDATE ";
+				keyword = "MERGE INTO";
 				if( sqlBody.startsWith(keyword) ) {
 					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " SET AA='AAA' WHERE 1=1";
+					sqlBody = keyword + " " + tableName + " USING DUAL ON(1=1) WHEN MATCHED THEN UPDATE SET AAA='AAA' WHEN NOT MATCHED THEN INSERT ( AAA ) VALUES ( 'AAA' )";
 				}
 			}
 			if(StringUtil.isEmpty(tableName)) {
-				keyword = "DELETE ";
+				keyword = "INSERT INTO";
 				if( sqlBody.startsWith(keyword) ) {
-					sqlBody = StringUtil.replace(sqlBody, "\n", "");
-					sqlBody = ParseUtil.adjustConts(sqlBody);
-					sqlBody = StringUtil.replace(sqlBody, "DELETE * FROM", "DELETE FROM");
-					keyword = "DELETE FROM";
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " ( AAA ) VALUES ( 'AAA' )";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "UPDATE ";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " SET AAA='AAA' WHERE 1=1";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "DELETE FROM";
+				if( sqlBody.startsWith(keyword) ) {
 					tableName = StringUtil.nextWord(sqlBody, keyword, div);
 					sqlBody = keyword + " " + tableName + " WHERE 1=1";
 				}
 			}
 		}
+		
 		return sqlBody;
 	}
+	
 	
 	/**
 	 * 쿼리VO를 특정디렉토리에 파일로 저장하는 메소드
@@ -588,7 +623,9 @@ public class ParseUtil {
 		String div = "|";
 		StringBuffer tblListConts = new StringBuffer();
 		try {
-			fileName = vo.getQueryId() + ".txt";
+			fileName = StringUtil.nullCheck(vo.getKey(), "") + ".txt";
+			queryInfoConts.append("KEY" + div + StringUtil.nullCheck(vo.getKey(), "")).append("\n");
+			queryInfoConts.append("네임스페이스" + div + StringUtil.nullCheck(vo.getNamespace(), "")).append("\n");
 			queryInfoConts.append("쿼리ID" + div + StringUtil.nullCheck(vo.getQueryId(), "")).append("\n");
 			queryInfoConts.append("쿼리종류" + div + StringUtil.nullCheck(vo.getQueryKind(), "")).append("\n");
 			queryInfoConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
@@ -613,19 +650,32 @@ public class ParseUtil {
 	
 	/**
 	 * 쿼리ID로 특정디렉토리에서 쿼리VO를 복원하는 메소드
-	 * @param queryId
+	 * @param key
 	 * @param readFilePath
 	 * @return
 	 */
-	public static QueryVo readQueryVo(String queryId, String readFilePath) {
+	public static QueryVo readQueryVo(String key, String readFilePath) {
 		QueryVo vo = new QueryVo();
 		String fileName = "";
 		String div = "|";
 		try {
-			fileName = readFilePath + "/" + queryId+ ".txt";
+			fileName = readFilePath + "/" + key+ ".txt";
 			if(FileUtil.isFileExist(fileName)) {
 				String[] lines = FileUtil.readFileByLines(fileName);
 				for(String line : lines) {
+					if(StringUtil.isEmpty(line.trim())) {continue;}
+					if(line.startsWith("KEY" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setKey(words[1]);
+						}
+					}
+					if(line.startsWith("네임스페이스" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setNamespace(words[1]);
+						}
+					}
 					if(line.startsWith("쿼리ID" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
@@ -657,7 +707,8 @@ public class ParseUtil {
 					}
 					if(line.startsWith("쿼리내용" + div)) {
 						String queryBody = FileUtil.readFile(fileName);
-						queryBody = queryBody.substring(queryBody.indexOf("쿼리내용" + div));
+						String keyword = "쿼리내용" + div;
+						queryBody = queryBody.substring(queryBody.indexOf(keyword)+keyword.length());
 						vo.setQueryBody(queryBody);
 					}
 				}

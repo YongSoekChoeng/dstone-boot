@@ -70,11 +70,11 @@ public class AppAnalyzer extends BaseObject{
 		return analizer;
 	}
 
-	public void analyze(String subPath) {
+	public void analyze() {
 		try {
 			
 			/*** 1. 서버소스 분석 ***/
-			svcAnalyzer.analyze(subPath);
+			svcAnalyzer.analyze();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
