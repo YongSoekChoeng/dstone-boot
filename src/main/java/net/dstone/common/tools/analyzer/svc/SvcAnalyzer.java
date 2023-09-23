@@ -17,6 +17,7 @@ import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class SvcAnalyzer extends BaseObject{
@@ -324,7 +325,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			}
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -359,7 +360,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			}
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -409,7 +410,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 			methodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -446,7 +447,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -481,7 +482,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -535,7 +536,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 			queryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -563,7 +564,7 @@ public class SvcAnalyzer extends BaseObject{
 				ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
 			}
 		} catch (Exception e) {
-			getLogger().sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
