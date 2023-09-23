@@ -33,13 +33,6 @@ public class DefaultQuery implements Query {
 			String namespace = xml.getNode("mapper").getAttributes().getNamedItem("namespace").getTextContent();
 			String nodeExp = "/mapper/*";
 			NodeList nodeList = xml.getNodeListByExp(nodeExp);
-			StringBuffer sqlBuff = new StringBuffer();
-			
-			NodeList childNodeList = null;
-			Node childNode = null;
-			Node sqlChildNode = null;
-			String keyword = "";
-			String refid = "";
 			
 			if( nodeList != null ){
 				Map<String, String> row = new HashMap<String, String>();
