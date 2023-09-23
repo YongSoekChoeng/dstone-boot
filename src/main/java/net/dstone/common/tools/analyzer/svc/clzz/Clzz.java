@@ -34,7 +34,8 @@ public interface Clzz {
 	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 	 * @param classFile
+	 * @param otherClassFileList
 	 * @return
 	 */
-	public List<Map<String, String>> getCallClassAlias(String classFile) throws Exception ;
+	public List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) throws Exception ;
 }

@@ -30,10 +30,7 @@ public class SvcAnalyzer extends BaseObject{
 	static {
 		QUERY_FILTER.add("xml");
 	}
-	public static ArrayList<String> PACKAGE_LIST = new ArrayList<String>();
-	public static ArrayList<String> CLASS_LIST = new ArrayList<String>();
-	public static ArrayList<String> PACKAGE_CLASS_LIST = new ArrayList<String>();
-	
+
 	private static boolean isValidSvcFile(String file) {
 		boolean isValid = false;
 		if( FileUtil.isFileExist(file) ) {
@@ -122,11 +119,12 @@ public class SvcAnalyzer extends BaseObject{
 		/**
 		 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 		 * @param classFile
+		 * @param otherClassFileList
 		 * @return
 		 */
-		static List<Map<String, String>> getCallClassAlias(String classFile) throws Exception {
+		static List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) throws Exception {
 			Clzz clzz = new DefaultClzz();
-			return clzz.getCallClassAlias(classFile);
+			return clzz.getCallClassAlias(classFile, otherClassFileList);
 		}
 	}
 	
@@ -202,9 +200,8 @@ public class SvcAnalyzer extends BaseObject{
 		ArrayList<String> filteredFileList = null;
 		try {
 
-			/**************************************** 클래스 분석 시작 ****************************************/
-			
-			/*** 클래스 파일추출 시작 ***/
+			getLogger().info("/**************************************** 클래스 분석 시작 ****************************************/");
+			getLogger().info("/*** 클래스 파일추출 시작 ***/");
 			String[] classFileList = null;
 			fileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
@@ -218,20 +215,18 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(classFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			/*** 클래스 파일추출 끝 ***/
+			getLogger().info("/*** 클래스 파일추출 끝 ***/");
 			
-			/*** 클래스 단위 정보 추출 시작 ***/
-			// 패키지ID/클래스ID/클래스명/기능종류 추출
+			getLogger().info("/*** 클래스 단위 정보 추출 시작 ***/");
+			getLogger().info("// 패키지ID/클래스ID/클래스명/기능종류 추출");
 			this.analyzeClass(classFileList);
-			// 호출알리아스 추출
+			getLogger().info("// 호출알리아스 추출");
 			this.analyzeClassAlias(classFileList);
-			/*** 클래스 단위 정보 추출 끝 ***/
-			
-			/**************************************** 클래스 분석 끝 ****************************************/
+			getLogger().info("/*** 클래스 단위 정보 추출 끝 ***/");
+			getLogger().info("/**************************************** 클래스 분석 끝 ****************************************/");
 
-			/**************************************** 쿼리 분석 시작 ****************************************/
-
-			/*** 쿼리 파일추출 시작 ***/
+			getLogger().info("/**************************************** 쿼리 분석 시작 ****************************************/");
+			getLogger().info("/*** 쿼리 파일추출 시작 ***/");
 			String[] queryFileList = null;
 			fileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
@@ -245,34 +240,29 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(queryFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			/*** 쿼리 파일추출 끝 ***/
+			getLogger().info("/*** 쿼리 파일추출 끝 ***/");
 
-			/*** 쿼리 단위 정보 추출 시작 ***/
-			// KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 추출
+			getLogger().info("/*** 쿼리 단위 정보 추출 시작 ***/");
+			getLogger().info("// KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 추출");
 			queryFileList = this.analyzeQuery(queryFileList);
-			if(queryFileList != null && queryFileList.length > 0) {
-				// 쿼리정보파일로부터 호출테이블ID정보목록 추출
-				this.analyzeQueryCallTbl(queryFileList);
-			}
-			/*** 쿼리 단위 정보 추출 끝 ***/
+			getLogger().info("// 쿼리정보파일로부터 호출테이블ID정보목록 추출");
+			this.analyzeQueryCallTbl(queryFileList);
+			getLogger().info("/*** 쿼리 단위 정보 추출 끝 ***/");
+			getLogger().info("/**************************************** 쿼리 분석 끝 ****************************************/");
 
-			/**************************************** 쿼리 분석 끝 ****************************************/
+			getLogger().info("/**************************************** 메소드 분석 시작 ****************************************/");
+			getLogger().info("/*** 메소드 파일추출 및 기본정보 추출 시작 ***/");
+			getLogger().info("// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 추출");
+			String[] methodFileList = this.analyzeMtd(classFileList);
+			getLogger().info("/*** 메소드 파일추출 및 기본정보 추출 끝 ***/");
 
-			/**************************************** 메소드 분석 시작 ****************************************/
-
-			/*** 메소드 단위 정보 추출 시작 ***/
-			String[] methodFileList = null;
-			// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 추출
-			methodFileList = this.analyzeMtd(classFileList);
-			if(methodFileList != null && methodFileList.length > 0) {
-				// 메소드내 타 호출메소드 목록 추출
-				this.analyzeMtdCallMtd(methodFileList);
-				// 메소드내 호출테이블 목록 추출
-				this.analyzeMtdCallTbl(methodFileList);
-			}
-			/*** 메소드 단위 정보 추출 끝 ***/
-
-			/**************************************** 메소드 분석 끝 ****************************************/
+			getLogger().info("/*** 메소드 단위 정보 추출 끝 ***/");
+			getLogger().info("// 메소드내 타 호출메소드 목록 추출");
+			this.analyzeMtdCallMtd(methodFileList);
+			getLogger().info("// 메소드내 호출테이블 목록 추출");
+			this.analyzeMtdCallTbl(methodFileList);
+			getLogger().info("/*** 메소드 단위 정보 추출 끝 ***/");
+			getLogger().info("/**************************************** 메소드 분석 끝 ****************************************/");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -311,17 +301,6 @@ public class SvcAnalyzer extends BaseObject{
 					// 파일저장			
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 
-					// 패키지/클래스/패키지+클래스 ID 목록 메모리에 저장
-					if( !PACKAGE_LIST.contains(clzzVo.getPackageId()) ) {
-						PACKAGE_LIST.add(clzzVo.getPackageId());
-					}
-					if( !CLASS_LIST.contains(clzzVo.getClassId()) ) {
-						CLASS_LIST.add(clzzVo.getClassId());
-					}
-					if( !PACKAGE_CLASS_LIST.contains(clzzVo.getPackageId() + "." + clzzVo.getClassId()) ) {
-						PACKAGE_CLASS_LIST.add(clzzVo.getPackageId() + "." + clzzVo.getClassId());
-					}
-					
 				}
 			}
 		} catch (Exception e) {
@@ -340,7 +319,9 @@ public class SvcAnalyzer extends BaseObject{
 		ClzzVo clzzVo = null;
 		String pkgClassId = "";
 		String file= "";
+		String[] otherClassFileList = null;
 		try {
+			otherClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 			for(int i=0; i<fileList.length; i++) {
 				file = fileList[i];
 				if( isValidSvcFile(file) ) {
@@ -353,7 +334,7 @@ public class SvcAnalyzer extends BaseObject{
 					clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
 					
 					// 호출알리아스
-					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(file));
+					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(file, otherClassFileList));
 					
 					// 파일저장	
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.dstone.common.core.BaseObject;
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
@@ -117,10 +118,11 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 	 * @param classFile
+	 * @param otherClassFileList
 	 * @return
 	 */
 	@Override
-	public List<Map<String, String>> getCallClassAlias(String classFile) {
+	public List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 
@@ -136,7 +138,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		String selfClassId = this.getClassId(classFile);
 		int lineNum = 0;
 		
-		for(String packageClassId : SvcAnalyzer.PACKAGE_CLASS_LIST) {
+		for(String packageClassId : otherClassFileList) {
 			
 			isAliasExists = false;
 			isUsed = false;
