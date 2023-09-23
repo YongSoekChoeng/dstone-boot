@@ -319,7 +319,7 @@ public class FileUtil {
 	}
 
 	public static String[] readFileList(String filePath) {
-		return readFileList(filePath, false);
+		return readFileList(filePath, true);
 	}
 	
 	public static String[] readFileList(String filePath, boolean extInclude) {
