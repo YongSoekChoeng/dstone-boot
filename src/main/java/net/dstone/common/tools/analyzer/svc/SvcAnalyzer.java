@@ -206,8 +206,8 @@ public class SvcAnalyzer extends BaseObject{
 		ArrayList<String> filteredFileList = null;
 		try {
 
-			getLogger().info("/**************************************** 클래스 분석 시작 ****************************************/");
-			getLogger().info("/*** 클래스 파일추출 시작 ***/");
+			getLogger().info("/**************************************** A.클래스 분석 시작 ****************************************/");
+			getLogger().info("/*** A-1.클래스 파일추출 시작 ***/");
 			classFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : classFileList) {
@@ -220,18 +220,14 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(classFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			getLogger().info("/*** 클래스 파일추출 끝 ***/");
-			
-			getLogger().info("/*** 클래스 단위 정보 추출 시작 ***/");
-			getLogger().info("// 패키지ID/클래스ID/클래스명/기능종류 추출");
+			getLogger().info("/*** A-2.패키지ID/클래스ID/클래스명/기능종류 추출");
 			this.analyzeClass(classFileList);
-			getLogger().info("// 호출알리아스 추출");
+			getLogger().info("/*** A-3.호출알리아스 추출");
 			this.analyzeClassAlias(classFileList);
-			getLogger().info("/*** 클래스 단위 정보 추출 끝 ***/");
-			getLogger().info("/**************************************** 클래스 분석 끝 ****************************************/");
+			getLogger().info("/**************************************** A.클래스 분석 끝 ****************************************/");
 
-			getLogger().info("/**************************************** 쿼리 분석 시작 ****************************************/");
-			getLogger().info("/*** 쿼리 파일추출 시작 ***/");
+			getLogger().info("/**************************************** B.쿼리 분석 시작 ****************************************/");
+			getLogger().info("/*** B-1.쿼리 파일추출 시작 ***/");
 			queryFileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : queryFileList) {
@@ -244,31 +240,22 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(queryFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			getLogger().info("/*** 쿼리 파일추출 끝 ***/");
-
-			getLogger().info("/*** 쿼리 단위 정보 추출 시작 ***/");
-			getLogger().info("// KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
+			getLogger().info("/*** B-2.KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 			this.analyzeQuery(queryFileList);
 			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
-			getLogger().info("// 쿼리분석파일리스트 에 호출테이블ID정보목록 추출");
+			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 			this.analyzeQueryCallTbl(analyzedQueryFileList);
-			getLogger().info("/*** 쿼리 단위 정보 추출 끝 ***/");
-			getLogger().info("/**************************************** 쿼리 분석 끝 ****************************************/");
+			getLogger().info("/**************************************** B.쿼리 분석 끝 ****************************************/");
 
-			getLogger().info("/**************************************** 메소드 분석 시작 ****************************************/");
-			getLogger().info("/*** 메소드 파일추출 및 기본정보 추출 시작 ***/");
-			getLogger().info("// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
+			getLogger().info("/**************************************** C.메소드 분석 시작 ****************************************/");
+			getLogger().info("/*** C-1.기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 			this.analyzeMtd(classFileList);
 			analyzedMethodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
-			getLogger().info("/*** 메소드 파일추출 및 기본정보 추출 끝 ***/");
-
-			getLogger().info("/*** 메소드 단위 정보 추출 끝 ***/");
-			getLogger().info("// 메소드내 타 호출메소드 목록 추출");
+			getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 			this.analyzeMtdCallMtd(analyzedMethodFileList);
-			getLogger().info("// 메소드내 호출테이블 목록 추출");
+			getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 			this.analyzeMtdCallTbl(analyzedMethodFileList);
-			getLogger().info("/*** 메소드 단위 정보 추출 끝 ***/");
-			getLogger().info("/**************************************** 메소드 분석 끝 ****************************************/");
+			getLogger().info("/**************************************** C.메소드 분석 끝 ****************************************/");
 			
 		} catch (Exception e) {
 			e.printStackTrace();

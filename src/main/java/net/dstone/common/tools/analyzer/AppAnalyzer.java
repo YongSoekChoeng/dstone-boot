@@ -54,9 +54,10 @@ public class AppAnalyzer extends BaseObject{
 	 * @param includePackageRoot - 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
 	 * @param excludePackagePattern - 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.)
 	 * @param queryRootPath - 쿼리 루트 디렉토리
+	 * @param writePath - 중간산출물 저장디렉토리
 	 * @return
 	 */
-	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath){
+	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath){
 		if(analizer == null){
 			analizer = new AppAnalyzer();
 			AppAnalyzer.ROOT_PATH = StringUtil.replace(rootPath, "\\", "/");
@@ -64,8 +65,8 @@ public class AppAnalyzer extends BaseObject{
 			AppAnalyzer.WEB_ROOT_PATH = StringUtil.replace(webRootPath, "\\", "/");
 			AppAnalyzer.INCLUDE_PACKAGE_ROOT = includePackageRoot;
 			AppAnalyzer.EXCLUDE_PACKAGE_PATTERN = excludePackagePattern;
-			AppAnalyzer.WRITE_PATH = "D:/Temp/anlaysis/" + DateUtil.getToDate("yyyyMMddHHmmss");
 			AppAnalyzer.QUERY_ROOT_PATH = StringUtil.replace(queryRootPath, "\\", "/");
+			AppAnalyzer.WRITE_PATH = writePath;
 		}
 		return analizer;
 	}
