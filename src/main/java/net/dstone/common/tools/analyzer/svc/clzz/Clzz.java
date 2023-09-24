@@ -9,7 +9,7 @@ import net.dstone.common.tools.analyzer.vo.MtdVo;
 public interface Clzz {
 	/**
 	 * 패키지ID 추출
-	 * @param classFile
+	 * @param classFile 클래스파일
 	 * @return
 	 */
 	public String getPackageId(String classFile) throws Exception ;

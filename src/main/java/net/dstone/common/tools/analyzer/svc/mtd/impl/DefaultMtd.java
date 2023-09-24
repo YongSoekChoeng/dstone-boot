@@ -31,15 +31,15 @@ public class DefaultMtd extends BaseObject implements Mtd {
 	/**
 	 * 호출메소드 목록 추출
 	 * @param clzzVo
-	 * @param methodFile
+	 * @param analyzedMethodFile
 	 * @return
 	 */
 	@Override
-	public List<String> getCallMtdList(String methodFile) {
+	public List<String> getCallMtdList(String analyzedMethodFile) {
 		List<String> callsMtdList = new ArrayList<String>();
 		
 		// 메소드VO 정보 획득
-		String functionId = FileUtil.getFileName(methodFile, false);
+		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 
 		// 클래스VO 정보 획득
@@ -85,15 +85,15 @@ public class DefaultMtd extends BaseObject implements Mtd {
 
 	/**
 	 * 호출테이블 목록 추출
-	 * @param methodFile
+	 * @param analyzedMethodFile
 	 * @return
 	 */
 	@Override
-	public List<String> getCallTblList(String methodFile) {
+	public List<String> getCallTblList(String analyzedMethodFile) {
 		List<String> callTblList = new ArrayList<String>();
 		
 		// 메소드VO 정보 획득
-		String functionId = FileUtil.getFileName(methodFile, false);
+		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 
 		// 쿼리목록 정보 획득

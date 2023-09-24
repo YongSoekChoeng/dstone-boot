@@ -18,7 +18,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 
 	/**
 	 * 패키지ID 추출
-	 * @param classFile
+	 * @param classFile 클래스파일
 	 * @return
 	 */
 	@Override
@@ -118,11 +118,11 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 	 * @param classFile
-	 * @param otherClassFileList
+	 * @param analyzedClassFileList
 	 * @return
 	 */
 	@Override
-	public List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) {
+	public List<Map<String, String>> getCallClassAlias(String classFile, String[] analyzedClassFileList) {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 
@@ -138,7 +138,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		String selfClassId = this.getClassId(classFile);
 		int lineNum = 0;
 		
-		for(String packageClassId : otherClassFileList) {
+		for(String packageClassId : analyzedClassFileList) {
 			
 			isAliasExists = false;
 			isUsed = false;

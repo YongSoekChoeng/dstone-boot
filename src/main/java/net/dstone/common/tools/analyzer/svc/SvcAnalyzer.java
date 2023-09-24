@@ -82,7 +82,7 @@ public class SvcAnalyzer extends BaseObject{
 	private static class ClassFactory {
 		/**
 		 * 패키지ID 추출
-		 * @param classFile
+		 * @param classFile 클래스파일
 		 * @return
 		 */
 		static String getPackageId(String classFile) throws Exception {
@@ -146,12 +146,12 @@ public class SvcAnalyzer extends BaseObject{
 		
 		/**
 		 * 호출메소드 목록 추출
-		 * @param methodFile
+		 * @param analyzedMethodFile
 		 * @return
 		 */
-		static List<String> getCallMtdList(String methodFile) throws Exception {
+		static List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
 			Mtd mtd = new DefaultMtd();
-			return mtd.getCallMtdList(methodFile);
+			return mtd.getCallMtdList(analyzedMethodFile);
 		}
 
 		/**
@@ -196,16 +196,21 @@ public class SvcAnalyzer extends BaseObject{
 	/*********************** Factory 끝 ***********************/
 	
 	public void analyze() {
-		String[] fileList = null;
+		String[] 	classFileList = null;				/* 클래스파일리스트 */
+		String[] 	queryFileList = null;				/* 쿼리파일리스트 */
+
+		String[] 	analyzedClassFileList = null;		/* 클래스분석파일리스트 */
+		String[] 	analyzedQueryFileList = null;		/* 쿼리파분석일리스트 */
+		String[] 	analyzedMethodFileList = null;		/* 메소드분석파일리스트 */
+		
 		ArrayList<String> filteredFileList = null;
 		try {
 
 			getLogger().info("/**************************************** 클래스 분석 시작 ****************************************/");
 			getLogger().info("/*** 클래스 파일추출 시작 ***/");
-			String[] classFileList = null;
-			fileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
+			classFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
-			for(String file : fileList) {
+			for(String file : classFileList) {
 				if( !isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
 					continue;
 				}
@@ -227,10 +232,9 @@ public class SvcAnalyzer extends BaseObject{
 
 			getLogger().info("/**************************************** 쿼리 분석 시작 ****************************************/");
 			getLogger().info("/*** 쿼리 파일추출 시작 ***/");
-			String[] queryFileList = null;
-			fileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
+			queryFileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
-			for(String file : fileList) {
+			for(String file : queryFileList) {
 				if( !isValidQueryFile(file) ) {
 					continue;
 				}
@@ -243,24 +247,26 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/*** 쿼리 파일추출 끝 ***/");
 
 			getLogger().info("/*** 쿼리 단위 정보 추출 시작 ***/");
-			getLogger().info("// KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 추출");
-			queryFileList = this.analyzeQuery(queryFileList);
-			getLogger().info("// 쿼리정보파일로부터 호출테이블ID정보목록 추출");
-			this.analyzeQueryCallTbl(queryFileList);
+			getLogger().info("// KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
+			this.analyzeQuery(queryFileList);
+			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
+			getLogger().info("// 쿼리분석파일리스트 에 호출테이블ID정보목록 추출");
+			this.analyzeQueryCallTbl(analyzedQueryFileList);
 			getLogger().info("/*** 쿼리 단위 정보 추출 끝 ***/");
 			getLogger().info("/**************************************** 쿼리 분석 끝 ****************************************/");
 
 			getLogger().info("/**************************************** 메소드 분석 시작 ****************************************/");
 			getLogger().info("/*** 메소드 파일추출 및 기본정보 추출 시작 ***/");
-			getLogger().info("// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 추출");
-			String[] methodFileList = this.analyzeMtd(classFileList);
+			getLogger().info("// 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
+			this.analyzeMtd(classFileList);
+			analyzedMethodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
 			getLogger().info("/*** 메소드 파일추출 및 기본정보 추출 끝 ***/");
 
 			getLogger().info("/*** 메소드 단위 정보 추출 끝 ***/");
 			getLogger().info("// 메소드내 타 호출메소드 목록 추출");
-			this.analyzeMtdCallMtd(methodFileList);
+			this.analyzeMtdCallMtd(analyzedMethodFileList);
 			getLogger().info("// 메소드내 호출테이블 목록 추출");
-			this.analyzeMtdCallTbl(methodFileList);
+			this.analyzeMtdCallTbl(analyzedMethodFileList);
 			getLogger().info("/*** 메소드 단위 정보 추출 끝 ***/");
 			getLogger().info("/**************************************** 메소드 분석 끝 ****************************************/");
 			
@@ -271,32 +277,32 @@ public class SvcAnalyzer extends BaseObject{
 	
 	/**
 	 * 클래스의 패키지/클래스ID/클래스명/기능종류 추출
-	 * @param fileList
+	 * @param classFileList	클래스파일리스트
 	 */
-	protected void analyzeClass(String[] fileList)throws Exception {
+	protected void analyzeClass(String[] classFileList)throws Exception {
 		ClzzVo clzzVo = null;
-		String file= "";
+		String classFile= "";
 		try {
-			for(int i=0; i<fileList.length; i++) {
-				file = fileList[i];
-				if( isValidSvcFile(file) ) {
+			for(int i=0; i<classFileList.length; i++) {
+				classFile = classFileList[i];
+				if( isValidSvcFile(classFile) ) {
 					
 					clzzVo = new ClzzVo();
 					
 					// 패키지ID
-					clzzVo.setPackageId(ClassFactory.getPackageId(file));
+					clzzVo.setPackageId(ClassFactory.getPackageId(classFile));
 					
 					// 클래스ID
-					clzzVo.setClassId(ClassFactory.getClassId(file));
+					clzzVo.setClassId(ClassFactory.getClassId(classFile));
 					
 					// 클래스명
-					clzzVo.setClassName(ClassFactory.getClassName(file));
+					clzzVo.setClassName(ClassFactory.getClassName(classFile));
 					
 					// 기능종류
-					clzzVo.setClassKind(ClassFactory.getClassKind(file));
+					clzzVo.setClassKind(ClassFactory.getClassKind(classFile));
 					
 					// 파일명
-					clzzVo.setFileName(file);
+					clzzVo.setFileName(classFile);
 					
 					// 파일저장			
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
@@ -304,7 +310,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			}
 		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. classFile["+classFile+"]");
 			e.printStackTrace();
 			throw e;
 		}
@@ -313,19 +319,19 @@ public class SvcAnalyzer extends BaseObject{
 	
 	/**
 	 * 클래스의 호출알리아스 추출
-	 * @param fileList
+	 * @param classFileList
 	 */
-	protected void analyzeClassAlias(String[] fileList) throws Exception {
+	protected void analyzeClassAlias(String[] classFileList) throws Exception {
 		ClzzVo clzzVo = null;
 		String pkgClassId = "";
-		String file= "";
-		String[] otherClassFileList = null;
+		String classFile= "";
+		String[] analyzedClassFileList = null;
 		try {
-			otherClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
-			for(int i=0; i<fileList.length; i++) {
-				file = fileList[i];
-				if( isValidSvcFile(file) ) {
-					String fileNoExt = file.substring(0, file.lastIndexOf("."));
+			analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
+			for(int i=0; i<classFileList.length; i++) {
+				classFile = classFileList[i];
+				if( isValidSvcFile(classFile) ) {
+					String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
 					pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
 					if(pkgClassId.startsWith("/")) {
 						pkgClassId = pkgClassId.substring(1);
@@ -334,155 +340,31 @@ public class SvcAnalyzer extends BaseObject{
 					clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
 					
 					// 호출알리아스
-					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(file, otherClassFileList));
+					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(classFile, analyzedClassFileList));
 					
 					// 파일저장	
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 				}
 			}
 		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
 			e.printStackTrace();
 			throw e;
 		}
 	}
 
 	/**
-	 * 메소드ID/메소드명/메소드URL/메소드내용 추출
-	 * @param fileList
-	 * @return 메소드파일목록
+	 * KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출
+	 * @param queryFileList
 	 */
-	protected String[] analyzeMtd(String[] fileList) throws Exception {
-		String[] methodFileList = null;
-		MtdVo mtdVo = null;
-		List<Map<String, String>> methodInfoList = null;
-		String file= "";
-		String functionId = "";
-		try {
-			for(int i=0; i<fileList.length; i++) {
-				file = fileList[i];
-				if( isValidSvcFile(file) ) {
-					// 메소드ID/메소드명/메소드URL/메소드내용 추출
-					methodInfoList = MethodFactory.getMtdInfoList(file);
-					if( methodInfoList != null ) {
-						for(Map<String, String> methodInfo : methodInfoList) {
-							mtdVo = new MtdVo();
-
-							// 기능ID
-							functionId = ClassFactory.getPackageId(file) + "." + ClassFactory.getClassId(file) + "." + methodInfo.get("METHOD_ID");
-							mtdVo.setFunctionId(functionId);
-							// 메소드ID
-							mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
-							// 메소드명
-							mtdVo.setMethodName(methodInfo.get("METHOD_NAME"));
-							// 메소드URL
-							mtdVo.setMethodUrl(methodInfo.get("METHOD_URL"));
-							// 파일명
-							mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + functionId + ".txt");
-							// 메소드내용
-							mtdVo.setMethodBody(methodInfo.get("METHOD_BODY"));
-
-							// 파일저장			
-							ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
-						}
-					}
-					
-				}
-			}
-			methodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
-		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. file["+file+"]");
-			e.printStackTrace();
-			throw e;
-		}
-		return methodFileList;
-	}
-	
-	/**
-	 * 메소드내 타 호출메소드 목록 추출
-	 * @param fileList
-	 */
-	protected void analyzeMtdCallMtd(String[] fileList) throws Exception {
-		MtdVo mtdVo = null;
-		String functionId = "";
-		String file = "";
-		
-		try {
-			if(fileList != null) {
-				for(int i=0; i<fileList.length; i++) {
-					file = fileList[i];
-					String fileNoExt = file.substring(0, file.lastIndexOf("."));
-					functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
-					if(functionId.startsWith("/")) {
-						functionId = functionId.substring(1);
-					}
-					functionId = StringUtil.replace(functionId, "/", ".");
-					mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-					
-					// 호출메소드
-					mtdVo.setCallMtdVoList(MethodFactory.getCallMtdList(file));
-					
-					// 파일저장	
-					ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
-				}
-			}
-
-		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. file["+file+"]");
-			e.printStackTrace();
-			throw e;
-		}
-	}
-	/**
-	 * 메소드내 호출테이블 목록 추출
-	 * @param fileList
-	 */
-	protected void analyzeMtdCallTbl(String[] fileList) throws Exception {
-		MtdVo mtdVo = null;
-		String functionId = "";
-		String file = "";
-		
-		try {
-			if(fileList != null) {
-				for(int i=0; i<fileList.length; i++) {
-					file = fileList[i];
-					String fileNoExt = file.substring(0, file.lastIndexOf("."));
-					functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
-					if(functionId.startsWith("/")) {
-						functionId = functionId.substring(1);
-					}
-					functionId = StringUtil.replace(functionId, "/", ".");
-					mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-					
-					// 호출테이블
-					mtdVo.setCallTblVoList(MethodFactory.getCallTblList(file));
-					
-					// 파일저장	
-					ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
-				}
-			}
-
-		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. file["+file+"]");
-			e.printStackTrace();
-			throw e;
-		}
-	}
-	
-	/**
-	 * KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 추출
-	 * @param fileList
-	 * @return
-	 */
-	protected String[] analyzeQuery(String[] fileList) throws Exception {
-		String[] queryFileList = null;
+	protected void analyzeQuery(String[] queryFileList) throws Exception {
 		QueryVo queryVo = null;
 		List<Map<String, String>> queryInfoList = null;
 		String file= "";
 		String key = "";
 		try {
-			for(int i=0; i<fileList.length; i++) {
-				file = fileList[i];
+			for(int i=0; i<queryFileList.length; i++) {
+				file = queryFileList[i];
 				if( isValidQueryFile(file) ) {
 					// KEY/네임스페이스/쿼리ID/쿼리종류 추출
 					queryInfoList = QueryFactory.getQueryInfoList(file);
@@ -515,37 +397,154 @@ public class SvcAnalyzer extends BaseObject{
 					
 				}
 			}
-			queryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
 		} catch (Exception e) {
 			LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
 			throw e;
 		}
-		return queryFileList;
 	}
 	
 	/**
-	 * 쿼리정보파일로부터 호출테이블ID정보목록 추출
-	 * @param fileList
+	 * 쿼리분석파일리스트 에 호출테이블ID정보목록 추출
+	 * @param analyzedQueryFileList
 	 */
-	protected void analyzeQueryCallTbl(String[] fileList) throws Exception {
+	protected void analyzeQueryCallTbl(String[] analyzedQueryFileList) throws Exception {
 		QueryVo queryVo = null;
 		String key = "";
-		String file= "";
+		String analyzedQueryFile= "";
 		try {
-			for(int i=0; i<fileList.length; i++) {
-				file = fileList[i];
-				key = FileUtil.getFileName(file, false);
+			for(int i=0; i<analyzedQueryFileList.length; i++) {
+				analyzedQueryFile = analyzedQueryFileList[i];
+				key = FileUtil.getFileName(analyzedQueryFile, false);
 				queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
 				
 				// 테이블ID정보목록
-				queryVo.setCallTblList(QueryFactory.getCallTblList(file));
+				queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile));
 				
 				// 파일저장	
 				ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
 			}
 		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. file["+file+"]");
+			LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+
+	/**
+	 * 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출
+	 * @param classFileList
+	 */
+	protected void analyzeMtd(String[] classFileList) throws Exception {
+		MtdVo mtdVo = null;
+		List<Map<String, String>> methodInfoList = null;
+		String classFile= "";
+		String functionId = "";
+		try {
+			for(int i=0; i<classFileList.length; i++) {
+				classFile = classFileList[i];
+				if( isValidSvcFile(classFile) ) {
+					// 메소드ID/메소드명/메소드URL/메소드내용 추출
+					methodInfoList = MethodFactory.getMtdInfoList(classFile);
+					if( methodInfoList != null ) {
+						for(Map<String, String> methodInfo : methodInfoList) {
+							mtdVo = new MtdVo();
+
+							// 기능ID
+							functionId = ClassFactory.getPackageId(classFile) + "." + ClassFactory.getClassId(classFile) + "." + methodInfo.get("METHOD_ID");
+							mtdVo.setFunctionId(functionId);
+							// 메소드ID
+							mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
+							// 메소드명
+							mtdVo.setMethodName(methodInfo.get("METHOD_NAME"));
+							// 메소드URL
+							mtdVo.setMethodUrl(methodInfo.get("METHOD_URL"));
+							// 파일명
+							mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + functionId + ".txt");
+							// 메소드내용
+							mtdVo.setMethodBody(methodInfo.get("METHOD_BODY"));
+
+							// 파일저장			
+							ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+						}
+					}
+					
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. classFile["+classFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	/**
+	 * 메소드내 타 호출메소드 목록 추출
+	 * @param analyzedMethodFileList
+	 */
+	protected void analyzeMtdCallMtd(String[] analyzedMethodFileList) throws Exception {
+		MtdVo mtdVo = null;
+		String functionId = "";
+		String analyzedMethodFile = "";
+		
+		try {
+			if(analyzedMethodFileList != null) {
+				for(int i=0; i<analyzedMethodFileList.length; i++) {
+					analyzedMethodFile = analyzedMethodFileList[i];
+					String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
+					functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
+					if(functionId.startsWith("/")) {
+						functionId = functionId.substring(1);
+					}
+					functionId = StringUtil.replace(functionId, "/", ".");
+					mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+					
+					// 호출메소드
+					mtdVo.setCallMtdVoList(MethodFactory.getCallMtdList(analyzedMethodFile));
+					
+					// 파일저장	
+					ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+				}
+			}
+
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	/**
+	 * 메소드내 호출테이블 목록 추출
+	 * @param analyzedMethodFileList
+	 */
+	protected void analyzeMtdCallTbl(String[] analyzedMethodFileList) throws Exception {
+		MtdVo mtdVo = null;
+		String functionId = "";
+		String analyzedMethodFile = "";
+		
+		try {
+			if(analyzedMethodFileList != null) {
+				for(int i=0; i<analyzedMethodFileList.length; i++) {
+					analyzedMethodFile = analyzedMethodFileList[i];
+					String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
+					functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
+					if(functionId.startsWith("/")) {
+						functionId = functionId.substring(1);
+					}
+					functionId = StringUtil.replace(functionId, "/", ".");
+					mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+					
+					// 호출테이블
+					mtdVo.setCallTblVoList(MethodFactory.getCallTblList(analyzedMethodFile));
+					
+					// 파일저장	
+					ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+				}
+			}
+
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
 			e.printStackTrace();
 			throw e;
 		}
