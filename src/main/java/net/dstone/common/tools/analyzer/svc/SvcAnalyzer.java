@@ -273,7 +273,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스의 패키지/클래스ID/클래스명/기능종류 추출
 	 * @param fileList
 	 */
-	private void analyzeClass(String[] fileList)throws Exception {
+	protected void analyzeClass(String[] fileList)throws Exception {
 		ClzzVo clzzVo = null;
 		String file= "";
 		try {
@@ -315,7 +315,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스의 호출알리아스 추출
 	 * @param fileList
 	 */
-	private void analyzeClassAlias(String[] fileList) throws Exception {
+	protected void analyzeClassAlias(String[] fileList) throws Exception {
 		ClzzVo clzzVo = null;
 		String pkgClassId = "";
 		String file= "";
@@ -352,7 +352,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param fileList
 	 * @return 메소드파일목록
 	 */
-	private String[] analyzeMtd(String[] fileList) throws Exception {
+	protected String[] analyzeMtd(String[] fileList) throws Exception {
 		String[] methodFileList = null;
 		MtdVo mtdVo = null;
 		List<Map<String, String>> methodInfoList = null;
@@ -402,7 +402,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 메소드내 타 호출메소드 목록 추출
 	 * @param fileList
 	 */
-	private void analyzeMtdCallMtd(String[] fileList) throws Exception {
+	protected void analyzeMtdCallMtd(String[] fileList) throws Exception {
 		MtdVo mtdVo = null;
 		String functionId = "";
 		String file = "";
@@ -437,7 +437,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 메소드내 호출테이블 목록 추출
 	 * @param fileList
 	 */
-	private void analyzeMtdCallTbl(String[] fileList) throws Exception {
+	protected void analyzeMtdCallTbl(String[] fileList) throws Exception {
 		MtdVo mtdVo = null;
 		String functionId = "";
 		String file = "";
@@ -474,7 +474,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param fileList
 	 * @return
 	 */
-	private String[] analyzeQuery(String[] fileList) throws Exception {
+	protected String[] analyzeQuery(String[] fileList) throws Exception {
 		String[] queryFileList = null;
 		QueryVo queryVo = null;
 		List<Map<String, String>> queryInfoList = null;
@@ -528,7 +528,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 쿼리정보파일로부터 호출테이블ID정보목록 추출
 	 * @param fileList
 	 */
-	private void analyzeQueryCallTbl(String[] fileList) throws Exception {
+	protected void analyzeQueryCallTbl(String[] fileList) throws Exception {
 		QueryVo queryVo = null;
 		String key = "";
 		String file= "";
