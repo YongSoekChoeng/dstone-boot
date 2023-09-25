@@ -242,16 +242,6 @@ public class SvcAnalyzer extends BaseObject{
 			return ui.getUiName(uiFile);
 		}
 		/**
-		 * UI파일로부터 링크목록 추출
-		 * @param uiFile
-		 * @return
-		 */
-		static List<String> getUiLinkList(String uiFile) throws Exception {
-			Ui ui = new DefaultUi();
-			return ui.getUiLinkList(uiFile);
-		}
-
-		/**
 		 * UI파일로부터 Include된 타 UI파일목록 추출
 		 * @param uiFile
 		 * @return
@@ -259,6 +249,16 @@ public class SvcAnalyzer extends BaseObject{
 		static List<String> getIncludeUiList(String uiFile) throws Exception {
 			Ui ui = new DefaultUi();
 			return ui.getIncludeUiList(uiFile);
+		}
+
+		/**
+		 * UI파일로부터 링크목록 추출
+		 * @param uiFile
+		 * @return
+		 */
+		static List<String> getUiLinkList(String uiFile) throws Exception {
+			Ui ui = new DefaultUi();
+			return ui.getUiLinkList(uiFile);
 		}
 
 	}
