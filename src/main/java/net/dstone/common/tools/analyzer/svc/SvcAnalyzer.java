@@ -220,9 +220,9 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(classFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			getLogger().info("/*** A-2.패키지ID/클래스ID/클래스명/기능종류 추출");
+			getLogger().info("/*** A-2.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 			this.analyzeClass(classFileList);
-			getLogger().info("/*** A-3.호출알리아스 추출");
+			getLogger().info("/*** A-3.클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가");
 			this.analyzeClassAlias(classFileList);
 			getLogger().info("/**************************************** A.클래스 분석 끝 ****************************************/");
 
@@ -240,7 +240,7 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(queryFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			getLogger().info("/*** B-2.KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
+			getLogger().info("/*** B-2. 쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 			this.analyzeQuery(queryFileList);
 			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
 			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
@@ -248,7 +248,7 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/**************************************** B.쿼리 분석 끝 ****************************************/");
 
 			getLogger().info("/**************************************** C.메소드 분석 시작 ****************************************/");
-			getLogger().info("/*** C-1.기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
+			getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 			this.analyzeMtd(classFileList);
 			analyzedMethodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
 			getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
@@ -263,7 +263,7 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	/**
-	 * 클래스의 패키지/클래스ID/클래스명/기능종류 추출
+	 * 클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출
 	 * @param classFileList	클래스파일리스트
 	 */
 	protected void analyzeClass(String[] classFileList)throws Exception {
@@ -305,8 +305,8 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	/**
-	 * 클래스의 호출알리아스 추출
-	 * @param classFileList
+	 * 클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가
+	 * @param classFileList 클래스파일리스트
 	 */
 	protected void analyzeClassAlias(String[] classFileList) throws Exception {
 		ClzzVo clzzVo = null;
@@ -341,8 +341,8 @@ public class SvcAnalyzer extends BaseObject{
 	}
 
 	/**
-	 * KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출
-	 * @param queryFileList
+	 * 쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출
+	 * @param queryFileList 쿼리파일리스트
 	 */
 	protected void analyzeQuery(String[] queryFileList) throws Exception {
 		QueryVo queryVo = null;
@@ -393,7 +393,7 @@ public class SvcAnalyzer extends BaseObject{
 	
 	/**
 	 * 쿼리분석파일리스트 에 호출테이블ID정보목록 추출
-	 * @param analyzedQueryFileList
+	 * @param analyzedQueryFileList 쿼리분석파일리스트
 	 */
 	protected void analyzeQueryCallTbl(String[] analyzedQueryFileList) throws Exception {
 		QueryVo queryVo = null;
@@ -420,8 +420,8 @@ public class SvcAnalyzer extends BaseObject{
 	
 
 	/**
-	 * 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출
-	 * @param classFileList
+	 * 클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출
+	 * @param classFileList 클래스파일리스트
 	 */
 	protected void analyzeMtd(String[] classFileList) throws Exception {
 		MtdVo mtdVo = null;
@@ -468,7 +468,7 @@ public class SvcAnalyzer extends BaseObject{
 	
 	/**
 	 * 메소드내 타 호출메소드 목록 추출
-	 * @param analyzedMethodFileList
+	 * @param analyzedMethodFileList 메소드분석파일리스트
 	 */
 	protected void analyzeMtdCallMtd(String[] analyzedMethodFileList) throws Exception {
 		MtdVo mtdVo = null;
@@ -503,7 +503,7 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	/**
 	 * 메소드내 호출테이블 목록 추출
-	 * @param analyzedMethodFileList
+	 * @param analyzedMethodFileList 메소드분석파일리스트
 	 */
 	protected void analyzeMtdCallTbl(String[] analyzedMethodFileList) throws Exception {
 		MtdVo mtdVo = null;
