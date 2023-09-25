@@ -751,6 +751,9 @@ public class ParseUtil {
 				while(contsForAtag.indexOf(keyword) > -1) {
 					if(contsForAtag.indexOf(keyword) > -1) {
 						nextWord = StringUtil.nextWord(contsForAtag, keyword, div);
+						if(nextWord.indexOf("?")>-1) {
+							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
+						}
 						linkList.add(nextWord);
 						contsForAtag = contsForAtag.substring( contsForAtag.indexOf(nextWord) + (nextWord).length() );
 					}
@@ -793,6 +796,9 @@ public class ParseUtil {
 				while(contsForAction.indexOf(keyword) > -1) {
 					if(contsForAction.indexOf(keyword) > -1) {
 						nextWord = StringUtil.nextWord(contsForAction, keyword, div);
+						if(nextWord.indexOf("?")>-1) {
+							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
+						}
 						linkList.add(nextWord);
 						contsForAction = contsForAction.substring( contsForAction.indexOf(nextWord) + (nextWord).length() );
 					}
@@ -874,6 +880,12 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setUiName(words[1]);
+						}
+					}
+					if(line.startsWith("파일명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setFileName(words[1]);
 						}
 					}
 					if(line.startsWith("인크루드파일" + div)) {

@@ -652,6 +652,7 @@ public class SvcAnalyzer extends BaseObject{
 			for(int i=0; i<uiFileList.length; i++) {
 				uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
 				if( isValidUiFile(uiFile) ) {
+					
 					// UI아이디/UI명/인크루드파일/링크 추출
 					uiVo = new UiVo();
 					
@@ -690,9 +691,6 @@ public class SvcAnalyzer extends BaseObject{
 					// UI Vo
 					uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
 					
-					// UI명
-					uiVo.setFileName(UiFactory.getUiName(uiFile));
-					
 					// 인크루드파일
 					uiVo.setIncludeUiFileNameList(UiFactory.getIncludeUiList(uiFile));
 
@@ -718,6 +716,7 @@ public class SvcAnalyzer extends BaseObject{
 			for(int i=0; i<uiFileList.length; i++) {
 				uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
 				if( isValidUiFile(uiFile) ) {
+					
 					// UI Vo
 					uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
 					
@@ -726,6 +725,7 @@ public class SvcAnalyzer extends BaseObject{
 
 					// 파일저장			
 					ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
+					
 				}
 			}
 		} catch (Exception e) {
