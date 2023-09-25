@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
+import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
@@ -722,11 +721,15 @@ public class ParseUtil {
 		return vo;
 	}
 	
-	public static List<String> extrackLinksFromWebPage(String webPageFile){
+	/**
+	 * 웹페이지의 A태그로부터 링크를 추출하는 메소드
+	 * @param webPageFile
+	 * @return
+	 */
+	public static List<String> extrackLinksFromAtag(String webPageFile){
 		List<String> linkList = new ArrayList<String>();
 		try {
 			if(FileUtil.isFileExist(webPageFile)) {
-
 				String keyword = "";
 				String[] div = {"'"};
 				String nextWord = "";
@@ -737,27 +740,54 @@ public class ParseUtil {
 				conts = adjustConts(conts);
 				conts = StringUtil.replace(conts, "\"", "'");
 				
-				String contsForLink = new String(conts);
-				String contsForAction = new String(conts);
+				String contsForAtag = new String(conts);
 				
 				// A태그 Link
-				contsForLink = StringUtil.replace(contsForLink, "href =", "href=");
-				contsForLink = StringUtil.replace(contsForLink, "href= '", "href='");
+				contsForAtag = StringUtil.replace(contsForAtag, "href =", "href=");
+				contsForAtag = StringUtil.replace(contsForAtag, "href= '", "href='");
+				contsForAtag = StringUtil.replace(contsForAtag, "href=''", "");
 				keyword = "href='";
 				nextWord = "";
-				while(contsForLink.indexOf(keyword) > -1) {
-					if(contsForLink.indexOf(keyword) > -1) {
-						nextWord = StringUtil.nextWord(contsForLink, keyword, div);
+				while(contsForAtag.indexOf(keyword) > -1) {
+					if(contsForAtag.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForAtag, keyword, div);
 						linkList.add(nextWord);
-						contsForLink = contsForLink.substring( contsForLink.indexOf(nextWord) + (nextWord).length() );
+						contsForAtag = contsForAtag.substring( contsForAtag.indexOf(nextWord) + (nextWord).length() );
 					}
 				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return linkList;
+	}
+	/**
+	 * 웹페이지의 폼액션으로부터 링크를 추출하는 메소드
+	 * @param webPageFile
+	 * @return
+	 */
+	public static List<String> extrackLinksFromAction(String webPageFile){
+		List<String> linkList = new ArrayList<String>();
+		try {
+			if(FileUtil.isFileExist(webPageFile)) {
+				String keyword = "";
+				String[] div = {"'"};
+				String nextWord = "";
+				
+				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.replace(conts, "\r\n", "");
+				conts = StringUtil.replace(conts, "\n", "");
+				conts = adjustConts(conts);
+				conts = StringUtil.replace(conts, "\"", "'");
+				
+				String contsForAction = new String(conts);
 				
 				// Form Action
 				contsForAction = StringUtil.replace(contsForAction, ".action =", ".action=");
 				contsForAction = StringUtil.replace(contsForAction, ".action= '", ".action='");
 				contsForAction = StringUtil.replace(contsForAction, "action =", "action=");
 				contsForAction = StringUtil.replace(contsForAction, "action= '", "action='");
+				contsForAction = StringUtil.replace(contsForAction, "action=''", "");
 				keyword = "action='";
 				nextWord = "";
 				while(contsForAction.indexOf(keyword) > -1) {
@@ -772,6 +802,109 @@ public class ParseUtil {
 			e.printStackTrace();
 		}
 		return linkList;
+	}
+	
+	/**
+	 * UiVO를 특정디렉토리에 파일로 저장하는 메소드
+	 * @param vo
+	 * @param writeFilePath
+	 */
+	public static void writeUiVo(UiVo vo, String writeFilePath) {
+		String fileName = "";
+		StringBuffer uiConts = new StringBuffer();
+		String div = "|";
+		StringBuffer includeUiFileNameConts = new StringBuffer();
+		StringBuffer linkConts = new StringBuffer();
+		try {
+			fileName = StringUtil.nullCheck(vo.getUiId(), "") + ".txt";
+			uiConts.append("UI아이디" + div + StringUtil.nullCheck(vo.getUiId(), "")).append("\n");
+			uiConts.append("UI명" + div + StringUtil.nullCheck(vo.getUiName(), "")).append("\n");
+			uiConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
+			List<String> includeUiFileNameList = vo.getIncludeUiFileNameList();
+			if(includeUiFileNameList != null) {
+				for(String item : includeUiFileNameList) {
+					if(includeUiFileNameConts.length() > 0) {
+						includeUiFileNameConts.append(",");
+					}
+					includeUiFileNameConts.append(item);
+				}
+			}
+			uiConts.append("인크루드파일" + div + StringUtil.nullCheck(includeUiFileNameConts, "")).append("\n");
+			List<String> linkList = vo.getLinkList();
+			if(linkList != null) {
+				for(String item : linkList) {
+					if(linkConts.length() > 0) {
+						linkConts.append(",");
+					}
+					linkConts.append(item);
+				}
+			}
+			uiConts.append("링크" + div + StringUtil.nullCheck(linkConts, "")).append("\n");
+			
+			FileUtil.writeFile(writeFilePath, fileName, uiConts.toString()); 
+		} catch (Exception e) {
+			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * UI아이디로 특정디렉토리에서 UiVO를 복원하는 메소드
+	 * @param uiId
+	 * @param readFilePath
+	 * @return
+	 */
+	public static UiVo readUiVo(String uiId, String readFilePath) {
+		UiVo vo = new UiVo();
+		String fileName = "";
+		String div = "|";
+		try {
+			fileName = readFilePath + "/" + uiId+ ".txt";
+			if(FileUtil.isFileExist(fileName)) {
+				String[] lines = FileUtil.readFileByLines(fileName);
+				for(String line : lines) {
+					if(StringUtil.isEmpty(line.trim())) {continue;}
+					if(line.startsWith("UI아이디" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setUiId(words[1]);
+						}
+					}
+					if(line.startsWith("UI명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setUiName(words[1]);
+						}
+					}
+					if(line.startsWith("인크루드파일" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							List<String> includeUiFileNameList = new ArrayList<String>();
+							String[] includeUiFileNameStrList = StringUtil.toStrArray(words[1], ",");
+							for(String includeUiFileNameStr : includeUiFileNameStrList) {
+								includeUiFileNameList.add(includeUiFileNameStr);
+							}
+							vo.setIncludeUiFileNameList(includeUiFileNameList);
+						}
+					}
+					if(line.startsWith("링크" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							List<String> linkList = new ArrayList<String>();
+							String[] linkStrList = StringUtil.toStrArray(words[1], ",");
+							for(String linkStr : linkStrList) {
+								linkList.add(linkStr);
+							}
+							vo.setLinkList(linkList);
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vo;
 	}
 	
 

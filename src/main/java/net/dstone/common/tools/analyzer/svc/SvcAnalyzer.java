@@ -12,10 +12,13 @@ import net.dstone.common.tools.analyzer.svc.clzz.impl.DefaultClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.DefaultMtd;
 import net.dstone.common.tools.analyzer.svc.query.impl.DefaultQuery;
+import net.dstone.common.tools.analyzer.svc.ui.Ui;
+import net.dstone.common.tools.analyzer.svc.ui.impl.DefaultUi;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
+import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
@@ -30,10 +33,10 @@ public class SvcAnalyzer extends BaseObject{
 	static {
 		QUERY_FILTER.add("xml");
 	}
-	private static ArrayList<String> WEB_FILTER = new ArrayList<String>();
+	private static ArrayList<String> UI_FILTER = new ArrayList<String>();
 	static {
-		WEB_FILTER.add("jsp");
-		WEB_FILTER.add("js");
+		UI_FILTER.add("jsp");
+		UI_FILTER.add("js");
 	}
 
 	private static boolean isValidSvcFile(String file) {
@@ -71,6 +74,17 @@ public class SvcAnalyzer extends BaseObject{
 		if( FileUtil.isFileExist(file) ) {
 			String ext = FileUtil.getFileExt(file);
 			if(QUERY_FILTER.contains(ext)) {
+				isValid = true;
+			}
+		}
+		return isValid;
+	}
+	
+	private static boolean isValidUiFile(String file) {
+		boolean isValid = false;
+		if( FileUtil.isFileExist(file) ) {
+			String ext = FileUtil.getFileExt(file);
+			if(UI_FILTER.contains(ext)) {
 				isValid = true;
 			}
 		}
@@ -199,15 +213,67 @@ public class SvcAnalyzer extends BaseObject{
 		
 	}
 
+	/**
+	 * UI 분석 팩토리 클래스
+	 * @author jysn007
+	 */
+	private static class UiFactory {
+		/**
+		 * UI파일로부터 UI아이디 추출
+		 * @param uiFile
+		 * @return
+		 */
+		static String getUiId(String uiFile) throws Exception{
+			uiFile = StringUtil.replace(uiFile, "\\", "/");
+			String uiId = StringUtil.replace( FileUtil.getFileName(uiFile, false),  AppAnalyzer.CLASS_ROOT_PATH, "");
+			if(uiId.startsWith("/")) {
+				uiId = uiId.substring(1);
+			}
+			uiId = StringUtil.replace(uiId,  "/", ".");
+			return uiId;
+		}
+		/**
+		 * UI파일로부터 UI명 추출
+		 * @param uiFile
+		 * @return
+		 */
+		static String getUiName(String uiFile) throws Exception{
+			Ui ui = new DefaultUi();
+			return ui.getUiName(uiFile);
+		}
+		/**
+		 * UI파일로부터 링크목록 추출
+		 * @param uiFile
+		 * @return
+		 */
+		static List<String> getUiLinkList(String uiFile) throws Exception {
+			Ui ui = new DefaultUi();
+			return ui.getUiLinkList(uiFile);
+		}
+
+		/**
+		 * UI파일로부터 Include된 타 UI파일목록 추출
+		 * @param uiFile
+		 * @return
+		 */
+		static List<String> getIncludeUiList(String uiFile) throws Exception {
+			Ui ui = new DefaultUi();
+			return ui.getIncludeUiList(uiFile);
+		}
+
+	}
+
 	/*********************** Factory 끝 ***********************/
 	
 	public void analyze(int jobKind) {
 		String[] 	classFileList = null;				/* 클래스파일리스트 */
 		String[] 	queryFileList = null;				/* 쿼리파일리스트 */
+		String[] 	uiFileList = null;					/* UI파일리스트 */
 
 		String[] 	analyzedClassFileList = null;		/* 클래스분석파일리스트 */
 		String[] 	analyzedQueryFileList = null;		/* 쿼리파분석일리스트 */
 		String[] 	analyzedMethodFileList = null;		/* 메소드분석파일리스트 */
+		String[] 	analyzedUiFileList = null;			/* UI분석파일리스트 */
 		
 		ArrayList<String> filteredFileList = null;
 		try {
@@ -269,7 +335,32 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 			this.analyzeMtdCallTbl(analyzedMethodFileList);
 			getLogger().info("/**************************************** C.메소드 분석 끝 ****************************************/");
-			
+
+			getLogger().info("/**************************************** D.UI 분석 시작 ****************************************/");
+			getLogger().info("/*** D-1.UI 파일추출 시작 ***/");
+			uiFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
+			filteredFileList = new ArrayList<String>();
+			for(String file : uiFileList) {
+				if( !isValidUiFile(file) ) {
+					continue;
+				}
+				filteredFileList.add(file);
+			}
+			uiFileList = new String[filteredFileList.size()];
+			filteredFileList.toArray(uiFileList);
+			filteredFileList.clear();
+			filteredFileList = null;
+			getLogger().info("/*** D-2.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
+			if(jobKind <= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {return;}
+			this.analyzeUi(uiFileList);
+			getLogger().info("/*** D-3.UI파일로부터 Include된 타 UI파일목록의 추출");
+			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_INCLUDE) {return;}
+			this.analyzeUiIncludeUi(uiFileList);
+			getLogger().info("/*** D-4.UI파일로부터 링크 추출");
+			if(jobKind <= AppAnalyzer.JOB_KIND_43_ANALYZE_UI_LINK) {return;}
+			this.analyzeUiLink(uiFileList);
+			getLogger().info("/**************************************** D.UI 분석 끝 ****************************************/");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -545,6 +636,100 @@ public class SvcAnalyzer extends BaseObject{
 
 		} catch (Exception e) {
 			LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	/**
+	 * UI파일리스트 에서 UI아이디/UI명 등이 담긴 UI분석파일리스트 추출
+	 * @param uiFileList UI파일리스트
+	 */
+	protected void analyzeUi(String[] uiFileList) throws Exception {
+		UiVo uiVo = null;
+		String uiFile= "";
+		try {
+			for(int i=0; i<uiFileList.length; i++) {
+				uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
+				if( isValidUiFile(uiFile) ) {
+					// UI아이디/UI명/인크루드파일/링크 추출
+					uiVo = new UiVo();
+					
+					// UI아이디
+					uiVo.setUiId(UiFactory.getUiId(uiFile));
+					
+					// UI명
+					uiVo.setUiName(UiFactory.getUiName(uiFile));
+
+					// 파일명
+					uiVo.setFileName(uiFile);
+					
+					// 파일저장			
+					ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
+					
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	/**
+	 * UI파일리스트 에서 인크루드파일을 추출하여 UI분석파일리스트 에 추가
+	 * @param uiFileList UI파일리스트
+	 */
+	protected void analyzeUiIncludeUi(String[] uiFileList) throws Exception {
+		UiVo uiVo = null;
+		String uiFile= "";
+		try {
+			for(int i=0; i<uiFileList.length; i++) {
+				uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
+				if( isValidUiFile(uiFile) ) {
+					
+					// UI Vo
+					uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
+					
+					// UI명
+					uiVo.setFileName(UiFactory.getUiName(uiFile));
+					
+					// 인크루드파일
+					uiVo.setIncludeUiFileNameList(UiFactory.getIncludeUiList(uiFile));
+
+					// 파일저장			
+					ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
+					
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeUiIncludeUi()수행중 예외발생. uiFile["+uiFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	/**
+	 * UI파일리스트 에서 링크정보를 추출하여 UI분석파일리스트 에 추가
+	 * @param uiFileList UI파일리스트
+	 */
+	protected void analyzeUiLink(String[] uiFileList) throws Exception {
+		UiVo uiVo = null;
+		String uiFile= "";
+		try {
+			for(int i=0; i<uiFileList.length; i++) {
+				uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
+				if( isValidUiFile(uiFile) ) {
+					// UI Vo
+					uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
+					
+					// 링크
+					uiVo.setLinkList(UiFactory.getUiLinkList(uiFile));
+
+					// 파일저장			
+					ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
 			e.printStackTrace();
 			throw e;
 		}

@@ -46,6 +46,9 @@ public class AppAnalyzer extends BaseObject{
 	public static int JOB_KIND_31_ANALYZE_MTD            = 31;  /* 클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출 */
 	public static int JOB_KIND_32_ANALYZE_MTD_CALLMTD    = 32;  /* 메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가 */
 	public static int JOB_KIND_33_ANALYZE_MTD_CALLTBL    = 33;  /* 메소드분석파일리스트 에 메소드내 호출테이블 목록 추가 */
+	public static int JOB_KIND_41_ANALYZE_UI		     = 41;  /* UI파일로부터  UI아이디/UI명 등이 담긴 UI분석파일목록 추출 */
+	public static int JOB_KIND_42_ANALYZE_UI_INCLUDE     = 42;  /* UI파일로부터 Include된 타 UI파일목록의 추출 */
+	public static int JOB_KIND_43_ANALYZE_UI_LINK        = 43;  /* UI파일로부터 링크 추출 */ 
 	
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 	
