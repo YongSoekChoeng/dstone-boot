@@ -265,6 +265,7 @@ public class SvcAnalyzer extends BaseObject{
 
 	/*********************** Factory 끝 ***********************/
 	
+	@SuppressWarnings("unused")
 	public void analyze(int jobKind) {
 		String[] 	classFileList = null;				/* 클래스파일리스트 */
 		String[] 	queryFileList = null;				/* 쿼리파일리스트 */
