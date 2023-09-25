@@ -38,6 +38,15 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static String WRITE_PATH;
 	
+	public static int JOB_KIND_99_ANALYZE_ALL          	 = 99;	/* 전체작업 */
+	public static int JOB_KIND_11_ANALYZE_CLASS          = 11;	/* 클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출 */
+	public static int JOB_KIND_12_ANALYZE_CLASS_ALIAS    = 12;  /* 클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가 */
+	public static int JOB_KIND_21_ANALYZE_QUERY          = 21;  /* 쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출 */
+	public static int JOB_KIND_22_ANALYZE_QUERY_CALLTBL  = 22;  /* 쿼리분석파일리스트 에 호출테이블ID정보목록 추가 */
+	public static int JOB_KIND_31_ANALYZE_MTD            = 31;  /* 클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출 */
+	public static int JOB_KIND_32_ANALYZE_MTD_CALLMTD    = 32;  /* 메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가 */
+	public static int JOB_KIND_33_ANALYZE_MTD_CALLTBL    = 33;  /* 메소드분석파일리스트 에 메소드내 호출테이블 목록 추가 */
+	
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 	
 	private AppAnalyzer(){
@@ -71,11 +80,11 @@ public class AppAnalyzer extends BaseObject{
 		return analizer;
 	}
 
-	public void analyze() {
+	public void analyze(int jobKind) {
 		try {
 			
 			/*** 1. 서버소스 분석 ***/
-			svcAnalyzer.analyze();
+			svcAnalyzer.analyze(jobKind);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
