@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -718,6 +720,58 @@ public class ParseUtil {
 			e.printStackTrace();
 		}
 		return vo;
+	}
+	
+	public static List<String> extrackLinksFromWebPage(String webPageFile){
+		List<String> linkList = new ArrayList<String>();
+		try {
+			if(FileUtil.isFileExist(webPageFile)) {
+
+				String keyword = "";
+				String[] div = {"'"};
+				String nextWord = "";
+				
+				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.replace(conts, "\r\n", "");
+				conts = StringUtil.replace(conts, "\n", "");
+				conts = adjustConts(conts);
+				conts = StringUtil.replace(conts, "\"", "'");
+				
+				String contsForLink = new String(conts);
+				String contsForAction = new String(conts);
+				
+				// A태그 Link
+				contsForLink = StringUtil.replace(contsForLink, "href =", "href=");
+				contsForLink = StringUtil.replace(contsForLink, "href= '", "href='");
+				keyword = "href='";
+				nextWord = "";
+				while(contsForLink.indexOf(keyword) > -1) {
+					if(contsForLink.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForLink, keyword, div);
+						linkList.add(nextWord);
+						contsForLink = contsForLink.substring( contsForLink.indexOf(nextWord) + (nextWord).length() );
+					}
+				}
+				
+				// Form Action
+				contsForAction = StringUtil.replace(contsForAction, ".action =", ".action=");
+				contsForAction = StringUtil.replace(contsForAction, ".action= '", ".action='");
+				contsForAction = StringUtil.replace(contsForAction, "action =", "action=");
+				contsForAction = StringUtil.replace(contsForAction, "action= '", "action='");
+				keyword = "action='";
+				nextWord = "";
+				while(contsForAction.indexOf(keyword) > -1) {
+					if(contsForAction.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForAction, keyword, div);
+						linkList.add(nextWord);
+						contsForAction = contsForAction.substring( contsForAction.indexOf(nextWord) + (nextWord).length() );
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return linkList;
 	}
 	
 

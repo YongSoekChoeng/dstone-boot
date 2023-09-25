@@ -30,6 +30,11 @@ public class SvcAnalyzer extends BaseObject{
 	static {
 		QUERY_FILTER.add("xml");
 	}
+	private static ArrayList<String> WEB_FILTER = new ArrayList<String>();
+	static {
+		WEB_FILTER.add("jsp");
+		WEB_FILTER.add("js");
+	}
 
 	private static boolean isValidSvcFile(String file) {
 		boolean isValid = false;
@@ -193,6 +198,7 @@ public class SvcAnalyzer extends BaseObject{
 		}
 		
 	}
+
 	/*********************** Factory 끝 ***********************/
 	
 	public void analyze(int jobKind) {
