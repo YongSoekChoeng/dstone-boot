@@ -66,23 +66,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		if("java".equals(fileExt)) {
 			if(fileConts.indexOf("public class") != -1) {
 				fileConts = fileConts.substring(0, fileConts.indexOf("public class"));
-				String[] lines = StringUtil.toStrArray(fileConts, "\n");
-				for(String line : lines) {
-					if(line.toUpperCase().indexOf("@DESCRIPTION") != -1) {
-						className = line;
-						className = line.substring(line.toUpperCase().indexOf("@DESCRIPTION")+12);
-						break;
-					}else if(line.toUpperCase().indexOf("@DESC") != -1) {
-						className = line;
-						className = line.substring(line.toUpperCase().indexOf("@DESC")+5);
-						break;
-					}
-				}
-				if(!StringUtil.isEmpty(className)) {
-					className = StringUtil.replace(className, ":", "");
-					className = StringUtil.replace(className, ";", "");
-					className = StringUtil.replace(className, " ", "");
-				}
+				className = ParseUtil.getFnNameFromComment(fileConts);
 			}
 		}
 		return className;

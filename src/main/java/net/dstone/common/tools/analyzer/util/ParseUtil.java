@@ -98,6 +98,9 @@ public class ParseUtil {
 				if( fnName.indexOf("<") > -1 ) {
 					fnName = fnName.substring(0, fnName.indexOf("<"));
 				}
+				fnName = StringUtil.replace(fnName, ":", "");
+				fnName = StringUtil.replace(fnName, ";", "");
+				fnName = StringUtil.replace(fnName, " ", "");
 			}
 		}
 		return fnName;
