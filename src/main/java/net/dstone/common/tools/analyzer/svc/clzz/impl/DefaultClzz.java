@@ -159,7 +159,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 
 			// import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있을 경우
 			}else if(!isUsed 
-				&&( fileConts.indexOf( "import " + pkg + ";")>-1 ||  pkg.equals(selfPkg) )
+				&&( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg) )
 			) {
 				lineNum = 0;
 				for(String line : lines) {
