@@ -10,7 +10,6 @@ import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
 import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParserClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
-import net.dstone.common.tools.analyzer.svc.mtd.impl.DefaultMtd;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParserMtd;
 import net.dstone.common.tools.analyzer.svc.query.Query;
 import net.dstone.common.tools.analyzer.svc.query.impl.DefaultQuery;

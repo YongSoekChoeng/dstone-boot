@@ -12,14 +12,8 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 
-import net.dstone.common.core.BaseObject;
-import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
-import net.dstone.common.tools.analyzer.vo.ClzzVo;
-import net.dstone.common.tools.analyzer.vo.MtdVo;
-import net.dstone.common.tools.analyzer.vo.QueryVo;
-import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class JavaParserMtd extends DefaultMtd implements Mtd {
@@ -42,6 +36,11 @@ public class JavaParserMtd extends DefaultMtd implements Mtd {
         List<AnnotationExpr> annotationList = classOrInterfaceDeclaration.getAnnotations();
         for(AnnotationExpr an : annotationList) {
         	if(an.getNameAsString().endsWith("Mapping")) {
+        		/***************************************************
+        		<SingleMemberAnnotation/NormalAnnotation 의 차이>
+        		- @RequestMapping("/sample/admin.do")       ===>> SingleMemberAnnotation
+        		- @RequestMapping(value="/sample/admin.do") ===>> NormalAnnotation
+        		***************************************************/
         		if( an.isSingleMemberAnnotationExpr() ) {
         			classUrl = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
         		}else if( an.isNormalAnnotationExpr() ) {
@@ -89,7 +88,6 @@ public class JavaParserMtd extends DefaultMtd implements Mtd {
             	METHOD_URL = classUrl + METHOD_URL;
             }
         	item.put("METHOD_URL", METHOD_URL);
-
         	// METHOD_BODY
         	String METHOD_BODY = ParseUtil.adjustConts(methodDec.getBody().get().toString());
     		String[] lines = StringUtil.toStrArray(METHOD_BODY, "\n");

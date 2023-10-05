@@ -1,7 +1,6 @@
 package net.dstone.common.tools.analyzer.svc.ui;
 
 import java.util.List;
-import java.util.Map;
 
 public interface Ui {
 	

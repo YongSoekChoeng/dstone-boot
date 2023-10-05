@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
-import net.dstone.common.tools.analyzer.vo.MtdVo;
 
 public interface Clzz {
 	/**

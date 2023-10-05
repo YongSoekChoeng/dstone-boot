@@ -16,10 +16,10 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 
-import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
+import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -62,7 +62,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 		String className = "";
 		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
         if(cu.getType(0).getJavadocComment().isPresent()) {
-        	className = net.dstone.common.tools.analyzer.util.ParseUtil.getFnNameFromComment(cu.getType(0).getJavadocComment().get().asString());
+        	className = ParseUtil.getFnNameFromComment(cu.getType(0).getJavadocComment().get().asString());
         }
 		return className;
 	}
@@ -108,6 +108,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	 * @param analyzedClassFileList
 	 * @return
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public List<Map<String, String>> getCallClassAlias(String classFile, String[] analyzedClassFileList) throws Exception {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
@@ -124,7 +125,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 		String type = "";
 		String alias = "";
         for (TypeDeclaration typeDec : cu.getTypes()) {
-            List<BodyDeclaration > members = typeDec.getMembers();
+            List<BodyDeclaration> members = typeDec.getMembers();
             if(members != null) {
                 for (BodyDeclaration  member : members) {
             		type = "";
@@ -156,7 +157,6 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
                         }
                 	}
                 	if(!StringUtil.isEmpty(alias)) {
-                		Map<String, String> aliasMap = new HashMap<String, String>();
                 		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
                 			continue;
                 		}
@@ -164,9 +164,10 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
     						isUsed = true;
     					}
     					if(isUsed) {
-                    		aliasMap.put("FULL_CLASS", type);
-                    		aliasMap.put("ALIAS", alias);
-                    		callClassAliasList.add(aliasMap);
+    						callClassAlias = new HashMap<String, String>();
+    						callClassAlias.put("FULL_CLASS", type);
+    						callClassAlias.put("ALIAS", alias);
+                    		callClassAliasList.add(callClassAlias);
     					}
                 	}
                 }

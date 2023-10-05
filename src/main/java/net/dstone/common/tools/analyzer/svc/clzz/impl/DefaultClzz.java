@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.dstone.common.core.BaseObject;
-import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
-import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
