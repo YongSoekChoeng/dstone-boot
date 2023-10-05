@@ -8,9 +8,11 @@ import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.DefaultClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParserClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.DefaultMtd;
+import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParserMtd;
+import net.dstone.common.tools.analyzer.svc.query.Query;
 import net.dstone.common.tools.analyzer.svc.query.impl.DefaultQuery;
 import net.dstone.common.tools.analyzer.svc.ui.Ui;
 import net.dstone.common.tools.analyzer.svc.ui.impl.DefaultUi;
@@ -39,7 +41,7 @@ public class SvcAnalyzer extends BaseObject{
 		UI_FILTER.add("js");
 	}
 
-	private static boolean isValidSvcFile(String file) {
+	public static boolean isValidSvcFile(String file) {
 		boolean isValid = false;
 		if( FileUtil.isFileExist(file) ) {
 			String ext = FileUtil.getFileExt(file);
@@ -50,7 +52,7 @@ public class SvcAnalyzer extends BaseObject{
 		return isValid;
 	}
 
-	private static boolean isValidSvcPackage(String packageId) {
+	public static boolean isValidSvcPackage(String packageId) {
 		boolean isValid = false;
 		for(String packageRoot : AppAnalyzer.INCLUDE_PACKAGE_ROOT) {
 			if( packageId.startsWith(packageRoot) ) {
@@ -69,7 +71,7 @@ public class SvcAnalyzer extends BaseObject{
 		return isValid;
 	}
 	
-	private static boolean isValidQueryFile(String file) {
+	public static boolean isValidQueryFile(String file) {
 		boolean isValid = false;
 		if( FileUtil.isFileExist(file) ) {
 			String ext = FileUtil.getFileExt(file);
@@ -80,7 +82,7 @@ public class SvcAnalyzer extends BaseObject{
 		return isValid;
 	}
 	
-	private static boolean isValidUiFile(String file) {
+	public static boolean isValidUiFile(String file) {
 		boolean isValid = false;
 		if( FileUtil.isFileExist(file) ) {
 			String ext = FileUtil.getFileExt(file);
@@ -99,14 +101,19 @@ public class SvcAnalyzer extends BaseObject{
 	 *
 	 */
 	private static class ClassFactory {
+		
+		static Clzz getClzz() {
+			//return new DefaultClzz(); 
+			return new JavaParserClzz(); 
+		}
+		
 		/**
 		 * 패키지ID 추출
 		 * @param classFile 클래스파일
 		 * @return
 		 */
 		static String getPackageId(String classFile) throws Exception {
-			Clzz clzz = new DefaultClzz();
-			return clzz.getPackageId(classFile);
+			return getClzz().getPackageId(classFile);
 		}
 		/**
 		 * 클래스ID 추출
@@ -114,8 +121,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getClassId(String classFile) throws Exception {
-			Clzz clzz = new DefaultClzz();
-			return clzz.getClassId(classFile);
+			return getClzz().getClassId(classFile);
 		}
 		/**
 		 * 클래스명 추출
@@ -123,8 +129,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getClassName(String classFile) throws Exception {
-			Clzz clzz = new DefaultClzz();
-			return clzz.getClassName(classFile);
+			return getClzz().getClassName(classFile);
 		}
 		/**
 		 * 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) 추출
@@ -132,8 +137,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static ClzzKind getClassKind(String classFile) throws Exception {
-			Clzz clzz = new DefaultClzz();
-			return clzz.getClassKind(classFile);
+			return getClzz().getClassKind(classFile);
 		}
 		/**
 		 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
@@ -142,8 +146,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) throws Exception {
-			Clzz clzz = new DefaultClzz();
-			return clzz.getCallClassAlias(classFile, otherClassFileList);
+			return getClzz().getCallClassAlias(classFile, otherClassFileList);
 		}
 	}
 	
@@ -152,6 +155,11 @@ public class SvcAnalyzer extends BaseObject{
 	 * @author jysn007
 	 */
 	private static class MethodFactory {
+
+		static Mtd getMethod() {
+			//return new DefaultMtd(); 
+			return new JavaParserMtd();
+		}
 		
 		/**
 		 * 메서드ID/메서드명/메서드URL/메서드내용 추출
@@ -159,8 +167,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getMtdInfoList(String classFile) throws Exception {
-			Mtd mtd = new DefaultMtd();
-			return mtd.getMtdInfoList(classFile);
+			return getMethod().getMtdInfoList(classFile);
 		}
 		
 		/**
@@ -169,8 +176,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
-			Mtd mtd = new DefaultMtd();
-			return mtd.getCallMtdList(analyzedMethodFile);
+			return getMethod().getCallMtdList(analyzedMethodFile);
 		}
 
 		/**
@@ -179,8 +185,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String methodFile) throws Exception {
-			Mtd mtd = new DefaultMtd();
-			return mtd.getCallTblList(methodFile);
+			return getMethod().getCallTblList(methodFile);
 		}
 
 	}
@@ -190,6 +195,10 @@ public class SvcAnalyzer extends BaseObject{
 	 * @author jysn007
 	 */
 	private static class QueryFactory {
+
+		static Query getQuery() {
+			return new DefaultQuery(); 
+		}
 		
 		/**
 		 * 쿼리정보 추출
@@ -197,8 +206,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getQueryInfoList(String queryFile) throws Exception {
-			DefaultQuery query = new DefaultQuery();
-			return query.getQueryInfoList(queryFile);
+			return getQuery().getQueryInfoList(queryFile);
 		}
 
 		/**
@@ -207,8 +215,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String queryInfoFile) throws Exception {
-			DefaultQuery query = new DefaultQuery();
-			return query.getTblInfoList(queryInfoFile);
+			return getQuery().getTblInfoList(queryInfoFile);
 		}
 		
 	}
@@ -218,6 +225,11 @@ public class SvcAnalyzer extends BaseObject{
 	 * @author jysn007
 	 */
 	private static class UiFactory {
+
+		static Ui getUi() {
+			return new DefaultUi(); 
+		}
+		
 		/**
 		 * UI파일로부터 UI아이디 추출
 		 * @param uiFile
@@ -238,8 +250,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getUiName(String uiFile) throws Exception{
-			Ui ui = new DefaultUi();
-			return ui.getUiName(uiFile);
+			return getUi().getUiName(uiFile);
 		}
 		/**
 		 * UI파일로부터 Include된 타 UI파일목록 추출
@@ -247,8 +258,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getIncludeUiList(String uiFile) throws Exception {
-			Ui ui = new DefaultUi();
-			return ui.getIncludeUiList(uiFile);
+			return getUi().getIncludeUiList(uiFile);
 		}
 
 		/**
@@ -257,8 +267,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getUiLinkList(String uiFile) throws Exception {
-			Ui ui = new DefaultUi();
-			return ui.getUiLinkList(uiFile);
+			return getUi().getUiLinkList(uiFile);
 		}
 
 	}
@@ -284,7 +293,7 @@ public class SvcAnalyzer extends BaseObject{
 			classFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : classFileList) {
-				if( !isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
+				if( !isValidSvcFile(file) ||  !isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
 					continue;
 				}
 				filteredFileList.add(file);

@@ -22,7 +22,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	 * @return
 	 */
 	@Override
-	public String getPackageId(String classFile) {
+	public String getPackageId(String classFile) throws Exception {
 		String pkg = "";
 		String[] lines = FileUtil.readFileByLines(classFile);
 		if(lines != null) {
@@ -46,7 +46,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	 * @return
 	 */
 	@Override
-	public String getClassId(String classFile) {
+	public String getClassId(String classFile) throws Exception  {
 		String classId = "";
 		classId = FileUtil.getFileName(classFile, false);
 		return classId;
@@ -58,7 +58,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	 * @return
 	 */
 	@Override
-	public String getClassName(String classFile) {
+	public String getClassName(String classFile) throws Exception  {
 		String className = "";
 		String fileExt = FileUtil.getFileExt(classFile);
 		String fileConts = FileUtil.readFile(classFile);
@@ -78,7 +78,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	 * @return
 	 */
 	@Override
-	public ClzzKind getClassKind(String classFile) {
+	public ClzzKind getClassKind(String classFile) throws Exception  {
 		ClzzKind classKind = ClzzKind.OT;
 		String fileExt = FileUtil.getFileExt(classFile);
 		if("jsp".equals(fileExt)) {
@@ -106,7 +106,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	 * @return
 	 */
 	@Override
-	public List<Map<String, String>> getCallClassAlias(String classFile, String[] analyzedClassFileList) {
+	public List<Map<String, String>> getCallClassAlias(String classFile, String[] analyzedClassFileList) throws Exception  {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 

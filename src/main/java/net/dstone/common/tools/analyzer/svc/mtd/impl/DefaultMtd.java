@@ -22,7 +22,7 @@ public class DefaultMtd extends BaseObject implements Mtd {
 	 * @return
 	 */
 	@Override
-	public List<Map<String, String>> getMtdInfoList(String classFile) {
+	public List<Map<String, String>> getMtdInfoList(String classFile) throws Exception  {
 		String fileConts = FileUtil.readFile(classFile);
 		fileConts = ParseUtil.adjustConts(fileConts);
 		return ParseUtil.getMtdListFromJava(fileConts);
@@ -35,7 +35,7 @@ public class DefaultMtd extends BaseObject implements Mtd {
 	 * @return
 	 */
 	@Override
-	public List<String> getCallMtdList(String analyzedMethodFile) {
+	public List<String> getCallMtdList(String analyzedMethodFile) throws Exception  {
 		List<String> callsMtdList = new ArrayList<String>();
 		
 		// 메소드VO 정보 획득
@@ -89,7 +89,7 @@ public class DefaultMtd extends BaseObject implements Mtd {
 	 * @return
 	 */
 	@Override
-	public List<String> getCallTblList(String analyzedMethodFile) {
+	public List<String> getCallTblList(String analyzedMethodFile) throws Exception  {
 		List<String> callTblList = new ArrayList<String>();
 		
 		// 메소드VO 정보 획득

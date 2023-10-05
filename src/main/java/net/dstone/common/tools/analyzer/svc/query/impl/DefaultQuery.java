@@ -30,30 +30,31 @@ public class DefaultQuery implements Query {
 		List<Map<String, String>> qList = new ArrayList<Map<String, String>>();
 		if(FileUtil.isFileExist(queryFile)) {
 			XmlUtil xml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
-			String namespace = xml.getNode("mapper").getAttributes().getNamedItem("namespace").getTextContent();
-			String nodeExp = "/mapper/*";
-			NodeList nodeList = xml.getNodeListByExp(nodeExp);
-			
-			if( nodeList != null ){
-				Map<String, String> row = new HashMap<String, String>();
-				String sqlBody = "";
-				for(int i=0; i<nodeList.getLength(); i++){
-					Node item =	nodeList.item(i);
-					row = new HashMap<String, String>();
-					
-					row.put("SQL_NAMESPACE", namespace);
-					row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
-					row.put("SQL_KIND", item.getNodeName().toUpperCase());
-					
-					nodeExp = "/mapper/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
-					sqlBody = xml.getNodeTextByExpForMybatis(nodeExp, true);
-					sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
-					row.put("SQL_BODY", sqlBody);
+			if(xml.hasNode("mapper")) {
+				String namespace = xml.getNode("mapper").getAttributes().getNamedItem("namespace").getTextContent();
+				String nodeExp = "/mapper/*";
+				NodeList nodeList = xml.getNodeListByExp(nodeExp);
+				if( nodeList != null ){
+					Map<String, String> row = new HashMap<String, String>();
+					String sqlBody = "";
+					for(int i=0; i<nodeList.getLength(); i++){
+						Node item =	nodeList.item(i);
+						row = new HashMap<String, String>();
+						
+						row.put("SQL_NAMESPACE", namespace);
+						row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
+						row.put("SQL_KIND", item.getNodeName().toUpperCase());
+						
+						nodeExp = "/mapper/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
+						sqlBody = xml.getNodeTextByExpForMybatis(nodeExp, true);
+						sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
+						row.put("SQL_BODY", sqlBody);
 
-					if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
-						qList.add(row);
+						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
+							qList.add(row);
+						}
+						
 					}
-					
 				}
 			}
 		}
