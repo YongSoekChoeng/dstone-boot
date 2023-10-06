@@ -57,7 +57,7 @@ public class DbGen {
 			MYSQL_CREATE.append("  TBL_ID VARCHAR(100) NOT NULL COMMENT '테이블ID', ").append("\n");
 			MYSQL_CREATE.append("  JOB_KIND VARCHAR(10) COMMENT '작업종류', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (FUNC_ID, TBL_ID) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (FUNC_ID, TBL_ID, JOB_KIND) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '테이블맵핑'; ").append("\n");
 			/* <화면-TB_UI> */
 			MYSQL_CREATE.append("CREATE TABLE TB_UI ( ").append("\n");
@@ -136,7 +136,7 @@ public class DbGen {
 			ORACLE_CREATE.append("  TBL_ID VARCHAR2(100) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  JOB_KIND VARCHAR2(10), ").append("\n");
 			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL, ").append("\n");
-			ORACLE_CREATE.append("  PRIMARY KEY (FUNC_ID, TBL_ID) ").append("\n");
+			ORACLE_CREATE.append("  PRIMARY KEY (FUNC_ID, TBL_ID, JOB_KIND) ").append("\n");
 			ORACLE_CREATE.append("); ").append("\n");			
 			ORACLE_CREATE.append("COMMENT ON TABLE TB_FUNC_TBL_MAPPING IS '테이블맵핑' ; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_FUNC_TBL_MAPPING.FUNC_ID IS '기능ID'; ").append("\n");
