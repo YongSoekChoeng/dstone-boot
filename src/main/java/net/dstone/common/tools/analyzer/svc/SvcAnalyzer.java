@@ -754,13 +754,13 @@ public class SvcAnalyzer extends BaseObject{
 		}
 	}
 	
-	private void deleteFromDb(String DBID) throws Exception {
+	public void deleteFromDb(String DBID) throws Exception {
 		getLogger().info("/**************************************** E.기존데이터삭제 시작 ****************************************/");
 		DbGen.deleteAll(DBID);
 		getLogger().info("/**************************************** E.기존데이터삭제 끝 ****************************************/");
 	}
 
-	private void insertToDb(String DBID) throws Exception {
+	public void insertToDb(String DBID) throws Exception {
 		getLogger().info("/**************************************** F.데이터적재 시작 ****************************************/");
 		String[] fileList = null;
 		String subPath = "";

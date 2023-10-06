@@ -27,6 +27,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
@@ -252,7 +253,7 @@ public class FileUtil {
 							}
 						}
 					}
-					deleteFile(filePath);
+					FileUtils.deleteDirectory(new File(filePath));
 				}
 			}
 		} catch (Exception e) {
