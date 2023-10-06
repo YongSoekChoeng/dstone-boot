@@ -321,7 +321,7 @@ public class DbGen {
 		}
 	}
 	
-	public static String getDdl(String DB_KIND, String JOB_KIND) {
+	public static String getDdlQuery(String DB_KIND, String JOB_KIND) {
 		if( "DROP".equals(JOB_KIND) ) {
 			return DDL.DROP.toString();
 		}else {
