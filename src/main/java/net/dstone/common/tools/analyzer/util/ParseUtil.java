@@ -294,7 +294,7 @@ public class ParseUtil {
 		StringBuffer callClassAliasConts = new StringBuffer();
 		String div = "|";
 		try {
-			fileName = (StringUtil.isEmpty(vo.getPackageId()) ? "" : vo.getPackageId() + ".") + vo.getClassId()+ ".txt";
+			fileName = vo.getClassId()+ ".txt";
 			fileConts.append("패키지" + div + StringUtil.nullCheck(vo.getPackageId(), "")).append("\n");
 			fileConts.append("클래스ID" + div + StringUtil.nullCheck(vo.getClassId(), "")).append("\n");
 			fileConts.append("클래스명" + div + StringUtil.nullCheck(vo.getClassName(), "")).append("\n");
@@ -915,7 +915,6 @@ public class ParseUtil {
 					}
 				}
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

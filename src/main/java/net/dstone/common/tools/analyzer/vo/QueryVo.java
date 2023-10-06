@@ -2,7 +2,9 @@ package net.dstone.common.tools.analyzer.vo;
 
 import java.util.List;
 
-public class QueryVo {
+import net.dstone.common.biz.BaseVo;
+
+public class QueryVo extends BaseVo {
 
 	private String key;
 	private String namespace;

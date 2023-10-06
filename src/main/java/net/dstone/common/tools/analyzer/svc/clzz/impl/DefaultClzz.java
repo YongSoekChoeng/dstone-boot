@@ -46,7 +46,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	@Override
 	public String getClassId(String classFile) throws Exception  {
 		String classId = "";
-		classId = FileUtil.getFileName(classFile, false);
+		classId = this.getPackageId(classFile) + "." + FileUtil.getFileName(classFile, false);
 		return classId;
 	}
 
@@ -125,7 +125,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			isAliasExists = false;
 			isUsed = false;
 			String pkg = packageClassId.substring(0, packageClassId.lastIndexOf("."));
-			String classId = packageClassId.substring(packageClassId.lastIndexOf(".")+1);
+			String classId = packageClassId;
 
 			if( pkg.equals(selfPkg) && classId.equals(selfClassId)) {
 				continue;

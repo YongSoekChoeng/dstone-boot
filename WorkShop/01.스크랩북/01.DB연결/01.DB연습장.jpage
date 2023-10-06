@@ -9,12 +9,11 @@ String TABLE_NAME = "HELP";
 try {
 
 	String DB_URL = net.dstone.common.utils.SystemUtil.getInstance().getProperty(DBID + ".strUrl");
-	
-	sql.append("SELECT ").append("\n"); 
+		sql.append("SELECT ").append("\n"); 
 	sql.append("	* ").append("\n");
 	sql.append("FROM  ").append("\n");
 	sql.append("	TB_FUNC  ").append("\n");
-	sql.append("WHERE 1=1 ").append("\n");
+	sql.append("WHERE 1=1 ").append("\n");	
 	db = new net.dstone.common.utils.DbUtil(DBID);
 	db.getConnection();
 	db.setQuery(sql.toString());

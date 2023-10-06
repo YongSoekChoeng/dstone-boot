@@ -7,7 +7,11 @@ import net.dstone.common.utils.StringUtil;
 public class AppAnalyzer extends BaseObject{
 
 	private static AppAnalyzer analizer = null;
-	
+
+	/**
+	 * DBID
+	 */
+	public static String DBID;
 	/**
 	 * 프로젝트 루트 디렉토리
 	 */
@@ -89,6 +93,7 @@ public class AppAnalyzer extends BaseObject{
 	}
 	
 	/**
+	 * @param DBID - DBID
 	 * @param rootPath - 프로젝트 루트 디렉토리
 	 * @param classRootPath - 클래스 루트 디렉토리
 	 * @param webRootPath - 웹 루트 디렉토리
@@ -98,15 +103,34 @@ public class AppAnalyzer extends BaseObject{
 	 * @param writePath - 중간산출물 저장디렉토리
 	 * @return
 	 */
-	public static AppAnalyzer getInstance(String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath){
+	public static AppAnalyzer getInstance(String DBID, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath){
 		if(analizer == null){
 			analizer = new AppAnalyzer();
-			AppAnalyzer.ROOT_PATH = StringUtil.replace(rootPath, "\\", "/");
-			AppAnalyzer.CLASS_ROOT_PATH = StringUtil.replace(classRootPath, "\\", "/");
-			AppAnalyzer.WEB_ROOT_PATH = StringUtil.replace(webRootPath, "\\", "/");
+			
+			AppAnalyzer.DBID = DBID;
+
+			rootPath = StringUtil.replace(rootPath, "\\", "/");
+			if(rootPath.endsWith("/")) {rootPath = rootPath.substring(0, rootPath.lastIndexOf("/"));}
+			AppAnalyzer.ROOT_PATH = rootPath;
+			
+			classRootPath = StringUtil.replace(classRootPath, "\\", "/");
+			if(classRootPath.endsWith("/")) {classRootPath = classRootPath.substring(0, classRootPath.lastIndexOf("/"));}
+			AppAnalyzer.CLASS_ROOT_PATH = classRootPath;
+			
+			webRootPath = StringUtil.replace(webRootPath, "\\", "/");
+			if(webRootPath.endsWith("/")) {webRootPath = webRootPath.substring(0, webRootPath.lastIndexOf("/"));}
+			AppAnalyzer.WEB_ROOT_PATH = webRootPath;
+			
 			AppAnalyzer.INCLUDE_PACKAGE_ROOT = includePackageRoot;
+			
 			AppAnalyzer.EXCLUDE_PACKAGE_PATTERN = excludePackagePattern;
-			AppAnalyzer.QUERY_ROOT_PATH = StringUtil.replace(queryRootPath, "\\", "/");
+
+			queryRootPath = StringUtil.replace(queryRootPath, "\\", "/");
+			if(queryRootPath.endsWith("/")) {queryRootPath = queryRootPath.substring(0, queryRootPath.lastIndexOf("/"));}
+			AppAnalyzer.QUERY_ROOT_PATH = queryRootPath;
+			
+			writePath = StringUtil.replace(writePath, "\\", "/");
+			if(writePath.endsWith("/")) {writePath = writePath.substring(0, writePath.lastIndexOf("/"));}
 			AppAnalyzer.WRITE_PATH = writePath;
 		}
 		return analizer;
@@ -115,8 +139,20 @@ public class AppAnalyzer extends BaseObject{
 	public void analyze(int jobKind) {
 		try {
 			
-			/*** 1. 서버소스 분석 ***/
+			/*** 서버소스 분석 ***/
 			svcAnalyzer.analyze(jobKind);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public void save() {
+		try {
+			
+			/*** DB저장 ***/
+			svcAnalyzer.saveToDb(AppAnalyzer.DBID);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

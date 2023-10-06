@@ -15,6 +15,7 @@ import net.dstone.common.tools.analyzer.svc.query.Query;
 import net.dstone.common.tools.analyzer.svc.query.impl.DefaultQuery;
 import net.dstone.common.tools.analyzer.svc.ui.Ui;
 import net.dstone.common.tools.analyzer.svc.ui.impl.DefaultUi;
+import net.dstone.common.tools.analyzer.util.DbGen;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
@@ -369,7 +370,7 @@ public class SvcAnalyzer extends BaseObject{
 			if(jobKind <= AppAnalyzer.JOB_KIND_43_ANALYZE_UI_LINK) {return;}
 			this.analyzeUiLink(uiFileList);
 			getLogger().info("/**************************************** D.UI 분석 끝 ****************************************/");
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -552,7 +553,7 @@ public class SvcAnalyzer extends BaseObject{
 							mtdVo = new MtdVo();
 
 							// 기능ID
-							functionId = ClassFactory.getPackageId(classFile) + "." + ClassFactory.getClassId(classFile) + "." + methodInfo.get("METHOD_ID");
+							functionId = ClassFactory.getClassId(classFile) + "." + methodInfo.get("METHOD_ID");
 							mtdVo.setFunctionId(functionId);
 							// 메소드ID
 							mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
@@ -742,6 +743,107 @@ public class SvcAnalyzer extends BaseObject{
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	public void saveToDb(String DBID) {
+		try {
+			this.deleteFromDb(DBID);
+			this.insertToDb(DBID);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void deleteFromDb(String DBID) throws Exception {
+		getLogger().info("/**************************************** E.기존데이터삭제 시작 ****************************************/");
+		DbGen.deleteAll(DBID);
+		getLogger().info("/**************************************** E.기존데이터삭제 끝 ****************************************/");
+	}
+
+	private void insertToDb(String DBID) throws Exception {
+		getLogger().info("/**************************************** F.데이터적재 시작 ****************************************/");
+		String[] fileList = null;
+		String subPath = "";
+		ClzzVo clzzVo = null;
+		MtdVo mtdVo = null;
+		UiVo uiVo = null;
+		
+		try {
+			// 클래스
+			getLogger().info("/*** F-1.클래스 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/class";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					clzzVo = ParseUtil.readClassVo(file, subPath);
+					DbGen.insertTB_CLZZ(DBID, clzzVo);
+				}
+			}
+
+			// 기능메서드
+			getLogger().info("/*** F-2.기능메서드 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/method";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					mtdVo = ParseUtil.readMethodVo(file, subPath);
+					DbGen.insertTB_FUNC(DBID, mtdVo);
+				}
+			}
+
+			// 테이블
+			getLogger().info("/*** F-3.테이블 데이터적재 시작 ***/");
+			DbGen.insertTB_TBL(DBID);
+			
+			// 기능간맵핑
+			getLogger().info("/*** F-4.기능간맵핑 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/method";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					mtdVo = ParseUtil.readMethodVo(file, subPath);
+					DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, mtdVo);
+				}
+			}
+
+			// 테이블맵핑
+			getLogger().info("/*** F-5.테이블맵핑 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/method";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					mtdVo = ParseUtil.readMethodVo(file, subPath);
+					DbGen.insertTB_FUNC_TBL_MAPPING(DBID, mtdVo);
+				}
+			}
+
+			// 화면
+			getLogger().info("/*** F-6.화면 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/ui";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					uiVo = ParseUtil.readUiVo(file, subPath);
+					DbGen.insertTB_UI(DBID, uiVo);
+				}
+			}
+
+			// 화면기능맵핑
+			getLogger().info("/*** F-7.화면기능맵핑 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/ui";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					uiVo = ParseUtil.readUiVo(file, subPath);
+					DbGen.insertTB_UI_FUNC_MAPPING(DBID, uiVo);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		getLogger().info("/**************************************** F.데이터적재 끝 ****************************************/");
 	}
 	
 }

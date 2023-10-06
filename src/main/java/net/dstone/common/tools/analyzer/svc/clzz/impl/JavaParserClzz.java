@@ -48,7 +48,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	public String getClassId(String classFile) throws Exception {
 		String classId = "";
 		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
-		classId = cu.getType(0).getNameAsString();
+		classId = cu.getPackageDeclaration().get().getNameAsString() + "." + cu.getType(0).getNameAsString();
 		return classId;
 	}
 

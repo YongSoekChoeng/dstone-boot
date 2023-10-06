@@ -2,7 +2,9 @@ package net.dstone.common.tools.analyzer.vo;
 
 import java.util.List;
 
-public class UiVo {
+import net.dstone.common.biz.BaseVo;
+
+public class UiVo extends BaseVo {
 	private String uiId;
 	private String uiName;
 	protected String fileName;

@@ -2600,6 +2600,65 @@ public class DbUtil {
 	}
 	
 
+	public static net.dstone.common.utils.DataSet getTabs(String DBID) {
+		net.dstone.common.utils.DbUtil db = null;
+		net.dstone.common.utils.DataSet ds = null;
+		StringBuffer sql = new StringBuffer();
+
+		try {
+			db = new net.dstone.common.utils.DbUtil(DBID);
+			db.getConnection();
+			
+			// 1. 테이블정보 조회.
+			if ("ORACLE".equals(db.currentDbKind)) {
+				sql.append("SELECT  ").append("\n");
+				sql.append("	*  ").append("\n");
+				sql.append("FROM (  ").append("\n");
+				sql.append("	SELECT  ").append("\n");
+				sql.append("	    A.OWNER AS TABLE_OWNER ").append("\n");
+				sql.append("	    , A.TABLE_NAME ").append("\n");
+				sql.append("	    , A.COMMENTS AS TABLE_COMMENT ").append("\n");
+				sql.append("	    , ROW_NUMBER() OVER (PARTITION BY A.TABLE_NAME ORDER BY A.TABLE_NAME) RNUM").append("\n");
+				sql.append("	FROM  ").append("\n");
+				sql.append("	    ALL_TAB_COMMENTS A ").append("\n");
+				sql.append(	"WHERE 1=1 ").append("\n");
+				sql.append("		AND A.TABLE_TYPE = 'TABLE'").append("\n");
+				sql.append("		AND A.TABLE_NAME IN ( SELECT TABLE_NAME FROM USER_TAB_COMMENTS B WHERE A.TABLE_NAME = B.TABLE_NAME ) ").append("\n");
+				sql.append("	) A ").append("\n");
+				sql.append("WHERE 1=1 ").append("\n");
+				sql.append("	AND RNUM < 2 ").append("\n");
+			} else if ("MSSQL".equals(db.currentDbKind)) {
+				sql.append("SELECT   ").append("\n");
+				sql.append("	A.TABLE_SCHEMA AS TABLE_OWNER ").append("\n");
+				sql.append("	, A.TABLE_NAME ").append("\n");
+				sql.append("	, (SELECT VALUE FROM ::FN_LISTEXTENDEDPROPERTY (NULL, 'SCHEMA', 'dbo', 'TABLE', A.TABLE_NAME, DEFAULT, DEFAULT) ) AS TABLE_COMMENT ").append("\n");
+				sql.append("FROM INFORMATION_SCHEMA.TABLES A ").append("\n");
+			} else if ("MYSQL".equals(db.currentDbKind)) {
+				sql.append("SELECT ").append("\n"); 
+				sql.append("	A.* ").append("\n"); 
+				sql.append("FROM ( ").append("\n"); 
+				sql.append("	SELECT ").append("\n"); 
+				sql.append("		A.TABLE_SCHEMA AS TABLE_OWNER ").append("\n");
+				sql.append("		, A.TABLE_NAME ").append("\n");
+				sql.append("		, A.TABLE_COMMENT ").append("\n");
+				sql.append("	FROM  ").append("\n");
+				sql.append("		INFORMATION_SCHEMA.TABLES A ").append("\n");
+				sql.append("	WHERE 1=1 ").append("\n");
+				sql.append(") A ").append("\n"); 
+			}
+			
+			db.setQuery(sql.toString());
+			ds = new net.dstone.common.utils.DataSet();
+			ds.buildFromResultSet(db.select(), "TBL_LIST");
+			
+			ds.setDatum("DB_KIND", db.currentDbKind);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			db.release();
+		}
+		return ds;
+	}
 	public static net.dstone.common.utils.DataSet getCols(String DBID, String TABLE_NAME) {
 		net.dstone.common.utils.DbUtil db = null;
 		net.dstone.common.utils.DataSet ds = null;

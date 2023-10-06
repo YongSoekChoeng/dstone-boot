@@ -41,11 +41,11 @@ public class DefaultMtd extends BaseObject implements Mtd {
 		// 메소드VO 정보 획득
 		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-
+		
 		// 클래스VO 정보 획득
 		String packageClassId = functionId.substring(0, functionId.lastIndexOf("."));
 		ClzzVo clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
-		
+
 		// 클래스 호출알리아스 정보
 		List<Map<String, String>> callClassAliasList = clzzVo.getCallClassAlias();
 		
@@ -75,11 +75,12 @@ public class DefaultMtd extends BaseObject implements Mtd {
 					}
 				}
 				if( !StringUtil.isEmpty(callMtd) ) {
-					callsMtdList.add(callMtd);
+					if(!callsMtdList.contains(callMtd)) {
+						callsMtdList.add(callMtd);
+					}
 				}
 			}
 		}
-		
 		return callsMtdList;
 	}
 
@@ -115,6 +116,11 @@ public class DefaultMtd extends BaseObject implements Mtd {
 			for(String line : lines) {
 				keyword = "";
 				for(String queryKey : queryKeyList) {
+					/********************************************
+					아래와 같이 queryKey => keyword 로 치환하는 작업.
+					queryKey 	: net.dstone.sample.AdminDao_listUser
+					keyword 	: "net.dstone.sample.AdminDao.listUser"
+					********************************************/
 					keyword = queryKey;
 					if( keyword.indexOf("_")>-1 ) {
 						keyword = keyword.substring(0, keyword.lastIndexOf("_")) + "." + keyword.substring(keyword.lastIndexOf("_")+1);
@@ -123,9 +129,15 @@ public class DefaultMtd extends BaseObject implements Mtd {
 					if( line.indexOf(keyword) > -1 ) {
 						queryVo = ParseUtil.readQueryVo(queryKey, AppAnalyzer.WRITE_PATH + "/query");
 						if(queryVo != null && queryVo.getCallTblList() != null && queryVo.getCallTblList().size() > 0) {
+							String tblKey = "";
 							for(String callTbl : queryVo.getCallTblList()) {
-								if( !callTblList.contains(callTbl) ) {
-									callTblList.add(callTbl);
+								/********************************************
+								메소드VO.호출테이블 항목을 테이블명 + "!" + 쿼리종류 로 저장.
+								예)SAMPLE_MEMBER!UPDATE
+								********************************************/
+								tblKey = callTbl + "!" + queryVo.getQueryKind();
+								if( !callTblList.contains(tblKey ) ) {
+									callTblList.add(tblKey);
 								}
 							}
 						}
