@@ -154,7 +154,7 @@ public class AppAnalyzer extends BaseObject{
 		}
 	}
 	
-	public void analyze(int jobKind) {
+	public void analyzeApp(int jobKind) {
 		try {
 			
 			/*** 서버소스 분석 ***/
@@ -166,7 +166,7 @@ public class AppAnalyzer extends BaseObject{
 		}
 	}
 	
-	public void save() {
+	public void saveToDb() {
 		try {
 			
 			/*** DB저장 ***/
