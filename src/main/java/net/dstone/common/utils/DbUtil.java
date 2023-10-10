@@ -2763,6 +2763,8 @@ public class DbUtil {
 	public static net.dstone.common.utils.DataSet getKeys(String DBID, String TABLE_NAME) {
 		net.dstone.common.utils.DbUtil db = null;
 		net.dstone.common.utils.DataSet ds = null;
+		net.dstone.common.utils.DataSet dsRow = null;
+		net.dstone.common.utils.DataSet dsCols = null;
 		StringBuffer keySql = new StringBuffer();
 
 		try {
@@ -2809,6 +2811,17 @@ public class DbUtil {
 			db.setQuery(keySql.toString());
 			ds = new net.dstone.common.utils.DataSet();
 			ds.buildFromResultSet(db.select(), "KEY_LIST");
+	
+			dsCols = getCols(DBID, TABLE_NAME);
+			for(int i=0; i<ds.getDataSetRowCount("KEY_LIST"); i++) {
+				dsRow = ds.getDataSet("KEY_LIST", i);
+				for(int k=0; k<dsCols.getDataSetRowCount("COL_LIST"); k++) {
+					if( dsRow.getDatum("COLUMN_NAME").equals(dsCols.getDataSet("COL_LIST", k).getDatum("COLUMN_NAME")) ) {
+						dsRow.setDatum("COLUMN_COMMENT", dsCols.getDataSet("COL_LIST", k).getDatum("COLUMN_COMMENT"));
+						break;
+					}
+				}
+			}
 
 			ds.setDatum("DB_KIND", db.currentDbKind);
 		} catch (Exception e) {
