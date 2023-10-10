@@ -157,8 +157,8 @@ public class SqlUtil extends BaseObject {
 				pagingUpConts.append("		        ROWNUM RNUM, P1.*  ").append("\n");
 				pagingUpConts.append("		    FROM  ").append("\n");
 				pagingUpConts.append("		        (  ").append("\n");
-				pagingUpConts.append("                /**********************************************************************************************************************************/ ").append("\n");
-				// 하단 쿼리
+				pagingUpConts.append("                 /**********************************************************************************************************************************/ ").append("\n");
+			// 하단 쿼리
 			}else if(upOrDown == 1){
 				pagingLowConts.append("                /**********************************************************************************************************************************/ ").append("\n");
 				pagingLowConts.append("		        ) P1 ").append("\n");
