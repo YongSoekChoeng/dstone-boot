@@ -225,10 +225,11 @@ public class SqlUtil extends BaseObject {
 	 * 테이블명으로 SELECT 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
-	 * @param queryKind
+	 * @param queryKind (BASIC/MYBATIS)
+	 * @param tableAlias
 	 * @return
 	 */
-	public static String getSelectSql(String DBID, String TABLE_NAME, String queryKind) {
+	public static String getSelectSql(String DBID, String TABLE_NAME, String queryKind, String tableAlias) {
 		StringBuffer sql = new StringBuffer();
 		net.dstone.common.utils.DataSet dsCols = null;
 		net.dstone.common.utils.DataSet dsKeys = null;
@@ -256,11 +257,14 @@ public class SqlUtil extends BaseObject {
 						if(i > 0 ) {
 							sql.append(", ");
 						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
+						}
 						sql.append(COLUMN_NAME).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
 				}
 				sql.append("FROM").append("\n");
-				sql.append("\t").append(TABLE_NAME).append("\n");
+				sql.append("\t").append(TABLE_NAME).append( (StringUtil.isEmpty(tableAlias)?"":" " + tableAlias) ).append("\n");
 				sql.append("WHERE").append("\n");
 				if (dsKeys.getDataSetRowCount("KEY_LIST") > 0) {
 					for (int i = 0; i < dsKeys.getDataSetRowCount("KEY_LIST"); i++) {
@@ -270,6 +274,9 @@ public class SqlUtil extends BaseObject {
 						sql.append("\t");
 						if(i > 0 ) {
 							sql.append("AND ");
+						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
 						}
 						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsKeys.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
@@ -289,10 +296,11 @@ public class SqlUtil extends BaseObject {
 	 * 테이블명으로 MERGE 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
-	 * @param queryKind
+	 * @param queryKind (BASIC/MYBATIS)
+	 * @param tableAlias
 	 * @return
 	 */
-	public static String getMergeSql(String DBID, String TABLE_NAME, String queryKind) {
+	public static String getMergeSql(String DBID, String TABLE_NAME, String queryKind, String tableAlias) {
 		StringBuffer sql = new StringBuffer();
 		net.dstone.common.utils.DataSet dsCols = null;
 		net.dstone.common.utils.DataSet dsKeys = null;
@@ -307,7 +315,7 @@ public class SqlUtil extends BaseObject {
 				int DATA_LENGTH = 0;
 				
 				String div = "\n";
-				sql.append("MERGE INTO ").append(TABLE_NAME).append(div);
+				sql.append("MERGE INTO ").append(TABLE_NAME).append( (StringUtil.isEmpty(tableAlias)?"":" " + tableAlias) ).append(div);
 				sql.append("USING DUAL").append(div);
 				sql.append("ON (").append(div);
 				if (dsKeys.getDataSetRowCount("KEY_LIST") > 0) {
@@ -318,6 +326,9 @@ public class SqlUtil extends BaseObject {
 						sql.append("\t");
 						if(i > 0 ) {
 							sql.append("AND ");
+						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
 						}
 						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsKeys.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
@@ -339,6 +350,9 @@ public class SqlUtil extends BaseObject {
 						if(i > 0 ) {
 							sql.append(", ");
 						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
+						}
 						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
 				}
@@ -359,6 +373,9 @@ public class SqlUtil extends BaseObject {
 						if(i > 0 ) {
 							sql.append(", ");
 						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
+						}
 						sql.append(COLUMN_NAME).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
 				}
@@ -371,6 +388,9 @@ public class SqlUtil extends BaseObject {
 						sql.append("\t");
 						if(i > 0 ) {
 							sql.append(", ");
+						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
 						}
 						sql.append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
@@ -390,10 +410,11 @@ public class SqlUtil extends BaseObject {
 	 * 테이블명으로 INSERT 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
-	 * @param queryKind
+	 * @param queryKind (BASIC/MYBATIS)
+	 * @param tableAlias
 	 * @return
 	 */
-	public static String getInsertSql(String DBID, String TABLE_NAME, String queryKind) {
+	public static String getInsertSql(String DBID, String TABLE_NAME, String queryKind, String tableAlias) {
 		StringBuffer sql = new StringBuffer();
 		net.dstone.common.utils.DataSet dsCols = null;
 		net.dstone.common.utils.DataSet dsKeys = null;
@@ -406,7 +427,7 @@ public class SqlUtil extends BaseObject {
 				String COLUMN_COMMENT = "";
 				String DATA_TYPE = "";
 				int DATA_LENGTH = 0;
-				sql.append("INSERT INTO "+TABLE_NAME+" (").append("\n");
+				sql.append("INSERT INTO "+TABLE_NAME + (StringUtil.isEmpty(tableAlias)?"":" " + tableAlias) +" (").append("\n");
 				if (dsCols.getDataSetRowCount("COL_LIST") > 0) {
 					for (int i = 0; i < dsCols.getDataSetRowCount("COL_LIST"); i++) {
 						COLUMN_NAME = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME");
@@ -421,6 +442,9 @@ public class SqlUtil extends BaseObject {
 						if(i > 0 ) {
 							sql.append(", ");
 						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
+						}
 						sql.append(COLUMN_NAME).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
 				}
@@ -433,6 +457,9 @@ public class SqlUtil extends BaseObject {
 						sql.append("\t");
 						if(i > 0 ) {
 							sql.append(", ");
+						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
 						}
 						sql.append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
@@ -450,10 +477,11 @@ public class SqlUtil extends BaseObject {
 	 * 테이블명으로 UPDATE 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
-	 * @param queryKind
+	 * @param queryKind (BASIC/MYBATIS)
+	 * @param tableAlias
 	 * @return
 	 */
-	public static String getUpdateSql(String DBID, String TABLE_NAME, String queryKind) {
+	public static String getUpdateSql(String DBID, String TABLE_NAME, String queryKind, String tableAlias) {
 		StringBuffer sql = new StringBuffer();
 		net.dstone.common.utils.DataSet dsCols = null;
 		net.dstone.common.utils.DataSet dsKeys = null;
@@ -466,7 +494,7 @@ public class SqlUtil extends BaseObject {
 				String COLUMN_COMMENT = "";
 				String DATA_TYPE = "";
 				int DATA_LENGTH = 0;
-				sql.append("UPDATE "+TABLE_NAME+" ").append("\n");
+				sql.append("UPDATE "+TABLE_NAME).append( (StringUtil.isEmpty(tableAlias)?"":" " + tableAlias) ).append("\n");
 				sql.append("SET ").append("\n");
 				if (dsCols.getDataSetRowCount("COL_LIST") > 0) {
 					for (int i = 0; i < dsCols.getDataSetRowCount("COL_LIST"); i++) {
@@ -482,6 +510,9 @@ public class SqlUtil extends BaseObject {
 						if(i > 0 ) {
 							sql.append(", ");
 						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
+						}
 						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
 				}
@@ -494,6 +525,9 @@ public class SqlUtil extends BaseObject {
 						sql.append("\t");
 						if(i > 0 ) {
 							sql.append("AND ");
+						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
 						}
 						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsKeys.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
@@ -510,10 +544,11 @@ public class SqlUtil extends BaseObject {
 	 * 테이블명으로 DELETE 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
-	 * @param queryKind
+	 * @param queryKind (BASIC/MYBATIS)
+	 * @param tableAlias
 	 * @return
 	 */
-	public static String getDeleteSql(String DBID, String TABLE_NAME, String queryKind) {
+	public static String getDeleteSql(String DBID, String TABLE_NAME, String queryKind, String tableAlias) {
 		StringBuffer sql = new StringBuffer();
 		net.dstone.common.utils.DataSet dsCols = null;
 		net.dstone.common.utils.DataSet dsKeys = null;
@@ -527,7 +562,7 @@ public class SqlUtil extends BaseObject {
 				String COLUMN_COMMENT = "";
 				String DATA_TYPE = "";
 				int DATA_LENGTH = 0;
-				sql.append("DELETE FROM "+TABLE_NAME+" ").append("\n");
+				sql.append("DELETE FROM "+TABLE_NAME).append( (StringUtil.isEmpty(tableAlias)?"":" " + tableAlias) ).append("\n");
 				sql.append("WHERE").append("\n");
 				if (dsKeys.getDataSetRowCount("KEY_LIST") > 0) {
 					for (int i = 0; i < dsKeys.getDataSetRowCount("KEY_LIST"); i++) {
@@ -537,6 +572,9 @@ public class SqlUtil extends BaseObject {
 						sql.append("\t");
 						if(i > 0 ) {
 							sql.append("AND ");
+						}
+						if(!StringUtil.isEmpty(tableAlias)) {
+							sql.append(tableAlias+".");
 						}
 						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsKeys.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
 					}
@@ -555,9 +593,11 @@ public class SqlUtil extends BaseObject {
 	 * 테이블명으로 CRUD 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
+	 * @param queryKind (BASIC/MYBATIS)
+	 * @param tableAlias
 	 * @return
 	 */
-	public static String getCrudSql(String DBID, String TABLE_NAME, String queryKind) {
+	public static String getCrudSql(String DBID, String TABLE_NAME, String queryKind, String tableAlias) {
 		
 		StringBuffer sql = new StringBuffer();
 
@@ -566,19 +606,19 @@ public class SqlUtil extends BaseObject {
 			String div = "\n";
 
 			sql.append("/********* 1. SELECT *********/").append(div);
-			sql.append(getSelectSql(DBID, TABLE_NAME, queryKind)).append(div);
+			sql.append(getSelectSql(DBID, TABLE_NAME, queryKind, tableAlias)).append(div);
 
 			sql.append("/********* 2. MERGE *********/").append(div);
-			sql.append(getMergeSql(DBID, TABLE_NAME, queryKind)).append(div);
+			sql.append(getMergeSql(DBID, TABLE_NAME, queryKind, tableAlias)).append(div);
 		
 			sql.append("/********* 3. INSERT *********/").append(div);
-			sql.append(getInsertSql(DBID, TABLE_NAME, queryKind)).append(div);
+			sql.append(getInsertSql(DBID, TABLE_NAME, queryKind, tableAlias)).append(div);
 		
 			sql.append("/********* 4. UPDATE *********/").append(div);
-			sql.append(getUpdateSql(DBID, TABLE_NAME, queryKind)).append(div);
+			sql.append(getUpdateSql(DBID, TABLE_NAME, queryKind, tableAlias)).append(div);
 		
 			sql.append("/********* 5. DELETE *********/").append(div);
-			sql.append(getDeleteSql(DBID, TABLE_NAME, queryKind)).append(div);
+			sql.append(getDeleteSql(DBID, TABLE_NAME, queryKind, tableAlias)).append(div);
 		
 		}catch(Exception e){
 			e.printStackTrace();
