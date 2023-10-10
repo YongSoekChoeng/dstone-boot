@@ -1,0 +1,7 @@
+String DBID = "DBID_2";String TABLE_NAME = "TB_FUNC";String queryKind = "BASIC"; /* BASIC/MYBATIS */net.dstone.common.utils.DateUtil.stopWatchStart("02.테이블쿼리생성기");
+try {	String sql = "";		sql = net.dstone.common.utils.SqlUtil.getCrudSql(DBID, TABLE_NAME, queryKind);
+	net.dstone.common.utils.LogUtil.sysout(sql);
+}catch(Exception e){
+	e.printStackTrace();
+}finally{	net.dstone.common.utils.DateUtil.stopWatchEnd("02.테이블쿼리생성기");
+}

@@ -286,6 +286,107 @@ public class SqlUtil extends BaseObject {
 	
 	
 	/**
+	 * 테이블명으로 MERGE 쿼리를 생성하는 메소드.
+	 * @param DBID
+	 * @param TABLE_NAME
+	 * @param queryKind
+	 * @return
+	 */
+	public static String getMergeSql(String DBID, String TABLE_NAME, String queryKind) {
+		StringBuffer sql = new StringBuffer();
+		net.dstone.common.utils.DataSet dsCols = null;
+		net.dstone.common.utils.DataSet dsKeys = null;
+		try {
+			dsCols = net.dstone.common.utils.DbUtil.getCols(DBID, TABLE_NAME);
+			dsKeys = net.dstone.common.utils.DbUtil.getKeys(DBID, TABLE_NAME);
+			
+			if(dsCols != null){
+				String COLUMN_NAME = "";
+				String COLUMN_COMMENT = "";
+				String DATA_TYPE = "";
+				int DATA_LENGTH = 0;
+				
+				String div = "\n";
+				sql.append("MERGE INTO ").append(TABLE_NAME).append(div);
+				sql.append("USING DUAL").append(div);
+				sql.append("ON (").append(div);
+				if (dsKeys.getDataSetRowCount("KEY_LIST") > 0) {
+					for (int i = 0; i < dsKeys.getDataSetRowCount("KEY_LIST"); i++) {
+						COLUMN_NAME = dsKeys.getDataSet("KEY_LIST", i).getDatum("COLUMN_NAME");
+						COLUMN_COMMENT = dsKeys.getDataSet("KEY_LIST", i).getDatum("COLUMN_COMMENT");
+						DATA_TYPE = dsKeys.getDataSet("KEY_LIST", i).getDatum("DATA_TYPE");
+						sql.append("\t");
+						if(i > 0 ) {
+							sql.append("AND ");
+						}
+						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsKeys.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
+					}
+				}
+				sql.append(")").append(div);
+				sql.append("WHEN MATCH THEN ").append(div);
+				sql.append("UPDATE SET ").append(div);
+				if (dsCols.getDataSetRowCount("COL_LIST") > 0) {
+					for (int i = 0; i < dsCols.getDataSetRowCount("COL_LIST"); i++) {
+						COLUMN_NAME = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME");
+						COLUMN_COMMENT = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_COMMENT");
+						DATA_TYPE = dsCols.getDataSet("COL_LIST", i).getDatum("DATA_TYPE");
+						if(!StringUtil.isEmpty(dsCols.getDataSet("COL_LIST", i).getDatum("DATA_LENGTH"))){
+							DATA_LENGTH = Integer.parseInt(dsCols.getDataSet("COL_LIST", i).getDatum("DATA_LENGTH", "0"));
+						}else {
+							DATA_LENGTH = 0;
+						}
+						sql.append("\t");
+						if(i > 0 ) {
+							sql.append(", ");
+						}
+						sql.append(COLUMN_NAME).append(" = ").append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
+					}
+				}
+
+				sql.append("WHEN NOT MATCH THEN ").append(div);
+				sql.append("INSERT (").append(div);
+				if (dsCols.getDataSetRowCount("COL_LIST") > 0) {
+					for (int i = 0; i < dsCols.getDataSetRowCount("COL_LIST"); i++) {
+						COLUMN_NAME = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME");
+						COLUMN_COMMENT = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_COMMENT");
+						DATA_TYPE = dsCols.getDataSet("COL_LIST", i).getDatum("DATA_TYPE");
+						if(!StringUtil.isEmpty(dsCols.getDataSet("COL_LIST", i).getDatum("DATA_LENGTH"))){
+							DATA_LENGTH = Integer.parseInt(dsCols.getDataSet("COL_LIST", i).getDatum("DATA_LENGTH", "0"));
+						}else {
+							DATA_LENGTH = 0;
+						}
+						sql.append("\t");
+						if(i > 0 ) {
+							sql.append(", ");
+						}
+						sql.append(COLUMN_NAME).append(" /* "+COLUMN_COMMENT+" */").append("\n");
+					}
+				}
+				sql.append(") VALUES (").append(div);
+				if (dsCols.getDataSetRowCount("COL_LIST") > 0) {
+					for (int i = 0; i < dsCols.getDataSetRowCount("COL_LIST"); i++) {
+						COLUMN_NAME = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME");
+						COLUMN_COMMENT = dsCols.getDataSet("COL_LIST", i).getDatum("COLUMN_COMMENT");
+						DATA_TYPE = dsCols.getDataSet("COL_LIST", i).getDatum("DATA_TYPE");
+						sql.append("\t");
+						if(i > 0 ) {
+							sql.append(", ");
+						}
+						sql.append(getParamByType(DATA_TYPE, COLUMN_NAME, dsCols.getDatum("DB_KIND"), queryKind)).append(" /* "+COLUMN_COMMENT+" */").append("\n");
+					}
+				}
+				sql.append(");").append(div);
+				sql.append(div);
+			
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sql.toString();
+	}
+	
+	/**
 	 * 테이블명으로 INSERT 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
@@ -451,149 +552,33 @@ public class SqlUtil extends BaseObject {
 	
 
 	/**
-	 * 테이블명으로 Mybatis 용 CUD 쿼리를 생성하는 메소드.
+	 * 테이블명으로 CRUD 쿼리를 생성하는 메소드.
 	 * @param DBID
 	 * @param TABLE_NAME
 	 * @return
 	 */
-	public static String getCudSqlForMybatis(String DBID, String TABLE_NAME) {
+	public static String getCrudSql(String DBID, String TABLE_NAME, String queryKind) {
 		
 		StringBuffer sql = new StringBuffer();
-		
-		net.dstone.common.tools.BizGenerator.DBID = DBID;
-		
-		net.dstone.common.tools.BizGenerator.DbInfo.TabInfo table = null;
-		net.dstone.common.tools.BizGenerator.DbInfo.ColInfo[] cols = null;
-		net.dstone.common.tools.BizGenerator.DbInfo.ColInfo[] keys = null;
-		java.util.HashMap<String, net.dstone.common.tools.BizGenerator.DbInfo.ColInfo> keyMap = new java.util.HashMap<String, net.dstone.common.tools.BizGenerator.DbInfo.ColInfo>();
-		
+
 		try {
-		
-			table = net.dstone.common.tools.BizGenerator.DbInfo.getTab(TABLE_NAME);
-			cols = table.getCols();
-			keys = table.getKey();
-			if(keys != null){
-				for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
-					keyMap.put(key.COLUMN_NAME, key);
-				}
-			}
+			
 			String div = "\n";
-			int index = 0;
+
+			sql.append("/********* 1. SELECT *********/").append(div);
+			sql.append(getSelectSql(DBID, TABLE_NAME, queryKind)).append(div);
+
+			sql.append("/********* 2. MERGE *********/").append(div);
+			sql.append(getMergeSql(DBID, TABLE_NAME, queryKind)).append(div);
 		
-			sql.append("/********* 1. MERGE *********/").append(div);
-			sql.append("MERGE INTO ").append(table.TABLE_NAME).append(div);
-			sql.append("USING DUAL").append(div);
-			sql.append("ON (").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
-				if(index == 0 ){
-					sql.append("    ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
-				}else{
-					sql.append("    AND ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
-				}
-				index++;
-			}
-			sql.append(")").append(div);
-			sql.append("WHEN MATCH THEN ").append(div);
-			sql.append("UPDATE SET ").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
-				if(!keyMap.containsKey(col.COLUMN_NAME)){
-					if(index == 0 ){
-						sql.append("    ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
-					}else{
-						sql.append("    , ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
-					}
-					index++;
-				}
-			}
-			sql.append("WHEN NOT MATCH THEN ").append(div);
-			sql.append("INSERT (").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
-				if(index == 0 ){
-					sql.append("    ").append(col.COLUMN_NAME).append(div);
-				}else{
-					sql.append("    , ").append(col.COLUMN_NAME).append(div);
-				}
-				index++;
-			}	
-			sql.append(") VALUES (").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
-				if(index == 0 ){
-					sql.append("    #{").append(col.COLUMN_NAME).append("}").append(div);
-				}else{
-					sql.append("    , #{").append(col.COLUMN_NAME).append("}").append(div);
-				}
-				index++;
-			}	
-			sql.append(")").append(div);
-			sql.append(div);
+			sql.append("/********* 3. INSERT *********/").append(div);
+			sql.append(getInsertSql(DBID, TABLE_NAME, queryKind)).append(div);
 		
-			sql.append("/********* 2. INSERT *********/").append(div);
-			sql.append("INSERT INTO ").append(table.TABLE_NAME).append("(").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
-				if(index == 0 ){
-					sql.append("    ").append(col.COLUMN_NAME).append(div);
-				}else{
-					sql.append("    , ").append(col.COLUMN_NAME).append(div);
-				}
-				index++;
-			}	
-			sql.append(") VALUES (").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
-				if(index == 0 ){
-					sql.append("    #{").append(col.COLUMN_NAME).append("}").append(div);
-				}else{
-					sql.append("    , #{").append(col.COLUMN_NAME).append("}").append(div);
-				}
-				index++;
-			}	
-			sql.append(")").append(div);
-			sql.append(div);
+			sql.append("/********* 4. UPDATE *********/").append(div);
+			sql.append(getUpdateSql(DBID, TABLE_NAME, queryKind)).append(div);
 		
-			sql.append("/********* 3. UPDATE *********/").append(div);
-			sql.append("UPDATE ").append(table.TABLE_NAME).append(" ").append(div);
-			sql.append("SET ").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo col : cols){
-				if(!keyMap.containsKey(col.COLUMN_NAME)){
-					if(index == 0 ){
-						sql.append("    ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
-					}else{
-						sql.append("    , ").append(col.COLUMN_NAME).append("= #{").append(col.COLUMN_NAME).append("}").append(div);
-					}
-					index++;
-				}
-			}	
-			sql.append("WHERE ").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
-				if(index == 0 ){
-					sql.append("    ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
-				}else{
-					sql.append("    AND ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
-				}
-				index++;
-			}
-			sql.append(div);
-		
-			sql.append("/********* 4. DELETE *********/").append(div);
-			sql.append("DELETE FROM ").append(table.TABLE_NAME).append(" ").append(div);
-			sql.append("WHERE ").append(div);
-			index = 0;
-			for(net.dstone.common.tools.BizGenerator.DbInfo.ColInfo key : keys){
-				if(index == 0 ){
-					sql.append("    ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
-				}else{
-					sql.append("    AND ").append(key.COLUMN_NAME).append("= #{").append(key.COLUMN_NAME).append("}").append(div);
-				}
-				index++;
-			}
-			sql.append(div);
+			sql.append("/********* 5. DELETE *********/").append(div);
+			sql.append(getDeleteSql(DBID, TABLE_NAME, queryKind)).append(div);
 		
 		}catch(Exception e){
 			e.printStackTrace();
