@@ -600,7 +600,6 @@ public class DbGen {
 	
 	private static void deleteTB_CLZZ(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -618,7 +617,6 @@ public class DbGen {
 	
 	private static void deleteTB_FUNC(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -636,7 +634,6 @@ public class DbGen {
 	
 	private static void deleteTB_TBL(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -654,7 +651,6 @@ public class DbGen {
 
 	private static void deleteTB_FUNC_FUNC_MAPPING(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -672,7 +668,6 @@ public class DbGen {
 
 	private static void deleteTB_FUNC_TBL_MAPPING(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -690,7 +685,6 @@ public class DbGen {
 
 	private static void deleteTB_UI(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -708,7 +702,6 @@ public class DbGen {
 
 	private static void deleteTB_UI_FUNC_MAPPING(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
