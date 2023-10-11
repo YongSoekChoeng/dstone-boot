@@ -3,10 +3,9 @@ package net.dstone.common.tools.analyzer.vo;
 import java.util.List;
 import java.util.Map;
 
-import net.dstone.common.biz.BaseVo;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 
-public class ClzzVo extends BaseVo {
+public class ClzzVo {
 	
 	protected String packageId;
 	protected String classId;

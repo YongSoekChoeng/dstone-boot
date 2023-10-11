@@ -2,9 +2,7 @@ package net.dstone.common.tools.analyzer.vo;
 
 import java.util.List;
 
-import net.dstone.common.biz.BaseVo;
-
-public class MtdVo extends BaseVo {
+public class MtdVo {
 
 	protected String functionId;
 	protected String methodId;
