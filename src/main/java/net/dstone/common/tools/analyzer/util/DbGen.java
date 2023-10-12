@@ -113,7 +113,7 @@ public class DbGen {
 			MYSQL_FUNCTION.append("		WHERE 1=1").append("\n");
 			MYSQL_FUNCTION.append("			AND FIND_IN_SET(FUNC_ID, @R)").append("\n");
 			MYSQL_FUNCTION.append("			AND LENGTH(@R := CONCAT(@R, ',', CALL_FUNC_ID))").append("\n");
-			MYSQL_FUNCTION.append("			AND FUNC_ID = IF('Y' = IFNULL(V_RECURSIVE_YN, 'Y'), FUNC_ID, 'net.dstone.sample.dept.DeptController.listSampleDept')").append("\n");
+			MYSQL_FUNCTION.append("			AND FUNC_ID = IF('Y' = IFNULL(V_RECURSIVE_YN, 'Y'), FUNC_ID, V_FUNC_ID)").append("\n");
 			MYSQL_FUNCTION.append("	;").append("\n");
 			MYSQL_FUNCTION.append("			").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CONTINUE HANDLER FOR NOT FOUND SET FINISHED = 1;	").append("\n");
