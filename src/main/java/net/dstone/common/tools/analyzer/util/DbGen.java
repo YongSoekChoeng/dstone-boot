@@ -416,7 +416,6 @@ public class DbGen {
 		public static StringBuffer INSERT_TB_UI = new StringBuffer();
 		public static StringBuffer INSERT_TB_UI_FUNC_MAPPING = new StringBuffer();
 
-
 		public static StringBuffer DELETE_TB_CLZZ = new StringBuffer();
 		public static StringBuffer DELETE_TB_FUNC = new StringBuffer();
 		public static StringBuffer DELETE_TB_TBL = new StringBuffer();
@@ -424,6 +423,8 @@ public class DbGen {
 		public static StringBuffer DELETE_TB_FUNC_TBL_MAPPING = new StringBuffer();
 		public static StringBuffer DELETE_TB_UI = new StringBuffer();
 		public static StringBuffer DELETE_TB_UI_FUNC_MAPPING = new StringBuffer();
+		
+		public static StringBuffer SELECT_TB_FUNC_ALL = new StringBuffer();
 		
 		static {
 			
@@ -540,7 +541,35 @@ public class DbGen {
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			DELETE_TB_UI_FUNC_MAPPING.append("DELETE FROM TB_UI_FUNC_MAPPING WHERE WORKER_ID = 'SYSTEM' ").append("\n");
 
-			
+			/* <SELECT-기능조회ALL> */
+			SELECT_TB_FUNC_ALL.append("SELECT").append("\n");
+			SELECT_TB_FUNC_ALL.append("	A.FUNC_ID /* 기능ID */").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.CLZZ_ID /* 클래스ID */").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.MTD_ID /* 메서드ID */").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.MTD_NM /* 메서드명 */").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.CLZZ_KIND /* 기능종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.MTD_URL /* 메서드URL */").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.FUNC_FUNC_MAPPING").append("\n");
+			SELECT_TB_FUNC_ALL.append("	, A.FUNC_TBL_MAPPING").append("\n");
+			SELECT_TB_FUNC_ALL.append("FROM").append("\n");
+			SELECT_TB_FUNC_ALL.append("	(").append("\n");
+			SELECT_TB_FUNC_ALL.append("	SELECT ").append("\n");
+			SELECT_TB_FUNC_ALL.append("		C.FUNC_ID /* 기능ID */").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, C.CLZZ_ID /* 클래스ID */").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, C.MTD_ID /* 메서드ID */").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, C.MTD_NM /* 메서드명 */").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, (SELECT CLZZ_KIND FROM TB_CLZZ A WHERE A.CLZZ_ID = C.CLZZ_ID) CLZZ_KIND /* 기능종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, C.MTD_URL /* 메서드URL */").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, FN_FUNC_FUNC_MAPPING(C.FUNC_ID, ?) FUNC_FUNC_MAPPING").append("\n");
+			SELECT_TB_FUNC_ALL.append("		, FN_FUNC_TBL_MAPPING(C.FUNC_ID, ?) FUNC_TBL_MAPPING").append("\n");
+			SELECT_TB_FUNC_ALL.append("	FROM	 ").append("\n");
+			SELECT_TB_FUNC_ALL.append("		TB_FUNC C").append("\n");
+			SELECT_TB_FUNC_ALL.append("	WHERE 1=1").append("\n");
+			SELECT_TB_FUNC_ALL.append("	) A").append("\n");
+			SELECT_TB_FUNC_ALL.append("WHERE 1=1	").append("\n");
+			SELECT_TB_FUNC_ALL.append("	AND A.FUNC_ID LIKE CONCAT( ? , '%' )	").append("\n");
+			SELECT_TB_FUNC_ALL.append("ORDER BY").append("\n");
+			SELECT_TB_FUNC_ALL.append("	A.FUNC_ID").append("\n");
 		}
 	}
 	
@@ -942,6 +971,36 @@ public class DbGen {
 				db.release();
 			}
 		}
+	}
+	
+	
+	public static net.dstone.common.utils.DataSet selectTB_FUNC_ALL(String DBID, String FUNC_ID, String FUNC_RECURSIVE_YN, String TBL_RECURSIVE_YN) throws Exception {
+		net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
+		net.dstone.common.utils.DbUtil db = null;
+		int parameterIndex = 0;
+		try {
+			db = new net.dstone.common.utils.DbUtil(DBID);
+			db.getConnection();
+			
+			/* <기능조회ALL> */
+			db.setQuery(QUERY.SELECT_TB_FUNC_ALL.toString());
+			
+			parameterIndex = 0;
+			parameterIndex = setParam(db.pstmt, parameterIndex, StringUtil.nullCheck(FUNC_RECURSIVE_YN, "N"));	/* 기능ID 재귀조회여부 */
+			parameterIndex = setParam(db.pstmt, parameterIndex, StringUtil.nullCheck(TBL_RECURSIVE_YN, "N"));	/* 테이블ID 재귀조회여부 */
+			db.pstmt.setString(++parameterIndex, StringUtil.nullCheck(FUNC_ID, ""));	/* 기능ID */
+
+			ds.buildFromResultSet(db.select(), "FUNC_LIST");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(db != null) {
+				db.release();
+			}
+		}
+		return ds;
 	}
 	
 }
