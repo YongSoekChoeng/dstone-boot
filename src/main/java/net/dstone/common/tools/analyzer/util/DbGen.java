@@ -13,6 +13,9 @@ public class DbGen {
 		public static StringBuffer MYSQL_CREATE = new StringBuffer();
 		public static StringBuffer ORACLE_CREATE = new StringBuffer();
 
+		public static StringBuffer MYSQL_FUNCTION = new StringBuffer();
+		public static StringBuffer ORACLE_FUNCTION = new StringBuffer();
+
 		public static StringBuffer DROP = new StringBuffer();
 		
 		static {
@@ -73,6 +76,136 @@ public class DbGen {
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
 			MYSQL_CREATE.append("  PRIMARY KEY (UI_ID, MTD_URL) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '화면기능맵핑'; ").append("\n");
+
+			/* <펑션-FN_FUNC_FUNC_MAPPING> */
+			MYSQL_FUNCTION.append("/*******************************************************").append("\n");
+			MYSQL_FUNCTION.append("펑션생성권한 허용.(root 계정으로 수행해야 함.)").append("\n");
+			MYSQL_FUNCTION.append("SET GLOBAL log_bin_trust_function_creators = 1;").append("\n");
+			MYSQL_FUNCTION.append("*******************************************************/").append("\n");
+			MYSQL_FUNCTION.append("DROP FUNCTION IF EXISTS FN_FUNC_FUNC_MAPPING;").append("\n");
+			MYSQL_FUNCTION.append("DELIMITER$$").append("\n");
+			MYSQL_FUNCTION.append("CREATE FUNCTION FN_FUNC_FUNC_MAPPING(V_FUNC_ID VARCHAR(100), V_RECURSIVE_YN VARCHAR(1)) RETURNS VARCHAR(4000)").append("\n");
+			MYSQL_FUNCTION.append("DETERMINISTIC").append("\n");
+			MYSQL_FUNCTION.append("READS SQL DATA").append("\n");
+			MYSQL_FUNCTION.append("BEGIN").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE RETURN_CALL_CHAIN VARCHAR(4000) DEFAULT '';").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE FINISHED INTEGER DEFAULT 0;").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_FUNC_ID VARCHAR(100);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_CALL_FUNC_ID VARCHAR(100);").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CALL_CHAIN_UNIT VARCHAR(200);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CURSOR_FUNC_FUNC_MAPPING CURSOR FOR").append("\n");
+			MYSQL_FUNCTION.append("		SELECT ").append("\n");
+			MYSQL_FUNCTION.append("			FUNC_ID, CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("		FROM ").append("\n");
+			MYSQL_FUNCTION.append("			(").append("\n");
+			MYSQL_FUNCTION.append("			SELECT ").append("\n");
+			MYSQL_FUNCTION.append("				IFNULL(A.FUNC_ID, '') FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				, IFNULL(B.CALL_FUNC_ID, '') CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			FROM ").append("\n");
+			MYSQL_FUNCTION.append("				TB_FUNC A").append("\n");
+			MYSQL_FUNCTION.append("				, TB_FUNC_FUNC_MAPPING B").append("\n");
+			MYSQL_FUNCTION.append("			WHERE 1=1").append("\n");
+			MYSQL_FUNCTION.append("				AND A.FUNC_ID = B.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			ORDER BY ").append("\n");
+			MYSQL_FUNCTION.append("				A.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			) RM_SORTED").append("\n");
+			MYSQL_FUNCTION.append("			,(SELECT @R:= V_FUNC_ID ) INITIALISATION").append("\n");
+			MYSQL_FUNCTION.append("		WHERE 1=1").append("\n");
+			MYSQL_FUNCTION.append("			AND FIND_IN_SET(FUNC_ID, @R)").append("\n");
+			MYSQL_FUNCTION.append("			AND LENGTH(@R := CONCAT(@R, ',', CALL_FUNC_ID))").append("\n");
+			MYSQL_FUNCTION.append("			AND FUNC_ID = IF('Y' = IFNULL(V_RECURSIVE_YN, 'Y'), FUNC_ID, 'net.dstone.sample.dept.DeptController.listSampleDept')").append("\n");
+			MYSQL_FUNCTION.append("	;").append("\n");
+			MYSQL_FUNCTION.append("			").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CONTINUE HANDLER FOR NOT FOUND SET FINISHED = 1;	").append("\n");
+			MYSQL_FUNCTION.append("  ").append("\n");
+			MYSQL_FUNCTION.append("    OPEN CURSOR_FUNC_FUNC_MAPPING;").append("\n");
+			MYSQL_FUNCTION.append("		CURSOR_LOOP: LOOP").append("\n");
+			MYSQL_FUNCTION.append("			FETCH CURSOR_FUNC_FUNC_MAPPING INTO CUR_FUNC_ID, CUR_CALL_FUNC_ID;").append("\n");
+			MYSQL_FUNCTION.append("			IF FINISHED = 1 THEN ").append("\n");
+			MYSQL_FUNCTION.append("				LEAVE CURSOR_LOOP;").append("\n");
+			MYSQL_FUNCTION.append("			END IF;		").append("\n");
+			MYSQL_FUNCTION.append("			SET CALL_CHAIN_UNIT = CONCAT(CUR_FUNC_ID, '->', CUR_CALL_FUNC_ID, '|');				").append("\n");
+			MYSQL_FUNCTION.append("			IF INSTR(RETURN_CALL_CHAIN, CALL_CHAIN_UNIT) = 0 THEN").append("\n");
+			MYSQL_FUNCTION.append("				SET RETURN_CALL_CHAIN = CONCAT(IFNULL(RETURN_CALL_CHAIN, ''), IFNULL(CALL_CHAIN_UNIT, ''));").append("\n");
+			MYSQL_FUNCTION.append("			END IF;").append("\n");
+			MYSQL_FUNCTION.append("		END LOOP CURSOR_LOOP;		").append("\n");
+			MYSQL_FUNCTION.append("    CLOSE CURSOR_FUNC_FUNC_MAPPING;").append("\n");
+			MYSQL_FUNCTION.append("    ").append("\n");
+			MYSQL_FUNCTION.append("	RETURN RETURN_CALL_CHAIN;").append("\n");
+			MYSQL_FUNCTION.append("END$$").append("\n");
+			MYSQL_FUNCTION.append("DELIMITER ; ").append("\n");
+
+			/* <펑션-FN_FUNC_TBL_MAPPING> */
+			MYSQL_FUNCTION.append("/*******************************************************").append("\n");
+			MYSQL_FUNCTION.append("펑션생성권한 허용.(root 계정으로 수행해야 함.)").append("\n");
+			MYSQL_FUNCTION.append("SET GLOBAL log_bin_trust_function_creators = 1;").append("\n");
+			MYSQL_FUNCTION.append("*******************************************************/").append("\n");
+			MYSQL_FUNCTION.append("DROP FUNCTION IF EXISTS FN_FUNC_TBL_MAPPING;").append("\n");
+			MYSQL_FUNCTION.append("DELIMITER$$").append("\n");
+			MYSQL_FUNCTION.append("CREATE FUNCTION FN_FUNC_TBL_MAPPING(V_FUNC_ID VARCHAR(100), V_RECURSIVE_YN VARCHAR(1)) RETURNS VARCHAR(4000)").append("\n");
+			MYSQL_FUNCTION.append("DETERMINISTIC").append("\n");
+			MYSQL_FUNCTION.append("READS SQL DATA").append("\n");
+			MYSQL_FUNCTION.append("BEGIN").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE RETURN_CALL_CHAIN VARCHAR(4000) DEFAULT '';").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE FINISHED INTEGER DEFAULT 0;").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_FUNC_ID VARCHAR(100);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_TBL_ID VARCHAR(100);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_JOB_KIND VARCHAR(10);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CALL_CHAIN_UNIT VARCHAR(200);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CURSOR_FUNC_TBL_MAPPING CURSOR FOR	").append("\n");
+			MYSQL_FUNCTION.append("		SELECT").append("\n");
+			MYSQL_FUNCTION.append("			M.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			, M.TBL_ID").append("\n");
+			MYSQL_FUNCTION.append("			, M.JOB_KIND").append("\n");
+			MYSQL_FUNCTION.append("		FROM").append("\n");
+			MYSQL_FUNCTION.append("			TB_FUNC_TBL_MAPPING M").append("\n");
+			MYSQL_FUNCTION.append("			, (").append("\n");
+			MYSQL_FUNCTION.append("			SELECT").append("\n");
+			MYSQL_FUNCTION.append("				V_FUNC_ID FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			UNION ALL").append("\n");
+			MYSQL_FUNCTION.append("			SELECT ").append("\n");
+			MYSQL_FUNCTION.append("				CALL_FUNC_ID FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			FROM ").append("\n");
+			MYSQL_FUNCTION.append("				(").append("\n");
+			MYSQL_FUNCTION.append("				SELECT ").append("\n");
+			MYSQL_FUNCTION.append("					A.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("					, B.CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				FROM ").append("\n");
+			MYSQL_FUNCTION.append("					TB_FUNC A").append("\n");
+			MYSQL_FUNCTION.append("					, TB_FUNC_FUNC_MAPPING B").append("\n");
+			MYSQL_FUNCTION.append("				WHERE 1=1").append("\n");
+			MYSQL_FUNCTION.append("					AND A.FUNC_ID = B.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				ORDER BY ").append("\n");
+			MYSQL_FUNCTION.append("					A.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				) RM_SORTED").append("\n");
+			MYSQL_FUNCTION.append("				,(SELECT @R:=V_FUNC_ID) INITIALISATION").append("\n");
+			MYSQL_FUNCTION.append("			WHERE 1=1").append("\n");
+			MYSQL_FUNCTION.append("				AND FIND_IN_SET(FUNC_ID, @R)").append("\n");
+			MYSQL_FUNCTION.append("				AND LENGTH(@R := CONCAT(@R, ',', CALL_FUNC_ID))").append("\n");
+			MYSQL_FUNCTION.append("				AND FUNC_ID = IF('Y' = IFNULL(V_RECURSIVE_YN, 'Y'), FUNC_ID, V_FUNC_ID)").append("\n");
+			MYSQL_FUNCTION.append("			) A").append("\n");
+			MYSQL_FUNCTION.append("		WHERE 1=1").append("\n");
+			MYSQL_FUNCTION.append("			AND A.FUNC_ID = M.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("	;").append("\n");
+			MYSQL_FUNCTION.append("			").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CONTINUE HANDLER FOR NOT FOUND SET FINISHED = 1;	").append("\n");
+			MYSQL_FUNCTION.append("  ").append("\n");
+			MYSQL_FUNCTION.append("    OPEN CURSOR_FUNC_TBL_MAPPING;").append("\n");
+			MYSQL_FUNCTION.append("		CURSOR_LOOP: LOOP").append("\n");
+			MYSQL_FUNCTION.append("			FETCH CURSOR_FUNC_TBL_MAPPING INTO CUR_FUNC_ID, CUR_TBL_ID, CUR_JOB_KIND;").append("\n");
+			MYSQL_FUNCTION.append("			IF FINISHED = 1 THEN ").append("\n");
+			MYSQL_FUNCTION.append("				LEAVE CURSOR_LOOP;").append("\n");
+			MYSQL_FUNCTION.append("			END IF;		").append("\n");
+			MYSQL_FUNCTION.append("			SET CALL_CHAIN_UNIT = CONCAT(CUR_TBL_ID, ':', CUR_JOB_KIND, '|');				").append("\n");
+			MYSQL_FUNCTION.append("			IF INSTR(RETURN_CALL_CHAIN, CALL_CHAIN_UNIT) = 0 THEN").append("\n");
+			MYSQL_FUNCTION.append("				SET RETURN_CALL_CHAIN = CONCAT(IFNULL(RETURN_CALL_CHAIN, ''), IFNULL(CALL_CHAIN_UNIT, ''));").append("\n");
+			MYSQL_FUNCTION.append("			END IF;").append("\n");
+			MYSQL_FUNCTION.append("		END LOOP CURSOR_LOOP;		").append("\n");
+			MYSQL_FUNCTION.append("    CLOSE CURSOR_FUNC_TBL_MAPPING;").append("\n");
+			MYSQL_FUNCTION.append("    ").append("\n");
+			MYSQL_FUNCTION.append("	RETURN RETURN_CALL_CHAIN;").append("\n");
+			MYSQL_FUNCTION.append("END$$").append("\n");
+			MYSQL_FUNCTION.append("DELIMITER ; ").append("\n");
 
 			/* <클래스-TB_CLZZ> */
 			ORACLE_CREATE.append("CREATE TABLE TB_CLZZ ( ").append("\n");
@@ -166,6 +299,91 @@ public class DbGen {
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_UI_FUNC_MAPPING.MTD_URL IS '메서드URL'; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_UI_FUNC_MAPPING.WORKER_ID IS '입력자ID'; ").append("\n");
 
+			/* <펑션-FN_FUNC_FUNC_MAPPING> */
+			ORACLE_FUNCTION.append("CREATE OR REPLACE FUNCTION FN_FUNC_FUNC_MAPPING(V_FUNC_ID IN VARCHAR2, V_RECURSIVE_YN IN VARCHAR2) RETURN VARCHAR2").append("\n");
+			ORACLE_FUNCTION.append("IS").append("\n");
+			ORACLE_FUNCTION.append("	RETURN_CALL_CHAIN VARCHAR2(4000) DEFAULT '';").append("\n");
+			ORACLE_FUNCTION.append("	CALL_CHAIN_UNIT VARCHAR2(200);		").append("\n");
+			ORACLE_FUNCTION.append("BEGIN").append("\n");
+			ORACLE_FUNCTION.append("	FOR CURSOR_FUNC_FUNC_MAPPING IN (").append("\n");
+			ORACLE_FUNCTION.append("		SELECT ").append("\n");
+			ORACLE_FUNCTION.append("			A.FUNC_ID, A.CALL_FUNC_ID, A.LVL, A.RNUM").append("\n");
+			ORACLE_FUNCTION.append("		FROM").append("\n");
+			ORACLE_FUNCTION.append("			(").append("\n");
+			ORACLE_FUNCTION.append("			SELECT ").append("\n");
+			ORACLE_FUNCTION.append("				B.FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("				, B.CALL_FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("				, LEVEL LVL").append("\n");
+			ORACLE_FUNCTION.append("                , ROWNUM RNUM").append("\n");
+			ORACLE_FUNCTION.append("			FROM ").append("\n");
+			ORACLE_FUNCTION.append("				TB_FUNC_FUNC_MAPPING B        ").append("\n");
+			ORACLE_FUNCTION.append("			START WITH FUNC_ID = V_FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("			CONNECT BY PRIOR CALL_FUNC_ID = FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("			) A").append("\n");
+			ORACLE_FUNCTION.append("		WHERE 1=1").append("\n");
+			ORACLE_FUNCTION.append("			AND LVL = DECODE( 'Y', NVL(V_RECURSIVE_YN, 'Y'), LVL, 1 )").append("\n");
+			ORACLE_FUNCTION.append("		ORDER BY RNUM").append("\n");
+			ORACLE_FUNCTION.append("	) LOOP").append("\n");
+			ORACLE_FUNCTION.append("		CALL_CHAIN_UNIT := CURSOR_FUNC_FUNC_MAPPING.FUNC_ID || '->' || CURSOR_FUNC_FUNC_MAPPING.CALL_FUNC_ID || '|';				").append("\n");
+			ORACLE_FUNCTION.append("		IF RETURN_CALL_CHAIN IS NULL OR INSTR(RETURN_CALL_CHAIN, CALL_CHAIN_UNIT) = 0 THEN").append("\n");
+			ORACLE_FUNCTION.append("			RETURN_CALL_CHAIN := RETURN_CALL_CHAIN || CALL_CHAIN_UNIT;").append("\n");
+			ORACLE_FUNCTION.append("		END IF;			").append("\n");
+			ORACLE_FUNCTION.append("	END LOOP;").append("\n");
+			ORACLE_FUNCTION.append("	RETURN RETURN_CALL_CHAIN;").append("\n");
+			ORACLE_FUNCTION.append("EXCEPTION").append("\n");
+			ORACLE_FUNCTION.append("WHEN NO_DATA_FOUND THEN").append("\n");
+			ORACLE_FUNCTION.append("    RETURN('');").append("\n");
+			ORACLE_FUNCTION.append("END;").append("\n");
+			/* <펑션-FN_FUNC_TBL_MAPPING> */
+			ORACLE_FUNCTION.append("CREATE OR REPLACE FUNCTION FN_FUNC_TBL_MAPPING(V_FUNC_ID IN VARCHAR2, V_RECURSIVE_YN IN VARCHAR2) RETURN VARCHAR2").append("\n");
+			ORACLE_FUNCTION.append("IS").append("\n");
+			ORACLE_FUNCTION.append("	RETURN_CALL_CHAIN VARCHAR2(4000) DEFAULT '';").append("\n");
+			ORACLE_FUNCTION.append("	CALL_CHAIN_UNIT VARCHAR2(200);		").append("\n");
+			ORACLE_FUNCTION.append("BEGIN").append("\n");
+			ORACLE_FUNCTION.append("	FOR CURSOR_FUNC_TBL_MAPPING IN (").append("\n");
+			ORACLE_FUNCTION.append("		SELECT").append("\n");
+			ORACLE_FUNCTION.append("			M.FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("			, M.TBL_ID").append("\n");
+			ORACLE_FUNCTION.append("			, M.JOB_KIND").append("\n");
+			ORACLE_FUNCTION.append("		FROM").append("\n");
+			ORACLE_FUNCTION.append("			TB_FUNC_TBL_MAPPING M").append("\n");
+			ORACLE_FUNCTION.append("			, (").append("\n");
+			ORACLE_FUNCTION.append("			SELECT").append("\n");
+			ORACLE_FUNCTION.append("				V_FUNC_ID FUNC_ID, 0 LVL, 0 RNUM").append("\n");
+			ORACLE_FUNCTION.append("            FROM DUAL    ").append("\n");
+			ORACLE_FUNCTION.append("			UNION ALL            ").append("\n");
+			ORACLE_FUNCTION.append("			SELECT ").append("\n");
+			ORACLE_FUNCTION.append("				A.CALL_FUNC_ID FUNC_ID, A.LVL, A.RNUM").append("\n");
+			ORACLE_FUNCTION.append("			FROM").append("\n");
+			ORACLE_FUNCTION.append("				(").append("\n");
+			ORACLE_FUNCTION.append("				SELECT ").append("\n");
+			ORACLE_FUNCTION.append("					B.FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("					, B.CALL_FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("					, LEVEL LVL").append("\n");
+			ORACLE_FUNCTION.append("                    , ROWNUM RNUM").append("\n");
+			ORACLE_FUNCTION.append("				FROM ").append("\n");
+			ORACLE_FUNCTION.append("					TB_FUNC_FUNC_MAPPING B        ").append("\n");
+			ORACLE_FUNCTION.append("				START WITH FUNC_ID = V_FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("				CONNECT BY PRIOR CALL_FUNC_ID = FUNC_ID").append("\n");
+			ORACLE_FUNCTION.append("				) A").append("\n");
+			ORACLE_FUNCTION.append("			WHERE 1=1").append("\n");
+			ORACLE_FUNCTION.append("				AND LVL = DECODE( 'Y', NVL(V_RECURSIVE_YN, 'Y'), LVL, 1 )").append("\n");
+			ORACLE_FUNCTION.append("			ORDER BY RNUM").append("\n");
+			ORACLE_FUNCTION.append("			) A").append("\n");
+			ORACLE_FUNCTION.append("		WHERE 1=1").append("\n");
+			ORACLE_FUNCTION.append("			AND A.FUNC_ID = M.FUNC_ID	").append("\n");
+			ORACLE_FUNCTION.append("	) LOOP").append("\n");
+			ORACLE_FUNCTION.append("		CALL_CHAIN_UNIT := CURSOR_FUNC_TBL_MAPPING.TBL_ID || ':' || CURSOR_FUNC_TBL_MAPPING.JOB_KIND || '|';			").append("\n");
+			ORACLE_FUNCTION.append("		IF RETURN_CALL_CHAIN IS NULL OR INSTR(RETURN_CALL_CHAIN, CALL_CHAIN_UNIT) = 0 THEN").append("\n");
+			ORACLE_FUNCTION.append("			RETURN_CALL_CHAIN := RETURN_CALL_CHAIN || CALL_CHAIN_UNIT;").append("\n");
+			ORACLE_FUNCTION.append("		END IF;		").append("\n");
+			ORACLE_FUNCTION.append("	END LOOP;").append("\n");
+			ORACLE_FUNCTION.append("	RETURN RETURN_CALL_CHAIN;").append("\n");
+			ORACLE_FUNCTION.append("EXCEPTION").append("\n");
+			ORACLE_FUNCTION.append("WHEN NO_DATA_FOUND THEN").append("\n");
+			ORACLE_FUNCTION.append("    RETURN('');").append("\n");
+			ORACLE_FUNCTION.append("END;").append("\n");
+			
 			/* <클래스-TB_CLZZ> */
 			DROP.append("DROP TABLE TB_CLZZ;").append("\n");
 			/* <기능메서드-TB_FUNC> */
@@ -180,6 +398,11 @@ public class DbGen {
 			DROP.append("DROP TABLE TB_UI; ").append("\n");
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			DROP.append("DROP TABLE TB_UI_FUNC_MAPPING; ").append("\n");
+			/* <펑션-FN_FUNC_FUNC_MAPPING> */
+			DROP.append("DROP FUNCTION FN_FUNC_FUNC_MAPPING; ").append("\n");
+			/* <펑션-FN_FUNC_TBL_MAPPING> */
+			DROP.append("DROP FUNCTION FN_FUNC_TBL_MAPPING; ").append("\n");
+			
 		}
 	}
 	
@@ -322,17 +545,21 @@ public class DbGen {
 	}
 	
 	public static String getDdlQuery(String DB_KIND, String JOB_KIND) {
+		StringBuffer ddl = new StringBuffer();
 		if( "DROP".equals(JOB_KIND) ) {
-			return DDL.DROP.toString();
+			ddl.append(DDL.DROP);
 		}else {
 			if( "MYSQL".equals(DB_KIND) ) {
-				return DDL.MYSQL_CREATE.toString();
+				ddl.append(DDL.MYSQL_CREATE);
+				ddl.append("\n");
+				ddl.append(DDL.MYSQL_FUNCTION);
 			}else if( "ORACLE".equals(DB_KIND) ) {
-				return DDL.ORACLE_CREATE.toString();
-			}else {
-				return null;
+				ddl.append(DDL.ORACLE_CREATE);
+				ddl.append("\n");
+				ddl.append(DDL.ORACLE_FUNCTION);
 			}
 		}
+		return ddl.toString();
 	}
 	
 	public static String getDeleteQuery() {
