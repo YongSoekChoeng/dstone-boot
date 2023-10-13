@@ -77,11 +77,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 		ClzzKind classKind = ClzzKind.OT;
 		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
         String fileExt = FileUtil.getFileExt(classFile);
-		if("jsp".equals(fileExt)) {
-			classKind = ClzzKind.UI;
-		}else if("js".equals(fileExt)) {
-			classKind = ClzzKind.JS;
-		}else if("java".equals(fileExt)) {
+		if("java".equals(fileExt)) {
             List<MarkerAnnotationExpr> annotationDeclarationList = cu.findAll(MarkerAnnotationExpr.class);
             if(!annotationDeclarationList.isEmpty()) {
             	for(MarkerAnnotationExpr item : annotationDeclarationList) {
@@ -100,6 +96,36 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
             }
 		}
 		return classKind;
+	}
+	
+	/**
+	 * 리소스ID 추출
+	 * @param classFile
+	 * @return
+	 */
+	@Override
+	public String getResourceId(String classFile) throws Exception {
+		return super.getResourceId(classFile);
+	}
+	
+	/**
+	 * 클래스or인터페이스(C:클래스/I:인터페이스) 추출
+	 * @param classFile
+	 * @return
+	 */
+	@Override
+	public String getClassOrInterface(String classFile) throws Exception{
+		return super.getClassOrInterface(classFile);
+	}
+
+	/**
+	 * 인터페이스ID 추출.(인터페이스를 구현한 경우에만 존재)
+	 * @param classFile
+	 * @return
+	 */
+	@Override
+	public String getInterfaceId(String classFile) throws Exception{
+		return super.getInterfaceId(classFile);
 	}
 
 	/**
@@ -135,8 +161,8 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
                 		FieldDeclaration field = ((FieldDeclaration) member);
                 		List<VariableDeclarator> fieldVariableDeclaratorList = field.getVariables();
                         for (VariableDeclarator variable : fieldVariableDeclaratorList) {
-                            //Print the field's class typr
-                            type = variable.getType().asString();
+                        	//Print the field's class typr
+                        	type = variable.getType().asString();
                             if(type.indexOf(".") == -1 && importMap.containsKey(type) ) {
                             	type = importMap.get(type).getNameAsString();
                             }

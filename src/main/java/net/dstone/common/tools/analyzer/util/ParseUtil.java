@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
@@ -282,6 +283,252 @@ public class ParseUtil {
 		}		
 		return mList;
 	}
+	/**
+	 * 클래스ID의 알리아스를 추출하기 위해 해당 소스 라인이 적합한지 조사하는 메소드.(클래스 시작부분, 주석부분은 적합하지 않으므로 false반환)
+	 * @param line
+	 * @return
+	 */
+	public static boolean isValidAliasLine(String line) {
+		boolean isValid = true;
+		ArrayList<String> inValidCaseList = new ArrayList<String>();
+		inValidCaseList.add("class ");
+		inValidCaseList.add("implements ");
+		inValidCaseList.add("extends ");
+		inValidCaseList.add("throws ");
+		for(String word : inValidCaseList) {
+			if(line.indexOf(word)>-1) {
+				isValid = false;
+				break;
+			}
+		}
+		if(isValid) {
+			if(line.trim().startsWith("//") || line.trim().startsWith("/*") || line.trim().startsWith("*")) {
+				isValid = false;
+			}
+		}
+		return isValid;
+	}
+	
+	/**
+	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
+	 * @param sqlBody
+	 * @param sqlKind
+	 * @return
+	 */
+	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
+		
+		String sqlBody = inputSql;
+		String keyword = "";
+		String tableName = "";
+		String[] div = {" ", "(", "\n"};
+		sqlBody = sqlBody.trim();
+
+		// 주석제거 및 쿼리정리
+		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
+		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
+		sqlBody = ParseUtil.adjustConts(sqlBody);
+		
+		HashMap<String, String> replMap = new HashMap<String, String>();
+		// XML의 CDATA 태그제거
+		replMap.put("<![CDATA[", "");
+		replMap.put("]]>", "");
+		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
+		replMap.put("#{", "'");
+		replMap.put("}", "'");
+		replMap.put("${", "'");
+		replMap.put("}", "'");
+		// 내용없는 연속쉼표 랜덤스트링값으로 치환
+		replMap.put(", ,", ", 'AAA',");
+		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
+		
+		// 프로시저는 지원하지 않음.
+		if(sqlBody.toUpperCase().startsWith("BEGIN")) {
+			sqlBody = "";
+		// INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 단순화.
+		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UPDATE") || sqlKind.equals("DELETE")  ) {
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "MERGE INTO";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " USING DUAL ON(1=1) WHEN MATCHED THEN UPDATE SET AAA='AAA' WHEN NOT MATCHED THEN INSERT ( AAA ) VALUES ( 'AAA' )";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "INSERT INTO";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " ( AAA ) VALUES ( 'AAA' )";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "UPDATE ";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " SET AAA='AAA' WHERE 1=1";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "DELETE FROM";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " WHERE 1=1";
+				}
+			}
+		}
+		
+		return sqlBody;
+	}
+	
+	/**
+	 * 웹페이지의 A태그로부터 링크를 추출하는 메소드
+	 * @param webPageFile
+	 * @return
+	 */
+	public static List<String> extrackLinksFromAtag(String webPageFile){
+		List<String> linkList = new ArrayList<String>();
+		try {
+			if(FileUtil.isFileExist(webPageFile)) {
+				String keyword = "";
+				String[] div = {"'"};
+				String nextWord = "";
+				
+				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.replace(conts, "\r\n", "");
+				conts = StringUtil.replace(conts, "\n", "");
+				conts = adjustConts(conts);
+				conts = StringUtil.replace(conts, "\"", "'");
+				
+				String contsForAtag = new String(conts);
+				
+				// A태그 Link
+				contsForAtag = StringUtil.replace(contsForAtag, "href =", "href=");
+				contsForAtag = StringUtil.replace(contsForAtag, "href= '", "href='");
+				contsForAtag = StringUtil.replace(contsForAtag, "href=''", "");
+				keyword = "href='";
+				nextWord = "";
+				while(contsForAtag.indexOf(keyword) > -1) {
+					if(contsForAtag.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForAtag, keyword, div);
+						if(nextWord.indexOf("?")>-1) {
+							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
+						}
+						linkList.add(nextWord);
+						contsForAtag = contsForAtag.substring( contsForAtag.indexOf(nextWord) + (nextWord).length() );
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return linkList;
+	}
+	/**
+	 * 웹페이지의 폼액션으로부터 링크를 추출하는 메소드
+	 * @param webPageFile
+	 * @return
+	 */
+	public static List<String> extrackLinksFromAction(String webPageFile){
+		List<String> linkList = new ArrayList<String>();
+		try {
+			if(FileUtil.isFileExist(webPageFile)) {
+				String keyword = "";
+				String[] div = {"'"};
+				String nextWord = "";
+				
+				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.replace(conts, "\r\n", "");
+				conts = StringUtil.replace(conts, "\n", "");
+				conts = adjustConts(conts);
+				conts = StringUtil.replace(conts, "\"", "'");
+				
+				String contsForAction = new String(conts);
+				
+				// Form Action
+				contsForAction = StringUtil.replace(contsForAction, ".action =", ".action=");
+				contsForAction = StringUtil.replace(contsForAction, ".action= '", ".action='");
+				contsForAction = StringUtil.replace(contsForAction, "action =", "action=");
+				contsForAction = StringUtil.replace(contsForAction, "action= '", "action='");
+				contsForAction = StringUtil.replace(contsForAction, "action=''", "");
+				keyword = "action='";
+				nextWord = "";
+				while(contsForAction.indexOf(keyword) > -1) {
+					if(contsForAction.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForAction, keyword, div);
+						if(nextWord.indexOf("?")>-1) {
+							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
+						}
+						linkList.add(nextWord);
+						contsForAction = contsForAction.substring( contsForAction.indexOf(nextWord) + (nextWord).length() );
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return linkList;
+	}
+	
+	/**
+	 * 어노테이션이 있는 라인으로부터 어노테이션값을 추출하는 메소드.
+	 * 예)@Resource(name = "customUserService") ==>> customUserService
+	 * 예)@Service("customUserService") ==>> customUserService
+	 * @param annotationLine
+	 * @return
+	 */
+	public static String getValueFromAnnotationLine(String annotationLine) {
+		String annotationValue = "";
+		
+		if(!StringUtil.isEmpty(annotationLine) && annotationLine.indexOf("@")>-1) {
+			if(annotationLine.indexOf("(")>-1) {
+				annotationLine = annotationLine.trim();
+				annotationLine = adjustConts(annotationLine);
+				annotationLine = annotationLine.substring(annotationLine.indexOf("("));
+				annotationLine = StringUtil.replace(annotationLine, "(", "");
+				annotationLine = StringUtil.replace(annotationLine, "value", "");
+				annotationLine = StringUtil.replace(annotationLine, "name", "");
+				annotationLine = StringUtil.replace(annotationLine, "=", "");
+				annotationLine = StringUtil.replace(annotationLine, ")", "");
+				annotationLine = StringUtil.replace(annotationLine, "\"", "");
+				annotationLine = StringUtil.replace(annotationLine, " ", "");
+				annotationValue = annotationLine;
+			}
+		}
+		
+		return annotationValue;
+	}
+	
+	/**
+	 * 인터페이스인 클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 구현클래스의 클래스ID을 추출하는 메소드.
+	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
+	 * @param interfaceId
+	 * @param resourceId
+	 * @param analyzedClassFileList
+	 * @return
+	 */
+	public static String findImplClassId(String interfaceId, String resourceId, String[] analyzedClassFileList) {
+		String implClassId = "";
+		ClzzVo clzzVo = ParseUtil.readClassVo(interfaceId, AppAnalyzer.WRITE_PATH + "/class");
+		String classOrInterface = clzzVo.getClassOrInterface();
+		ArrayList<ClzzVo> impleClzzVoList = new ArrayList<ClzzVo>();
+		if( "I".equals(classOrInterface) ) {
+			for(String packageClassId : analyzedClassFileList) {
+				clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
+				if( !StringUtil.isEmpty(resourceId) && resourceId.equals(clzzVo.getResourceId())) {
+					implClassId = clzzVo.getClassId();
+					break;
+				}else {
+					if(clzzVo.getInterfaceId().equals(interfaceId)) {
+						impleClzzVoList.add(clzzVo);
+					}
+				}
+			}
+			if( !StringUtil.isEmpty(resourceId) && impleClzzVoList.size() > 0 ) {
+				implClassId = impleClzzVoList.get(0).getClassId();
+			}
+		}
+
+		return implClassId;
+	}
 	
 	/**
 	 * 클래스VO를 특정디렉토리에 파일로 저장하는 메소드
@@ -300,6 +547,9 @@ public class ParseUtil {
 			fileConts.append("클래스명" + div + StringUtil.nullCheck(vo.getClassName(), "")).append("\n");
 			fileConts.append("기능종류" + div + StringUtil.nullCheck(vo.getClassKind(), "")).append("\n");
 			fileConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
+			fileConts.append("클래스or인터페이스" + div + StringUtil.nullCheck(vo.getClassOrInterface(), "")).append("\n");
+			fileConts.append("리소스ID" + div + StringUtil.nullCheck(vo.getResourceId(), "")).append("\n");
+			fileConts.append("인터페이스ID" + div + StringUtil.nullCheck(vo.getInterfaceId(), "")).append("\n");
 			List<Map<String, String>> callClassAlias = vo.getCallClassAlias();
 			if(callClassAlias != null) {
 				for(Map<String, String> item : callClassAlias) {
@@ -363,6 +613,24 @@ public class ParseUtil {
 							vo.setFileName(words[1]);
 						}
 					}
+					if(line.startsWith("리소스ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setResourceId(words[1]);
+						}
+					}
+					if(line.startsWith("클래스or인터페이스" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setClassOrInterface(words[1]);
+						}
+					}
+					if(line.startsWith("인터페이스ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setInterfaceId(words[1]);
+						}
+					}
 					if(line.startsWith("호출알리아스" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
@@ -389,31 +657,7 @@ public class ParseUtil {
 		return vo;
 	}
 	
-	/**
-	 * 클래스ID의 알리아스를 추출하기 위해 해당 소스 라인이 적합한지 조사하는 메소드.(클래스 시작부분, 주석부분은 적합하지 않으므로 false반환)
-	 * @param line
-	 * @return
-	 */
-	public static boolean isValidAliasLine(String line) {
-		boolean isValid = true;
-		ArrayList<String> inValidCaseList = new ArrayList<String>();
-		inValidCaseList.add("class ");
-		inValidCaseList.add("implements ");
-		inValidCaseList.add("extends ");
-		inValidCaseList.add("throws ");
-		for(String word : inValidCaseList) {
-			if(line.indexOf(word)>-1) {
-				isValid = false;
-				break;
-			}
-		}
-		if(isValid) {
-			if(line.trim().startsWith("//") || line.trim().startsWith("/*") || line.trim().startsWith("*")) {
-				isValid = false;
-			}
-		}
-		return isValid;
-	}
+
 	
 	/**
 	 * 메소드VO를 특정디렉토리에 파일로 저장하는 메소드
@@ -545,75 +789,7 @@ public class ParseUtil {
 		return vo;
 	}
 	
-	/**
-	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
-	 * @param sqlBody
-	 * @param sqlKind
-	 * @return
-	 */
-	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
-		
-		String sqlBody = inputSql;
-		String keyword = "";
-		String tableName = "";
-		String[] div = {" ", "(", "\n"};
-		sqlBody = sqlBody.trim();
 
-		// 주석제거 및 쿼리정리
-		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
-		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
-		sqlBody = ParseUtil.adjustConts(sqlBody);
-		
-		HashMap<String, String> replMap = new HashMap<String, String>();
-		// XML의 CDATA 태그제거
-		replMap.put("<![CDATA[", "");
-		replMap.put("]]>", "");
-		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
-		replMap.put("#{", "'");
-		replMap.put("}", "'");
-		replMap.put("${", "'");
-		replMap.put("}", "'");
-		// 내용없는 연속쉼표 랜덤스트링값으로 치환
-		replMap.put(", ,", ", 'AAA',");
-		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
-		
-		// 프로시저는 지원하지 않음.
-		if(sqlBody.toUpperCase().startsWith("BEGIN")) {
-			sqlBody = "";
-		// INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 단순화.
-		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UPDATE") || sqlKind.equals("DELETE")  ) {
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "MERGE INTO";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " USING DUAL ON(1=1) WHEN MATCHED THEN UPDATE SET AAA='AAA' WHEN NOT MATCHED THEN INSERT ( AAA ) VALUES ( 'AAA' )";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "INSERT INTO";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " ( AAA ) VALUES ( 'AAA' )";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "UPDATE ";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " SET AAA='AAA' WHERE 1=1";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "DELETE FROM";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " WHERE 1=1";
-				}
-			}
-		}
-		
-		return sqlBody;
-	}
 	
 	
 	/**
@@ -724,94 +900,8 @@ public class ParseUtil {
 		return vo;
 	}
 	
-	/**
-	 * 웹페이지의 A태그로부터 링크를 추출하는 메소드
-	 * @param webPageFile
-	 * @return
-	 */
-	public static List<String> extrackLinksFromAtag(String webPageFile){
-		List<String> linkList = new ArrayList<String>();
-		try {
-			if(FileUtil.isFileExist(webPageFile)) {
-				String keyword = "";
-				String[] div = {"'"};
-				String nextWord = "";
-				
-				String conts = FileUtil.readFile(webPageFile);
-				conts = StringUtil.replace(conts, "\r\n", "");
-				conts = StringUtil.replace(conts, "\n", "");
-				conts = adjustConts(conts);
-				conts = StringUtil.replace(conts, "\"", "'");
-				
-				String contsForAtag = new String(conts);
-				
-				// A태그 Link
-				contsForAtag = StringUtil.replace(contsForAtag, "href =", "href=");
-				contsForAtag = StringUtil.replace(contsForAtag, "href= '", "href='");
-				contsForAtag = StringUtil.replace(contsForAtag, "href=''", "");
-				keyword = "href='";
-				nextWord = "";
-				while(contsForAtag.indexOf(keyword) > -1) {
-					if(contsForAtag.indexOf(keyword) > -1) {
-						nextWord = StringUtil.nextWord(contsForAtag, keyword, div);
-						if(nextWord.indexOf("?")>-1) {
-							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
-						}
-						linkList.add(nextWord);
-						contsForAtag = contsForAtag.substring( contsForAtag.indexOf(nextWord) + (nextWord).length() );
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return linkList;
-	}
-	/**
-	 * 웹페이지의 폼액션으로부터 링크를 추출하는 메소드
-	 * @param webPageFile
-	 * @return
-	 */
-	public static List<String> extrackLinksFromAction(String webPageFile){
-		List<String> linkList = new ArrayList<String>();
-		try {
-			if(FileUtil.isFileExist(webPageFile)) {
-				String keyword = "";
-				String[] div = {"'"};
-				String nextWord = "";
-				
-				String conts = FileUtil.readFile(webPageFile);
-				conts = StringUtil.replace(conts, "\r\n", "");
-				conts = StringUtil.replace(conts, "\n", "");
-				conts = adjustConts(conts);
-				conts = StringUtil.replace(conts, "\"", "'");
-				
-				String contsForAction = new String(conts);
-				
-				// Form Action
-				contsForAction = StringUtil.replace(contsForAction, ".action =", ".action=");
-				contsForAction = StringUtil.replace(contsForAction, ".action= '", ".action='");
-				contsForAction = StringUtil.replace(contsForAction, "action =", "action=");
-				contsForAction = StringUtil.replace(contsForAction, "action= '", "action='");
-				contsForAction = StringUtil.replace(contsForAction, "action=''", "");
-				keyword = "action='";
-				nextWord = "";
-				while(contsForAction.indexOf(keyword) > -1) {
-					if(contsForAction.indexOf(keyword) > -1) {
-						nextWord = StringUtil.nextWord(contsForAction, keyword, div);
-						if(nextWord.indexOf("?")>-1) {
-							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
-						}
-						linkList.add(nextWord);
-						contsForAction = contsForAction.substring( contsForAction.indexOf(nextWord) + (nextWord).length() );
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return linkList;
-	}
+
+
 	
 	/**
 	 * UiVO를 특정디렉토리에 파일로 저장하는 메소드

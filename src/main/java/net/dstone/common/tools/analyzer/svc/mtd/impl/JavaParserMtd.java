@@ -89,7 +89,10 @@ public class JavaParserMtd extends DefaultMtd implements Mtd {
             }
         	item.put("METHOD_URL", METHOD_URL);
         	// METHOD_BODY
-        	String METHOD_BODY = ParseUtil.adjustConts(methodDec.getBody().get().toString());
+        	String METHOD_BODY = "";
+        	if( methodDec.getBody() != null && methodDec.getBody().isPresent() ) {
+        		METHOD_BODY = ParseUtil.adjustConts(methodDec.getBody().get().toString());
+        	}
     		String[] lines = StringUtil.toStrArray(METHOD_BODY, "\n");
     		METHOD_BODY = "";
     		for(String line : lines) {

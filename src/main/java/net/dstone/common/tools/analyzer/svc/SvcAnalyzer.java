@@ -8,7 +8,7 @@ import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParserClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.DefaultClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParserMtd;
 import net.dstone.common.tools.analyzer.svc.query.Query;
@@ -38,7 +38,7 @@ public class SvcAnalyzer extends BaseObject{
 	private static ArrayList<String> UI_FILTER = new ArrayList<String>();
 	static {
 		UI_FILTER.add("jsp");
-		UI_FILTER.add("js");
+		//UI_FILTER.add("js");
 	}
 
 	public static boolean isValidSvcFile(String file) {
@@ -103,8 +103,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class ClassFactory {
 		
 		static Clzz getClzz() {
-			//return new DefaultClzz(); 
-			return new JavaParserClzz(); 
+			return new DefaultClzz(); 
+			//return new JavaParserClzz(); 
 		}
 		
 		/**
@@ -138,6 +138,32 @@ public class SvcAnalyzer extends BaseObject{
 		 */
 		static ClzzKind getClassKind(String classFile) throws Exception {
 			return getClzz().getClassKind(classFile);
+		}
+		/**
+		 * 리소스ID 추출
+		 * @param classFile
+		 * @return
+		 */
+		static String getResourceId(String classFile) throws Exception {
+			return getClzz().getResourceId(classFile);
+		}
+		
+		/**
+		 * 클래스or인터페이스(C:클래스/I:인터페이스) 추출
+		 * @param classFile
+		 * @return
+		 */
+		static String getClassOrInterface(String classFile) throws Exception {
+			return getClzz().getClassOrInterface(classFile);
+		}
+
+		/**
+		 * 인터페이스ID 추출
+		 * @param classFile
+		 * @return
+		 */
+		static String getInterfaceId(String classFile) throws Exception {
+			return getClzz().getInterfaceId(classFile);
 		}
 		/**
 		 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
@@ -401,7 +427,16 @@ public class SvcAnalyzer extends BaseObject{
 					
 					// 기능종류
 					clzzVo.setClassKind(ClassFactory.getClassKind(classFile));
-					
+
+					// 리소스ID
+					clzzVo.setResourceId(ClassFactory.getResourceId(classFile));
+
+					// 클래스or인터페이스
+					clzzVo.setClassOrInterface(ClassFactory.getClassOrInterface(classFile));
+
+					// 인터페이스ID
+					clzzVo.setInterfaceId(ClassFactory.getInterfaceId(classFile));
+
 					// 파일명
 					clzzVo.setFileName(classFile);
 					

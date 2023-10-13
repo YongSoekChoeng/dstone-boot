@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import net.dstone.common.core.BaseObject;
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
+import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -78,25 +80,111 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	@Override
 	public ClzzKind getClassKind(String classFile) throws Exception  {
 		ClzzKind classKind = ClzzKind.OT;
-		String fileExt = FileUtil.getFileExt(classFile);
-		if("jsp".equals(fileExt)) {
-			classKind = ClzzKind.UI;
-		}else if("js".equals(fileExt)) {
-			classKind = ClzzKind.JS;
-		}else if("java".equals(fileExt)) {
-			String fileConts = FileUtil.readFile(classFile);
-			fileConts = ParseUtil.adjustConts(fileConts);
-			if(fileConts.indexOf("@Controller") != -1 || fileConts.indexOf("@RestController") != -1) {
-				classKind = ClzzKind.CT;
-			}else if(fileConts.indexOf("@Service") != -1) {
-				classKind = ClzzKind.SV;
-			}else if(fileConts.indexOf("@Repository") != -1) {
-				classKind = ClzzKind.DA;
-			}
+		String fileConts = FileUtil.readFile(classFile);
+		fileConts = ParseUtil.adjustConts(fileConts);
+		if(fileConts.indexOf("@Controller") != -1 || fileConts.indexOf("@RestController") != -1) {
+			classKind = ClzzKind.CT;
+		}else if(fileConts.indexOf("@Service") != -1) {
+			classKind = ClzzKind.SV;
+		}else if(fileConts.indexOf("@Repository") != -1) {
+			classKind = ClzzKind.DA;
 		}
 		return classKind;
 	}
-
+	
+	/**
+	 * 리소스ID 추출
+	 * @param classFile
+	 * @return
+	 */
+	@Override
+	public String getResourceId(String classFile) throws Exception {
+		String resourceId = "";
+		String[] lines = FileUtil.readFileByLines(classFile);
+		if(lines != null) {
+			String searchLine = "";
+			for(String line : lines) {
+				line = line.trim();
+				line = ParseUtil.adjustConts(line);
+				if(line.indexOf("@Service") != -1 || line.indexOf("@Repository") != -1 || line.indexOf("@Resource") != -1) {
+					searchLine = line;
+				}
+				if(!StringUtil.isEmpty(searchLine)) {
+					resourceId = ParseUtil.getValueFromAnnotationLine(searchLine);
+					break;
+				}
+				if(line.indexOf(" class ") != -1 || line.indexOf(" interface ") != -1) {
+					break;
+				}
+			}
+		}
+		return resourceId;
+	}
+	
+	/**
+	 * 클래스or인터페이스(C:클래스/I:인터페이스) 추출
+	 * @param classFile
+	 * @return
+	 */
+	public String getClassOrInterface(String classFile) throws Exception{
+		String classOrInterface = "";
+		String fileConts = FileUtil.readFile(classFile);
+		fileConts = ParseUtil.adjustConts(fileConts);
+		if(fileConts.indexOf(" interface ")>-1) {
+			classOrInterface = "I";
+		}else {
+			classOrInterface = "C";
+		}
+		return classOrInterface;
+	}
+	
+	/**
+	 * 인터페이스ID 추출.(인터페이스를 구현한 경우에만 존재)
+	 * @param classFile
+	 * @return
+	 */
+	public String getInterfaceId(String classFile) throws Exception{
+		String interfaceId = "";
+		String interfaceClass = "";
+		String[] lines = FileUtil.readFileByLines(classFile);
+		ArrayList<String> importList = new ArrayList<String>();
+		if(lines != null) {
+			String importLine = "";
+			String searchLine = "";
+			for(String line : lines) {
+				line = line.trim();
+				line = ParseUtil.adjustConts(line);
+				if(line.indexOf("import ") != -1) {
+					importLine = line;
+					importLine = StringUtil.replace(importLine, "import ", "");
+					importLine = StringUtil.replace(importLine, ";", "");
+					importList.add(importLine);
+				}
+				if(line.indexOf(" implements ") != -1) {
+					searchLine = line;
+				}
+				if(!StringUtil.isEmpty(searchLine)) {
+					String[] div = {"{"};
+					interfaceClass = StringUtil.nextWord(searchLine, " implements ", div);
+					break;
+				}
+			}
+		}
+		if(!StringUtil.isEmpty(interfaceClass)) {
+			if(interfaceClass.indexOf(".")>-1) {
+				interfaceId = interfaceClass;
+			}else {
+				for(String importLine : importList) {
+					if(importLine.endsWith("." + interfaceClass)) {
+						interfaceId = importLine;
+						break;
+					}
+				}
+			}
+		}
+		return interfaceId;
+	}
+	
 	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 	 * @param classFile
@@ -119,6 +207,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		String selfPkg = this.getPackageId(classFile);
 		String selfClassId = this.getClassId(classFile);
 		int lineNum = 0;
+		String beforeLine = "";
 		
 		for(String packageClassId : analyzedClassFileList) {
 			
@@ -126,6 +215,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			isUsed = false;
 			String pkg = packageClassId.substring(0, packageClassId.lastIndexOf("."));
 			String classId = packageClassId;
+			String resourceId = "";
 
 			if( pkg.equals(selfPkg) && classId.equals(selfClassId)) {
 				continue;
@@ -135,18 +225,21 @@ public class DefaultClzz extends BaseObject implements Clzz {
 				&& fileConts.indexOf(packageClassId)>-1
 			) {
 				lineNum = 0;
+				beforeLine = "";
 				for(String line : lines) {
 					lineNum++;
 					if (!ParseUtil.isValidAliasLine(line)) { 
 						continue;
 					}
 					if( line.indexOf(packageClassId + " ")>-1 ) {
-						alias = net.dstone.common.utils.StringUtil.nextWord(line, packageClassId, div);
+						alias = StringUtil.nextWord(line, packageClassId, div);
 						if(!StringUtil.isEmpty(alias)) {
 							isAliasExists = true;
+							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
 							break;
 						}
 					}
+					beforeLine = line;
 				}
 				if (isAliasExists) {
 					//getLogger().sysout(classFile + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias1=============>>>[" + alias + "]");
@@ -160,22 +253,34 @@ public class DefaultClzz extends BaseObject implements Clzz {
 				&&( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg) )
 			) {
 				lineNum = 0;
+				beforeLine = "";
 				for(String line : lines) {
 					lineNum++;
 					if (!ParseUtil.isValidAliasLine(line)) { 
 						continue;
 					}
 					if( line.indexOf(packageClassId + " ")>-1 || line.indexOf(classId + " ")>-1 ) {
-						alias = net.dstone.common.utils.StringUtil.nextWord(line, classId, div);
+						alias = StringUtil.nextWord(line, classId, div);
 						if(!StringUtil.isEmpty(alias)) {
 							isAliasExists = true;
+							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
+							break;
 						}
 					}
+					
 					if (isAliasExists) {
 						//getLogger().sysout(classFile + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
 						if (fileConts.indexOf(alias + ".")>-1) {
 							isUsed = true;
 						}
+					}
+					
+					beforeLine = line;
+				}
+				if (isAliasExists) {
+					//getLogger().sysout(classFile + " lineNum["+lineNum+"] packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
+					if (fileConts.indexOf(alias + ".")>-1) {
+						isUsed = true;
 					}
 				}
 			}
@@ -183,6 +288,10 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			if(isUsed) {
 				//getLogger().sysout(classFile + " packageClassId["+packageClassId + "] alias3=============>>>[" + alias + "]");
 				callClassAlias = new HashMap<String, String>();
+				ClzzVo clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
+				if( "I".equals(clzzVo.getClassOrInterface()) ) {
+//					packageClassId = ParseUtil.findImplClassId(clzzVo.getClassId(), resourceId, analyzedClassFileList);
+				}
 				callClassAlias.put("FULL_CLASS",packageClassId);
 				callClassAlias.put("ALIAS",alias);
 				if( !callClassAliasList.contains(callClassAlias) ) {
@@ -193,5 +302,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		
 		return callClassAliasList;
 	}
+
+
 
 }

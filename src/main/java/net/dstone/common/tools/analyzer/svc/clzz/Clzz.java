@@ -31,6 +31,26 @@ public interface Clzz {
 	 */
 	public ClzzKind getClassKind(String classFile) throws Exception ;
 	/**
+	 * 리소스ID 추출
+	 * @param classFile
+	 * @return
+	 */
+	public String getResourceId(String classFile) throws Exception ;
+	/**
+	 * 클래스or인터페이스(C:클래스/I:인터페이스) 추출
+	 * @param classFile
+	 * @return
+	 */
+	public String getClassOrInterface(String classFile) throws Exception ;
+	
+	/**
+	 * 인터페이스ID 추출.(인터페이스를 구현한 경우에만 존재)
+	 * @param classFile
+	 * @return
+	 */
+	public String getInterfaceId(String classFile) throws Exception ;
+
+	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
 	 * @param classFile
 	 * @param otherClassFileList
