@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.exception.SecException;
+import net.dstone.common.security.vo.CustomUserDetails;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.web.SessionListener;
 

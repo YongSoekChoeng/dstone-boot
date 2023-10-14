@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.exception.SecException;
-import net.dstone.common.security.CustomUserDetails;
+import net.dstone.common.security.vo.CustomUserDetails;
 
 @Component
 public class SessionListener extends BaseObject implements HttpSessionListener {

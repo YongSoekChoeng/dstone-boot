@@ -4,6 +4,7 @@ import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DbUtil.LoggableStatement;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class DbGen {
@@ -94,25 +95,36 @@ public class DbGen {
 			MYSQL_FUNCTION.append("	DECLARE CUR_CALL_FUNC_ID VARCHAR(100);").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CALL_CHAIN_UNIT VARCHAR(200);	").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CURSOR_FUNC_FUNC_MAPPING CURSOR FOR").append("\n");
-			MYSQL_FUNCTION.append("		SELECT ").append("\n");
-			MYSQL_FUNCTION.append("			FUNC_ID, CALL_FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("		FROM ").append("\n");
+			MYSQL_FUNCTION.append("		SELECT").append("\n");
+			MYSQL_FUNCTION.append("			IFNULL(A.FUNC_ID, '') FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			, IFNULL(A.CALL_FUNC_ID, '') CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("		FROM").append("\n");
 			MYSQL_FUNCTION.append("			(").append("\n");
-			MYSQL_FUNCTION.append("			SELECT ").append("\n");
-			MYSQL_FUNCTION.append("				IFNULL(A.FUNC_ID, '') FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("				, IFNULL(B.CALL_FUNC_ID, '') CALL_FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("			FROM ").append("\n");
-			MYSQL_FUNCTION.append("				TB_FUNC A").append("\n");
-			MYSQL_FUNCTION.append("				, TB_FUNC_FUNC_MAPPING B").append("\n");
+			MYSQL_FUNCTION.append("			SELECT      ").append("\n");
+			MYSQL_FUNCTION.append("				P5.FUNC_ID AS PARENT5_ID,").append("\n");
+			MYSQL_FUNCTION.append("				P4.FUNC_ID AS PARENT4_ID,").append("\n");
+			MYSQL_FUNCTION.append("				P3.FUNC_ID AS PARENT3_ID,").append("\n");
+			MYSQL_FUNCTION.append("				P2.FUNC_ID AS PARENT2_ID,").append("\n");
+			MYSQL_FUNCTION.append("				P1.FUNC_ID AS FUNC_ID,").append("\n");
+			MYSQL_FUNCTION.append("				P1.CALL_FUNC_ID AS CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			FROM        ").append("\n");
+			MYSQL_FUNCTION.append("				TB_FUNC_FUNC_MAPPING P1").append("\n");
+			MYSQL_FUNCTION.append("				LEFT JOIN TB_FUNC_FUNC_MAPPING P2 ON P2.CALL_FUNC_ID = P1.FUNC_ID ").append("\n");
+			MYSQL_FUNCTION.append("				LEFT JOIN TB_FUNC_FUNC_MAPPING P3 ON P3.CALL_FUNC_ID = P2.FUNC_ID ").append("\n");
+			MYSQL_FUNCTION.append("				LEFT JOIN TB_FUNC_FUNC_MAPPING P4 ON P4.CALL_FUNC_ID = P3.FUNC_ID  ").append("\n");
+			MYSQL_FUNCTION.append("				LEFT JOIN TB_FUNC_FUNC_MAPPING P5 ON P5.CALL_FUNC_ID = P4.FUNC_ID  ").append("\n");
 			MYSQL_FUNCTION.append("			WHERE 1=1").append("\n");
-			MYSQL_FUNCTION.append("				AND A.FUNC_ID = B.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				AND V_FUNC_ID IN (").append("\n");
+			MYSQL_FUNCTION.append("					P1.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("					P2.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("					P3.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("					P4.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("					P5.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				) ").append("\n");
 			MYSQL_FUNCTION.append("			ORDER BY ").append("\n");
-			MYSQL_FUNCTION.append("				A.FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("			) RM_SORTED").append("\n");
-			MYSQL_FUNCTION.append("			,(SELECT @R:= V_FUNC_ID ) INITIALISATION").append("\n");
+			MYSQL_FUNCTION.append("				P5.FUNC_ID, P4.FUNC_ID, P3.FUNC_ID, P2.FUNC_ID, P1.FUNC_ID, P1.CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			) A").append("\n");
 			MYSQL_FUNCTION.append("		WHERE 1=1").append("\n");
-			MYSQL_FUNCTION.append("			AND FIND_IN_SET(FUNC_ID, @R)").append("\n");
-			MYSQL_FUNCTION.append("			AND LENGTH(@R := CONCAT(@R, ',', CALL_FUNC_ID))").append("\n");
 			MYSQL_FUNCTION.append("			AND FUNC_ID = IF('Y' = IFNULL(V_RECURSIVE_YN, 'Y'), FUNC_ID, V_FUNC_ID)").append("\n");
 			MYSQL_FUNCTION.append("	;").append("\n");
 			MYSQL_FUNCTION.append("			").append("\n");
@@ -163,25 +175,35 @@ public class DbGen {
 			MYSQL_FUNCTION.append("			SELECT").append("\n");
 			MYSQL_FUNCTION.append("				V_FUNC_ID FUNC_ID").append("\n");
 			MYSQL_FUNCTION.append("			UNION ALL").append("\n");
-			MYSQL_FUNCTION.append("			SELECT ").append("\n");
-			MYSQL_FUNCTION.append("				CALL_FUNC_ID FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("			FROM ").append("\n");
+			MYSQL_FUNCTION.append("			SELECT").append("\n");
+			MYSQL_FUNCTION.append("				IFNULL(A.CALL_FUNC_ID, '') FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("			FROM").append("\n");
 			MYSQL_FUNCTION.append("				(").append("\n");
-			MYSQL_FUNCTION.append("				SELECT ").append("\n");
-			MYSQL_FUNCTION.append("					A.FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("					, B.CALL_FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("				FROM ").append("\n");
-			MYSQL_FUNCTION.append("					TB_FUNC A").append("\n");
-			MYSQL_FUNCTION.append("					, TB_FUNC_FUNC_MAPPING B").append("\n");
+			MYSQL_FUNCTION.append("				SELECT      ").append("\n");
+			MYSQL_FUNCTION.append("					P5.FUNC_ID AS PARENT5_ID,").append("\n");
+			MYSQL_FUNCTION.append("					P4.FUNC_ID AS PARENT4_ID,").append("\n");
+			MYSQL_FUNCTION.append("					P3.FUNC_ID AS PARENT3_ID,").append("\n");
+			MYSQL_FUNCTION.append("					P2.FUNC_ID AS PARENT2_ID,").append("\n");
+			MYSQL_FUNCTION.append("					P1.FUNC_ID AS FUNC_ID,").append("\n");
+			MYSQL_FUNCTION.append("					P1.CALL_FUNC_ID AS CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				FROM        ").append("\n");
+			MYSQL_FUNCTION.append("					TB_FUNC_FUNC_MAPPING P1").append("\n");
+			MYSQL_FUNCTION.append("					LEFT JOIN TB_FUNC_FUNC_MAPPING P2 ON P2.CALL_FUNC_ID = P1.FUNC_ID ").append("\n");
+			MYSQL_FUNCTION.append("					LEFT JOIN TB_FUNC_FUNC_MAPPING P3 ON P3.CALL_FUNC_ID = P2.FUNC_ID ").append("\n");
+			MYSQL_FUNCTION.append("					LEFT JOIN TB_FUNC_FUNC_MAPPING P4 ON P4.CALL_FUNC_ID = P3.FUNC_ID  ").append("\n");
+			MYSQL_FUNCTION.append("					LEFT JOIN TB_FUNC_FUNC_MAPPING P5 ON P5.CALL_FUNC_ID = P4.FUNC_ID  ").append("\n");
 			MYSQL_FUNCTION.append("				WHERE 1=1").append("\n");
-			MYSQL_FUNCTION.append("					AND A.FUNC_ID = B.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("					AND V_FUNC_ID IN (").append("\n");
+			MYSQL_FUNCTION.append("						P1.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("						P2.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("						P3.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("						P4.FUNC_ID, ").append("\n");
+			MYSQL_FUNCTION.append("						P5.FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("					) ").append("\n");
 			MYSQL_FUNCTION.append("				ORDER BY ").append("\n");
-			MYSQL_FUNCTION.append("					A.FUNC_ID").append("\n");
-			MYSQL_FUNCTION.append("				) RM_SORTED").append("\n");
-			MYSQL_FUNCTION.append("				,(SELECT @R:=V_FUNC_ID) INITIALISATION").append("\n");
+			MYSQL_FUNCTION.append("					P5.FUNC_ID, P4.FUNC_ID, P3.FUNC_ID, P2.FUNC_ID, P1.FUNC_ID, P1.CALL_FUNC_ID").append("\n");
+			MYSQL_FUNCTION.append("				) A").append("\n");
 			MYSQL_FUNCTION.append("			WHERE 1=1").append("\n");
-			MYSQL_FUNCTION.append("				AND FIND_IN_SET(FUNC_ID, @R)").append("\n");
-			MYSQL_FUNCTION.append("				AND LENGTH(@R := CONCAT(@R, ',', CALL_FUNC_ID))").append("\n");
 			MYSQL_FUNCTION.append("				AND FUNC_ID = IF('Y' = IFNULL(V_RECURSIVE_YN, 'Y'), FUNC_ID, V_FUNC_ID)").append("\n");
 			MYSQL_FUNCTION.append("			) A").append("\n");
 			MYSQL_FUNCTION.append("		WHERE 1=1").append("\n");
@@ -568,6 +590,7 @@ public class DbGen {
 			SELECT_TB_FUNC_ALL.append("	) A").append("\n");
 			SELECT_TB_FUNC_ALL.append("WHERE 1=1	").append("\n");
 			SELECT_TB_FUNC_ALL.append("	AND A.FUNC_ID LIKE CONCAT( ? , '%' )	").append("\n");
+			SELECT_TB_FUNC_ALL.append("	AND A.CLZZ_KIND LIKE CONCAT( ? , '%' )	").append("\n");
 			SELECT_TB_FUNC_ALL.append("ORDER BY").append("\n");
 			SELECT_TB_FUNC_ALL.append("	A.FUNC_ID").append("\n");
 		}
@@ -974,7 +997,7 @@ public class DbGen {
 	}
 	
 	
-	public static net.dstone.common.utils.DataSet selectTB_FUNC_ALL(String DBID, String FUNC_ID, String FUNC_RECURSIVE_YN, String TBL_RECURSIVE_YN) throws Exception {
+	public static net.dstone.common.utils.DataSet selectTB_FUNC_ALL(String DBID, String FUNC_ID, String CLZZ_KIND, String FUNC_RECURSIVE_YN, String TBL_RECURSIVE_YN) throws Exception {
 		net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
@@ -989,6 +1012,7 @@ public class DbGen {
 			parameterIndex = setParam(db.pstmt, parameterIndex, StringUtil.nullCheck(FUNC_RECURSIVE_YN, "N"));	/* 기능ID 재귀조회여부 */
 			parameterIndex = setParam(db.pstmt, parameterIndex, StringUtil.nullCheck(TBL_RECURSIVE_YN, "N"));	/* 테이블ID 재귀조회여부 */
 			db.pstmt.setString(++parameterIndex, StringUtil.nullCheck(FUNC_ID, ""));	/* 기능ID */
+			db.pstmt.setString(++parameterIndex, StringUtil.nullCheck(CLZZ_KIND, ""));	/* 기능종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */
 
 			ds.buildFromResultSet(db.select(), "FUNC_LIST");
 			
@@ -997,6 +1021,7 @@ public class DbGen {
 			throw e;
 		} finally {
 			if(db != null) {
+				LogUtil.sysout(db.getQuery());
 				db.release();
 			}
 		}

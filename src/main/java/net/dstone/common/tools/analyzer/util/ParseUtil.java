@@ -502,31 +502,34 @@ public class ParseUtil {
 	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
 	 * @param interfaceId
 	 * @param resourceId
-	 * @param analyzedClassFileList
 	 * @return
 	 */
-	public static String findImplClassId(String interfaceId, String resourceId, String[] analyzedClassFileList) {
+	public static String findImplClassId(String interfaceId, String resourceId) {
 		String implClassId = "";
-		ClzzVo clzzVo = ParseUtil.readClassVo(interfaceId, AppAnalyzer.WRITE_PATH + "/class");
-		String classOrInterface = clzzVo.getClassOrInterface();
-		ArrayList<ClzzVo> impleClzzVoList = new ArrayList<ClzzVo>();
-		if( "I".equals(classOrInterface) ) {
-			for(String packageClassId : analyzedClassFileList) {
-				clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
-				if( !StringUtil.isEmpty(resourceId) && resourceId.equals(clzzVo.getResourceId())) {
-					implClassId = clzzVo.getClassId();
-					break;
-				}else {
-					if(clzzVo.getInterfaceId().equals(interfaceId)) {
-						impleClzzVoList.add(clzzVo);
+		ClzzVo interfaceVo = ParseUtil.readClassVo(interfaceId, AppAnalyzer.WRITE_PATH + "/class");
+		ClzzVo implClzzVo = null;
+		List<String> implClassIdList = interfaceVo.getImplClassIdList();
+		if( "I".equals(interfaceVo.getClassOrInterface()) ) {
+			// 해당인터페이스 구현클래스 목록을 LOOP 돌리면서 인터페이스의 클래스ID 가 구현클래스의 인터페이스ID와 일치하는 구현클래스의 resourceId를 찾아서 비교한다.
+			for(String packageClassId : implClassIdList) {
+				implClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
+				if( interfaceVo.getClassId().equals(implClzzVo.getInterfaceId())) {
+					// resourceId 로 찾고자 할 때
+					if( !StringUtil.isEmpty(resourceId) ) {
+						if( resourceId.equals(implClzzVo.getResourceId())) {
+							implClassId = implClzzVo.getClassId();
+							break;
+						}
+					// resourceId 로 찾지 않을 때	
+					}else {
+						implClassId = implClzzVo.getClassId();
+						break;
 					}
 				}
 			}
-			if( !StringUtil.isEmpty(resourceId) && impleClzzVoList.size() > 0 ) {
-				implClassId = impleClzzVoList.get(0).getClassId();
-			}
+		}else {
+			implClassId = interfaceId;
 		}
-
 		return implClassId;
 	}
 	
@@ -538,6 +541,7 @@ public class ParseUtil {
 	public static void writeClassVo(ClzzVo vo, String writeFilePath) {
 		String fileName = "";
 		StringBuffer fileConts = new StringBuffer();
+		StringBuffer implClassIdConts = new StringBuffer();
 		StringBuffer callClassAliasConts = new StringBuffer();
 		String div = "|";
 		try {
@@ -546,10 +550,20 @@ public class ParseUtil {
 			fileConts.append("클래스ID" + div + StringUtil.nullCheck(vo.getClassId(), "")).append("\n");
 			fileConts.append("클래스명" + div + StringUtil.nullCheck(vo.getClassName(), "")).append("\n");
 			fileConts.append("기능종류" + div + StringUtil.nullCheck(vo.getClassKind(), "")).append("\n");
-			fileConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
-			fileConts.append("클래스or인터페이스" + div + StringUtil.nullCheck(vo.getClassOrInterface(), "")).append("\n");
 			fileConts.append("리소스ID" + div + StringUtil.nullCheck(vo.getResourceId(), "")).append("\n");
-			fileConts.append("인터페이스ID" + div + StringUtil.nullCheck(vo.getInterfaceId(), "")).append("\n");
+			fileConts.append("클래스or인터페이스" + div + StringUtil.nullCheck(vo.getClassOrInterface(), "")).append("\n");
+			fileConts.append("상위인터페이스ID" + div + StringUtil.nullCheck(vo.getInterfaceId(), "")).append("\n");
+			List<String> implClassIdList = vo.getImplClassIdList();
+			if(implClassIdList != null) {
+				for(String item : implClassIdList) {
+					if(implClassIdConts.length() > 0) {
+						implClassIdConts.append(",");
+					}
+					implClassIdConts.append(item);
+				}
+			}
+			fileConts.append("인터페이스구현하위클래스ID목록" + div  + implClassIdConts.toString() ).append("\n");
+			
 			List<Map<String, String>> callClassAlias = vo.getCallClassAlias();
 			if(callClassAlias != null) {
 				for(Map<String, String> item : callClassAlias) {
@@ -560,6 +574,8 @@ public class ParseUtil {
 				}
 			}
 			fileConts.append("호출알리아스" + div  + callClassAliasConts.toString() ).append("\n");
+			
+			fileConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
 			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
 		} catch (Exception e) {
 			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
@@ -607,28 +623,35 @@ public class ParseUtil {
 							vo.setClassKind(ClzzKind.getClzzKindCd(words[1]));
 						}
 					}
-					if(line.startsWith("파일명" + div)) {
-						String[] words = StringUtil.toStrArray(line, div);
-						if(words.length > 1) {
-							vo.setFileName(words[1]);
-						}
-					}
+					
 					if(line.startsWith("리소스ID" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setResourceId(words[1]);
 						}
 					}
+
 					if(line.startsWith("클래스or인터페이스" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setClassOrInterface(words[1]);
 						}
 					}
-					if(line.startsWith("인터페이스ID" + div)) {
+					if(line.startsWith("상위인터페이스ID" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setInterfaceId(words[1]);
+						}
+					}
+					if(line.startsWith("인터페이스구현하위클래스ID목록" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							List<String> implClassIdList = new ArrayList<String>();
+							String[] implClassIdStrList = StringUtil.toStrArray(words[1], ",");
+							for(String implClassIdStr : implClassIdStrList) {
+								implClassIdList.add(implClassIdStr);
+							}
+							vo.setImplClassIdList(implClassIdList);
 						}
 					}
 					if(line.startsWith("호출알리아스" + div)) {
@@ -646,6 +669,13 @@ public class ParseUtil {
 								}
 							}
 							vo.setCallClassAlias(callClassAlias);
+						}
+					}
+
+					if(line.startsWith("파일명" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setFileName(words[1]);
 						}
 					}
 				}

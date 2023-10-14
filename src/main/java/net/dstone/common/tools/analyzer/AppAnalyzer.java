@@ -52,9 +52,13 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static int JOB_KIND_11_ANALYZE_CLASS          = 11;
 	/**
+	 * 작업종류 - 클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가
+	 */
+	public static int JOB_KIND_12_ANALYZE_CLASS_IMPL     = 12;
+	/**
 	 * 작업종류 - 클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가
 	 */
-	public static int JOB_KIND_12_ANALYZE_CLASS_ALIAS    = 12;
+	public static int JOB_KIND_13_ANALYZE_CLASS_ALIAS    = 13;
 	/**
 	 * 작업종류 - 쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출
 	 */

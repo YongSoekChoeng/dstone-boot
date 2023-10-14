@@ -20,6 +20,7 @@ import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.SecException;
 import net.dstone.common.security.svc.CustomUserService;
+import net.dstone.common.security.vo.CustomUserDetails;
 import net.dstone.common.utils.LogUtil;
 
 @Component("customAuthenticationProvider")

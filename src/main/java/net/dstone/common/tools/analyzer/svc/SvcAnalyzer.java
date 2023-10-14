@@ -8,7 +8,7 @@ import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.DefaultClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParserClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParserMtd;
 import net.dstone.common.tools.analyzer.svc.query.Query;
@@ -103,8 +103,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class ClassFactory {
 		
 		static Clzz getClzz() {
-			return new DefaultClzz(); 
-			//return new JavaParserClzz(); 
+			//return new DefaultClzz(); 
+			return new JavaParserClzz(); 
 		}
 		
 		/**
@@ -158,7 +158,7 @@ public class SvcAnalyzer extends BaseObject{
 		}
 
 		/**
-		 * 인터페이스ID 추출
+		 * 상위인터페이스ID 추출(인터페이스를 구현한 클래스의 경우에만 존재)
 		 * @param classFile
 		 * @return
 		 */
@@ -166,13 +166,22 @@ public class SvcAnalyzer extends BaseObject{
 			return getClzz().getInterfaceId(classFile);
 		}
 		/**
-		 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
-		 * @param classFile
+		 * 인터페이스구현하위클래스ID목록(인터페이스인 경우에만 존재)
+		 * @param selfClzzVo
 		 * @param otherClassFileList
 		 * @return
 		 */
-		static List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) throws Exception {
-			return getClzz().getCallClassAlias(classFile, otherClassFileList);
+		static List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception {
+			return getClzz().getImplClassIdList(selfClzzVo, otherClassFileList);
+		}
+		/**
+		 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
+		 * @param selfClzzVo
+		 * @param otherClassFileList
+		 * @return
+		 */
+		static List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception {
+			return getClzz().getCallClassAlias(selfClzzVo, otherClassFileList);
 		}
 	}
 	
@@ -331,8 +340,11 @@ public class SvcAnalyzer extends BaseObject{
 			if(jobKind <= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {return;}
 			getLogger().info("/*** A-2.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 			this.analyzeClass(classFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_ALIAS) {return;}
-			getLogger().info("/*** A-3.클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가");
+			if(jobKind <= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {return;}
+			getLogger().info("/*** A-3.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
+			this.analyzeClassImpl(classFileList);
+			if(jobKind <= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {return;}
+			getLogger().info("/*** A-4.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
 			this.analyzeClassAlias(classFileList);
 			getLogger().info("/**************************************** A.클래스 분석 끝 ****************************************/");
 			
@@ -454,6 +466,46 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	/**
+	 * 클래스파일리스트 에서 해당클래스파일이 인터페이스인 경우 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가
+	 * @param classFileList 클래스파일리스트
+	 */
+	protected void analyzeClassImpl(String[] classFileList) throws Exception {
+		ClzzVo clzzVo = null;
+		String pkgClassId = "";
+		String classFile= "";
+		String[] analyzedClassFileList = null;
+		try {
+			analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
+			for(int i=0; i<classFileList.length; i++) {
+				classFile = classFileList[i];
+				if( isValidSvcFile(classFile) ) {
+					String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
+					pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
+					if(pkgClassId.startsWith("/")) {
+						pkgClassId = pkgClassId.substring(1);
+					}
+					pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
+					clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
+					
+					if( "I".equals(clzzVo.getClassOrInterface()) ) {
+						
+						// 인터페이스구현하위클래스ID목록
+						clzzVo.setImplClassIdList(ClassFactory.getImplClassIdList(clzzVo, analyzedClassFileList));
+						
+						// 파일저장	
+						ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	/**
 	 * 클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가
 	 * @param classFileList 클래스파일리스트
 	 */
@@ -476,7 +528,7 @@ public class SvcAnalyzer extends BaseObject{
 					clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
 					
 					// 호출알리아스
-					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(classFile, analyzedClassFileList));
+					clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(clzzVo, analyzedClassFileList));
 					
 					// 파일저장	
 					ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");

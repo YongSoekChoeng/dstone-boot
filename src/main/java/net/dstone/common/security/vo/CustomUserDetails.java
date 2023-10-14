@@ -1,4 +1,4 @@
-package net.dstone.common.security;
+package net.dstone.common.security.vo;
 
 import java.util.Collection;
 import java.util.List;

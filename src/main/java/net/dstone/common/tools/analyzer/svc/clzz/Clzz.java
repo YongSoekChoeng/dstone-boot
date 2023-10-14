@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
+import net.dstone.common.tools.analyzer.vo.ClzzVo;
 
 public interface Clzz {
 	/**
@@ -30,31 +31,41 @@ public interface Clzz {
 	 * @return
 	 */
 	public ClzzKind getClassKind(String classFile) throws Exception ;
+	
 	/**
-	 * 리소스ID 추출
+	 * 어노테이션으로 표현된 리소스ID 추출
 	 * @param classFile
 	 * @return
 	 */
 	public String getResourceId(String classFile) throws Exception ;
+
 	/**
 	 * 클래스or인터페이스(C:클래스/I:인터페이스) 추출
 	 * @param classFile
 	 * @return
 	 */
 	public String getClassOrInterface(String classFile) throws Exception ;
-	
+
 	/**
-	 * 인터페이스ID 추출.(인터페이스를 구현한 경우에만 존재)
+	 * 인터페이스의 클래스ID 추출.(인터페이스를 구현한 클래스의 경우에만 존재)
 	 * @param classFile
 	 * @return
 	 */
 	public String getInterfaceId(String classFile) throws Exception ;
 
 	/**
-	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
-	 * @param classFile
+	 * 인터페이스구현클래스ID목록 추출.(인터페이스인 경우에만 존재)
+	 * @param selfClzzVo
 	 * @param otherClassFileList
 	 * @return
 	 */
-	public List<Map<String, String>> getCallClassAlias(String classFile, String[] otherClassFileList) throws Exception ;
+	public List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception ;
+	
+	/**
+	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
+	 * @param selfClzzVo
+	 * @param otherClassFileList
+	 * @return
+	 */
+	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception ;
 }

@@ -581,50 +581,68 @@ public class StringUtil {
 		}
 		return tmp;
 	}
-
+	
 	/**
 	 * <code>toStrArray</code> 설명: 구분자를 포함한 스트링을 배열로 바꾸는 메소드
 	 * 
-	 * @param strInput
-	 *            구분자를 포함한 전체스트링
-	 * @param div
-	 *            구분자
-	 * @param trimYn
-	 *            트림여부
-	 * @return 스트링배열
-	 */
-	public static String[] toStrArray(String strInput, String div, boolean trimYn) {
-		String[] sResults = null;
-		String sTemp = "";
-		int index = 0;
-
-		strInput = replace(strInput, (div), (" " + div));
-		java.util.StringTokenizer token = new java.util.StringTokenizer(strInput, div);
-		sResults = new String[token.countTokens()];
-		while (token.hasMoreElements()) {
-			sTemp = (String) token.nextElement();
-			if (trimYn) {
-				sResults[index] = sTemp.trim();
-			} else {
-				sResults[index] = sTemp;
-			}
-			index++;
-		}
-		return sResults;
-	}
-
-	/**
-	 * <code>toStrArray</code> 설명: 구분자를 포함한 스트링을 배열로 바꾸는 메소드
-	 * 
-	 * @param strInput
-	 *            구분자를 포함한 전체스트링
-	 * @param div
-	 *            구분자
+	 * @param strInput 구분자를 포함한 전체스트링
+	 * @param div 구분자
 	 * @return 스트링배열
 	 */
 	public static String[] toStrArray(String strInput, String div) {
 		return toStrArray(strInput, div, true);
 	}
+
+	/**
+	 * <code>toStrArray</code> 설명: 구분자를 포함한 스트링을 배열로 바꾸는 메소드
+	 * 
+	 * @param strInput 구분자를 포함한 전체스트링
+	 * @param div 구분자
+	 * @param trimYn 트림여부
+	 * @return 스트링배열
+	 */
+	public static String[] toStrArray(String strInput, String div, boolean trimYn) {
+		return toStrArray(strInput, div, trimYn, false);
+	}
+	
+	/**
+	 * <code>toStrArray</code> 설명: 구분자를 포함한 스트링을 배열로 바꾸는 메소드
+	 * 
+	 * @param strInput 구분자를 포함한 전체스트링
+	 * @param div 구분자
+	 * @param trimYn 트림여부
+	 * @param delBlankLineYn 비어있는라인제거여부
+	 * @return 스트링배열
+	 */
+	public static String[] toStrArray(String strInput, String div, boolean trimYn, boolean delBlankLineYn) {
+		String[] sResults = null;
+		String sTemp = "";
+
+		strInput = replace(strInput, (div), (" " + div));
+		java.util.StringTokenizer token = new java.util.StringTokenizer(strInput, div);
+		java.util.ArrayList<String> strList = new java.util.ArrayList<String>();
+		
+		while (token.hasMoreElements()) {
+			sTemp = (String) token.nextElement();
+			if(delBlankLineYn) {
+				if(sTemp.trim().equals("")) {
+					continue;
+				}
+			}
+			if (trimYn) {
+				strList.add(sTemp.trim());
+			} else {
+				strList.add(sTemp);
+			}
+		}
+		sResults = new String[strList.size()];
+		strList.toArray(sResults);
+		strList.clear();
+		strList = null;
+		return sResults;
+	}
+
+
 
 	/**
 	 * <code>moneyForamt</code> 설명:화폐형식표기 메소드.

@@ -14,12 +14,14 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
+import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -99,7 +101,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	}
 	
 	/**
-	 * 리소스ID 추출
+	 * 어노테이션으로 표현된 리소스ID 추출
 	 * @param classFile
 	 * @return
 	 */
@@ -119,7 +121,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	}
 
 	/**
-	 * 인터페이스ID 추출.(인터페이스를 구현한 경우에만 존재)
+	 * 상위인터페이스 클래스ID 추출.(인터페이스를 구현한 클래스의 경우에만 존재)
 	 * @param classFile
 	 * @return
 	 */
@@ -129,19 +131,29 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	}
 
 	/**
+	 * 인터페이스구현하위클래스ID목록 추출.(인터페이스인 경우에만 존재)
+	 * @param selfClzzVo
+	 * @param analyzedClassFileList
+	 * @return
+	 */
+	public List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception{
+		return super.getImplClassIdList(selfClzzVo, otherClassFileList);
+	}
+	
+	/**
 	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
-	 * @param classFile
+	 * @param selfClzzVo
 	 * @param analyzedClassFileList
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public List<Map<String, String>> getCallClassAlias(String classFile, String[] analyzedClassFileList) throws Exception {
+	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
-		String fileConts = FileUtil.readFile(classFile);
+		String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
 		boolean isUsed = false;
-		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
+		CompilationUnit cu = StaticJavaParser.parse(new File(selfClzzVo.getFileName()));
 
         HashMap<String, ImportDeclaration> importMap = new HashMap<String, ImportDeclaration>();
         List<ImportDeclaration> imports = cu.getImports();
@@ -150,17 +162,20 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
         }
 		String type = "";
 		String alias = "";
+		String resourceId = "";
         for (TypeDeclaration typeDec : cu.getTypes()) {
             List<BodyDeclaration> members = typeDec.getMembers();
             if(members != null) {
                 for (BodyDeclaration  member : members) {
             		type = "";
             		alias = "";
+            		resourceId = "";
             		isUsed = false;
                 	if( member instanceof FieldDeclaration ) {
                 		FieldDeclaration field = ((FieldDeclaration) member);
                 		List<VariableDeclarator> fieldVariableDeclaratorList = field.getVariables();
                         for (VariableDeclarator variable : fieldVariableDeclaratorList) {
+
                         	//Print the field's class typr
                         	type = variable.getType().asString();
                             if(type.indexOf(".") == -1 && importMap.containsKey(type) ) {
@@ -168,6 +183,22 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
                             }
                             //Print the field's name
                             alias = variable.getName().asString();
+                                
+                            //Print the field's annotation name
+							if(member.getAnnotations().isNonEmpty()) { 
+								String varType = variable.getTypeAsString();
+								// variable의 타입과 필드의 타입이 동일한 경우 해당 필드의 어노테이션을 가지고 와서 resourceId를 구해낸다.
+								if( varType.indexOf(".")>-1 && type.equals(varType) || varType.indexOf(".")==-1 && type.endsWith("."+varType) ) {
+									for(AnnotationExpr an : field.getAnnotations()) {  
+										if( an.isSingleMemberAnnotationExpr() ) {
+											resourceId = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
+										}else if( an.isNormalAnnotationExpr() ) {
+											resourceId = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
+										}
+									}
+								}
+							}
+
                         }
                 	}else if( member instanceof MethodDeclaration ) {
                 		MethodDeclaration method = ((MethodDeclaration) member);
@@ -191,7 +222,10 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
     					}
     					if(isUsed) {
     						callClassAlias = new HashMap<String, String>();
-    						callClassAlias.put("FULL_CLASS", type);
+    						
+    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
+    						//callClassAlias.put("FULL_CLASS", type);
+    						
     						callClassAlias.put("ALIAS", alias);
                     		callClassAliasList.add(callClassAlias);
     					}
