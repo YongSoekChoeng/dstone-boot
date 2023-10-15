@@ -379,12 +379,57 @@ public class ParseUtil {
 		return sqlBody;
 	}
 	
+	
 	/**
 	 * 웹페이지의 A태그로부터 링크를 추출하는 메소드
 	 * @param webPageFile
 	 * @return
 	 */
 	public static List<String> extrackLinksFromAtag(String webPageFile){
+		List<String> linkList = new ArrayList<String>();
+		try {
+			if(FileUtil.isFileExist(webPageFile)) {
+				String keyword = "";
+				String[] div = {"'"};
+				String nextWord = "";
+				
+				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.replace(conts, "\r\n", "");
+				conts = StringUtil.replace(conts, "\n", "");
+				conts = adjustConts(conts);
+				conts = StringUtil.replace(conts, "\"", "'");
+				
+				String contsForAtag = new String(conts);
+				
+				// A태그 Link
+				contsForAtag = StringUtil.replace(contsForAtag, "href =", "href=");
+				contsForAtag = StringUtil.replace(contsForAtag, "href= '", "href='");
+				contsForAtag = StringUtil.replace(contsForAtag, "href=''", "");
+				keyword = "href='";
+				nextWord = "";
+				while(contsForAtag.indexOf(keyword) > -1) {
+					if(contsForAtag.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForAtag, keyword, div);
+						if(nextWord.indexOf("?")>-1) {
+							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
+						}
+						linkList.add(nextWord);
+						contsForAtag = contsForAtag.substring( contsForAtag.indexOf(nextWord) + (nextWord).length() );
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return linkList;
+	}
+	
+	/**
+	 * 웹페이지의 A태그로부터 링크를 파싱(추출)하는 메소드
+	 * @param webPageFile
+	 * @return
+	 */
+	public static List<String> parseLinksFromAtag(String webPageFile){
 		List<String> linkList = new ArrayList<String>();
 		try {
 
@@ -408,12 +453,60 @@ public class ParseUtil {
 		}
 		return linkList;
 	}
+
+	
 	/**
 	 * 웹페이지의 폼액션으로부터 링크를 추출하는 메소드
 	 * @param webPageFile
 	 * @return
 	 */
 	public static List<String> extrackLinksFromAction(String webPageFile){
+		List<String> linkList = new ArrayList<String>();
+		try {
+			if(FileUtil.isFileExist(webPageFile)) {
+				String keyword = "";
+				String[] div = {"'"};
+				String nextWord = "";
+				
+				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.replace(conts, "\r\n", "");
+				conts = StringUtil.replace(conts, "\n", "");
+				conts = adjustConts(conts);
+				conts = StringUtil.replace(conts, "\"", "'");
+				
+				String contsForAction = new String(conts);
+				
+				// Form Action
+				contsForAction = StringUtil.replace(contsForAction, ".action =", ".action=");
+				contsForAction = StringUtil.replace(contsForAction, ".action= '", ".action='");
+				contsForAction = StringUtil.replace(contsForAction, "action =", "action=");
+				contsForAction = StringUtil.replace(contsForAction, "action= '", "action='");
+				contsForAction = StringUtil.replace(contsForAction, "action=''", "");
+				keyword = "action='";
+				nextWord = "";
+				while(contsForAction.indexOf(keyword) > -1) {
+					if(contsForAction.indexOf(keyword) > -1) {
+						nextWord = StringUtil.nextWord(contsForAction, keyword, div);
+						if(nextWord.indexOf("?")>-1) {
+							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
+						}
+						linkList.add(nextWord);
+						contsForAction = contsForAction.substring( contsForAction.indexOf(nextWord) + (nextWord).length() );
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return linkList;
+	}
+	
+	/**
+	 * 웹페이지의 폼액션으로부터 링크를 파싱(추출)하는 메소드
+	 * @param webPageFile
+	 * @return
+	 */
+	public static List<String> parseLinksFromAction(String webPageFile){
 		List<String> linkList = new ArrayList<String>();
 		try {
 			if(FileUtil.isFileExist(webPageFile)) {
