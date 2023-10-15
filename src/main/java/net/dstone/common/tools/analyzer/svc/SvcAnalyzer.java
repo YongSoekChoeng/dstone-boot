@@ -3,6 +3,7 @@ package net.dstone.common.tools.analyzer.svc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
@@ -288,21 +289,16 @@ public class SvcAnalyzer extends BaseObject{
 			return getUi().getUiName(uiFile);
 		}
 		/**
-		 * UI파일로부터 Include된 타 UI파일목록 추출
-		 * @param uiFile
-		 * @return
-		 */
-		static List<String> getIncludeUiList(String uiFile) throws Exception {
-			return getUi().getIncludeUiList(uiFile);
-		}
-
-		/**
 		 * UI파일로부터 링크목록 추출
 		 * @param uiFile
 		 * @return
 		 */
 		static List<String> getUiLinkList(String uiFile) throws Exception {
-			return getUi().getUiLinkList(uiFile);
+			List<String> composeLinkList = new ArrayList<String>();
+			
+			composeLinkList = getUi().getUiLinkList(uiFile);
+
+			return composeLinkList.stream().distinct().collect(Collectors.toList());
 		}
 
 	}
@@ -401,11 +397,8 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/*** D-2.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
 			if(jobKind <= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {return;}
 			this.analyzeUi(uiFileList);
-			getLogger().info("/*** D-3.UI파일로부터 Include된 타 UI파일목록의 추출");
-			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_INCLUDE) {return;}
-			this.analyzeUiIncludeUi(uiFileList);
-			getLogger().info("/*** D-4.UI파일로부터 링크 추출");
-			if(jobKind <= AppAnalyzer.JOB_KIND_43_ANALYZE_UI_LINK) {return;}
+			getLogger().info("/*** D-3.UI파일로부터 링크 추출");
+			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {return;}
 			this.analyzeUiLink(uiFileList);
 			getLogger().info("/**************************************** D.UI 분석 끝 ****************************************/");
 			
@@ -769,35 +762,6 @@ public class SvcAnalyzer extends BaseObject{
 			}
 		} catch (Exception e) {
 			LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
-			e.printStackTrace();
-			throw e;
-		}
-	}
-	/**
-	 * UI파일리스트 에서 인크루드파일을 추출하여 UI분석파일리스트 에 추가
-	 * @param uiFileList UI파일리스트
-	 */
-	protected void analyzeUiIncludeUi(String[] uiFileList) throws Exception {
-		UiVo uiVo = null;
-		String uiFile= "";
-		try {
-			for(int i=0; i<uiFileList.length; i++) {
-				uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
-				if( isValidUiFile(uiFile) ) {
-					
-					// UI Vo
-					uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
-					
-					// 인크루드파일
-					uiVo.setIncludeUiFileNameList(UiFactory.getIncludeUiList(uiFile));
-
-					// 파일저장			
-					ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
-					
-				}
-			}
-		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeUiIncludeUi()수행중 예외발생. uiFile["+uiFile+"]");
 			e.printStackTrace();
 			throw e;
 		}

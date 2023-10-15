@@ -6,8 +6,6 @@ public class UiVo {
 	private String uiId;
 	private String uiName;
 	protected String fileName;
-
-	protected List<String> includeUiFileNameList;
 	protected List<String> linkList;
 	
 	public String getUiId() {
@@ -28,12 +26,6 @@ public class UiVo {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	public List<String> getIncludeUiFileNameList() {
-		return includeUiFileNameList;
-	}
-	public void setIncludeUiFileNameList(List<String> includeUiFileNameList) {
-		this.includeUiFileNameList = includeUiFileNameList;
-	}
 	public List<String> getLinkList() {
 		return linkList;
 	}
@@ -42,7 +34,7 @@ public class UiVo {
 	}
 	@Override
 	public String toString() {
-		return "UiVo [uiId=" + uiId + ", uiName=" + uiName + ", fileName=" + fileName + ", includeUiFileNameList="
-				+ includeUiFileNameList + ", linkList=" + linkList + "]";
+		return "UiVo [uiId=" + uiId + ", uiName=" + uiName + ", fileName=" + fileName + ", linkList=" + linkList + "]";
 	}
+
 }

@@ -942,23 +942,12 @@ public class ParseUtil {
 		String fileName = "";
 		StringBuffer uiConts = new StringBuffer();
 		String div = "|";
-		StringBuffer includeUiFileNameConts = new StringBuffer();
 		StringBuffer linkConts = new StringBuffer();
 		try {
 			fileName = StringUtil.nullCheck(vo.getUiId(), "") + ".txt";
 			uiConts.append("UI아이디" + div + StringUtil.nullCheck(vo.getUiId(), "")).append("\n");
 			uiConts.append("UI명" + div + StringUtil.nullCheck(vo.getUiName(), "")).append("\n");
 			uiConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
-			List<String> includeUiFileNameList = vo.getIncludeUiFileNameList();
-			if(includeUiFileNameList != null) {
-				for(String item : includeUiFileNameList) {
-					if(includeUiFileNameConts.length() > 0) {
-						includeUiFileNameConts.append(",");
-					}
-					includeUiFileNameConts.append(item);
-				}
-			}
-			uiConts.append("인크루드파일" + div + StringUtil.nullCheck(includeUiFileNameConts, "")).append("\n");
 			List<String> linkList = vo.getLinkList();
 			if(linkList != null) {
 				for(String item : linkList) {
@@ -1009,17 +998,6 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setFileName(words[1]);
-						}
-					}
-					if(line.startsWith("인크루드파일" + div)) {
-						String[] words = StringUtil.toStrArray(line, div);
-						if(words.length > 1) {
-							List<String> includeUiFileNameList = new ArrayList<String>();
-							String[] includeUiFileNameStrList = StringUtil.toStrArray(words[1], ",");
-							for(String includeUiFileNameStr : includeUiFileNameStrList) {
-								includeUiFileNameList.add(includeUiFileNameStr);
-							}
-							vo.setIncludeUiFileNameList(includeUiFileNameList);
 						}
 					}
 					if(line.startsWith("링크" + div)) {

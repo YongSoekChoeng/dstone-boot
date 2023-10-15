@@ -90,7 +90,7 @@ public class AppAnalyzer extends BaseObject{
 	/**
 	 * 작업종류 - UI파일로부터 링크 추출
 	 */
-	public static int JOB_KIND_43_ANALYZE_UI_LINK        = 43;
+	public static int JOB_KIND_42_ANALYZE_UI_LINK        = 42;
 	
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 	
