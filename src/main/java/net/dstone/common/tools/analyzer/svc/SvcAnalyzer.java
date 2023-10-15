@@ -333,15 +333,18 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(classFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			if(jobKind <= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {return;}
+			
 			getLogger().info("/*** A-2.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 			this.analyzeClass(classFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {return;}
+			if(jobKind <= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {return;}
+			
 			getLogger().info("/*** A-3.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
 			this.analyzeClassImpl(classFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {return;}
+			if(jobKind <= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {return;}
+			
 			getLogger().info("/*** A-4.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
 			this.analyzeClassAlias(classFileList);
+			if(jobKind <= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {return;}
 			getLogger().info("/**************************************** A.클래스 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** B.쿼리 분석 시작 ****************************************/");
@@ -358,26 +361,30 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(queryFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
-			if(jobKind <= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {return;}
+			
 			getLogger().info("/*** B-2.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 			this.analyzeQuery(queryFileList);
 			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
-			if(jobKind <= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {return;}
+			if(jobKind <= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {return;}
+			
 			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 			this.analyzeQueryCallTbl(analyzedQueryFileList);
+			if(jobKind <= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {return;}
 			getLogger().info("/**************************************** B.쿼리 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** C.메소드 분석 시작 ****************************************/");
-			if(jobKind <= AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {return;}
 			getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 			this.analyzeMtd(classFileList);
 			analyzedMethodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
-			if(jobKind <= AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {return;}
+			if(jobKind <= AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {return;}
+			
 			getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 			this.analyzeMtdCallMtd(analyzedMethodFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {return;}
+			if(jobKind <= AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {return;}
+			
 			getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 			this.analyzeMtdCallTbl(analyzedMethodFileList);
+			if(jobKind <= AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {return;}
 			getLogger().info("/**************************************** C.메소드 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** D.UI 분석 시작 ****************************************/");
@@ -394,12 +401,14 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.toArray(uiFileList);
 			filteredFileList.clear();
 			filteredFileList = null;
+			
 			getLogger().info("/*** D-2.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
-			if(jobKind <= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {return;}
 			this.analyzeUi(uiFileList);
+			if(jobKind <= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {return;}
+			
 			getLogger().info("/*** D-3.UI파일로부터 링크 추출");
-			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {return;}
 			this.analyzeUiLink(uiFileList);
+			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {return;}
 			getLogger().info("/**************************************** D.UI 분석 끝 ****************************************/");
 			
 		} catch (Exception e) {
