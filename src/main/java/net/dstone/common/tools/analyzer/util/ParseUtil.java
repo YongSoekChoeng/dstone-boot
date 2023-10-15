@@ -387,35 +387,21 @@ public class ParseUtil {
 	public static List<String> extrackLinksFromAtag(String webPageFile){
 		List<String> linkList = new ArrayList<String>();
 		try {
+
 			if(FileUtil.isFileExist(webPageFile)) {
-				String keyword = "";
-				String[] div = {"'"};
-				String nextWord = "";
-				
-				String conts = FileUtil.readFile(webPageFile);
-				conts = StringUtil.replace(conts, "\r\n", "");
-				conts = StringUtil.replace(conts, "\n", "");
-				conts = adjustConts(conts);
-				conts = StringUtil.replace(conts, "\"", "'");
-				
-				String contsForAtag = new String(conts);
-				
-				// A태그 Link
-				contsForAtag = StringUtil.replace(contsForAtag, "href =", "href=");
-				contsForAtag = StringUtil.replace(contsForAtag, "href= '", "href='");
-				contsForAtag = StringUtil.replace(contsForAtag, "href=''", "");
-				keyword = "href='";
-				nextWord = "";
-				while(contsForAtag.indexOf(keyword) > -1) {
-					if(contsForAtag.indexOf(keyword) > -1) {
-						nextWord = StringUtil.nextWord(contsForAtag, keyword, div);
-						if(nextWord.indexOf("?")>-1) {
-							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
-						}
-						linkList.add(nextWord);
-						contsForAtag = contsForAtag.substring( contsForAtag.indexOf(nextWord) + (nextWord).length() );
-					}
-				}
+
+				org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse( net.dstone.common.utils.FileUtil.readFile(webPageFile) );
+				String elVal = "";
+				org.jsoup.select.Elements links = doc.select("a[href]");
+			    for (org.jsoup.nodes.Element link : links) {
+			    	elVal = link.attr("abs:href");
+			    	if(!StringUtil.isEmpty(elVal)) {
+			    		if(!linkList.contains(elVal)) {
+			    			linkList.add(elVal);
+			    		}
+			    	}
+			    }
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -431,36 +417,19 @@ public class ParseUtil {
 		List<String> linkList = new ArrayList<String>();
 		try {
 			if(FileUtil.isFileExist(webPageFile)) {
-				String keyword = "";
-				String[] div = {"'"};
-				String nextWord = "";
-				
-				String conts = FileUtil.readFile(webPageFile);
-				conts = StringUtil.replace(conts, "\r\n", "");
-				conts = StringUtil.replace(conts, "\n", "");
-				conts = adjustConts(conts);
-				conts = StringUtil.replace(conts, "\"", "'");
-				
-				String contsForAction = new String(conts);
-				
-				// Form Action
-				contsForAction = StringUtil.replace(contsForAction, ".action =", ".action=");
-				contsForAction = StringUtil.replace(contsForAction, ".action= '", ".action='");
-				contsForAction = StringUtil.replace(contsForAction, "action =", "action=");
-				contsForAction = StringUtil.replace(contsForAction, "action= '", "action='");
-				contsForAction = StringUtil.replace(contsForAction, "action=''", "");
-				keyword = "action='";
-				nextWord = "";
-				while(contsForAction.indexOf(keyword) > -1) {
-					if(contsForAction.indexOf(keyword) > -1) {
-						nextWord = StringUtil.nextWord(contsForAction, keyword, div);
-						if(nextWord.indexOf("?")>-1) {
-							nextWord = nextWord.substring(0, nextWord.indexOf("?"));
-						}
-						linkList.add(nextWord);
-						contsForAction = contsForAction.substring( contsForAction.indexOf(nextWord) + (nextWord).length() );
-					}
-				}
+
+				org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse( net.dstone.common.utils.FileUtil.readFile(webPageFile) );
+				String elVal = "";
+				org.jsoup.select.Elements links = doc.getElementsByTag("form");
+			    for (org.jsoup.nodes.Element el : links) {
+			    	elVal = el.attr("action");
+			    	if(!StringUtil.isEmpty(elVal)) {
+			    		if(!linkList.contains(elVal)) {
+			    			linkList.add(elVal);
+			    		}
+			    	}
+			    }
+			    
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

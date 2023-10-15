@@ -55,10 +55,13 @@ public class DefaultUi implements Ui {
 		
 		try {
 			if(FileUtil.isFileExist(uiFile)) {
+				
 				// A태그 로부터 링크를 추출.
 				uiLinkList.addAll(ParseUtil.extrackLinksFromAtag(uiFile));
+				
 				// 폼.action 으로부터 링크를 추출.
 				uiLinkList.addAll(ParseUtil.extrackLinksFromAction(uiFile));
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
