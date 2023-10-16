@@ -79,11 +79,13 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 		ClzzKind classKind = ClzzKind.OT;
 		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
         String fileExt = FileUtil.getFileExt(classFile);
+        String annotation = "";
+        
 		if("java".equals(fileExt)) {
-            List<MarkerAnnotationExpr> annotationDeclarationList = cu.findAll(MarkerAnnotationExpr.class);
+            List<AnnotationExpr> annotationDeclarationList = cu.findAll(AnnotationExpr.class);
             if(!annotationDeclarationList.isEmpty()) {
-            	for(MarkerAnnotationExpr item : annotationDeclarationList) {
-            		String annotation = item.getNameAsString();
+            	for(AnnotationExpr item : annotationDeclarationList) {
+            		annotation = item.getNameAsString();
             		if("Controller".equals(annotation) || "RestController".equals(annotation)) {
             			classKind = ClzzKind.CT;
             		}else if("Service".equals(annotation)) {
