@@ -82,7 +82,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
         String annotation = "";
         
 		if("java".equals(fileExt)) {
-            List<AnnotationExpr> annotationDeclarationList = cu.findAll(AnnotationExpr.class);
+			List<AnnotationExpr> annotationDeclarationList = cu.getType(0).getAnnotations();
             if(!annotationDeclarationList.isEmpty()) {
             	for(AnnotationExpr item : annotationDeclarationList) {
             		annotation = item.getNameAsString();

@@ -908,4 +908,14 @@ public class SvcAnalyzer extends BaseObject{
 		}
 	}
 	
+
+	
+	
+	public void saveToFile(String fileFullPath) {
+		StringBuffer conts = new StringBuffer();
+				
+		
+		FileUtil.writeFile(FileUtil.getFilePath(fileFullPath), FileUtil.getFileName(fileFullPath, true), conts.toString());
+	}
+	
 }
