@@ -144,13 +144,8 @@ public class AppAnalyzer extends BaseObject{
 	public void initAll() {
 		try {
 			
-			/*** DB 데이터 삭제 ***/
-			svcAnalyzer.deleteFromDb(AppAnalyzer.DBID);
-
 			/*** 파일정보 삭제 ***/
-			getLogger().info("/**************************************** 디렉토리["+AppAnalyzer.WRITE_PATH+"] 삭제 시작 ****************************************/");
 			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH);
-			getLogger().info("/**************************************** 디렉토리["+AppAnalyzer.WRITE_PATH+"] 생성 시작 ****************************************/");
 			FileUtil.makeDir(AppAnalyzer.WRITE_PATH);
 			
 		} catch (Exception e) {

@@ -807,21 +807,24 @@ public class SvcAnalyzer extends BaseObject{
 	
 	public void saveToDb(String DBID) {
 		try {
+			getLogger().info("/**************************************** F-1.기존데이터삭제 시작 ****************************************/");
 			this.deleteFromDb(DBID);
+			getLogger().info("/**************************************** F-1.기존데이터삭제 끝 ****************************************/");
+
+			getLogger().info("/**************************************** F-2.데이터적재 시작 ****************************************/");
 			this.insertToDb(DBID);
+			getLogger().info("/**************************************** F-2.데이터적재 끝 ****************************************/");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void deleteFromDb(String DBID) throws Exception {
-		getLogger().info("/**************************************** E.기존데이터삭제 시작 ****************************************/");
+	private void deleteFromDb(String DBID) throws Exception {
 		DbGen.deleteAll(DBID);
-		getLogger().info("/**************************************** E.기존데이터삭제 끝 ****************************************/");
 	}
 
-	public void insertToDb(String DBID) throws Exception {
-		getLogger().info("/**************************************** F.데이터적재 시작 ****************************************/");
+	private void insertToDb(String DBID) throws Exception {
 		String[] fileList = null;
 		String subPath = "";
 		ClzzVo clzzVo = null;
@@ -830,7 +833,7 @@ public class SvcAnalyzer extends BaseObject{
 		
 		try {
 			// 클래스
-			getLogger().info("/*** F-1.클래스 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-1.클래스 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/class";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
@@ -841,7 +844,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 			// 기능메서드
-			getLogger().info("/*** F-2.기능메서드 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-2.기능메서드 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
@@ -852,11 +855,11 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 			// 테이블
-			getLogger().info("/*** F-3.테이블 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-3.테이블 데이터적재 시작 ***/");
 			DbGen.insertTB_TBL(DBID);
 			
 			// 기능간맵핑
-			getLogger().info("/*** F-4.기능간맵핑 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-4.기능간맵핑 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
@@ -867,7 +870,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 			// 테이블맵핑
-			getLogger().info("/*** F-5.테이블맵핑 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-5.테이블맵핑 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
@@ -878,7 +881,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 			// 화면
-			getLogger().info("/*** F-6.화면 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-6.화면 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/ui";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
@@ -889,7 +892,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 
 			// 화면기능맵핑
-			getLogger().info("/*** F-7.화면기능맵핑 데이터적재 시작 ***/");
+			getLogger().info("/*** F-2-7.화면기능맵핑 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/ui";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
@@ -903,7 +906,6 @@ public class SvcAnalyzer extends BaseObject{
 			e.printStackTrace();
 			throw e;
 		}
-		getLogger().info("/**************************************** F.데이터적재 끝 ****************************************/");
 	}
 	
 }
