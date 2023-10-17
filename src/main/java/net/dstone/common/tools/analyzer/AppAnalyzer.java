@@ -177,4 +177,15 @@ public class AppAnalyzer extends BaseObject{
 		}
 	}
 	
+	public void saveToFile() {
+		try {
+			
+			/*** 파일저장 ***/
+			svcAnalyzer.saveToFile(AppAnalyzer.WRITE_PATH + "/" + "AppMetrix.txt");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

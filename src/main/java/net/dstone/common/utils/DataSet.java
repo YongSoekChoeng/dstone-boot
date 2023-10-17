@@ -1664,6 +1664,59 @@ public class DataSet implements java.io.Serializable {
 		dataSetMap.get(key).add(ds);		
 		return ds;
 	}
+	
+	/**
+	 * 해당key로 하위(Child)DataSet을 생성하는 메소드
+	 * @param key(생성하고자 하는 DataSet의 key값)
+	 * @param dsForInsert(인서트하고자 하는 DataSet의 row값)
+	 * @param rowIndex(해당Row가 위치 할 Row의 인덱스. 리스트길이를 벗어날 경우 최종Row로 Add된다.)
+	 * @return DataSet
+	 */
+	public void insertDataSet(String key, DataSet dsForInsert, int rowIndex){
+		this.insertDataSet(key, dsForInsert, rowIndex, "");
+	}
+	
+	/**
+	 * 해당key로 하위(Child)DataSet을 생성하는 메소드
+	 * @param key(생성하고자 하는 DataSet의 key값)
+	 * @param dsForInsert(인서트하고자 하는 DataSet의 row값)
+	 * @param rowIndex(해당Row가 위치 할 Row의 인덱스. 리스트길이를 벗어날 경우 최종Row로 Add된다.)
+	 * @param comment(key로 저장할 코멘트)
+	 * @return DataSet
+	 */
+	public void insertDataSet(String key, DataSet dsForInsert, int rowIndex, String comment){
+		
+		/*** 자식에 전달할 속성정보 시작 ***/
+		dsForInsert.isNullDataSetHide = this.isNullDataSetHide;
+		dsForInsert.isCommentShow = this.isCommentShow;
+		/*** 자식에 전달할 속성정보 끝 ***/
+
+		if( !dataSetMap.containsKey(key) ){
+			dataSetMap.put(key, new ArrayList<DataSet>());
+			if( !dataSetExtraInfo.containsKey(key) ){
+				dataSetExtraInfo.put(key, new HashMap<String, String>());
+			}
+			if( !dataOrderInfo.contains(key) ){
+				dataOrderInfo.add(key);
+			}
+			if( !dataComment.containsKey(key) ){
+				dataComment.put(key, StringUtil.nullCheck(comment, ""));
+			}
+		}
+		
+		int size = dataSetMap.get(key).size();
+		if(rowIndex > -1) {
+			if(rowIndex < size) {
+				dataSetMap.get(key).add(rowIndex, dsForInsert);		
+			}else if(rowIndex == size) {
+				dataSetMap.get(key).add(dsForInsert);		
+			}else if(rowIndex > size) {
+				dataSetMap.get(key).add(dsForInsert);		
+			}
+		}else {
+			dataSetMap.get(key).add(dsForInsert);		
+		}
+	}
 	/**
 	 * 해당key로 저장된 하위(Children)DataSet중 rowIndex번째 DataSet을반환하는 메소드.
 	 * @param key(반환하고자 하는 하위(Child)DataSet의 key값)
