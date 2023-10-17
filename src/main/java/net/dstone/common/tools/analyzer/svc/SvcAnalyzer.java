@@ -1034,7 +1034,7 @@ ds.checkData();
 		return ds;
 	}
 	
-	private int setCallMtdByRecursively(DataSet ds, int methodIndex, String functionId) throws Exception{
+	private DataSet setCallMtdByRecursively(DataSet ds, int methodIndex, String functionId) throws Exception{
 		DataSet dsRow = null;
 		DataSet dsRowForInsert = null;
 		ClzzVo clzzVo = null;
@@ -1061,12 +1061,12 @@ ds.checkData();
 						dsRowForInsert = dsRow.copy();
 						ds.insertDataSet("METRIX", dsRowForInsert, ds.getDataSetRowCount("METRIX"));
 					}
-					this.setCallMtdByRecursively(ds, (methodIndex+1), callFunctionIdForChild);
+					ds = this.setCallMtdByRecursively(ds, (methodIndex+1), callFunctionIdForChild);
 				}
 			}
 			/* 현재 ROW 정보 세팅 끝 */
 		}
-		return 0;
+		return ds;
 	}
 	
 	
