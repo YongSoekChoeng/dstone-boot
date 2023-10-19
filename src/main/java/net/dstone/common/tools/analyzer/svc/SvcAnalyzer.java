@@ -914,12 +914,12 @@ public class SvcAnalyzer extends BaseObject{
 		List<DataSet> dsList = new ArrayList<DataSet>();
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
-		
-		/********************************* 기본구조 세팅 시작 *********************************/
-		ds = this.setFileBasic();
-		/********************************* 기본구조 세팅 끝 *********************************/
 
-		/********************************* 호출구조 세팅 시작 *********************************/
+		getLogger().info("/**************************************** G-1.기본구조 세팅 시작 ****************************************/");
+		ds = this.setFileBasic();
+		getLogger().info("/**************************************** G-1.기본구조 세팅 끝 ****************************************/");
+
+		getLogger().info("/**************************************** G-2.호출구조 세팅 시작 ****************************************/");
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
 			for(int i=0; i<ds.getDataSetRowCount("METRIX"); i++) {
 				dsRow = ds.getDataSet("METRIX", i);
@@ -928,9 +928,9 @@ public class SvcAnalyzer extends BaseObject{
 			}
 		}
 		ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsList);
-		/********************************* 호출구조 세팅 끝 *********************************/
+		getLogger().info("/**************************************** G-2.호출구조 세팅 끝 ****************************************/");
 
-		/********************************* MAX호출레벨 세팅 시작 *********************************/
+		getLogger().info("/**************************************** G-3.MAX호출레벨 세팅 시작 ****************************************/");
 		int maxCallLevel = 0;
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
 			for(DataSet row : ds.getDataSetList("METRIX")) {
@@ -939,9 +939,9 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			}
 		}
-		/********************************* MAX호출레벨 세팅 끝 *********************************/
+		getLogger().info("/**************************************** G-3.MAX호출레벨 세팅 끝 ****************************************/");
 
-		/********************************* 파일생성 시작 *********************************/
+		getLogger().info("/**************************************** G-4.파일생성 시작 ****************************************/");
 		// 컬럼
 		conts.append("UI_ID").append("\t");
 		conts.append("UI_NAME").append("\t");
@@ -969,7 +969,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 		}
 		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, "AppAnalyzer.ouput", conts.toString());
-		/********************************* 파일생성 끝 *********************************/
+		getLogger().info("/**************************************** G-4.파일생성 끝 ****************************************/");
 
 	}
 	
