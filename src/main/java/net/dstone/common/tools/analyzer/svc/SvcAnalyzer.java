@@ -24,6 +24,7 @@ import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DataSet;
+import net.dstone.common.utils.DbUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
@@ -910,91 +911,118 @@ public class SvcAnalyzer extends BaseObject{
 	public void saveToFile(String fileFullPath) throws Exception{
 		
 		StringBuffer conts = new StringBuffer();
+		List<DataSet> dsList = new ArrayList<DataSet>();
 		DataSet ds = new DataSet();
+		DataSet dsRow = null;
 		
-		String[] analyzedClassFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/class", false );
-		String[] analyzedMethodFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/method", false );
-		String[] analyzedUiFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/ui", false );
-		
-		// 컨트롤러 세팅
-		ds = this.setFileController(ds, analyzedClassFileList, analyzedMethodFileList);
-		// UI 세팅
-		ds = this.setFileUi(ds, analyzedUiFileList);
-		// 호출구조 세팅
-		ds.setDatum("CALL_METHOD_DEPTH", "0");
-		ds = this.setFileControllerCallMtd(ds, analyzedMethodFileList);
-ds.checkData();
+		/********************************* 기본구조 세팅 시작 *********************************/
+		ds = this.setFileBasic();
+		/********************************* 기본구조 세팅 끝 *********************************/
+
+		/********************************* 호출구조 세팅 시작 *********************************/
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
-			DataSet row = null;
-			String[] cols = null;
-			StringBuffer contRow = new StringBuffer();
 			for(int i=0; i<ds.getDataSetRowCount("METRIX"); i++) {
-				row = ds.getDataSet("METRIX", i);
-				cols = row.getChildrenKeys();
-				for(int k=0; k<cols.length; k++) {
-					if(contRow.length() > 0) {
-						contRow.append("\t");
-					}
-					contRow.append(row.getDatum(cols[k]));
-				}
-				if(contRow.length() > 0) {
-					conts.append("\n");
-				}
-				conts.append(contRow);
+				dsRow = ds.getDataSet("METRIX", i);
+				String functionId = dsRow.getDatum("BASIC_ID");
+				dsList.addAll(this.setFileCallChain(dsRow, functionId, 1));
 			}
-			
-			//FileUtil.writeFile(FileUtil.getFilePath(fileFullPath), FileUtil.getFileName(fileFullPath, true), conts.toString());
 		}
-		
+		ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsList);
+		/********************************* 호출구조 세팅 끝 *********************************/
+
+		/********************************* MAX호출레벨 세팅 시작 *********************************/
+		int maxCallLevel = 0;
+		if( ds.getDataSetRowCount("METRIX") > 0 ) {
+			for(DataSet row : ds.getDataSetList("METRIX")) {
+				if( Integer.parseInt(row.getDatum("CALL_LEVEL", "0")) > maxCallLevel ) {
+					maxCallLevel = Integer.parseInt(row.getDatum("CALL_LEVEL", "0"));
+				}
+			}
+		}
+		/********************************* MAX호출레벨 세팅 끝 *********************************/
+
+		/********************************* 파일생성 시작 *********************************/
+		// 컬럼
+		conts.append("UI_ID").append("\t");
+		conts.append("UI_NAME").append("\t");
+		conts.append("BASIC_URL").append("\t");
+		for(int i=1; i<=maxCallLevel; i++) {
+			conts.append("FUNCTION_ID_"+i).append("\t");
+			conts.append("FUNCTION_NAME_"+i).append("\t");
+			conts.append("CLASS_KIND_"+i).append("\t");
+		}
+		conts.append("CALL_TBL").append("\t");
+		conts.append("\n");
+		// 내용
+		if( ds.getDataSetRowCount("METRIX") > 0 ) {
+			for(DataSet row : ds.getDataSetList("METRIX")) {
+				conts.append(row.getDatum("UI_ID", "")).append("\t");
+				conts.append(row.getDatum("UI_NAME", "")).append("\t");
+				conts.append(row.getDatum("BASIC_URL", "")).append("\t");
+				for(int i=1; i<=maxCallLevel; i++) {
+					conts.append(row.getDatum("FUNCTION_ID_"+i, "")).append("\t");
+					conts.append(row.getDatum("FUNCTION_NAME_"+i, "")).append("\t");
+					conts.append(row.getDatum("CLASS_KIND_"+i, "")).append("\t");
+				}
+				conts.append(row.getDatum("CALL_TBL", "")).append("\t");
+				conts.append("\n");
+			}
+		}
+		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, "AppAnalyzer.ouput", conts.toString());
+		/********************************* 파일생성 끝 *********************************/
+
 	}
 	
-	private DataSet setFileController(DataSet ds, String[] analyzedClassFileList, String[] analyzedMethodFileList) {
+
+	
+	private DataSet setFileBasic() throws Exception {
+		DataSet ds = new DataSet();
 		DataSet dsRow = null;
+		ClzzVo clzzVo = null;
+		MtdVo mtdVo = null;
+		
+		String[] analyzedClassFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/class", false );
+		String[] analyzedMethodFileList = null;
+
+		/*** 컨트롤러메소드 기준 ***/
 		if( analyzedClassFileList != null ) {
-			ClzzVo clzzVo = null;
-			MtdVo mtdVo = null;
 			for(String classId : analyzedClassFileList) {		
 				clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
 				if( ClzzKind.CT.getClzzKindCd().equals(clzzVo.getClassKind().getClzzKindCd()) ) {
+					analyzedMethodFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/method", clzzVo.getClassId(), false);
 					if( analyzedMethodFileList != null ) {
 						for(String functionId : analyzedMethodFileList) {
-							// 해당클래스의 메소드목록 추출
-							if(functionId.startsWith(classId+".")) {
-								mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-								dsRow = ds.addDataSet("METRIX");
-								dsRow.setDatum("CONTROLLER_ID", mtdVo.getFunctionId());
-								dsRow.setDatum("CONTROLLER_NAME", mtdVo.getMethodName());
-								dsRow.setDatum("CONTROLLER_URL", mtdVo.getMethodUrl());
-							}
+							dsRow = ds.addDataSet("METRIX");
+							mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+							dsRow.setDatum("BASIC_ID", mtdVo.getFunctionId());
+							dsRow.setDatum("BASIC_URL", mtdVo.getMethodUrl());
 						}
 					}
 				}
 			}
 		}
-		return ds;
-	}
-	
-	
-	private DataSet setFileUi(DataSet ds, String[] analyzedUiFileList) throws Exception{
-		DataSet dsRow = null;
+
+		/*** UI 정보 추가 ***/
+		String[] analyzedUiFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/ui", false );
 		DataSet dsRowForCopy = null;
 		if( analyzedUiFileList != null ) {
 			UiVo uiVo = null;
 			HashMap<String, DataSet> urlDsMap = new HashMap<String, DataSet>();
 			for(String uiId : analyzedUiFileList) {
 				uiVo = ParseUtil.readUiVo(uiId, AppAnalyzer.WRITE_PATH + "/ui");
-				for(int rowIndex=0; rowIndex<ds.getDataSetRowCount("METRIX"); rowIndex++) {
-					dsRow = ds.getDataSet("METRIX", rowIndex);
-					if( uiVo.getLinkList() != null ) {
-						for(String link : uiVo.getLinkList()) {
-							if( StringUtil.isEmpty(link) ) {continue;}
-							if( link.indexOf(dsRow.getDatum("CONTROLLER_URL"))>-1 ) {
-								if( urlDsMap.containsKey(dsRow.getDatum("CONTROLLER_URL")) ) {
-									dsRowForCopy = urlDsMap.get(dsRow.getDatum("CONTROLLER_URL")).copy();
-									ds.insertDataSet("METRIX", dsRowForCopy, rowIndex);
+				if( uiVo.getLinkList() != null ) {
+					for(String link : uiVo.getLinkList()) {
+						if( StringUtil.isEmpty(link) ) {continue;}
+						for(int rowIndex=0; rowIndex<ds.getDataSetRowCount("METRIX"); rowIndex++) {
+							dsRow = ds.getDataSet("METRIX", rowIndex);
+							if( StringUtil.isEmpty(dsRow.getDatum("BASIC_URL")) ) {continue;}
+							if( link.indexOf(dsRow.getDatum("BASIC_URL"))>-1 ) {
+								if( urlDsMap.containsKey(dsRow.getDatum("BASIC_URL")) ) {
+									dsRowForCopy = urlDsMap.get(dsRow.getDatum("BASIC_URL")).copy();
+									ds.insertDataSet("METRIX", dsRowForCopy, rowIndex+1);
 								}else {
 									dsRowForCopy = dsRow;
-									urlDsMap.put(dsRow.getDatum("CONTROLLER_URL"), dsRow);
+									urlDsMap.put(dsRow.getDatum("BASIC_URL"), dsRow);
 								}
 								dsRowForCopy.setDatum("UI_ID", uiVo.getUiId());
 								dsRowForCopy.setDatum("UI_NAME", StringUtil.nullCheck(uiVo.getUiName(), "") );
@@ -1004,70 +1032,79 @@ ds.checkData();
 				}
 			}
 		}
-		return ds;
-	}
 
-	private DataSet setFileControllerCallMtd(DataSet ds, String[] analyzedMethodFileList) throws Exception{
-		MtdVo controllerMtdVo = null;
-		DataSet dsRow = null;
-		DataSet dsRowForCopy = null;
-		
-		if( analyzedMethodFileList != null ) {
-			for(int rowIndex=0; rowIndex<ds.getDataSetRowCount("METRIX"); rowIndex++) {
-				dsRow = ds.getDataSet("METRIX", rowIndex);
-				controllerMtdVo = ParseUtil.readMethodVo(dsRow.getDatum("CONTROLLER_ID"), AppAnalyzer.WRITE_PATH + "/method");
-				if( controllerMtdVo.getCallMtdVoList() != null) {
-					for(int i = 0; i<controllerMtdVo.getCallMtdVoList().size(); i++) {
-						String callFunctionId = controllerMtdVo.getCallMtdVoList().get(i);
-						dsRowForCopy = dsRow.copy();
-						ds.insertDataSet("METRIX", dsRowForCopy, rowIndex+1);
-
-						int callMethodDepth = 1;
-						int callMethodDepthAfter = this.setCallMtdByRecursively(dsRowForCopy, callMethodDepth, callFunctionId);
-						if(callMethodDepthAfter > callMethodDepth) {
-							ds.setDatum("CALL_METHOD_DEPTH", String.valueOf(callMethodDepthAfter));
-						}
-					}
-				}
-			}
-		}
 		return ds;
 	}
 	
-	private DataSet setCallMtdByRecursively(DataSet ds, int methodIndex, String functionId) throws Exception{
-		DataSet dsRow = null;
-		DataSet dsRowForInsert = null;
-		ClzzVo clzzVo = null;
+	
+	private List<DataSet> setFileCallChain(DataSet dsRow, String functionId, int callLevel) throws Exception {
+		List<DataSet> dsList = new ArrayList<DataSet>();		
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-		if( !StringUtil.isEmpty(mtdVo.getFunctionId()) ) {
-			String classId = functionId.substring(0, functionId.lastIndexOf("."));
-			clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
-			
-			/* 현재 ROW 정보 세팅 시작 */
-			dsRow = ds.addDataSet("METRIX");
-			dsRow.setDatum("FUNCTION_ID_" + methodIndex, mtdVo.getFunctionId());
-			dsRow.setDatum("FUNCTION_NM_" + methodIndex, mtdVo.getMethodName());
-			dsRow.setDatum("CLASS_KIND", clzzVo.getClassKind().getClzzKindCd());
-			/* 현재 ROW 정보 세팅 끝 */
-
-			/* 현재 ROW 정보 세팅 시작 */
-			if(mtdVo.getCallMtdVoList() != null && mtdVo.getCallMtdVoList().size() > 0) {
-				for(int k=0; k<mtdVo.getCallMtdVoList().size(); k++) {
-					String callFunctionIdForChild = mtdVo.getCallMtdVoList().get(k);
-					if(k==0) {
-						dsRowForInsert = dsRow;
-					}else {
-						dsRowForInsert = ds.addDataSet("METRIX");
-						dsRowForInsert = dsRow.copy();
-						ds.insertDataSet("METRIX", dsRowForInsert, ds.getDataSetRowCount("METRIX"));
+		String classId = "";
+		if( functionId.indexOf(".")>-1 ) {
+			classId = functionId.substring(0, functionId.lastIndexOf("."));
+		}
+		ClzzVo clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
+		
+		/********************************* 메소드별 사용할 항목 시작 *********************************/
+		dsRow.setDatum("FUNCTION_ID_" + callLevel, mtdVo.getFunctionId());		// 기능ID
+		dsRow.setDatum("FUNCTION_NAME_" + callLevel, mtdVo.getMethodName());	// 기능명
+		dsRow.setDatum("CLASS_KIND_" + callLevel, "");							// 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)
+		dsRow.setDatum("FUNCTION_URL_" + callLevel, "");						// 기능URL
+		if( clzzVo.getClassKind() != null ) {
+			dsRow.setDatum("CLASS_KIND_" + callLevel, clzzVo.getClassKind().getClzzKindCd());
+			if( ClzzKind.CT.getClzzKindCd().equals(clzzVo.getClassKind().getClzzKindCd()) ) {
+				dsRow.setDatum("FUNCTION_URL_" + callLevel, mtdVo.getMethodUrl());
+			}
+		}
+		dsRow.setDatum("CALL_LEVEL", String.valueOf(callLevel));				// 기능레벨
+		if( mtdVo.getCallTblVoList() != null ) {
+			StringBuffer tblBuff = new StringBuffer();
+			String[] words = null;
+			String tblNm = "";
+			DataSet tblDs = null;
+			for(int i=0; i<mtdVo.getCallTblVoList().size(); i++) {
+				String tblId = mtdVo.getCallTblVoList().get(i);
+				if(tblBuff.length() > 0) {
+					tblBuff.append("|");
+				}
+				if(!StringUtil.isEmpty(tblId) && tblId.indexOf("!")>-1) {
+					words = StringUtil.toStrArray(tblId, "!");
+					tblDs = DbUtil.getTabs(AppAnalyzer.DBID, words[0]);
+					if( tblDs.getDataSetRowCount("TBL_LIST") > 0 && !StringUtil.isEmpty(tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT"))) {
+						tblNm = tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT");
+						tblId = words[0] + "(" + tblNm + ")" + "!" + words[1];
 					}
-					ds = this.setCallMtdByRecursively(ds, (methodIndex+1), callFunctionIdForChild);
+				}
+				tblBuff.append(tblId);
+			}
+			dsRow.setDatum("CALL_TBL", tblBuff.toString());						// 호출테이블
+		}
+		/********************************* 메소드별 사용할 항목 끝 *********************************/
+
+		/********************************* 호출메소드 재귀적 처리 시작 *********************************/
+		if( mtdVo.getCallMtdVoList() != null ) {
+			int childCallLevel = callLevel+1;
+			for(int i=0; i<mtdVo.getCallMtdVoList().size(); i++) {
+				String callFunctionId = mtdVo.getCallMtdVoList().get(i);
+				if(i==0) {
+					dsList.addAll(this.setFileCallChain(dsRow, callFunctionId, childCallLevel));
+				}else {
+					DataSet dsRowCopy = dsRow.copy();
+					dsList.addAll(this.setFileCallChain(dsRowCopy, callFunctionId, childCallLevel));
 				}
 			}
-			/* 현재 ROW 정보 세팅 끝 */
+		}else {
+			dsList.add(dsRow);
 		}
-		return ds;
+		/********************************* 호출메소드 재귀적 처리 끝 *********************************/
+		
+		return dsList;
 	}
+
+
+	
+
 	
 	
 }

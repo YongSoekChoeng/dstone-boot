@@ -1789,11 +1789,12 @@ public class DataSet implements java.io.Serializable {
 	 * @return ArrayList<DataSet> 저장하고자하는 하위(Children)DataSet리스트
 	 * @param comment(key로 저장할 코멘트)
 	 */	
-	public void setDataSetList(String key, ArrayList<DataSet>dsList, String comment) throws Exception{
+	public void setDataSetList(String key, ArrayList<DataSet> dsList, String comment) throws Exception{
 		removeDataSet(key);
+		addDataSet(key);
 		if(dsList!=null){
-			for(int i=0; i<dsList.size();i++){
-				setDataSet(key, i, dsList.get(i), comment);
+			if( dataSetMap.containsKey(key) ){
+				dataSetMap.put(key, dsList);
 			}
 		}
 	}

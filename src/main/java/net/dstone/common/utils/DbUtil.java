@@ -2601,6 +2601,9 @@ public class DbUtil {
 	
 
 	public static net.dstone.common.utils.DataSet getTabs(String DBID) {
+		return getTabs(DBID, null);
+	}
+	public static net.dstone.common.utils.DataSet getTabs(String DBID, String TABLE_NAME) {
 		net.dstone.common.utils.DbUtil db = null;
 		net.dstone.common.utils.DataSet ds = null;
 		StringBuffer sql = new StringBuffer();
@@ -2624,6 +2627,9 @@ public class DbUtil {
 				sql.append(	"WHERE 1=1 ").append("\n");
 				sql.append("		AND A.TABLE_TYPE = 'TABLE'").append("\n");
 				sql.append("		AND A.TABLE_NAME IN ( SELECT TABLE_NAME FROM USER_TAB_COMMENTS B WHERE A.TABLE_NAME = B.TABLE_NAME ) ").append("\n");
+				if(!StringUtil.isEmpty(TABLE_NAME)) {
+					sql.append("		AND A.TABLE_NAME = '"+TABLE_NAME+"' ").append("\n");
+				}
 				sql.append("	) A ").append("\n");
 				sql.append("WHERE 1=1 ").append("\n");
 				sql.append("	AND RNUM < 2 ").append("\n");
@@ -2633,6 +2639,10 @@ public class DbUtil {
 				sql.append("	, A.TABLE_NAME ").append("\n");
 				sql.append("	, (SELECT VALUE FROM ::FN_LISTEXTENDEDPROPERTY (NULL, 'SCHEMA', 'dbo', 'TABLE', A.TABLE_NAME, DEFAULT, DEFAULT) ) AS TABLE_COMMENT ").append("\n");
 				sql.append("FROM INFORMATION_SCHEMA.TABLES A ").append("\n");
+				sql.append("WHERE 1=1 ").append("\n");
+				if(!StringUtil.isEmpty(TABLE_NAME)) {
+					sql.append("		AND A.TABLE_NAME = '"+TABLE_NAME+"' ").append("\n");
+				}
 			} else if ("MYSQL".equals(db.currentDbKind)) {
 				sql.append("SELECT ").append("\n"); 
 				sql.append("	A.* ").append("\n"); 
@@ -2644,6 +2654,9 @@ public class DbUtil {
 				sql.append("	FROM  ").append("\n");
 				sql.append("		INFORMATION_SCHEMA.TABLES A ").append("\n");
 				sql.append("	WHERE 1=1 ").append("\n");
+				if(!StringUtil.isEmpty(TABLE_NAME)) {
+					sql.append("		AND A.TABLE_NAME = '"+TABLE_NAME+"' ").append("\n");
+				}
 				sql.append(") A ").append("\n"); 
 			}
 			

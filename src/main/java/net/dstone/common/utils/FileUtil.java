@@ -320,17 +320,35 @@ public class FileUtil {
 	}
 
 	public static String[] readFileList(String filePath) {
-		return readFileList(filePath, true);
+		return readFileList(filePath, null, true);
 	}
 	
 	public static String[] readFileList(String filePath, boolean extInclude) {
+		return readFileList(filePath, null, extInclude);
+	}
+	
+	public static String[] readFileList(String filePath, String filterStr) {
+		return readFileList(filePath, filterStr, true);
+	}
+	
+	
+	public static String[] readFileList(String filePath, String filterStr, boolean extInclude) {
 		String[] result = null;
 		String fileName = null;
 		try {
 			java.io.File f = new java.io.File(filePath);
 			if (f.exists()) {
 				if (f.isDirectory()) {
-					result = f.list();
+					if(StringUtil.isEmpty(filterStr)) {
+						result = f.list();
+					}else {
+						result = f.list(new java.io.FilenameFilter(){
+						    @Override 
+						    public boolean accept(java.io.File dir, String name) { 
+						         return (name.indexOf(filterStr)>-1 ? true : false); 
+						    }
+						});
+					}
 					if( result != null && !extInclude ) {
 						for(int i=0; i<result.length ; i++) {
 							fileName = result[i];
@@ -523,6 +541,10 @@ public class FileUtil {
 
 
 	public static String[] readFileListAll(String filePath) {
+		return readFileListAll(filePath, null);
+	}
+	
+	public static String[] readFileListAll(String filePath, String filterStr) {
 
 		java.util.Vector<String> listVec = new java.util.Vector<String>();
 		String[] result = new String[listVec.size()];
@@ -533,7 +555,16 @@ public class FileUtil {
 			if (f.exists()) {
 				if (f.isDirectory()) {
 					String[] subResult = null;
-					result = f.list();
+					if(StringUtil.isEmpty(filterStr)) {
+						result = f.list();
+					}else {
+						result = f.list(new java.io.FilenameFilter(){
+						    @Override 
+						    public boolean accept(java.io.File dir, String name) { 
+						         return (name.indexOf(filterStr)>-1 ? true : false); 
+						    }
+						});
+					}
 					if (result != null) {
 						for (int i = 0; i < result.length; i++) {
 							subFilePath = filePath + "/" + result[i];
