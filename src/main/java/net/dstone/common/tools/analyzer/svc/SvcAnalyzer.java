@@ -519,6 +519,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] classFileList = (String[])this.getObj("classFileList");
 					ClzzVo clzzVo = null;
 					String pkgClassId = "";
 					String classFile= "";
@@ -583,6 +584,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] classFileList = (String[])this.getObj("classFileList");
 					ClzzVo clzzVo = null;
 					String pkgClassId = "";
 					String classFile= "";
@@ -724,6 +726,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] classFileList = (String[])this.getObj("classFileList");
 					MtdVo mtdVo = null;
 					List<Map<String, String>> methodInfoList = null;
 					String classFile= "";
@@ -794,6 +797,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] analyzedMethodFileList = (String[])this.getObj("analyzedMethodFileList");
 					MtdVo mtdVo = null;
 					String functionId = "";
 					String analyzedMethodFile = "";
@@ -852,6 +856,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] analyzedMethodFileList = (String[])this.getObj("analyzedMethodFileList");
 					MtdVo mtdVo = null;
 					String functionId = "";
 					String analyzedMethodFile = "";
@@ -910,6 +915,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] uiFileList = (String[])this.getObj("uiFileList");
 					UiVo uiVo = null;
 					String uiFile= "";
 					try {
@@ -968,6 +974,7 @@ public class SvcAnalyzer extends BaseObject{
 				public TaskItem doTheTask(){
 					
 					/************************ 작업세팅 시작 ************************/
+					String[] uiFileList = (String[])this.getObj("uiFileList");
 					UiVo uiVo = null;
 					String uiFile= "";
 					try {
