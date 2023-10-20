@@ -92,8 +92,13 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static int JOB_KIND_42_ANALYZE_UI_LINK        = 42;
 	
+	/**
+	 * WORKER_THREAD_NUM - 분석작업을 진행 할 쓰레드 갯수
+	 */
+	public static int WORKER_THREAD_NUM = 10;
+
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
-	
+
 	private AppAnalyzer(){
 	}
 	

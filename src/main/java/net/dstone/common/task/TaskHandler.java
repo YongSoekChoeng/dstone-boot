@@ -188,7 +188,7 @@ public class TaskHandler extends BaseObject{
 				    }
 				}
 			}
-			getLogger().info("Active 쓰레드갯수[doTheTasks시작시점:"+startThreadCount+"개 ==>> doTheTasks종료시점:"+Thread.activeCount()+"개]");
+			//getLogger().info("Active 쓰레드갯수[doTheTasks시작시점:"+startThreadCount+"개 ==>> doTheTasks종료시점:"+Thread.activeCount()+"개]");
 		} catch (Exception e) {
 			getLogger().info( this.getClass().getName() + ".doTheTasks() 작없중 예외발생. 상세내용:" + e.toString());
 			throw e;
