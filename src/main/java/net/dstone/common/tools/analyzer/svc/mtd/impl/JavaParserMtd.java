@@ -32,77 +32,79 @@ public class JavaParserMtd extends DefaultMtd implements Mtd {
 
     	// classUrl
         String classUrl = "";
-        ClassOrInterfaceDeclaration classOrInterfaceDeclaration = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
-        List<AnnotationExpr> annotationList = classOrInterfaceDeclaration.getAnnotations();
-        for(AnnotationExpr an : annotationList) {
-        	if(an.getNameAsString().endsWith("Mapping")) {
-        		/***************************************************
-        		<SingleMemberAnnotation/NormalAnnotation 의 차이>
-        		- @RequestMapping("/sample/admin.do")       ===>> SingleMemberAnnotation
-        		- @RequestMapping(value="/sample/admin.do") ===>> NormalAnnotation
-        		***************************************************/
-        		if( an.isSingleMemberAnnotationExpr() ) {
-        			classUrl = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
-        		}else if( an.isNormalAnnotationExpr() ) {
-        			classUrl = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
-        		}
-        	}
-        }
-        if(!StringUtil.isEmpty(classUrl)) {
-        	if(classUrl.endsWith("/*")) {
-        		classUrl = classUrl.substring(0, classUrl.length()-2);
-        	}else if(classUrl.endsWith("/")) {
-        		classUrl = classUrl.substring(0, classUrl.length()-1);
-        	}
-        }
-
-        List<MethodDeclaration> methodDeclarationList = cu.findAll(MethodDeclaration.class);
-        for(MethodDeclaration methodDec : methodDeclarationList) {
-        	Map<String, String> item = new HashMap<String, String>();
-        	
-        	// METHOD_ID
-            String METHOD_ID = methodDec.getNameAsString();
-        	item.put("METHOD_ID", METHOD_ID);
-        	// METHOD_NAME
-            String METHOD_NAME = "";
-        	if(methodDec.getJavadocComment().isPresent()) {
-        		METHOD_NAME = ParseUtil.getFnNameFromComment(methodDec.getJavadocComment().get().asString());
-        	}
-        	item.put("METHOD_NAME", METHOD_NAME);
-        	// METHOD_URL
-            String METHOD_URL = "";
-            List<AnnotationExpr> methodAnnotationList =  methodDec.getAnnotations();
-            for(AnnotationExpr an : methodAnnotationList) {
+        if(cu.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) {
+            ClassOrInterfaceDeclaration classOrInterfaceDeclaration = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
+            List<AnnotationExpr> annotationList = classOrInterfaceDeclaration.getAnnotations();
+            for(AnnotationExpr an : annotationList) {
             	if(an.getNameAsString().endsWith("Mapping")) {
+            		/***************************************************
+            		<SingleMemberAnnotation/NormalAnnotation 의 차이>
+            		- @RequestMapping("/sample/admin.do")       ===>> SingleMemberAnnotation
+            		- @RequestMapping(value="/sample/admin.do") ===>> NormalAnnotation
+            		***************************************************/
             		if( an.isSingleMemberAnnotationExpr() ) {
-            			METHOD_URL = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
+            			classUrl = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
             		}else if( an.isNormalAnnotationExpr() ) {
-            			METHOD_URL = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
+            			classUrl = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
             		}
             	}
             }
-            if(!StringUtil.isEmpty(METHOD_URL)) {
-            	if(!METHOD_URL.startsWith("/")) {
-            		METHOD_URL = "/" + METHOD_URL;
+            if(!StringUtil.isEmpty(classUrl)) {
+            	if(classUrl.endsWith("/*")) {
+            		classUrl = classUrl.substring(0, classUrl.length()-2);
+            	}else if(classUrl.endsWith("/")) {
+            		classUrl = classUrl.substring(0, classUrl.length()-1);
             	}
-            	METHOD_URL = classUrl + METHOD_URL;
             }
-        	item.put("METHOD_URL", METHOD_URL);
-        	// METHOD_BODY
-        	String METHOD_BODY = "";
-        	if( methodDec.getBody() != null && methodDec.getBody().isPresent() ) {
-        		METHOD_BODY = ParseUtil.adjustConts(methodDec.getBody().get().toString());
-        	}
-    		String[] lines = StringUtil.toStrArray(METHOD_BODY, "\n");
-    		METHOD_BODY = "";
-    		for(String line : lines) {
-    			METHOD_BODY = METHOD_BODY + line.trim() + "\n";
-    		}
-        	item.put("METHOD_BODY", METHOD_BODY);
-        	
-        	mList.add(item);
+
+            List<MethodDeclaration> methodDeclarationList = cu.findAll(MethodDeclaration.class);
+            for(MethodDeclaration methodDec : methodDeclarationList) {
+            	Map<String, String> item = new HashMap<String, String>();
+            	
+            	// METHOD_ID
+                String METHOD_ID = methodDec.getNameAsString();
+            	item.put("METHOD_ID", METHOD_ID);
+            	// METHOD_NAME
+                String METHOD_NAME = "";
+            	if(methodDec.getJavadocComment().isPresent()) {
+            		METHOD_NAME = ParseUtil.getFnNameFromComment(methodDec.getJavadocComment().get().asString());
+            	}
+            	item.put("METHOD_NAME", METHOD_NAME);
+            	// METHOD_URL
+                String METHOD_URL = "";
+                List<AnnotationExpr> methodAnnotationList =  methodDec.getAnnotations();
+                for(AnnotationExpr an : methodAnnotationList) {
+                	if(an.getNameAsString().endsWith("Mapping")) {
+                		if( an.isSingleMemberAnnotationExpr() ) {
+                			METHOD_URL = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
+                		}else if( an.isNormalAnnotationExpr() ) {
+                			METHOD_URL = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
+                		}
+                	}
+                }
+                if(!StringUtil.isEmpty(METHOD_URL)) {
+                	if(!METHOD_URL.startsWith("/")) {
+                		METHOD_URL = "/" + METHOD_URL;
+                	}
+                	METHOD_URL = classUrl + METHOD_URL;
+                }
+            	item.put("METHOD_URL", METHOD_URL);
+            	// METHOD_BODY
+            	String METHOD_BODY = "";
+            	if( methodDec.getBody() != null && methodDec.getBody().isPresent() ) {
+            		METHOD_BODY = ParseUtil.adjustConts(methodDec.getBody().get().toString());
+            	}
+        		String[] lines = StringUtil.toStrArray(METHOD_BODY, "\n");
+        		METHOD_BODY = "";
+        		for(String line : lines) {
+        			METHOD_BODY = METHOD_BODY + line.trim() + "\n";
+        		}
+            	item.put("METHOD_BODY", METHOD_BODY);
+            	
+            	mList.add(item);
+            }
         }
-		
+        
 		return mList;
 	}
 

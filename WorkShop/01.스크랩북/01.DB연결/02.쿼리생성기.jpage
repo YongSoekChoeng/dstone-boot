@@ -1,4 +1,4 @@
-String DBID = "DBID_1";String TABLE_NAME = "TB_FUNC_FUNC_MAPPING";String queryKind = "BASIC"; /* BASIC/MYBATIS */String tableAlias = "C";net.dstone.common.utils.DateUtil.stopWatchStart("02.테이블쿼리생성기");
+String DBID = "DBID_2";String TABLE_NAME = "TB_FUNC_FUNC_MAPPING";String queryKind = "BASIC"; /* BASIC/MYBATIS */String tableAlias = "C";net.dstone.common.utils.DateUtil.stopWatchStart("02.테이블쿼리생성기");
 try {	String sql = "";		sql = net.dstone.common.utils.SqlUtil.getCrudSql(DBID, TABLE_NAME, queryKind, tableAlias);
 	net.dstone.common.utils.LogUtil.sysout(sql);
 }catch(Exception e){

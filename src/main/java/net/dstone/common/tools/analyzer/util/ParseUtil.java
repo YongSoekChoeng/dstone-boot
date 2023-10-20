@@ -570,22 +570,24 @@ public class ParseUtil {
 		String implClassId = "";
 		ClzzVo interfaceVo = ParseUtil.readClassVo(interfaceId, AppAnalyzer.WRITE_PATH + "/class");
 		ClzzVo implClzzVo = null;
-		List<String> implClassIdList = interfaceVo.getImplClassIdList();
 		if( "I".equals(interfaceVo.getClassOrInterface()) ) {
-			// 해당인터페이스 구현클래스 목록을 LOOP 돌리면서 인터페이스의 클래스ID 가 구현클래스의 인터페이스ID와 일치하는 구현클래스의 resourceId를 찾아서 비교한다.
-			for(String packageClassId : implClassIdList) {
-				implClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
-				if( interfaceVo.getClassId().equals(implClzzVo.getInterfaceId())) {
-					// resourceId 로 찾고자 할 때
-					if( !StringUtil.isEmpty(resourceId) ) {
-						if( resourceId.equals(implClzzVo.getResourceId())) {
+			List<String> implClassIdList = interfaceVo.getImplClassIdList();
+			if(implClassIdList != null) {
+				// 해당인터페이스 구현클래스 목록을 LOOP 돌리면서 인터페이스의 클래스ID 가 구현클래스의 인터페이스ID와 일치하는 구현클래스의 resourceId를 찾아서 비교한다.
+				for(String packageClassId : implClassIdList) {
+					implClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
+					if( interfaceVo.getClassId().equals(implClzzVo.getInterfaceId())) {
+						// resourceId 로 찾고자 할 때
+						if( !StringUtil.isEmpty(resourceId) ) {
+							if( resourceId.equals(implClzzVo.getResourceId())) {
+								implClassId = implClzzVo.getClassId();
+								break;
+							}
+						// resourceId 로 찾지 않을 때	
+						}else {
 							implClassId = implClzzVo.getClassId();
 							break;
 						}
-					// resourceId 로 찾지 않을 때	
-					}else {
-						implClassId = implClzzVo.getClassId();
-						break;
 					}
 				}
 			}

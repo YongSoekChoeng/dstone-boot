@@ -180,9 +180,13 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 
                         	//Print the field's class typr
                         	type = variable.getType().asString();
-                            if(type.indexOf(".") == -1 && importMap.containsKey(type) ) {
-                            	type = importMap.get(type).getNameAsString();
-                            }
+                        	if(type.indexOf(".") == -1) {
+                                if(importMap.containsKey(type) ) {
+                                	type = importMap.get(type).getNameAsString();
+                                }else {
+                                	type = cu.getPackageDeclaration().get().getNameAsString()+"."+type;
+                                }
+                        	}
                             //Print the field's name
                             alias = variable.getName().asString();
                                 
@@ -208,9 +212,13 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
                         for (VariableDeclarator variable : methodVariableDeclaratorList) {
                             //Print the field's class typr
                             type = variable.getType().asString();
-                            if(type.indexOf(".") == -1 && importMap.containsKey(type) ) {
-                            	type = importMap.get(type).getNameAsString();
-                            }
+                        	if(type.indexOf(".") == -1) {
+                                if(importMap.containsKey(type) ) {
+                                	type = importMap.get(type).getNameAsString();
+                                }else {
+                                	type = cu.getPackageDeclaration().get().getNameAsString()+"."+type;
+                                }
+                        	}
                             //Print the field's name
                             alias = variable.getName().asString();
                         }
