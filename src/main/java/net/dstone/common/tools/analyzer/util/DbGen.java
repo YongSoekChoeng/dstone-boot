@@ -3,12 +3,15 @@ package net.dstone.common.tools.analyzer.util;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.UiVo;
+import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.DbUtil.LoggableStatement;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class DbGen {
 
+	public static int FUNC_DEPTH_CNT = 10;
+	
 	public static class DDL {
 		
 		public static StringBuffer MYSQL_CREATE = new StringBuffer();
@@ -77,6 +80,19 @@ public class DbGen {
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
 			MYSQL_CREATE.append("  PRIMARY KEY (UI_ID, MTD_URL) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '화면기능맵핑'; ").append("\n");
+			/* <종합메트릭스-TB_METRIX> */
+			MYSQL_CREATE.append("CREATE TABLE TB_METRIX ( ").append("\n");
+			MYSQL_CREATE.append("  UI_ID VARCHAR(100) COMMENT '화면ID', ").append("\n");
+			MYSQL_CREATE.append("  UI_NM VARCHAR(200) COMMENT '화면명', ").append("\n");
+			MYSQL_CREATE.append("  BASIC_URL VARCHAR(200) COMMENT '기준URL', ").append("\n");
+			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
+				MYSQL_CREATE.append("  FUNCTION_ID_"+i+" VARCHAR(100) COMMENT '기능ID_"+i+"', ").append("\n");
+				MYSQL_CREATE.append("  FUNCTION_NAME_"+i+" VARCHAR(200) COMMENT '기능명_"+i+"', ").append("\n");
+				MYSQL_CREATE.append("  CLASS_KIND_"+i+" VARCHAR(2) COMMENT '클래스종류"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
+			}
+			MYSQL_CREATE.append("  CALL_TBL VARCHAR(1000) COMMENT '호출테이블', ").append("\n");
+			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID' ").append("\n");
+			MYSQL_CREATE.append(") COMMENT '종합메트릭스'; ").append("\n");
 
 			/* <펑션-FN_FUNC_FUNC_MAPPING> */
 			MYSQL_FUNCTION.append("/*******************************************************").append("\n");
@@ -319,7 +335,30 @@ public class DbGen {
 			ORACLE_CREATE.append("COMMENT ON TABLE TB_UI_FUNC_MAPPING IS '화면기능맵핑' ; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_UI_FUNC_MAPPING.UI_ID IS '화면ID'; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_UI_FUNC_MAPPING.MTD_URL IS '메서드URL'; ").append("\n");
-			ORACLE_CREATE.append("COMMENT ON COLUMN TB_UI_FUNC_MAPPING.WORKER_ID IS '입력자ID'; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_UI_FUNC_MAPPING.WORKER_ID IS '입력자ID'; ").append("\n");			
+			/* <종합메트릭스-TB_METRIX> */
+			ORACLE_CREATE.append("CREATE TABLE TB_METRIX ( ").append("\n");
+			ORACLE_CREATE.append("  UI_ID VARCHAR2(100), ").append("\n");
+			ORACLE_CREATE.append("  UI_NM VARCHAR2(200), ").append("\n");
+			ORACLE_CREATE.append("  BASIC_URL VARCHAR2(200) COMMENT '기준URL', ").append("\n");
+			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
+				ORACLE_CREATE.append("  FUNCTION_ID_"+i+" VARCHAR2(100) COMMENT '기능ID_"+i+"', ").append("\n");
+				ORACLE_CREATE.append("  FUNCTION_NAME_"+i+" VARCHAR2(200) COMMENT '기능명_"+i+"', ").append("\n");
+				ORACLE_CREATE.append("  CLASS_KIND_"+i+" VARCHAR2(2) COMMENT '클래스종류_"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
+			}
+			ORACLE_CREATE.append("  CALL_TBL VARCHAR2(1000) COMMENT '호출테이블', ").append("\n");
+			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL COMMENT '입력자ID' ").append("\n");
+			ORACLE_CREATE.append("); ").append("\n");			
+			ORACLE_CREATE.append("COMMENT ON TABLE TB_METRIX IS '종합메트릭스' ; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.UI_ID IS '화면ID'; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.UI_NM IS '화면명'; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.BASIC_URL IS '기준URL'; ").append("\n");
+			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
+				ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.FUNCTION_ID_"+i+" IS '기능ID"+i+"'; ").append("\n");
+				ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.FUNCTION_NAME_"+i+" IS '기능명"+i+"'; ").append("\n");
+				ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.CLASS_KIND_"+i+" IS '클래스종류"+i+"'; ").append("\n");
+			}
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.WORKER_ID IS '입력자ID'; ").append("\n");			
 
 			/* <펑션-FN_FUNC_FUNC_MAPPING> */
 			ORACLE_FUNCTION.append("CREATE OR REPLACE FUNCTION FN_FUNC_FUNC_MAPPING(V_FUNC_ID IN VARCHAR2, V_RECURSIVE_YN IN VARCHAR2) RETURN VARCHAR2").append("\n");
@@ -420,6 +459,8 @@ public class DbGen {
 			DROP.append("DROP TABLE TB_UI; ").append("\n");
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			DROP.append("DROP TABLE TB_UI_FUNC_MAPPING; ").append("\n");
+			/* <종합메트릭스-TB_METRIX> */
+			DROP.append("DROP TABLE TB_METRIX; ").append("\n");
 			/* <펑션-FN_FUNC_FUNC_MAPPING> */
 			DROP.append("DROP FUNCTION FN_FUNC_FUNC_MAPPING; ").append("\n");
 			/* <펑션-FN_FUNC_TBL_MAPPING> */
@@ -437,6 +478,7 @@ public class DbGen {
 		public static StringBuffer INSERT_TB_FUNC_TBL_MAPPING = new StringBuffer();
 		public static StringBuffer INSERT_TB_UI = new StringBuffer();
 		public static StringBuffer INSERT_TB_UI_FUNC_MAPPING = new StringBuffer();
+		public static StringBuffer INSERT_TB_METRIX = new StringBuffer();
 
 		public static StringBuffer DELETE_TB_CLZZ = new StringBuffer();
 		public static StringBuffer DELETE_TB_FUNC = new StringBuffer();
@@ -445,6 +487,7 @@ public class DbGen {
 		public static StringBuffer DELETE_TB_FUNC_TBL_MAPPING = new StringBuffer();
 		public static StringBuffer DELETE_TB_UI = new StringBuffer();
 		public static StringBuffer DELETE_TB_UI_FUNC_MAPPING = new StringBuffer();
+		public static StringBuffer DELETE_TB_METRIX = new StringBuffer();
 		
 		public static StringBuffer SELECT_TB_FUNC_ALL = new StringBuffer();
 		
@@ -541,7 +584,31 @@ public class DbGen {
 			INSERT_TB_UI_FUNC_MAPPING.append("	, 'SYSTEM' /* 입력자ID */ ").append("\n");
 			INSERT_TB_UI_FUNC_MAPPING.append(") ").append("\n");
 
-
+			/* <종합메트릭스-TB_METRIX> */
+			INSERT_TB_METRIX.append("INSERT INTO TB_METRIX (").append("\n");
+			INSERT_TB_METRIX.append("	UI_ID /* 화면ID */").append("\n");
+			INSERT_TB_METRIX.append("	, UI_NM /* 화면명 */").append("\n");
+			INSERT_TB_METRIX.append("	, BASIC_URL /* 기준URL */").append("\n");
+			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
+				INSERT_TB_METRIX.append("	, FUNCTION_ID_"+i+" /* 기능ID_"+i+" */").append("\n");
+				INSERT_TB_METRIX.append("	, FUNCTION_NAME_"+i+" /* 기능명_"+i+" */").append("\n");
+				INSERT_TB_METRIX.append("	, CLASS_KIND_"+i+" /* 클래스종류"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */").append("\n");
+			}
+			INSERT_TB_METRIX.append("	, CALL_TBL /* 호출테이블 */").append("\n");
+			INSERT_TB_METRIX.append("	, WORKER_ID /* 입력자ID */").append("\n");
+			INSERT_TB_METRIX.append(") VALUES (").append("\n");
+			INSERT_TB_METRIX.append("	? /* 화면ID */").append("\n");
+			INSERT_TB_METRIX.append("	, ? /* 화면명 */").append("\n");
+			INSERT_TB_METRIX.append("	, ? /* 기준URL */").append("\n");
+			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
+				INSERT_TB_METRIX.append("	, ? /* 기능ID_"+i+" */").append("\n");
+				INSERT_TB_METRIX.append("	, ? /* 기능명_"+i+" */").append("\n");
+				INSERT_TB_METRIX.append("	, ? /* 클래스종류"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */").append("\n");
+			}
+			INSERT_TB_METRIX.append("	, ? /* 호출테이블 */").append("\n");
+			INSERT_TB_METRIX.append("	, 'SYSTEM' /* 입력자ID */").append("\n");
+			INSERT_TB_METRIX.append(")").append("\n");
+			
 			/* <클래스-TB_CLZZ> */
 			DELETE_TB_CLZZ.append("DELETE FROM TB_CLZZ WHERE WORKER_ID = 'SYSTEM' ").append("\n");
 			
@@ -562,6 +629,9 @@ public class DbGen {
 
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			DELETE_TB_UI_FUNC_MAPPING.append("DELETE FROM TB_UI_FUNC_MAPPING WHERE WORKER_ID = 'SYSTEM' ").append("\n");
+
+			/* <종합메트릭스-TB_METRIX> */
+			DELETE_TB_METRIX.append("DELETE FROM TB_METRIX WHERE WORKER_ID = 'SYSTEM' ").append("\n");
 
 			/* <SELECT-기능조회ALL> */
 			SELECT_TB_FUNC_ALL.append("SELECT").append("\n");
@@ -867,6 +937,39 @@ public class DbGen {
 		}
 	}
 	
+	public static void insertTB_METRIX(String DBID, DataSet ds) throws Exception {
+		net.dstone.common.utils.DbUtil db = null;
+		int parameterIndex = 0;
+		try {
+			db = new net.dstone.common.utils.DbUtil(DBID);
+			db.getConnection();
+
+			/* <화면링크맵핑-TB_UI_FUNC_MAPPING> */
+			db.setQuery(QUERY.INSERT_TB_METRIX.toString());
+
+			parameterIndex = 0;
+			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("UI_ID"));	/* 화면ID */
+			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("UI_NM"));	/* 화면명 */
+			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("BASIC_URL"));	/* 기준URL */
+			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
+				parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("FUNCTION_ID_"+i, ""));	/* 기능ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("FUNCTION_NAME_"+i, ""));	/* 기능명 */
+				parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("CLASS_KIND_"+i, ""));	/* 클래스종류 */
+			}
+			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("CALL_TBL"));	/* 호출테이블 */
+			
+			db.insert();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(db != null) {
+				db.release();
+			}
+		}
+	}
+	
 	public static void deleteAll(String DBID) throws Exception {
 		deleteTB_UI_FUNC_MAPPING(DBID);
 		deleteTB_UI(DBID);
@@ -875,6 +978,7 @@ public class DbGen {
 		deleteTB_TBL(DBID);
 		deleteTB_FUNC(DBID);
 		deleteTB_CLZZ(DBID);
+		deleteTB_METRIX(DBID);
 	}
 	
 	private static void deleteTB_CLZZ(String DBID) throws Exception {
@@ -985,6 +1089,23 @@ public class DbGen {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
 			db.setQuery(QUERY.DELETE_TB_UI_FUNC_MAPPING.toString());
+			db.delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(db != null) {
+				db.release();
+			}
+		}
+	}
+	
+	private static void deleteTB_METRIX(String DBID) throws Exception {
+		net.dstone.common.utils.DbUtil db = null;
+		try {
+			db = new net.dstone.common.utils.DbUtil(DBID);
+			db.getConnection();
+			db.setQuery(QUERY.DELETE_TB_METRIX.toString());
 			db.delete();
 		} catch (Exception e) {
 			e.printStackTrace();

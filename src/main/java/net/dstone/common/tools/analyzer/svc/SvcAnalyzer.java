@@ -421,6 +421,10 @@ public class SvcAnalyzer extends BaseObject{
 			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {return;}
 			getLogger().info("/**************************************** D.UI 분석 끝 ****************************************/");
 			
+			getLogger().info("/**************************************** F.분석결과파일저장 시작 ****************************************/");
+			this.saveAnalyzeFile();
+			getLogger().info("/**************************************** F.분석결과파일저장 끝 ****************************************/");	
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1009,137 +1013,30 @@ public class SvcAnalyzer extends BaseObject{
 		String executorServiceId = "analyzeUiLink-Task";
 		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
 	}
-	
-	public void saveToDb(String DBID) {
-		try {
-			getLogger().info("/**************************************** F-1.기존데이터삭제 시작 ****************************************/");
-			this.deleteFromDb(DBID);
-			getLogger().info("/**************************************** F-1.기존데이터삭제 끝 ****************************************/");
 
-			getLogger().info("/**************************************** F-2.데이터적재 시작 ****************************************/");
-			this.insertToDb(DBID);
-			getLogger().info("/**************************************** F-2.데이터적재 끝 ****************************************/");
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	protected void deleteFromDb(String DBID) throws Exception {
-		DbGen.deleteAll(DBID);
-	}
-
-	protected void insertToDb(String DBID) throws Exception {
-		String[] fileList = null;
-		String subPath = "";
-		ClzzVo clzzVo = null;
-		MtdVo mtdVo = null;
-		UiVo uiVo = null;
-		
-		try {
-			// 클래스
-			getLogger().info("/*** F-2-1.클래스 데이터적재 시작 ***/");
-			subPath = AppAnalyzer.WRITE_PATH + "/class";
-			fileList = FileUtil.readFileList(subPath, false);
-			if(fileList != null) {
-				for(String file : fileList) {
-					clzzVo = ParseUtil.readClassVo(file, subPath);
-					DbGen.insertTB_CLZZ(DBID, clzzVo);
-				}
-			}
-
-			// 기능메서드
-			getLogger().info("/*** F-2-2.기능메서드 데이터적재 시작 ***/");
-			subPath = AppAnalyzer.WRITE_PATH + "/method";
-			fileList = FileUtil.readFileList(subPath, false);
-			if(fileList != null) {
-				for(String file : fileList) {
-					mtdVo = ParseUtil.readMethodVo(file, subPath);
-					DbGen.insertTB_FUNC(DBID, mtdVo);
-				}
-			}
-
-			// 테이블
-			getLogger().info("/*** F-2-3.테이블 데이터적재 시작 ***/");
-			DbGen.insertTB_TBL(DBID);
-			
-			// 기능간맵핑
-			getLogger().info("/*** F-2-4.기능간맵핑 데이터적재 시작 ***/");
-			subPath = AppAnalyzer.WRITE_PATH + "/method";
-			fileList = FileUtil.readFileList(subPath, false);
-			if(fileList != null) {
-				for(String file : fileList) {
-					mtdVo = ParseUtil.readMethodVo(file, subPath);
-					DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, mtdVo);
-				}
-			}
-
-			// 테이블맵핑
-			getLogger().info("/*** F-2-5.테이블맵핑 데이터적재 시작 ***/");
-			subPath = AppAnalyzer.WRITE_PATH + "/method";
-			fileList = FileUtil.readFileList(subPath, false);
-			if(fileList != null) {
-				for(String file : fileList) {
-					mtdVo = ParseUtil.readMethodVo(file, subPath);
-					DbGen.insertTB_FUNC_TBL_MAPPING(DBID, mtdVo);
-				}
-			}
-
-			// 화면
-			getLogger().info("/*** F-2-6.화면 데이터적재 시작 ***/");
-			subPath = AppAnalyzer.WRITE_PATH + "/ui";
-			fileList = FileUtil.readFileList(subPath, false);
-			if(fileList != null) {
-				for(String file : fileList) {
-					uiVo = ParseUtil.readUiVo(file, subPath);
-					DbGen.insertTB_UI(DBID, uiVo);
-				}
-			}
-
-			// 화면기능맵핑
-			getLogger().info("/*** F-2-7.화면기능맵핑 데이터적재 시작 ***/");
-			subPath = AppAnalyzer.WRITE_PATH + "/ui";
-			fileList = FileUtil.readFileList(subPath, false);
-			if(fileList != null) {
-				for(String file : fileList) {
-					uiVo = ParseUtil.readUiVo(file, subPath);
-					DbGen.insertTB_UI_FUNC_MAPPING(DBID, uiVo);
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-	}
-	
-
-	
-	
-	public void saveToFile(String fileFullPath) throws Exception{
+	protected void saveAnalyzeFile() throws Exception{
 		
 		StringBuffer conts = new StringBuffer();
 		List<DataSet> dsList = new ArrayList<DataSet>();
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
 
-		getLogger().info("/**************************************** G.분석결과파일저장 시작 ****************************************/");	
-		getLogger().info("/*** G-1.기본구조 세팅 시작 ***/");
-		ds = this.setFileBasic();
-		getLogger().info("/*** G-1.기본구조 세팅 끝 ***/");
+		getLogger().info("/*** F-1.기본구조 세팅 시작 ***/");
+		ds = this.makeAnalyzeBasicFileConts();
+		getLogger().info("/*** F-1.기본구조 세팅 끝 ***/");
 
-		getLogger().info("/*** G-2.호출구조 세팅 시작 ***/");
+		getLogger().info("/*** F-2.호출구조 세팅 시작 ***/");
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
 			for(int i=0; i<ds.getDataSetRowCount("METRIX"); i++) {
 				dsRow = ds.getDataSet("METRIX", i);
 				String functionId = dsRow.getDatum("BASIC_ID");
-				dsList.addAll(this.setFileCallChain(dsRow, functionId, 1));
+				dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, functionId, 1));
 			}
 		}
 		ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsList);
-		getLogger().info("/*** G-2.호출구조 세팅 끝 ***/");
+		getLogger().info("/*** F-2.호출구조 세팅 끝 ***/");
 
-		getLogger().info("/*** G-3.MAX호출레벨 세팅 시작 ***/");
+		getLogger().info("/*** F-3.MAX호출레벨 세팅 시작 ***/");
 		int maxCallLevel = 0;
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
 			for(DataSet row : ds.getDataSetList("METRIX")) {
@@ -1148,9 +1045,9 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			}
 		}
-		getLogger().info("/*** G-3.MAX호출레벨 세팅 끝 ***/");
+		getLogger().info("/*** F-3.MAX호출레벨 세팅 끝 ***/");
 
-		getLogger().info("/*** G-4.파일생성 시작 ***/");
+		getLogger().info("/*** F-4.파일생성 시작 ***/");
 		// 컬럼
 		conts.append("UI_ID").append("\t");
 		conts.append("UI_NAME").append("\t");
@@ -1177,15 +1074,14 @@ public class SvcAnalyzer extends BaseObject{
 				conts.append("\n");
 			}
 		}
-		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, "AppAnalyzer.ouput", conts.toString());
-		getLogger().info("/*** G-4.파일생성 끝 ***/");
-		getLogger().info("/**************************************** G.분석결과파일저장 끝 ****************************************/");	
+		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, "AppMetrix.ouput", conts.toString());
+		getLogger().info("/*** F-4.파일생성 끝 ***/");
 
 	}
 	
 
 	
-	protected DataSet setFileBasic() throws Exception {
+	protected DataSet makeAnalyzeBasicFileConts() throws Exception {
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
 		ClzzVo clzzVo = null;
@@ -1247,7 +1143,7 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	
-	protected List<DataSet> setFileCallChain(DataSet dsRow, String functionId, int callLevel) throws Exception {
+	protected List<DataSet> makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel) throws Exception {
 		List<DataSet> dsList = new ArrayList<DataSet>();		
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 		String classId = "";
@@ -1298,10 +1194,10 @@ public class SvcAnalyzer extends BaseObject{
 			for(int i=0; i<mtdVo.getCallMtdVoList().size(); i++) {
 				String callFunctionId = mtdVo.getCallMtdVoList().get(i);
 				if(i==0) {
-					dsList.addAll(this.setFileCallChain(dsRow, callFunctionId, childCallLevel));
+					dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, callFunctionId, childCallLevel));
 				}else {
 					DataSet dsRowCopy = dsRow.copy();
-					dsList.addAll(this.setFileCallChain(dsRowCopy, callFunctionId, childCallLevel));
+					dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRowCopy, callFunctionId, childCallLevel));
 				}
 			}
 		}else {
@@ -1313,8 +1209,134 @@ public class SvcAnalyzer extends BaseObject{
 	}
 
 
-	
+	public void saveToDb(String DBID) {
+		try {
+			getLogger().info("/**************************************** G-1.기존데이터삭제 시작 ****************************************/");
+			this.deleteFromDb(DBID);
+			getLogger().info("/**************************************** G-1.기존데이터삭제 끝 ****************************************/");
 
+			getLogger().info("/**************************************** G-2.데이터적재 시작 ****************************************/");
+			this.insertToDb(DBID);
+			getLogger().info("/**************************************** G-2.데이터적재 끝 ****************************************/");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
+	protected void deleteFromDb(String DBID) throws Exception {
+		DbGen.deleteAll(DBID);
+	}
+
+	protected void insertToDb(String DBID) throws Exception {
+		String[] fileList = null;
+		String subPath = "";
+		ClzzVo clzzVo = null;
+		MtdVo mtdVo = null;
+		UiVo uiVo = null;
+		
+		try {
+			// 클래스
+			getLogger().info("/*** G-2-1.클래스 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/class";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					clzzVo = ParseUtil.readClassVo(file, subPath);
+					DbGen.insertTB_CLZZ(DBID, clzzVo);
+				}
+			}
+
+			// 기능메서드
+			getLogger().info("/*** G-2-2.기능메서드 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/method";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					mtdVo = ParseUtil.readMethodVo(file, subPath);
+					DbGen.insertTB_FUNC(DBID, mtdVo);
+				}
+			}
+
+			// 테이블
+			getLogger().info("/*** G-2-3.테이블 데이터적재 시작 ***/");
+			DbGen.insertTB_TBL(DBID);
+			
+			// 기능간맵핑
+			getLogger().info("/*** G-2-4.기능간맵핑 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/method";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					mtdVo = ParseUtil.readMethodVo(file, subPath);
+					DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, mtdVo);
+				}
+			}
+
+			// 테이블맵핑
+			getLogger().info("/*** G-2-5.테이블맵핑 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/method";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					mtdVo = ParseUtil.readMethodVo(file, subPath);
+					DbGen.insertTB_FUNC_TBL_MAPPING(DBID, mtdVo);
+				}
+			}
+
+			// 화면
+			getLogger().info("/*** G-2-6.화면 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/ui";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					uiVo = ParseUtil.readUiVo(file, subPath);
+					DbGen.insertTB_UI(DBID, uiVo);
+				}
+			}
+
+			// 화면기능맵핑
+			getLogger().info("/*** G-2-7.화면기능맵핑 데이터적재 시작 ***/");
+			subPath = AppAnalyzer.WRITE_PATH + "/ui";
+			fileList = FileUtil.readFileList(subPath, false);
+			if(fileList != null) {
+				for(String file : fileList) {
+					uiVo = ParseUtil.readUiVo(file, subPath);
+					DbGen.insertTB_UI_FUNC_MAPPING(DBID, uiVo);
+				}
+			}
+			// 종합메트릭스
+			getLogger().info("/*** G-2-8.종합메트릭스 데이터적재 시작 ***/");
+			String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/AppMetrix.ouput");
+			if(lines != null) {
+				String line = "";
+				String[] cols = null;
+				String col = null;
+				String[] colVals = null;
+				String colVal = null;
+				DataSet dsRow = null;
+				int lineNum = 0;
+				for(int i=0; i<lines.length; i++) {
+					if(StringUtil.isEmpty(line)) {continue;}
+					if(lineNum == 0) {
+						cols = StringUtil.toStrArray(line, "\t");
+					}else {
+						colVals = StringUtil.toStrArray(line, "\t");
+						dsRow = new DataSet();
+						for(int k=0; k<colVals.length; k++) {
+							colVal = colVals[i];
+							dsRow.setDatum(col, colVal);
+						}
+						DbGen.insertTB_METRIX(DBID, dsRow);
+					}
+					lineNum++;
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
 	
 }
