@@ -191,12 +191,12 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	 * @param analyzedClassFileList
 	 * @return
 	 */
-	public List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception{
+	public List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception{	
 		List<String> implClassIdList = new ArrayList<String>();
 		if( "I".equals(selfClzzVo.getClassOrInterface()) ) {
 			ClzzVo otherClzzVo = null;
 			for(String packageClassId : analyzedClassFileList) {
-				otherClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
+				otherClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");		
 				if( selfClzzVo.getClassId().equals(otherClzzVo.getInterfaceId()) ) {
 					implClassIdList.add(otherClzzVo.getClassId());
 				}

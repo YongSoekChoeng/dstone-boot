@@ -34,6 +34,77 @@ public class ParseUtil {
 		conts = StringUtil.replace(conts, " }", "}");
 		return conts;
 	}
+	/**
+	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
+	 * @param sqlBody
+	 * @param sqlKind
+	 * @return
+	 */
+	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
+		String sqlBody = inputSql;
+		String keyword = "";
+		String tableName = "";
+		String[] div = {" ", "(", "\n"};
+		sqlBody = sqlBody.trim();
+	
+		// 주석제거 및 쿼리정리
+		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
+		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
+		sqlBody = adjustConts(sqlBody);
+		
+		HashMap<String, String> replMap = new HashMap<String, String>();
+		// XML의 CDATA 태그제거
+		replMap.put("<![CDATA[", "");
+		replMap.put("]]>", "");
+		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
+		replMap.put("#{", "'");
+		replMap.put("#", "'");
+		replMap.put("${", "'");
+		replMap.put("$", "'");
+		replMap.put("}", "'");
+		// 내용없는 연속쉼표 랜덤스트링값으로 치환
+		replMap.put(", ,", ", 'AAA',");
+		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
+		
+		// 프로시저는 지원하지 않음.
+		if(sqlBody.toUpperCase().startsWith("BEGIN")) {
+			sqlBody = "";
+		// INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 단순화.
+		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UPDATE") || sqlKind.equals("DELETE")  ) {
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "MERGE INTO";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " USING DUAL ON(1=1) WHEN MATCHED THEN UPDATE SET AAA='AAA' WHEN NOT MATCHED THEN INSERT ( AAA ) VALUES ( 'AAA' )";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "INSERT INTO";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " ( AAA ) VALUES ( 'AAA' )";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "UPDATE ";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " SET AAA='AAA' WHERE 1=1";
+				}
+			}
+			if(StringUtil.isEmpty(tableName)) {
+				keyword = "DELETE FROM";
+				if( sqlBody.startsWith(keyword) ) {
+					tableName = StringUtil.nextWord(sqlBody, keyword, div);
+					sqlBody = keyword + " " + tableName + " WHERE 1=1";
+				}
+			}
+		// SELECT 일 경우 SELECT ~ FROM 을 SELECT * FROM 으로 단순화.
+		}else if( sqlKind.equals("SELECT")  ) {	
+			sqlBody = SqlUtil.simplifySelectSql(sqlBody);
+		}
+		return sqlBody;
+	}
 	
 	/**
 	 * 주석에서 기능명을 추출하는 메소드.
@@ -308,77 +379,6 @@ public class ParseUtil {
 		}
 		return isValid;
 	}
-	
-	/**
-	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
-	 * @param sqlBody
-	 * @param sqlKind
-	 * @return
-	 */
-	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
-		
-		String sqlBody = inputSql;
-		String keyword = "";
-		String tableName = "";
-		String[] div = {" ", "(", "\n"};
-		sqlBody = sqlBody.trim();
-
-		// 주석제거 및 쿼리정리
-		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
-		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
-		sqlBody = ParseUtil.adjustConts(sqlBody);
-		
-		HashMap<String, String> replMap = new HashMap<String, String>();
-		// XML의 CDATA 태그제거
-		replMap.put("<![CDATA[", "");
-		replMap.put("]]>", "");
-		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
-		replMap.put("#{", "'");
-		replMap.put("}", "'");
-		replMap.put("${", "'");
-		replMap.put("}", "'");
-		// 내용없는 연속쉼표 랜덤스트링값으로 치환
-		replMap.put(", ,", ", 'AAA',");
-		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
-		
-		// 프로시저는 지원하지 않음.
-		if(sqlBody.toUpperCase().startsWith("BEGIN")) {
-			sqlBody = "";
-		// INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 단순화.
-		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UPDATE") || sqlKind.equals("DELETE")  ) {
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "MERGE INTO";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " USING DUAL ON(1=1) WHEN MATCHED THEN UPDATE SET AAA='AAA' WHEN NOT MATCHED THEN INSERT ( AAA ) VALUES ( 'AAA' )";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "INSERT INTO";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " ( AAA ) VALUES ( 'AAA' )";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "UPDATE ";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " SET AAA='AAA' WHERE 1=1";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "DELETE FROM";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " WHERE 1=1";
-				}
-			}
-		}
-		
-		return sqlBody;
-	}
-	
 	
 	/**
 	 * 웹페이지의 A태그로부터 링크를 추출하는 메소드
@@ -1082,6 +1082,8 @@ public class ParseUtil {
 		}
 		return vo;
 	}
+
+
 	
 
 }

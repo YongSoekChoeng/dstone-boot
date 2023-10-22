@@ -9,7 +9,6 @@ import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
 public class SqlUtil extends BaseObject {
-	
 	/**
 	 * 쿼리내의 테이블명 목록을 반환한다.(라이브러리로분석)
 	 * @param sql
@@ -25,6 +24,7 @@ public class SqlUtil extends BaseObject {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			tableNameList = getTableNamesByText(sql);
 		}
 		return tableNameList;
@@ -45,6 +45,7 @@ public class SqlUtil extends BaseObject {
 			if(!StringUtil.isEmpty(paramSql)) {
 				sql = paramSql; 
 				sql = ParseUtil.adjustConts(sql);
+				sql = StringUtil.replace(sql, "\r\n", " ");
 				sql = StringUtil.replace(sql, "\n", " ");
 				sql = sql.toUpperCase().trim();
 				if(sql.startsWith("INSERT")) {
@@ -71,88 +72,64 @@ public class SqlUtil extends BaseObject {
 						tableName = StringUtil.nextWord(sql, keyword, div);
 						tableNameList.add(tableName);
 					}
-				}else if(sql.startsWith("SELECT")) {
-					String selectKeyword = "SELECT ";
-					String fromKeyword = " FROM ";
-					
-					String whereKeyword = " WHERE ";
-					String unionKeyword = " UNION ";
-					String encloseKeyword = "(";
-					
-					int minIndex = -1;
-					int whereKeywordIndex = -1;
-					int unionKeywordIndex = -1;
-					int encloseKeywordIndex = -1;
-					
-					String subStr = "";
-					String[] tempTblArr = null;
-					while( sql.indexOf(selectKeyword)>-1 &&  sql.indexOf(fromKeyword)>-1  ) {
-						subStr = "";
-						tempTblArr = null;
-						
-						// FROM 이후의 스트링으로 절삭.
-						sql = sql.substring(sql.indexOf(fromKeyword) + fromKeyword.length()).trim();
-						
-						// FROM 이후 테이블 선언을 끝내는 케이스 세가지(WHERE/UNION/서브쿼리)
-						whereKeywordIndex = sql.indexOf(whereKeyword);
-						unionKeywordIndex = sql.indexOf(unionKeyword);
-						encloseKeywordIndex = sql.indexOf(encloseKeyword);
-						minIndex = Math.min(whereKeywordIndex==-1?Integer.MAX_VALUE:whereKeywordIndex, unionKeywordIndex==-1?Integer.MAX_VALUE:unionKeywordIndex);
-						minIndex = Math.min(unionKeywordIndex==-1?Integer.MAX_VALUE:unionKeywordIndex, encloseKeywordIndex==-1?Integer.MAX_VALUE:encloseKeywordIndex);
-						minIndex = Math.min(whereKeywordIndex==-1?Integer.MAX_VALUE:whereKeywordIndex, encloseKeywordIndex==-1?Integer.MAX_VALUE:encloseKeywordIndex);
-						
-						// [FROM (] 서브쿼리로 이루어 져 있을 경우
-						if(minIndex == encloseKeywordIndex) {
-							sql = sql.substring(sql.indexOf(encloseKeyword) + encloseKeyword.length()).trim();
-							continue;
-						// [FROM ~ WHERE] 사이에 테이블명이 있을 경우		
-						}else if(minIndex == whereKeywordIndex) {
-							subStr = sql.substring(0, sql.indexOf(whereKeyword));
-							tempTblArr = StringUtil.toStrArray(subStr, ",", true);
-							if( tempTblArr != null ) {
-								for(String tempTbl : tempTblArr) {
-									if(!tableNameList.contains(tempTbl)) {
-										tableNameList.add(tempTbl);
-									}
-								}
-							}
-							sql = sql.substring(sql.indexOf(whereKeyword) + whereKeyword.length());
-							continue;
-						// FROM ~ UNION 사이에 테이블명이 있을 경우(WHERE 없이 UNION OR UNION ALL 로 연결된 쿼리일 경우)
-						}else if(minIndex == unionKeywordIndex) {
-							subStr = sql.substring(0, sql.indexOf(unionKeyword));
-							tempTblArr = StringUtil.toStrArray(subStr, ",", true);
-							if( tempTblArr != null ) {
-								for(String tempTbl : tempTblArr) {
-									if(!tableNameList.contains(tempTbl)) {
-										tableNameList.add(tempTbl);
-									}
-								}
-							}
-							sql = sql.substring(sql.indexOf(unionKeyword) + unionKeyword.length());
-							continue;
-						// FROM ~ 이후에 조건없이 테이블명이 있을 경우
-						}else {
-							subStr = sql;
-							tempTblArr = StringUtil.toStrArray(subStr, ",", true);
-							if( tempTblArr != null ) {
-								for(String tempTbl : tempTblArr) {
-									if(!tableNameList.contains(tempTbl)) {
-										tableNameList.add(tempTbl);
-									}
-								}
-							}
-							continue;
+				}else{
+					if(!StringUtil.isEmpty(sql)) {
+						sql = simplifySelectSql(sql);
+						Iterator<String> tableNames = TablesNamesFinder.findTables(sql).iterator();
+						while(tableNames.hasNext()) {
+							tableNameList.add(tableNames.next());
 						}
 					}
 				}
 			}
 		} catch (Exception e) {
-			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNamesByText() 수행중 예외발생. 쿼리:\n" + paramSql);
+			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNamesByText() 수행중 예외발생. 쿼리:\n" +paramSql);
 			e.printStackTrace();
 			//throw e;
 		}
 		return tableNameList;
+	}
+	
+	public static String simplifySelectSql(String sql) {
+		StringBuffer sqlBuf = new StringBuffer();
+		
+		sql = sql.toUpperCase().trim();
+		if(sql.startsWith("SELECT")) {
+			sql = net.dstone.common.tools.analyzer.util.ParseUtil.adjustConts(sql);
+			sql = StringUtil.replace(sql, "\n", " ");
+			sql = StringUtil.replace(sql, "\r\n", " ");
+			sql = StringUtil.replace(sql, "(SELECT", "( SELECT");
+			sql = StringUtil.replace(sql, "FROM(", "FROM (");
+			String[] words = StringUtil.toStrArray(sql, " ");
+			boolean isSelectStart = false;
+			boolean isSelectEnd = false;
+			if( words != null ){
+				for(String word : words){
+					if("".equals(word.trim())){continue;}
+					
+					if(word.equals("SELECT")){
+						isSelectStart = true;
+						isSelectEnd = false;
+						sqlBuf.append("SELECT * ");
+						continue;
+					}
+					if(word.equals("FROM")){
+						isSelectStart = false;
+						isSelectEnd = true;
+						sqlBuf.append("FROM ");
+						continue;
+					}
+					
+					if( isSelectStart && !isSelectEnd ){
+						continue;
+					}else{
+						sqlBuf.append(word + " ");
+					}
+				}
+			}
+			sql = sqlBuf.toString();
+		}
+		return sql;
 	}
 	
 	/**
@@ -751,4 +728,6 @@ public class SqlUtil extends BaseObject {
 		return sql.toString();
 
 	}
+
+
 }

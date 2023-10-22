@@ -1,6 +1,7 @@
 package net.dstone.common.tools.analyzer.svc.query.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,33 +31,53 @@ public class DefaultQuery implements Query {
 		List<Map<String, String>> qList = new ArrayList<Map<String, String>>();
 		if(FileUtil.isFileExist(queryFile)) {
 			XmlUtil xml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
+			String rootKeyword = "";
+			List<String> queryKinds = new ArrayList<String>();
+			queryKinds.add("select");
+			queryKinds.add("insert");
+			queryKinds.add("update");
+			queryKinds.add("delete");
+			queryKinds.add("sql");
+			
+			// Mibatis
 			if(xml.hasNode("mapper")) {
-				String namespace = xml.getNode("mapper").getAttributes().getNamedItem("namespace").getTextContent();
-				String nodeExp = "/mapper/*";
-				NodeList nodeList = xml.getNodeListByExp(nodeExp);
-				if( nodeList != null ){
-					Map<String, String> row = new HashMap<String, String>();
-					String sqlBody = "";
-					for(int i=0; i<nodeList.getLength(); i++){
-						Node item =	nodeList.item(i);
-						row = new HashMap<String, String>();
-						
-						row.put("SQL_NAMESPACE", namespace);
-						row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
-						row.put("SQL_KIND", item.getNodeName().toUpperCase());
-						
-						nodeExp = "/mapper/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
-						sqlBody = xml.getNodeTextByExpForMybatis(nodeExp, true);
-						sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
-						row.put("SQL_BODY", sqlBody);
+				rootKeyword = "mapper";
+			}else if(xml.hasNode("Mapper")) {
+					rootKeyword = "Mapper";
+			// Ibatis
+			}else if(xml.hasNode("sqlMap")) {
+				rootKeyword = "sqlMap";
+			}else if(xml.hasNode("SqlMap")) {
+				rootKeyword = "SqlMap";
+			}
+			
+			String namespace = xml.getNode(rootKeyword).getAttributes().getNamedItem("namespace").getTextContent();
+			String nodeExp = "/"+rootKeyword+"/*";
+			NodeList nodeList = xml.getNodeListByExp(nodeExp);
+			if( nodeList != null ){
+				Map<String, String> row = new HashMap<String, String>();
+				String sqlBody = "";
+				for(int i=0; i<nodeList.getLength(); i++){
+					Node item =	nodeList.item(i);
+					if( !queryKinds.contains(item.getNodeName()) ) {continue;}
+					
+					row = new HashMap<String, String>();
+					row.put("SQL_NAMESPACE", namespace);
+					row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
+					row.put("SQL_KIND", item.getNodeName().toUpperCase());
+					
+					nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
+					sqlBody = xml.getNodeTextByExpForMybatis(nodeExp, true);
+					sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
+					row.put("SQL_BODY", sqlBody);
 
-						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
-							qList.add(row);
-						}
-						
+					if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
+						qList.add(row);
 					}
+					
 				}
 			}
+
 		}
 		return qList;
 	}

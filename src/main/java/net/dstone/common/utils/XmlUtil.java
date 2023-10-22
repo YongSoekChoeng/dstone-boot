@@ -1,6 +1,8 @@
 package net.dstone.common.utils;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -12,7 +14,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -209,6 +210,27 @@ public class XmlUtil {
 		if(node != null) {
 			NodeList nodeList = node.getChildNodes();
 			if(nodeList != null) {
+				
+				List<String> tagToBeRemovedList = new ArrayList<String>();
+				/*
+				tagToBeRemovedList.add("choose");
+				tagToBeRemovedList.add("foreach");
+				tagToBeRemovedList.add("isEqual");
+				tagToBeRemovedList.add("isNull");
+				tagToBeRemovedList.add("isNotNull");
+				tagToBeRemovedList.add("isNotEqual");
+				tagToBeRemovedList.add("isEmpty");
+				tagToBeRemovedList.add("isNotEmpty");
+				tagToBeRemovedList.add("isGreaterThan");
+				tagToBeRemovedList.add("isGreaterEqual");
+				tagToBeRemovedList.add("isLessEqual");
+				tagToBeRemovedList.add("isPropertyAvailable");
+				tagToBeRemovedList.add("isNotPropertyAvailable");
+				tagToBeRemovedList.add("isParameterPresent");
+				tagToBeRemovedList.add("isNotParameterPresent");
+				tagToBeRemovedList.add("dynamic");
+				*/
+				
 				Node cNode = null;
 				String refid = "";
 				String cNodeExp = "";
@@ -268,6 +290,8 @@ public class XmlUtil {
 									outBuff.append( " 1=1 ");
 								}
 							}
+						}else if(tagToBeRemovedList.contains(cNode.getNodeName())) {
+							continue;
 						}else {
 							outBuff.append(cNode.getTextContent());
 						}

@@ -539,10 +539,9 @@ public class SvcAnalyzer extends BaseObject{
 									pkgClassId = pkgClassId.substring(1);
 								}
 								pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
+
 								clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
-								
 								if( "I".equals(clzzVo.getClassOrInterface()) ) {
-									
 									// 인터페이스구현하위클래스ID목록
 									clzzVo.setImplClassIdList(ClassFactory.getImplClassIdList(clzzVo, analyzedClassFileList));
 									
@@ -1317,6 +1316,7 @@ public class SvcAnalyzer extends BaseObject{
 				DataSet dsRow = null;
 				int lineNum = 0;
 				for(int i=0; i<lines.length; i++) {
+					line = lines[i];
 					if(StringUtil.isEmpty(line)) {continue;}
 					if(lineNum == 0) {
 						cols = StringUtil.toStrArray(line, "\t");
@@ -1324,7 +1324,8 @@ public class SvcAnalyzer extends BaseObject{
 						colVals = StringUtil.toStrArray(line, "\t");
 						dsRow = new DataSet();
 						for(int k=0; k<colVals.length; k++) {
-							colVal = colVals[i];
+							col = cols[k];
+							colVal = colVals[k];
 							dsRow.setDatum(col, colVal);
 						}
 						DbGen.insertTB_METRIX(DBID, dsRow);
