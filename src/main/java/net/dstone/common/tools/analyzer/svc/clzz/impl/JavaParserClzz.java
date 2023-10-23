@@ -156,7 +156,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 		String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
 		boolean isUsed = false;
 		CompilationUnit cu = StaticJavaParser.parse(new File(selfClzzVo.getFileName()));
-
+		
         HashMap<String, ImportDeclaration> importMap = new HashMap<String, ImportDeclaration>();
         List<ImportDeclaration> imports = cu.getImports();
         for(ImportDeclaration item : imports) {

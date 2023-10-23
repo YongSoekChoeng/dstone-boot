@@ -13,7 +13,7 @@ import net.dstone.common.task.TaskItem;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParserClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.DefaultClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParserMtd;
 import net.dstone.common.tools.analyzer.svc.query.Query;
@@ -120,8 +120,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class ClassFactory {
 		
 		static Clzz getClzz() {
-			//return new DefaultClzz(); 
-			return new JavaParserClzz(); 
+			return new DefaultClzz(); 
+			//return new JavaParserClzz(); 
 		}
 		
 		/**

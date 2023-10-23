@@ -21,6 +21,28 @@ import net.dstone.common.utils.XmlUtil;
 
 public class ParseUtil {
 
+	static List<String> TAG_TO_BE_REMOVED_LIST = new ArrayList<String>();
+	static {
+		/*
+		TAG_TO_BE_REMOVED_LIST.add("choose");
+		TAG_TO_BE_REMOVED_LIST.add("foreach");
+		TAG_TO_BE_REMOVED_LIST.add("isEqual");
+		TAG_TO_BE_REMOVED_LIST.add("isNull");
+		TAG_TO_BE_REMOVED_LIST.add("isNotNull");
+		TAG_TO_BE_REMOVED_LIST.add("isNotEqual");
+		TAG_TO_BE_REMOVED_LIST.add("isEmpty");
+		TAG_TO_BE_REMOVED_LIST.add("isNotEmpty");
+		TAG_TO_BE_REMOVED_LIST.add("isGreaterThan");
+		TAG_TO_BE_REMOVED_LIST.add("isGreaterEqual");
+		TAG_TO_BE_REMOVED_LIST.add("isLessEqual");
+		TAG_TO_BE_REMOVED_LIST.add("isPropertyAvailable");
+		TAG_TO_BE_REMOVED_LIST.add("isNotPropertyAvailable");
+		TAG_TO_BE_REMOVED_LIST.add("isParameterPresent");
+		TAG_TO_BE_REMOVED_LIST.add("isNotParameterPresent");
+		TAG_TO_BE_REMOVED_LIST.add("dynamic");
+		*/
+	}
+	
 	/**
 	 * 파일내용을 파싱하기 편하게 변환.(탭을 스페이스로 변환, 다중스페이스를 단일스페이스로 변환)
 	 * @param conts
@@ -37,72 +59,20 @@ public class ParseUtil {
 		conts = StringUtil.replace(conts, " }", "}");
 		return conts;
 	}
+
 	/**
-	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드(주석제거, XML의 CDATA 태그제거, MYBATIS의 파라메터 세팅부분 변환)
-	 * @param sqlBody
-	 * @param sqlKind
-	 * @return
-	 */
-	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
-		String sqlBody = inputSql;
-		sqlBody = sqlBody.trim();
-	
-		// 주석제거 및 쿼리정리
-		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
-		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
-		sqlBody = adjustConts(sqlBody);
-		
-		HashMap<String, String> replMap = new HashMap<String, String>();
-		// XML의 CDATA 태그제거
-		replMap.put("<![CDATA[", "");
-		replMap.put("]]>", "");
-		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
-		replMap.put("#{", "'");
-		replMap.put("#", "'");
-		replMap.put("${", "'");
-		replMap.put("$", "'");
-		replMap.put("}", "'");
-		// 내용없는 연속쉼표 랜덤스트링값으로 치환
-		replMap.put(", ,", ", 'AAA',");
-		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
-		
-		return sqlBody;
-	}
-	
-	
-	/**
-	 * Mybatis 형식 일 경우 내부 태그 제거.
+	 * Mybatis 내부 태그 제거.
 	 * @param xml
 	 * @param nodeExp
 	 * @param recursivelyYn
 	 * @return
 	 */
-	public static String getNodeTextByExpForMybatis(XmlUtil xml, String nodeExp, boolean recursivelyYn) {
+	public static String removeMybatisTagFromSql(XmlUtil xml, String nodeExp, boolean recursivelyYn) {
 		StringBuffer outBuff = new StringBuffer();
 		Node node = xml.getNodeByExp(nodeExp);
 		if(node != null) {
 			NodeList nodeList = node.getChildNodes();
 			if(nodeList != null) {
-				
-				List<String> tagToBeRemovedList = new ArrayList<String>();
-				/*
-				tagToBeRemovedList.add("choose");
-				tagToBeRemovedList.add("foreach");
-				tagToBeRemovedList.add("isEqual");
-				tagToBeRemovedList.add("isNull");
-				tagToBeRemovedList.add("isNotNull");
-				tagToBeRemovedList.add("isNotEqual");
-				tagToBeRemovedList.add("isEmpty");
-				tagToBeRemovedList.add("isNotEmpty");
-				tagToBeRemovedList.add("isGreaterThan");
-				tagToBeRemovedList.add("isGreaterEqual");
-				tagToBeRemovedList.add("isLessEqual");
-				tagToBeRemovedList.add("isPropertyAvailable");
-				tagToBeRemovedList.add("isNotPropertyAvailable");
-				tagToBeRemovedList.add("isParameterPresent");
-				tagToBeRemovedList.add("isNotParameterPresent");
-				tagToBeRemovedList.add("dynamic");
-				*/
 				
 				Node cNode = null;
 				String refid = "";
@@ -136,14 +106,14 @@ public class ParseUtil {
 								refid = cNode.getAttributes().getNamedItem("refid").getTextContent();
 								if( xml.hasNodeById(refid)) {
 									 cNodeExp = "//*[@id='"+refid+"']";
-									 outBuff.append(getNodeTextByExpForMybatis(xml, cNodeExp, recursivelyYn));
+									 outBuff.append(removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
 								}else {
 									if(refid.indexOf(".") > -1) {
 										refidArr = StringUtil.toStrArray(refid, ".");
 										refid = refidArr[refidArr.length-1];
 										if( xml.hasNodeById(refid)) {
 											cNodeExp = "//*[@id='"+refid+"']";
-											outBuff.append(getNodeTextByExpForMybatis(xml, cNodeExp, recursivelyYn));
+											outBuff.append(removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
 										}
 									}
 								}
@@ -163,7 +133,7 @@ public class ParseUtil {
 									outBuff.append( " 1=1 ");
 								}
 							}
-						}else if(tagToBeRemovedList.contains(cNode.getNodeName())) {
+						}else if(TAG_TO_BE_REMOVED_LIST.contains(cNode.getNodeName())) {
 							continue;
 						}else {
 							outBuff.append(cNode.getTextContent());
@@ -178,6 +148,38 @@ public class ParseUtil {
 			}
 		}
 		return outBuff.toString();
+	}
+	
+	/**
+	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드(주석제거, XML의 CDATA 태그제거, MYBATIS의 파라메터 세팅부분 변환)
+	 * @param sqlBody
+	 * @param sqlKind
+	 * @return
+	 */
+	public static String removeBasicTagFromSql(String inputSql, String sqlKind) {
+		String sqlBody = inputSql;
+		sqlBody = sqlBody.trim();
+	
+		// 주석제거 및 쿼리정리
+		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
+		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
+		sqlBody = adjustConts(sqlBody);
+		
+		HashMap<String, String> replMap = new HashMap<String, String>();
+		// XML의 CDATA 태그제거
+		replMap.put("<![CDATA[", "");
+		replMap.put("]]>", "");
+		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
+		replMap.put("#{", "'");
+		replMap.put("#", "'");
+		replMap.put("${", "'");
+		replMap.put("$", "'");
+		replMap.put("}", "'");
+		// 내용없는 연속쉼표 랜덤스트링값으로 치환
+		replMap.put(", ,", ", 'AAA',");
+		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
+		
+		return sqlBody;
 	}
 	
 	/**
