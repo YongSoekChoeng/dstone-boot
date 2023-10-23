@@ -1240,10 +1240,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/class";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				for(String file : fileList) {
-					clzzVo = ParseUtil.readClassVo(file, subPath);
-					DbGen.insertTB_CLZZ(DBID, clzzVo);
-				}
+				DbGen.insertTB_CLZZ(DBID, fileList);
 			}
 
 			// 기능메서드
@@ -1251,10 +1248,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				for(String file : fileList) {
-					mtdVo = ParseUtil.readMethodVo(file, subPath);
-					DbGen.insertTB_FUNC(DBID, mtdVo);
-				}
+				DbGen.insertTB_FUNC(DBID, fileList);
 			}
 
 			// 테이블
@@ -1266,10 +1260,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				for(String file : fileList) {
-					mtdVo = ParseUtil.readMethodVo(file, subPath);
-					DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, mtdVo);
-				}
+				DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, fileList);
 			}
 
 			// 테이블맵핑
@@ -1277,10 +1268,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				for(String file : fileList) {
-					mtdVo = ParseUtil.readMethodVo(file, subPath);
-					DbGen.insertTB_FUNC_TBL_MAPPING(DBID, mtdVo);
-				}
+				DbGen.insertTB_FUNC_TBL_MAPPING(DBID, fileList);
 			}
 
 			// 화면
@@ -1288,10 +1276,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/ui";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				for(String file : fileList) {
-					uiVo = ParseUtil.readUiVo(file, subPath);
-					DbGen.insertTB_UI(DBID, uiVo);
-				}
+				DbGen.insertTB_UI(DBID, fileList);
 			}
 
 			// 화면기능맵핑
@@ -1299,40 +1284,11 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/ui";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				for(String file : fileList) {
-					uiVo = ParseUtil.readUiVo(file, subPath);
-					DbGen.insertTB_UI_FUNC_MAPPING(DBID, uiVo);
-				}
+				DbGen.insertTB_UI_FUNC_MAPPING(DBID, fileList);
 			}
 			// 종합메트릭스
 			getLogger().info("/*** G-2-8.종합메트릭스 데이터적재 시작 ***/");
-			String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/AppMetrix.ouput");
-			if(lines != null) {
-				String line = "";
-				String[] cols = null;
-				String col = null;
-				String[] colVals = null;
-				String colVal = null;
-				DataSet dsRow = null;
-				int lineNum = 0;
-				for(int i=0; i<lines.length; i++) {
-					line = lines[i];
-					if(StringUtil.isEmpty(line)) {continue;}
-					if(lineNum == 0) {
-						cols = StringUtil.toStrArray(line, "\t");
-					}else {
-						colVals = StringUtil.toStrArray(line, "\t");
-						dsRow = new DataSet();
-						for(int k=0; k<colVals.length; k++) {
-							col = cols[k];
-							colVal = colVals[k];
-							dsRow.setDatum(col, colVal);
-						}
-						DbGen.insertTB_METRIX(DBID, dsRow);
-					}
-					lineNum++;
-				}
-			}
+			DbGen.insertTB_METRIX(DBID);
 
 		} catch (Exception e) {
 			e.printStackTrace();

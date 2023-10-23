@@ -50,34 +50,35 @@ public class DefaultQuery implements Query {
 			}else if(xml.hasNode("SqlMap")) {
 				rootKeyword = "SqlMap";
 			}
-			
-			String namespace = xml.getNode(rootKeyword).getAttributes().getNamedItem("namespace").getTextContent();
-			String nodeExp = "/"+rootKeyword+"/*";
-			NodeList nodeList = xml.getNodeListByExp(nodeExp);
-			if( nodeList != null ){
-				Map<String, String> row = new HashMap<String, String>();
-				String sqlBody = "";
-				for(int i=0; i<nodeList.getLength(); i++){
-					Node item =	nodeList.item(i);
-					if( !queryKinds.contains(item.getNodeName()) ) {continue;}
-					
-					row = new HashMap<String, String>();
-					row.put("SQL_NAMESPACE", namespace);
-					row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
-					row.put("SQL_KIND", item.getNodeName().toUpperCase());
-					
-					nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
-					sqlBody = xml.getNodeTextByExpForMybatis(nodeExp, true);
-					sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
-					row.put("SQL_BODY", sqlBody);
+			if( xml.hasNode(rootKeyword) && xml.getNode(rootKeyword).getAttributes() != null ) {
+				String namespace = xml.getNode(rootKeyword).getAttributes().getNamedItem("namespace").getTextContent();
+				String nodeExp = "/"+rootKeyword+"/*";
+				NodeList nodeList = xml.getNodeListByExp(nodeExp);
+				if( nodeList != null ){
+					Map<String, String> row = new HashMap<String, String>();
+					String sqlBody = "";
+					for(int i=0; i<nodeList.getLength(); i++){
+						Node item =	nodeList.item(i);
+						if( !queryKinds.contains(item.getNodeName()) ) {continue;}
+						
+						row = new HashMap<String, String>();
+						row.put("SQL_NAMESPACE", namespace);
+						row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
+						row.put("SQL_KIND", item.getNodeName().toUpperCase());
+						
+						nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
+						// Mybatis/Ibatis 쿼리의 내부 태그 제거.
+						sqlBody = ParseUtil.getNodeTextByExpForMybatis(xml, nodeExp, true);
+						// 테이블명을 파싱하기 좋게 SQL을 간소화.
+						sqlBody = ParseUtil.simplifySqlForTblNm(sqlBody, row.get("SQL_KIND"));
+						row.put("SQL_BODY", sqlBody);
 
-					if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
-						qList.add(row);
+						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
+							qList.add(row);
+						}
 					}
-					
 				}
 			}
-
 		}
 		return qList;
 	}

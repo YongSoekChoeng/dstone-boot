@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -35,16 +38,13 @@ public class ParseUtil {
 		return conts;
 	}
 	/**
-	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드
+	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드(주석제거, XML의 CDATA 태그제거, MYBATIS의 파라메터 세팅부분 변환)
 	 * @param sqlBody
 	 * @param sqlKind
 	 * @return
 	 */
 	public static String simplifySqlForTblNm(String inputSql, String sqlKind) {
 		String sqlBody = inputSql;
-		String keyword = "";
-		String tableName = "";
-		String[] div = {" ", "(", "\n"};
 		sqlBody = sqlBody.trim();
 	
 		// 주석제거 및 쿼리정리
@@ -66,44 +66,118 @@ public class ParseUtil {
 		replMap.put(", ,", ", 'AAA',");
 		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
 		
-		// 프로시저는 지원하지 않음.
-		if(sqlBody.toUpperCase().startsWith("BEGIN")) {
-			sqlBody = "";
-		// INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 단순화.
-		}else if( sqlKind.equals("INSERT") || sqlKind.equals("UPDATE") || sqlKind.equals("DELETE")  ) {
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "MERGE INTO";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " USING DUAL ON(1=1) WHEN MATCHED THEN UPDATE SET AAA='AAA' WHEN NOT MATCHED THEN INSERT ( AAA ) VALUES ( 'AAA' )";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "INSERT INTO";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " ( AAA ) VALUES ( 'AAA' )";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "UPDATE ";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " SET AAA='AAA' WHERE 1=1";
-				}
-			}
-			if(StringUtil.isEmpty(tableName)) {
-				keyword = "DELETE FROM";
-				if( sqlBody.startsWith(keyword) ) {
-					tableName = StringUtil.nextWord(sqlBody, keyword, div);
-					sqlBody = keyword + " " + tableName + " WHERE 1=1";
-				}
-			}
-		// SELECT 일 경우 SELECT ~ FROM 을 SELECT * FROM 으로 단순화.
-		}else if( sqlKind.equals("SELECT")  ) {	
-			sqlBody = SqlUtil.simplifySelectSql(sqlBody);
-		}
 		return sqlBody;
+	}
+	
+	
+	/**
+	 * Mybatis 형식 일 경우 내부 태그 제거.
+	 * @param xml
+	 * @param nodeExp
+	 * @param recursivelyYn
+	 * @return
+	 */
+	public static String getNodeTextByExpForMybatis(XmlUtil xml, String nodeExp, boolean recursivelyYn) {
+		StringBuffer outBuff = new StringBuffer();
+		Node node = xml.getNodeByExp(nodeExp);
+		if(node != null) {
+			NodeList nodeList = node.getChildNodes();
+			if(nodeList != null) {
+				
+				List<String> tagToBeRemovedList = new ArrayList<String>();
+				/*
+				tagToBeRemovedList.add("choose");
+				tagToBeRemovedList.add("foreach");
+				tagToBeRemovedList.add("isEqual");
+				tagToBeRemovedList.add("isNull");
+				tagToBeRemovedList.add("isNotNull");
+				tagToBeRemovedList.add("isNotEqual");
+				tagToBeRemovedList.add("isEmpty");
+				tagToBeRemovedList.add("isNotEmpty");
+				tagToBeRemovedList.add("isGreaterThan");
+				tagToBeRemovedList.add("isGreaterEqual");
+				tagToBeRemovedList.add("isLessEqual");
+				tagToBeRemovedList.add("isPropertyAvailable");
+				tagToBeRemovedList.add("isNotPropertyAvailable");
+				tagToBeRemovedList.add("isParameterPresent");
+				tagToBeRemovedList.add("isNotParameterPresent");
+				tagToBeRemovedList.add("dynamic");
+				*/
+				
+				Node cNode = null;
+				String refid = "";
+				String cNodeExp = "";
+				String[] refidArr = null;
+				for(int i=0; i<nodeList.getLength(); i++) {
+					cNode = nodeList.item(i);
+					
+					/*******************************************************
+					멤버필드이름							정수값	노드종류
+					Node.ELEMENT_NODE					1		Element
+					Node.ATTRIBUTE_NODE					2		Attr
+					Node.TEXT_NODE						3		Text
+					Node.CDATA_SECTION_NODE				4		CDATASection
+					Node.ENTITY_REFERENCE_NODE			5		EntityReference
+					Node.ENTITY_NODE					6		Entity
+					Node.PROCESSING_INSTRUCTION_NODE	7		ProcessingInstruction
+					Node.COMMENT_NODE					8		Comment
+					Node.DOCUMENT_NODE					9		Document
+					Node.DOCUMENT_TYPE_NODE				10		DocumentType
+					Node.DOCUMENT_FRAGMENT_NODE			11		DocumentFragment
+					Node.NOTATION_NODE					12		Notation
+					*******************************************************/
+					//System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
+					
+					if (cNode.getNodeType() == Node.TEXT_NODE) {
+						outBuff.append(cNode.getNodeValue());
+					}else if( cNode.getNodeType() == Node.ELEMENT_NODE) {
+						if("include".equals(cNode.getNodeName())) {
+							if( recursivelyYn) {
+								refid = cNode.getAttributes().getNamedItem("refid").getTextContent();
+								if( xml.hasNodeById(refid)) {
+									 cNodeExp = "//*[@id='"+refid+"']";
+									 outBuff.append(getNodeTextByExpForMybatis(xml, cNodeExp, recursivelyYn));
+								}else {
+									if(refid.indexOf(".") > -1) {
+										refidArr = StringUtil.toStrArray(refid, ".");
+										refid = refidArr[refidArr.length-1];
+										if( xml.hasNodeById(refid)) {
+											cNodeExp = "//*[@id='"+refid+"']";
+											outBuff.append(getNodeTextByExpForMybatis(xml, cNodeExp, recursivelyYn));
+										}
+									}
+								}
+							}else {
+								outBuff.append(cNode.getTextContent());
+							}
+						}else if("where".equals(cNode.getNodeName())) {
+							outBuff.append( " WHERE ");
+							if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
+								outBuff.append( " 1=1 ");
+							}
+							outBuff.append( cNode.getTextContent());
+						}else if("trim".equals(cNode.getNodeName())) {
+							if( cNode.getAttributes().getNamedItem("prefix") != null && "WHERE".equalsIgnoreCase(cNode.getAttributes().getNamedItem("prefix").getTextContent())) {
+								outBuff.append( " WHERE ");
+								if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
+									outBuff.append( " 1=1 ");
+								}
+							}
+						}else if(tagToBeRemovedList.contains(cNode.getNodeName())) {
+							continue;
+						}else {
+							outBuff.append(cNode.getTextContent());
+						}
+
+					}else if(cNode.getNodeType() == Node.COMMENT_NODE) {
+						outBuff.append("");
+					}else {
+						outBuff.append(cNode.getTextContent());
+					}
+				}
+			}
+		}
+		return outBuff.toString();
 	}
 	
 	/**

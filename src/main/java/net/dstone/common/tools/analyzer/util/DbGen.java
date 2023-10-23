@@ -1,9 +1,11 @@
 package net.dstone.common.tools.analyzer.util;
 
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DataSet;
+import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.DbUtil.LoggableStatement;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
@@ -707,9 +709,14 @@ public class DbGen {
 		return parameterIndex;
 	}
 	
-	public static void insertTB_CLZZ(String DBID, ClzzVo clzzVo) throws Exception {
+	public static void insertTB_CLZZ(String DBID, String[] fileList) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+		
+		ClzzVo clzzVo = null;
+		String subPath = AppAnalyzer.WRITE_PATH + "/class";
+		int chunkSize = 500;
+		
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -717,13 +724,22 @@ public class DbGen {
 			/* <클래스-TB_CLZZ> */
 			db.setQuery(QUERY.INSERT_TB_CLZZ.toString());
 			
-			parameterIndex = 0;
-			parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassId());	/* 클래스ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getPackageId());	/* 패키지ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassName());	/* 클래스명 */
-			parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassKind().getClzzKindCd());	/* 클래스종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */
+			for(int i=0; i<fileList.length; i++) {
+				String file = fileList[i];
+				clzzVo = ParseUtil.readClassVo(file, subPath);
+				parameterIndex = 0;
+				parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassId());	/* 클래스ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getPackageId());	/* 패키지ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassName());	/* 클래스명 */
+				parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassKind().getClzzKindCd());	/* 클래스종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) */
+				
+				db.pstmt.addBatch();
+				if(i > 0 && i%chunkSize==0 ) {
+					db.pstmt.executeBatch();
+				}
+			}
 			
-			db.insert();
+			db.pstmt.executeBatch();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -735,9 +751,13 @@ public class DbGen {
 		}
 	}
 	
-	public static void insertTB_FUNC(String DBID, MtdVo mtdVo) throws Exception {
+	public static void insertTB_FUNC(String DBID, String[] fileList) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+		MtdVo mtdVo = null;
+		String subPath = AppAnalyzer.WRITE_PATH + "/method";
+		int chunkSize = 500;
+		
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -745,16 +765,24 @@ public class DbGen {
 			/* <기능메서드-TB_FUNC> */
 			db.setQuery(QUERY.INSERT_TB_FUNC.toString());
 
-			String classId = StringUtil.replace(mtdVo.getFunctionId(), "." + mtdVo.getMethodId(), "") ;
-			
-			parameterIndex = 0;
-			parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getMethodId());	/* 메서드ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getMethodName());	/* 메서드명 */
-			parameterIndex = setParam(db.pstmt, parameterIndex, classId);	/* 클래스ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getMethodUrl());	/* 메서드URL */
-			
-			db.insert();
+			for(int i=0; i<fileList.length; i++) {
+				String file = fileList[i];
+				mtdVo = ParseUtil.readMethodVo(file, subPath);
+				String classId = StringUtil.replace(mtdVo.getFunctionId(), "." + mtdVo.getMethodId(), "") ;
+				
+				parameterIndex = 0;
+				parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getMethodId());	/* 메서드ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getMethodName());	/* 메서드명 */
+				parameterIndex = setParam(db.pstmt, parameterIndex, classId);	/* 클래스ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getMethodUrl());	/* 메서드URL */
+				
+				db.pstmt.addBatch();
+				if(i > 0 && i%chunkSize==0 ) {
+					db.pstmt.executeBatch();
+				}
+			}
+			db.pstmt.executeBatch();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -769,6 +797,9 @@ public class DbGen {
 	public static void insertTB_TBL(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+		
+		int chunkSize = 500;
+		
 		try {
 			
 			net.dstone.common.utils.DataSet dsTblList = net.dstone.common.utils.DbUtil.getTabs(DBID);
@@ -776,51 +807,24 @@ public class DbGen {
 
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
+
+			/* <테이블-TB_TBL> */
+			db.setQuery(QUERY.INSERT_TB_TBL.toString());
 			
 			for(int i=0; i<dsTblList.getDataSetRowCount("TBL_LIST") ; i++) {
-				
 				dsTblRow = dsTblList.getDataSet("TBL_LIST", i);
-				
-				/* <테이블-TB_TBL> */
-				db.setQuery(QUERY.INSERT_TB_TBL.toString());
-				
 				parameterIndex = 0;
 				parameterIndex = setParam(db.pstmt, parameterIndex, dsTblRow.getDatum("TABLE_NAME").toUpperCase());		/* 테이블ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, dsTblRow.getDatum("TABLE_OWNER"));		/* 테이블오너 */
 				parameterIndex = setParam(db.pstmt, parameterIndex, StringUtil.textTail(dsTblRow.getDatum("TABLE_COMMENT"), 50));	/* 테이블명 */
 				
-				db.insert();
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			if(db != null) {
-				db.release();
-			}
-		}
-	}
-	
-	public static void insertTB_FUNC_FUNC_MAPPING(String DBID, MtdVo mtdVo) throws Exception {
-		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
-		try {
-			db = new net.dstone.common.utils.DbUtil(DBID);
-			db.getConnection();
-			
-			if( mtdVo.getCallMtdVoList() != null && mtdVo.getCallMtdVoList().size()>0 ) {
-				for(String callMtdFunctionId : mtdVo.getCallMtdVoList()) {
-					/* <기능간맵핑-TB_FUNC_FUNC_MAPPING> */
-					db.setQuery(QUERY.INSERT_TB_FUNC_FUNC_MAPPING.toString());
-					
-					parameterIndex = 0;
-					parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
-					parameterIndex = setParam(db.pstmt, parameterIndex, callMtdFunctionId);	/* 호출기능ID */
-					
-					db.insert();
+				db.pstmt.addBatch();
+				if(i > 0 && i%chunkSize==0 ) {
+					db.pstmt.executeBatch();
 				}
 			}
+			db.pstmt.executeBatch();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -831,45 +835,38 @@ public class DbGen {
 		}
 	}
 	
-	public static void insertTB_FUNC_TBL_MAPPING(String DBID, MtdVo mtdVo) throws Exception {
+	public static void insertTB_FUNC_FUNC_MAPPING(String DBID, String[] fileList) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+		MtdVo mtdVo = null;
+		String subPath = AppAnalyzer.WRITE_PATH + "/method";		
+		int chunkSize = 500;
+		
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
-			
-			if( mtdVo.getCallTblVoList() != null && mtdVo.getCallTblVoList().size()>0 ) {
-				String[] words = null;
-				String tblId = "";
-				String jobKind = "";
-				for(String callTbl : mtdVo.getCallTblVoList()) {
-					if(StringUtil.isEmpty(callTbl)) {
-						continue;
-					}
-					words = StringUtil.toStrArray(callTbl, "!");
-					tblId = "";
-					jobKind = "";
-					if(words.length > 0) {
-						tblId = words[0];
-						if(tblId.indexOf(".")>-1) {
-							tblId = tblId.substring(tblId.indexOf(".")+1);
+
+			/* <기능간맵핑-TB_FUNC_FUNC_MAPPING> */
+			db.setQuery(QUERY.INSERT_TB_FUNC_FUNC_MAPPING.toString());
+			for(int i=0; i<fileList.length; i++) {
+				String file = fileList[i];	
+				mtdVo = ParseUtil.readMethodVo(file, subPath);
+				
+				if( mtdVo.getCallMtdVoList() != null && mtdVo.getCallMtdVoList().size()>0 ) {
+					for(String callMtdFunctionId : mtdVo.getCallMtdVoList()) {
+
+						parameterIndex = 0;
+						parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
+						parameterIndex = setParam(db.pstmt, parameterIndex, callMtdFunctionId);	/* 호출기능ID */
+						
+						db.pstmt.addBatch();
+						if(i > 0 && i%chunkSize==0 ) {
+							db.pstmt.executeBatch();
 						}
 					}
-					if(words.length > 1) {
-						jobKind = words[1];
-					}
-					
-					/* <테이블맵핑-TB_FUNC_TBL_MAPPING> */
-					db.setQuery(QUERY.INSERT_TB_FUNC_TBL_MAPPING.toString());
-					
-					parameterIndex = 0;
-					parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
-					parameterIndex = setParam(db.pstmt, parameterIndex, tblId);	/* 테이블ID */
-					parameterIndex = setParam(db.pstmt, parameterIndex, jobKind);	/* 작업종류(SELECT/INSERT/UPDATE/DELETE/MERGE) */
-					
-					db.insert();
 				}
 			}
+			db.pstmt.executeBatch();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -880,22 +877,98 @@ public class DbGen {
 		}
 	}
 	
-	public static void insertTB_UI(String DBID, UiVo uiVo) throws Exception {
+	public static void insertTB_FUNC_TBL_MAPPING(String DBID, String[] fileList) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+
+		MtdVo mtdVo = null;
+		String subPath = AppAnalyzer.WRITE_PATH + "/method";		
+		int chunkSize = 500;
+		
+		try {
+			db = new net.dstone.common.utils.DbUtil(DBID);
+			db.getConnection();
+
+			/* <테이블맵핑-TB_FUNC_TBL_MAPPING> */
+			db.setQuery(QUERY.INSERT_TB_FUNC_TBL_MAPPING.toString());
+
+			for(int i=0; i<fileList.length; i++) {
+				String file = fileList[i];	
+				mtdVo = ParseUtil.readMethodVo(file, subPath);
+				
+				if( mtdVo.getCallTblVoList() != null && mtdVo.getCallTblVoList().size()>0 ) {
+					String[] words = null;
+					String tblId = "";
+					String jobKind = "";
+					for(String callTbl : mtdVo.getCallTblVoList()) {
+						if(StringUtil.isEmpty(callTbl)) {
+							continue;
+						}
+						words = StringUtil.toStrArray(callTbl, "!");
+						tblId = "";
+						jobKind = "";
+						if(words.length > 0) {
+							tblId = words[0];
+							if(tblId.indexOf(".")>-1) {
+								tblId = tblId.substring(tblId.indexOf(".")+1);
+							}
+						}
+						if(words.length > 1) {
+							jobKind = words[1];
+						}
+						
+						parameterIndex = 0;
+						parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
+						parameterIndex = setParam(db.pstmt, parameterIndex, tblId);	/* 테이블ID */
+						parameterIndex = setParam(db.pstmt, parameterIndex, jobKind);	/* 작업종류(SELECT/INSERT/UPDATE/DELETE/MERGE) */
+						
+						db.pstmt.addBatch();
+						if(i > 0 && i%chunkSize==0 ) {
+							db.pstmt.executeBatch();
+						}
+					}
+				}
+			}
+			db.pstmt.executeBatch();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(db != null) {
+				db.release();
+			}
+		}
+	}
+	
+	public static void insertTB_UI(String DBID, String[] fileList) throws Exception {
+		net.dstone.common.utils.DbUtil db = null;
+		int parameterIndex = 0;
+
+		UiVo uiVo = null;
+		String subPath = AppAnalyzer.WRITE_PATH + "/ui";
+		int chunkSize = 500;
+		
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
 			
 			/* <화면-TB_UI> */
 			db.setQuery(QUERY.INSERT_TB_UI.toString());
-			
-			parameterIndex = 0;
-			parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiName());	/* 화면명 */
-			
-			db.insert();
-			
+
+			for(int i=0; i<fileList.length; i++) {
+				String file = fileList[i];	
+				uiVo = ParseUtil.readUiVo(file, subPath);
+
+				parameterIndex = 0;
+				parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
+				parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiName());	/* 화면명 */
+				db.pstmt.addBatch();
+				
+				if(i > 0 && i%chunkSize==0 ) {
+					db.pstmt.executeBatch();
+				}
+			}
+			db.pstmt.executeBatch();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -906,26 +979,39 @@ public class DbGen {
 		}
 	}
 	
-	public static void insertTB_UI_FUNC_MAPPING(String DBID, UiVo uiVo) throws Exception {
+	public static void insertTB_UI_FUNC_MAPPING(String DBID, String[] fileList) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+
+		UiVo uiVo = null;
+		String subPath = AppAnalyzer.WRITE_PATH + "/ui";
+		int chunkSize = 500;
+
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
-			
-			if( uiVo.getLinkList() != null && uiVo.getLinkList().size()>0 ) {
-				for(String link : uiVo.getLinkList()) {
-					
-					/* <화면링크맵핑-TB_UI_FUNC_MAPPING> */
-					db.setQuery(QUERY.INSERT_TB_UI_FUNC_MAPPING.toString());
-					
-					parameterIndex = 0;
-					parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
-					parameterIndex = setParam(db.pstmt, parameterIndex, link);	/* 링크 */
-					
-					db.insert();
+
+			/* <화면링크맵핑-TB_UI_FUNC_MAPPING> */
+			db.setQuery(QUERY.INSERT_TB_UI_FUNC_MAPPING.toString());
+
+			for(int i=0; i<fileList.length; i++) {
+				String file = fileList[i];	
+				uiVo = ParseUtil.readUiVo(file, subPath);
+
+				if( uiVo.getLinkList() != null && uiVo.getLinkList().size()>0 ) {
+					for(String link : uiVo.getLinkList()) {
+						parameterIndex = 0;
+						parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
+						parameterIndex = setParam(db.pstmt, parameterIndex, link);	/* 링크 */
+						
+						db.pstmt.addBatch();
+						if(i > 0 && i%chunkSize==0 ) {
+							db.pstmt.executeBatch();
+						}
+					}
 				}
 			}
+			db.pstmt.executeBatch();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -937,28 +1023,61 @@ public class DbGen {
 		}
 	}
 	
-	public static void insertTB_METRIX(String DBID, DataSet ds) throws Exception {
+	public static void insertTB_METRIX(String DBID) throws Exception {
 		net.dstone.common.utils.DbUtil db = null;
 		int parameterIndex = 0;
+		int chunkSize = 500;
+		
 		try {
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
 
 			/* <화면링크맵핑-TB_UI_FUNC_MAPPING> */
 			db.setQuery(QUERY.INSERT_TB_METRIX.toString());
-
-			parameterIndex = 0;
-			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("UI_ID"));	/* 화면ID */
-			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("UI_NM"));	/* 화면명 */
-			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("BASIC_URL"));	/* 기준URL */
-			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
-				parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("FUNCTION_ID_"+i, ""));	/* 기능ID */
-				parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("FUNCTION_NAME_"+i, ""));	/* 기능명 */
-				parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("CLASS_KIND_"+i, ""));	/* 클래스종류 */
-			}
-			parameterIndex = setParam(db.pstmt, parameterIndex, ds.getDatum("CALL_TBL"));	/* 호출테이블 */
 			
-			db.insert();
+			String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/AppMetrix.ouput");
+			if(lines != null) {
+				String line = "";
+				String[] cols = null;
+				String col = null;
+				String[] colVals = null;
+				String colVal = null;
+				DataSet dsRow = null;
+				int lineNum = 0;
+				for(int i=0; i<lines.length; i++) {
+					line = lines[i];
+					if(StringUtil.isEmpty(line)) {continue;}
+					if(lineNum == 0) {
+						cols = StringUtil.toStrArray(line, "\t");
+					}else {
+						colVals = StringUtil.toStrArray(line, "\t");
+						dsRow = new DataSet();
+						for(int k=0; k<colVals.length; k++) {
+							col = cols[k];
+							colVal = colVals[k];
+							dsRow.setDatum(col, colVal);
+						}
+
+						parameterIndex = 0;
+						parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("UI_ID"));	/* 화면ID */
+						parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("UI_NM"));	/* 화면명 */
+						parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("BASIC_URL"));	/* 기준URL */
+						for(int k=1; k<=FUNC_DEPTH_CNT; k++) {
+							parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("FUNCTION_ID_"+k, ""));	/* 기능ID */
+							parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("FUNCTION_NAME_"+k, ""));	/* 기능명 */
+							parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("CLASS_KIND_"+k, ""));	/* 클래스종류 */
+						}
+						parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("CALL_TBL"));	/* 호출테이블 */
+						
+						db.pstmt.addBatch();
+						if(i > 0 && i%chunkSize==0 ) {
+							db.pstmt.executeBatch();
+						}
+					}
+					lineNum++;
+				}
+			}
+			db.pstmt.executeBatch();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
