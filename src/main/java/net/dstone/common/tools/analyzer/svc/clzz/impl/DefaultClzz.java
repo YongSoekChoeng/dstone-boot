@@ -184,6 +184,55 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		}
 		return interfaceId;
 	}
+	@Override
+	public String getParentClassId(String classFile) throws Exception {
+		String returnParentClassId = "";
+		List<String> importList = new ArrayList<String>();
+		String[] lines = FileUtil.readFileByLines(classFile);
+		boolean isFound = false;
+		if(lines != null) {
+			String importClass = "";
+			for(String line : lines) {
+				importClass = "";
+				line = line.trim();
+				line = ParseUtil.adjustConts(line);
+				if(line.startsWith("import") && line.endsWith(";")) {
+					importClass = line;
+					importClass = StringUtil.replace(importClass, "import", "");
+					importClass = StringUtil.replace(importClass, ";", "");
+					importClass = StringUtil.replace(importClass, " ", "");
+					importList.add(importClass);
+				}
+				if(line.indexOf(" extends ")>-1) {
+					String[] div = {" ", "{"};
+					String parentClassId = StringUtil.nextWord(line, " extends ", div);
+					for(String importStr : importList) {
+						if( parentClassId.indexOf(".")>-1 ) {
+							if(importStr.equals(parentClassId)) {
+								returnParentClassId = importStr;
+								isFound = true;
+								break;
+							}
+						}else {
+							if(importStr.endsWith("."+parentClassId)) {
+								returnParentClassId = importStr;
+								isFound = true;
+								break;
+							}
+						}
+					}
+					if( !StringUtil.isEmpty(returnParentClassId) && returnParentClassId.indexOf(".") == -1 ) {
+						returnParentClassId = this.getPackageId(classFile) + "." + returnParentClassId;
+						isFound = true;
+					}
+				}
+				if(isFound) {
+					break;
+				}
+			}
+		}
+		return returnParentClassId;
+	}
 
 	/**
 	 * 인터페이스구현하위클래스ID목록 추출.(인터페이스인 경우에만 존재)
@@ -302,6 +351,8 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		
 		return callClassAliasList;
 	}
+
+
 
 
 

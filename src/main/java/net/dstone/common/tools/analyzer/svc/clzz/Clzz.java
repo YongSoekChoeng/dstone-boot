@@ -54,6 +54,13 @@ public interface Clzz {
 	public String getInterfaceId(String classFile) throws Exception ;
 
 	/**
+	 * 부모클래스ID 추출
+	 * @param classFile
+	 * @return
+	 */
+	public String getParentClassId(String classFile) throws Exception ;
+	
+	/**
 	 * 인터페이스구현클래스ID목록 추출.(인터페이스인 경우에만 존재)
 	 * @param selfClzzVo
 	 * @param otherClassFileList
