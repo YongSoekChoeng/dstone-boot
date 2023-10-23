@@ -11,6 +11,7 @@ import net.sf.jsqlparser.util.TablesNamesFinder;
 public class SqlUtil extends BaseObject {
 	/**
 	 * 쿼리내의 테이블명 목록을 반환한다.(라이브러리로분석)
+	 * 라이브러리분석이 실해할 경우 텍스트자체분석.
 	 * @param sql
 	 * @return
 	 * @throws Exception
@@ -38,6 +39,8 @@ public class SqlUtil extends BaseObject {
 	
 	/**
 	 * 쿼리내의 테이블명 목록을 반환한다.(텍스트자체분석)
+	 * INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 NEXT WORD 를 발췌해서 테이블명 추출.
+	 * SELECT 일 경우 FROM 에서 FROM 종료 CASE 사이의 스트링을 발췌해서 가장 단순한 형태의 쿼리를 만들어 TablesNamesFinder로 테이블명 추출.
 	 * @param paramSql
 	 * @return
 	 * @throws Exception
@@ -57,7 +60,7 @@ public class SqlUtil extends BaseObject {
 				sql = StringUtil.replace(sql, "\n", " ");
 				sql = sql.toUpperCase().trim();
 				
-				/*** INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 NEXT WORD 를 발췌해서 TablesNamesFinder로 테이블명 추출. ***/
+				/*** INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 NEXT WORD 를 발췌해서 테이블명 추출. ***/
 				// INSERT
 				if(sql.startsWith("INSERT")) {
 					keyword = " INTO ";
@@ -97,7 +100,7 @@ public class SqlUtil extends BaseObject {
 				// SELECT	
 				}else{
 
-					/*** SELECT 일 경우 FROM 에서 FROM 종료 CASE 사이의 스트링을 발췌해서 테이블명 추출. ***/
+					/*** SELECT 일 경우 FROM 에서 FROM 종료 CASE 사이의 스트링을 발췌해서  TablesNamesFinder로 테이블명 추출. ***/
 
 					sql = StringUtil.replace(sql, ")", " ) ");
 					
