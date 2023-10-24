@@ -183,6 +183,14 @@ public class SvcAnalyzer extends BaseObject{
 			return getClzz().getInterfaceId(classFile);
 		}
 		/**
+		 * 상위클래스ID 추출
+		 * @param classFile
+		 * @return
+		 */
+		static String getParentClassId(String classFile) throws Exception {
+			return getClzz().getParentClassId(classFile);
+		}
+		/**
 		 * 인터페이스구현하위클래스ID목록(인터페이스인 경우에만 존재)
 		 * @param selfClzzVo
 		 * @param otherClassFileList
@@ -477,9 +485,12 @@ public class SvcAnalyzer extends BaseObject{
 								// 클래스or인터페이스
 								clzzVo.setClassOrInterface(ClassFactory.getClassOrInterface(classFile));
 
-								// 인터페이스ID
+								// 상위인터페이스ID
 								clzzVo.setInterfaceId(ClassFactory.getInterfaceId(classFile));
 
+								// 상위클래스ID
+								clzzVo.setParentClassId(ClassFactory.getParentClassId(classFile));
+								
 								// 파일명
 								clzzVo.setFileName(classFile);
 								

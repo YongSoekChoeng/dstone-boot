@@ -693,6 +693,7 @@ public class ParseUtil {
 			fileConts.append("리소스ID" + div + StringUtil.nullCheck(vo.getResourceId(), "")).append("\n");
 			fileConts.append("클래스or인터페이스" + div + StringUtil.nullCheck(vo.getClassOrInterface(), "")).append("\n");
 			fileConts.append("상위인터페이스ID" + div + StringUtil.nullCheck(vo.getInterfaceId(), "")).append("\n");
+			fileConts.append("상위클래스ID" + div + StringUtil.nullCheck(vo.getParentClassId(), "")).append("\n");
 			List<String> implClassIdList = vo.getImplClassIdList();
 			if(implClassIdList != null) {
 				for(String item : implClassIdList) {
@@ -781,6 +782,12 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setInterfaceId(words[1]);
+						}
+					}
+					if(line.startsWith("상위클래스ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setParentClassId(words[1]);
 						}
 					}
 					if(line.startsWith("인터페이스구현하위클래스ID목록" + div)) {
