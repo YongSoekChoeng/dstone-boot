@@ -81,7 +81,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	public ClzzKind getClassKind(String classFile) throws Exception  {
 		ClzzKind classKind = ClzzKind.OT;
 		String fileConts = FileUtil.readFile(classFile);
-		fileConts = ParseUtil.adjustConts(fileConts);
+		fileConts = StringUtil.trimTextForParse(fileConts);
 		if(fileConts.indexOf("@Controller") != -1 || fileConts.indexOf("@RestController") != -1) {
 			classKind = ClzzKind.CT;
 		}else if(fileConts.indexOf("@Service") != -1) {
@@ -105,7 +105,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			String searchLine = "";
 			for(String line : lines) {
 				line = line.trim();
-				line = ParseUtil.adjustConts(line);
+				line = StringUtil.trimTextForParse(line);
 				if(line.indexOf("@Service") != -1 || line.indexOf("@Repository") != -1 || line.indexOf("@Resource") != -1 || line.indexOf("@Component") != -1) {
 					searchLine = line;
 				}
@@ -129,7 +129,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	public String getClassOrInterface(String classFile) throws Exception{
 		String classOrInterface = "";
 		String fileConts = FileUtil.readFile(classFile);
-		fileConts = ParseUtil.adjustConts(fileConts);
+		fileConts = StringUtil.trimTextForParse(fileConts);
 		if(fileConts.indexOf(" interface ")>-1) {
 			classOrInterface = "I";
 		}else {
@@ -153,7 +153,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			String searchLine = "";
 			for(String line : lines) {
 				line = line.trim();
-				line = ParseUtil.adjustConts(line);
+				line = StringUtil.trimTextForParse(line);
 				if(line.indexOf("import ") != -1) {
 					importLine = line;
 					importLine = StringUtil.replace(importLine, "import ", "");
@@ -195,7 +195,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 			for(String line : lines) {
 				importClass = "";
 				line = line.trim();
-				line = ParseUtil.adjustConts(line);
+				line = StringUtil.trimTextForParse(line);
 				if(line.startsWith("import") && line.endsWith(";")) {
 					importClass = line;
 					importClass = StringUtil.replace(importClass, "import", "");
@@ -266,7 +266,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 
 		String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
-		fileConts = ParseUtil.adjustConts(fileConts);
+		fileConts = StringUtil.trimTextForParse(fileConts);
 		String[] lines = StringUtil.toStrArray(fileConts, "\n", false, true);
 
 		boolean isAliasExists = false;

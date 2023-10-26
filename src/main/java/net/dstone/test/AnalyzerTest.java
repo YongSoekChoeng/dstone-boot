@@ -242,7 +242,7 @@ public class AnalyzerTest {
 
 
                 	// METHOD_BODY
-                	String conts = ParseUtil.adjustConts(item.getBody().get().toString());
+                	String conts = StringUtil.trimTextForParse(item.getBody().get().toString());
             		String[] lines = StringUtil.toStrArray(conts, "\n");
             		conts = "";
             		for(String line : lines) {

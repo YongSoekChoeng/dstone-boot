@@ -130,6 +130,17 @@ public class XmlUtil {
 		return node;
 	}
 	
+	public int getNodeCountByExp(String expression) {
+		int cnt = 0;
+		try {
+			Number number = (Number) this.xPath.evaluate( "count(" + expression + ")", document, XPathConstants.NUMBER);
+			cnt = number.intValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return cnt;
+	}
+	
 	public Node getNodeById(String id) {
 		Node node = null;
 		String expression = "//*[@id='" +id+ "']";

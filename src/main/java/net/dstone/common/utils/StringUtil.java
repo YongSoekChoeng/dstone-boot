@@ -230,6 +230,26 @@ public class StringUtil {
 	}
 
 	/**
+	 * <code>subStringAfter</code> 설명:특정문자열 이후의 문자열 반환.
+	 * @param str 절삭대상 스트링
+	 * @param separator 특정문자열
+	 * @return String
+	 */
+	public static String subStringAfter(String str, String separator) {
+		return org.apache.commons.lang.StringUtils.substringAfter(str, separator);
+	}
+	
+	/**
+	 * <code>subStringAfter</code> 설명:특정문자열 이전의 문자열 반환.
+	 * @param str 절삭대상 스트링
+	 * @param separator 특정문자열
+	 * @return String
+	 */
+	public static String subStringBefore(String str, String separator) {
+		return org.apache.commons.lang.StringUtils.substringBefore(str, separator);
+	}
+	
+	/**
 	 * <code>subByteString</code> 설명:바이트절삭 메소드.
 	 * @param str 절삭대상 스트링
 	 * @param offSet 시작인덱스
@@ -928,25 +948,51 @@ public class StringUtil {
 	/**
 	 * 문자열에서 검색시작문자열 이후의 (단어분리 변수배열로 분리되는)단어하나를 반환하는 메소드
 	 * 
-	 * @param input
-	 *            체크할 전체문자열
-	 * @param startStr
-	 *            검색시작문자열
-	 * @param div
-	 *            단어분리 변수배열
+	 * @param input 체크할 전체문자열
+	 * @param startStr 검색시작문자열
+	 * @param div 단어분리 변수배열
 	 * @return String
 	 */
 	public static String nextWord(String inputStr, String startStr, String[] div) {
+		return nextWord(inputStr, startStr, 0, div);
+	}
+	
+	/**
+	 * 문자열에서 검색시작문자열 이후의 (단어분리 변수배열로 분리되는)단어하나를 반환하는 메소드
+	 * 
+	 * @param input 체크할 전체문자열
+	 * @param startStr 검색시작문자열
+	 * @param step 몇번째다음문자열인지 지정
+	 * @param div 단어분리 변수배열
+	 * @return String
+	 */
+	public static String nextWord(String inputStr, String startStr, int step, String[] div) {
 		String input = inputStr;
+		String nextToken = "";
 		String nextStr = "";
-
-		if (input.indexOf(startStr) != -1) {
-			input = input.substring(input.indexOf(startStr) + startStr.length()).trim();
-			for (int l = 0; l < div.length; l++) {
-				if (input.indexOf(div[l]) != -1) {
-					if (nextStr.length() == 0 || nextStr.length() > toStrArray(input, div[l])[0].length()) {
-						nextStr = toStrArray(input, div[l])[0];
+		if( isEmpty(startStr) && div.length>0 ) {
+			input = div[0] + input;
+		}
+		if(step > 0  && div.length>0 ) {
+			for(int i=0; i<step; i++) {
+				for (int l = 0; l < div.length; l++) {
+					input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr); 
+					if( input.indexOf(div[l])>-1 ) {
+						input = input.substring(input.indexOf(div[l])+div[l].length());
+						break;
 					}
+				}
+			}
+		}else {
+			input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr);
+		}
+		for (int l = 0; l < div.length; l++) {
+			if (input.indexOf(div[l]) != -1) {
+				nextToken = input.substring(input.indexOf(div[l])+div[l].length());
+				if(!isEmpty(nextToken)) {
+					nextToken = org.apache.commons.lang3.StringUtils.substringBefore(nextToken, div[l]);
+					nextStr = nextToken;
+					break;
 				}
 			}
 		}
@@ -956,22 +1002,30 @@ public class StringUtil {
 
 	/**
 	 * 문자열에서 검색시작문자열 이전의 (단어분리 변수배열로 분리되는)단어하나를 반환하는 메소드
-	 * 
-	 * @param input
-	 *            체크할 전체문자열
-	 * @param startStr
-	 *            검색시작문자열
-	 * @param div
-	 *            단어분리 변수배열
+	 * @param input 체크할 전체문자열
+	 * @param startStr 검색시작문자열
+	 * @param div 단어분리 변수배열
 	 * @return String
 	 */
 	public static String beforeWord(String inputStr, String startStr, String[] div) {
+		return beforeWord(inputStr, startStr, 0, div);
+	}
+	
+	/**
+	 * 문자열에서 검색시작문자열 이전의 (단어분리 변수배열로 분리되는)단어하나를 반환하는 메소드
+	 * @param input 체크할 전체문자열
+	 * @param startStr 검색시작문자열
+	 * @param step 몇번째이전문자열인지 지정
+	 * @param div 단어분리 변수배열
+	 * @return String
+	 */
+	public static String beforeWord(String inputStr, String startStr, int step, String[] div) {
 		String beforeStr = "";
 		String[] revDiv = new String[div.length];
 		for (int i = 0; i < div.length; i++) {
 			revDiv[i] = StringUtil.reverse(div[i]);
 		}
-		beforeStr = nextWord(StringUtil.reverse(inputStr), StringUtil.reverse(startStr), div);
+		beforeStr = nextWord(StringUtil.reverse(inputStr), StringUtil.reverse(startStr), step, div);
 		return StringUtil.reverse(beforeStr);
 	}
 
@@ -1409,5 +1463,38 @@ public class StringUtil {
 			}
 		}
 		return splits;
+	}
+
+	/**
+	 * 파일내용을 파싱하기 편하게 변환.(탭을 스페이스로 변환, 다중스페이스를 단일스페이스로 변환)
+	 * @param conts
+	 * @return
+	 */
+	public static String trimTextForParse(String conts) {
+		conts = replace(conts, "\t", " ");
+		conts = replace(conts, "   ", " ");
+		conts = replace(conts, "  ", " ");
+		conts = replace(conts, " ;", ";");
+		conts = replace(conts, " (", "(");
+		conts = replace(conts, " )", ")");
+		conts = replace(conts, " {", "{");
+		conts = replace(conts, " }", "}");
+		return conts;
+	}
+	
+	/**
+	 * 인풋스트링을 반복횟수만큼 복제해서 반환.
+	 * @param input
+	 * @param repeatNum
+	 * @return
+	 */
+	public static String repeatStr(String input, int repeatNum) {
+		StringBuffer output = new StringBuffer();
+		if( !isEmpty(input) && repeatNum > -1 ) {
+			for(int i=0; i<repeatNum; i++) {
+				output.append(input);
+			}
+		}
+		return output.toString();
 	}
 }

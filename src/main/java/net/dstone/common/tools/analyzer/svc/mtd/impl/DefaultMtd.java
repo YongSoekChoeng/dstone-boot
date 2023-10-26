@@ -24,7 +24,7 @@ public class DefaultMtd extends BaseObject implements Mtd {
 	@Override
 	public List<Map<String, String>> getMtdInfoList(String classFile) throws Exception  {
 		String fileConts = FileUtil.readFile(classFile);
-		fileConts = ParseUtil.adjustConts(fileConts);
+		fileConts = StringUtil.trimTextForParse(fileConts);
 		return ParseUtil.getMtdListFromJava(fileConts);
 	}
 

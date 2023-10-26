@@ -1,14 +1,16 @@
 package net.dstone.common.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.dstone.common.core.BaseObject;
-import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
 public class SqlUtil extends BaseObject {
+	
 	/**
 	 * 쿼리내의 테이블명 목록을 반환한다.(라이브러리로분석)
 	 * 라이브러리분석이 실해할 경우 텍스트자체분석.
@@ -16,46 +18,16 @@ public class SqlUtil extends BaseObject {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<String> getTableNames(String sql) throws Exception{
-		List<String> tableNameList = new ArrayList<String>();
-		try {
-			if(!StringUtil.isEmpty(sql)) {
-				Iterator<String> tableNames = TablesNamesFinder.findTables(sql).iterator();
-				String tableName = "";
-				while(tableNames.hasNext()) {
-					tableName = tableNames.next();
-					if(!tableNameList.contains(tableName)) {
-						tableNameList.add(tableName);
-					}
-				}
-			}
-		} catch (Exception e) {
-			//LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNames() 수행중 예외발생. 쿼리:\n" +sql);
-			//e.printStackTrace();
-			tableNameList = getTableNamesByText(sql);
-		}
-		return tableNameList;
-	}
-	
-	/**
-	 * 쿼리내의 테이블명 목록을 반환한다.(텍스트자체분석)
-	 * INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 NEXT WORD 를 발췌해서 테이블명 추출.
-	 * SELECT 일 경우 FROM 에서 FROM 종료 CASE 사이의 스트링을 발췌해서 가장 단순한 형태의 쿼리를 만들어 TablesNamesFinder로 테이블명 추출.
-	 * @param paramSql
-	 * @return
-	 * @throws Exception
-	 */
-	public static List<String> getTableNamesByText(String paramSql) throws Exception{
+	public static List<String> getTableNames(String paramSql) throws Exception{
 		List<String> tableNameList = new ArrayList<String>();
 		String keyword = "";
 		String tableName = "";
 		String[] div = {" "};
-		String sql = "";
-		String subSql = "";
 		try {
 			if(!StringUtil.isEmpty(paramSql)) {
-				sql = paramSql; 
-				sql = ParseUtil.adjustConts(sql);
+				
+				String sql = paramSql; 
+				sql = StringUtil.trimTextForParse(sql);
 				sql = StringUtil.replace(sql, "\r\n", " ");
 				sql = StringUtil.replace(sql, "\n", " ");
 				sql = sql.toUpperCase().trim();
@@ -99,106 +71,302 @@ public class SqlUtil extends BaseObject {
 					}
 				// SELECT	
 				}else{
-
-					/*** SELECT 일 경우 FROM 에서 FROM 종료 CASE 사이의 스트링을 발췌해서  TablesNamesFinder로 테이블명 추출. ***/
-
-					sql = StringUtil.replace(sql, ")", " ) ");
-					
-					String sqlStr = sql;
-					String sqlFromStr = "";
-					
-					// FROM 이 끝나는 경우
-					int whereIndex = -1;
-					int unionAllIndex = -1;
-					int unionIndex = -1;
-					int closerIndex = -1;
-					int havingIndex = -1;
-					int orderbyIndex = -1;
-					int connectbyIndex = -1;
-					
-					int minIndex = Integer.MAX_VALUE;
-					
-					keyword = " FROM ";
-					String nextKeyword = "";
-					while( sqlStr.indexOf(keyword)>-1 ) {
-						sqlStr = sqlStr.substring( sqlStr.indexOf(keyword) + keyword.length() );
-						// FROM ( ~ 로 이어지는 서브쿼리 일 경우 건너뜀.
-						if(sqlStr.trim().startsWith("(")) {
-							continue;
-						}
-						minIndex = Integer.MAX_VALUE;
-						nextKeyword = "";
-						
-						whereIndex 				= sqlStr.indexOf(" WHERE ");	
-						if(whereIndex > -1) 	{minIndex = Math.min(minIndex, whereIndex);		}
-						unionAllIndex 			= sqlStr.indexOf(" UNION ALL ");
-						if(unionAllIndex > -1) 	{minIndex = Math.min(minIndex, unionAllIndex);	}
-						unionIndex 				= sqlStr.indexOf(" UNION ");
-						if(unionIndex > -1) 	{minIndex = Math.min(minIndex, unionIndex);		}
-						closerIndex 			= sqlStr.indexOf(" )");
-						if(closerIndex > -1) 	{minIndex = Math.min(minIndex, closerIndex);	}
-						havingIndex 			= sqlStr.indexOf(" HAVING ");
-						if(havingIndex > -1) 	{minIndex = Math.min(minIndex, havingIndex);	}
-						orderbyIndex 			= sqlStr.indexOf(" ORDER BY ");
-						if(orderbyIndex > -1) 	{minIndex = Math.min(minIndex, orderbyIndex);	}
-						connectbyIndex 			= sqlStr.indexOf(" CONNECT BY ");
-						if(connectbyIndex > -1)	{minIndex = Math.min(minIndex, connectbyIndex);	}
-
-						// FROM 이 WHERE 로 끝나는 경우
-						if( whereIndex>-1 && minIndex == whereIndex) {
-							nextKeyword = " WHERE ";
-						}
-						// FROM 이 UNION ALL 로 끝나는 경우
-						if( unionAllIndex>-1 && minIndex == unionAllIndex) {
-							nextKeyword = " UNION ALL ";
-						}
-						// FROM 이 UNION 으로 끝나는 경우
-						if( unionIndex>-1 && minIndex == unionIndex) {
-							nextKeyword = " UNION ";
-						}
-						// FROM 이 ')' 로 끝나는 경우
-						if( closerIndex>-1 && minIndex == closerIndex) {
-							nextKeyword = " ) ";
-						}
-						// FROM 이 HAVING 으로 끝나는 경우
-						if( havingIndex>-1 && minIndex == havingIndex) {
-							nextKeyword = " HAVING ";
-						}
-						// FROM 이 ORDER BY 로 끝나는 경우
-						if( orderbyIndex>-1 && minIndex == orderbyIndex) {
-							nextKeyword = " ORDER BY ";
-						}
-						// FROM 이 CONNECT BY 로 끝나는 경우
-						if( connectbyIndex>-1 && minIndex == connectbyIndex) {
-							nextKeyword = " CONNECT BY ";
-						}
-
-						if( minIndex == Integer.MAX_VALUE) {
-							nextKeyword = sqlStr;
-						}
-						
-						if(!StringUtil.isEmpty(nextKeyword)) {
-							sqlFromStr = sqlStr.substring(0, sqlStr.indexOf(nextKeyword) );
-							subSql = "SELECT * FROM " + sqlFromStr + "";
-							Iterator<String> tableNames = TablesNamesFinder.findTables(subSql).iterator();
-							tableName = ""; 
-							while(tableNames.hasNext()) {
-								tableName = tableNames.next();
-								if(!tableNameList.contains(tableName)) {
-									tableNameList.add(tableName);
-								}
-							}
-							sqlStr = sqlStr.substring( sqlStr.indexOf(nextKeyword) + nextKeyword.length() );
+					Iterator<String> tableNames = TablesNamesFinder.findTables(sql).iterator();
+					while(tableNames.hasNext()) {
+						tableName = tableNames.next();
+						if(!tableNameList.contains(tableName)) {
+							tableNameList.add(tableName);
 						}
 					}
 				}
+
 			}
 		} catch (Exception e) {
-			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNamesByText() 수행중 예외발생. 쿼리:\n" +paramSql);
+			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNames() 수행중 예외발생. 쿼리:\n" +paramSql);
+			getTableNamesByText(paramSql);
+			//e.printStackTrace();
+		}
+		return tableNameList;
+	}
+	/**
+	 * 쿼리내의 테이블명 목록을 반환한다.(텍스트자체분석)
+	 * @param sql
+	 * @return
+	 */
+	public static List<String> getTableNamesByText(String paramSql) throws Exception{
+		List<String> tableNameList = new ArrayList<String>();
+		String keyword = "";
+		String tableName = "";
+		String[] div = {" "};
+		String sql = "";
+		try {
+			if(!StringUtil.isEmpty(paramSql)) {
+				sql = paramSql; 
+				sql = StringUtil.trimTextForParse(sql);
+				sql = StringUtil.replace(sql, "\n", " ");
+				sql = sql.toUpperCase().trim();
+				if(sql.startsWith("INSERT")) {
+					keyword = " INTO ";
+					if(sql.indexOf(keyword)>-1) {
+						tableName = StringUtil.nextWord(sql, keyword, div);
+						tableNameList.add(tableName);
+					}
+				}else if(sql.startsWith("UPDATE")) {
+					keyword = "UPDATE ";
+					if(sql.indexOf(keyword)>-1) {
+						tableName = StringUtil.nextWord(sql, keyword, div);
+						tableNameList.add(tableName);
+					}
+				}else if(sql.startsWith("MERGE")) {
+					keyword = " INTO ";
+					if(sql.indexOf(keyword)>-1) {
+						tableName = StringUtil.nextWord(sql, keyword, div);
+						tableNameList.add(tableName);
+					}
+				}else if(sql.startsWith("DELETE")) {
+					keyword = " FROM ";
+					if(sql.indexOf(keyword)>-1) {
+						tableName = StringUtil.nextWord(sql, keyword, div);
+						tableNameList.add(tableName);
+					}
+				}else if(sql.startsWith("SELECT")) {
+					tableNameList.addAll(getSelectTableNamesByText(paramSql));
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNamesByText() 수행중 예외발생. 쿼리:\n" + paramSql);
 			e.printStackTrace();
 			//throw e;
 		}
 		return tableNameList;
+	}
+	
+	/**
+	 * 쿼리내의 괄호에 마킹을 한다.
+	 * @param paramSql
+	 * @return
+	 */
+	public static String markBrakets(String paramSql) {
+		StringBuffer sql = new StringBuffer();
+		String div = "^";
+		String divOpen = "[";
+		String divClose = "]";
+		String divStr = "";
+		
+		if( !StringUtil.isEmpty(paramSql) ) {
+			char[] charArr = paramSql.toCharArray();
+			int num = 0;
+			for( char chr : charArr) {
+				if(chr == '(') {
+					num++;
+					divStr = divOpen + StringUtil.repeatStr(div, num) + divClose;
+					sql.append( divStr + " " );
+				}else if(chr == ')') {
+					divStr = divOpen + StringUtil.repeatStr(div, num) + divClose;
+					sql.append(divStr + " " );
+					num--;
+				}else {
+					sql.append(chr);
+				}
+			}
+		}
+
+//		if( !StringUtil.isEmpty(paramSql) ) {
+//			
+//			Map<String, Integer> indexMap = new HashMap<String, Integer>();
+//			char[] charArr = paramSql.toCharArray();
+//			
+//			int num = 1;
+//			String id = "";
+//			for( char chr : charArr) {
+//				if(chr == '(') {
+//					id = String.valueOf(num++);
+//					if(!indexMap.containsKey(id)) {
+//						indexMap.put(id, new Integer(0));
+//					}
+//					indexMap.put(id, indexMap.get(id).intValue()+1 );
+//					sql.append(divOpen + StringUtil.repeatStr(div, Integer.parseInt(id)) + "-" + StringUtil.repeatStr(div, indexMap.get(id)) + divClose + " " );
+//				}else if(chr == ')') {
+//					id = String.valueOf(--num);
+//					sql.append(divOpen + StringUtil.repeatStr(div, Integer.parseInt(id)) + "-" + StringUtil.repeatStr(div, indexMap.get(id)) + divClose + " " );
+//				}else {
+//					sql.append(chr);
+//				}
+//			}
+//			
+//		}
+		
+		return sql.toString();
+	}
+	
+	/**
+	 * 쿼리내의 From구분 목록을 반환한다.
+	 * @param paramSql
+	 * @return
+	 */
+	public static ArrayList<String> getSelectTableNamesByText(String paramSql) throws Exception {
+		ArrayList<String> tblList = new ArrayList<String>();
+		
+		try {
+
+			String sql = "";
+			String fromPhaseStr = "";
+			String beforeSql = "";
+			String afterSql = "";
+			String divOpen = "[";
+			String divClose = "]";
+			String[] div = {" "};
+			
+			if( !StringUtil.isEmpty(paramSql) ) {
+				
+				sql = paramSql; 
+				sql = StringUtil.replace(sql, "UNION ALL", "UNION");
+				sql = StringUtil.replace(sql, "\n", " ");
+				sql = StringUtil.trimTextForParse(sql);
+				sql = sql.toUpperCase().trim();
+				
+				java.util.ArrayList<String> fromEndKeywordList = new java.util.ArrayList<String>();
+				fromEndKeywordList.add("WHERE");
+				fromEndKeywordList.add("HAVING");
+				fromEndKeywordList.add("ORDER BY");
+				fromEndKeywordList.add("CONNECT BY");
+				
+				String fromKeyword = " FROM ";
+				String divStr = "";
+				int startIndex = -1;
+				int endIndex = -1;
+				
+				boolean fromStarted = false;
+				boolean fromEnded = false;
+
+				int tableNum = 0;
+				String nextKeyword = "";
+				String nextNextKeyword = "";
+				String nextNextNextKeyword = "";
+				
+				if( sql.startsWith("SELECT ") ) {
+					fromStarted = false;
+					fromEnded = false;
+				}
+			
+				while( sql.indexOf(fromKeyword)>-1 ) {
+					// FROM 시작
+					fromStarted = true;
+					tableNum = 0;
+					sql = sql.substring(sql.indexOf(fromKeyword) + fromKeyword.length()).trim();
+
+					// FROM 안에 괄호()로 묶여있는부분에 대한 분리 처리.
+					while(sql.indexOf(divOpen)>-1 && sql.indexOf(divClose)>-1) {
+						// 구분자 추출
+						startIndex = sql.indexOf(divOpen);
+						endIndex = sql.indexOf(divClose)+divClose.length();
+						divStr = sql.substring( startIndex,  endIndex );
+
+						// 하위쿼리 추출
+						fromPhaseStr = StringUtil.subStringAfter(sql, divStr);
+						if(fromPhaseStr.indexOf(divStr)>-1) {
+							fromPhaseStr = StringUtil.subStringBefore(fromPhaseStr, divStr);
+							beforeSql = StringUtil.subStringBefore(sql, divStr+fromPhaseStr).trim();
+							afterSql = StringUtil.subStringAfter(sql, fromPhaseStr+divStr).trim();
+							if(beforeSql.endsWith(",") && afterSql.startsWith(",")) {
+								beforeSql = beforeSql.substring(0, beforeSql.length()-1);
+							}
+							sql = beforeSql + afterSql;
+							// 재귀호출
+							ArrayList<String> subTblList = getSelectTableNamesByText(fromPhaseStr);
+							for(String tbl : subTblList) {
+								if(!tblList.contains(tbl)) {
+									tblList.add(tbl);
+								}
+							}
+						}else {
+							throw new Exception("괄호의 Pair가 맞지 않습니다.");
+						}
+						sql = StringUtil.trimTextForParse(sql);
+						sql = StringUtil.replace(sql, ", ,", ",");
+					}
+
+					while( fromStarted && !fromEnded ) {
+						nextKeyword = "";
+						nextNextKeyword = "";
+						nextNextNextKeyword = "";
+						// 테이블을 구분방법 분석
+						nextKeyword = StringUtil.nextWord(sql, "", 0, div);
+						// 첫번째는 테이블구분 단어가 없으므로 처음단어가 테이블명.
+						if( tableNum == 0 ) {
+							if(!StringUtil.isEmpty(nextKeyword)) {
+								tableNum++;
+								if(!tblList.contains(nextKeyword)) {
+									tblList.add(nextKeyword);
+								}
+								sql = StringUtil.subStringAfter(sql, nextKeyword).trim();
+							}
+						// 두번째부터는 다다다음단어, 다다다다음단어까지 비교하여 분석
+						}else {
+							nextKeyword = StringUtil.nextWord(sql, "", 0, div); 					// 첫번째 다음단어
+							nextNextKeyword = StringUtil.nextWord(sql, "", 1, div);					// 두번째 다음단어
+							nextNextNextKeyword = StringUtil.nextWord(sql, "", 2, div);				// 세번째 다음단어
+							// COMMA - 알리아스가 존재할 수 있으므로 다음단어, 다다음단어까지 비교
+							if(nextKeyword.equals(",")) {
+								if(!StringUtil.isEmpty(nextNextKeyword)) {
+									tableNum++;
+									if(!tblList.contains(nextNextKeyword)) {
+										tblList.add(nextNextKeyword); 								// 두번째 다음단어 가 테이블
+									}
+									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();		// 첫번째 다음단어 => 구분자(콤마)
+									sql = StringUtil.subStringAfter(sql, nextNextKeyword).trim();
+								}
+							}else if(nextNextKeyword.equals(",")) {	
+								if(!StringUtil.isEmpty(nextNextNextKeyword)) {
+									tableNum++;
+									if(!tblList.contains(nextNextNextKeyword)) {
+										tblList.add(nextNextNextKeyword);							// 세번째 다음단어 가 테이블
+									}
+									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();		// 첫번째 다음단어 => 앞 테이블의 알리아스
+									sql = StringUtil.subStringAfter(sql, nextNextKeyword).trim(); 	// 두번째 다음단어 => 구분자(콤마)
+									sql = StringUtil.subStringAfter(sql, nextNextNextKeyword).trim();
+								}
+
+							// 나머지는 JOIN	
+							/********************************************************
+							JOIN/INNER JOIN
+							LEFT OUTER JOIN/RIGHT OUTER JOIN/FULL OUTER JOIN
+							********************************************************/
+							}else{
+								sql = StringUtil.subStringAfter(sql, "JOIN").trim();
+								nextKeyword = StringUtil.nextWord(sql, "", 0, div); 				// JOIN 이후의 첫번째 다음단어
+								
+								if(!StringUtil.isEmpty(nextKeyword)) {
+									tableNum++;
+									if(!tblList.contains(nextKeyword)) {
+										tblList.add(nextKeyword);									// JOIN 이후의 첫번째 다음단어 가 테이블
+									}
+									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();
+								}
+							}
+						}
+						// FROM 끝
+						if(fromEndKeywordList.contains(nextKeyword)) {
+							fromEnded = true;
+							break;
+						}
+						if(StringUtil.isEmpty(sql)) {
+							fromEnded = true;
+							break;
+						}
+					}
+					if(StringUtil.isEmpty(sql)) {
+						fromEnded = true;
+						break;
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getSelectTableNamesByText() 수행중 예외발생. 상세사항:" + e.toString());
+		} 
+		
+		return tblList;
 	}
 	
 	/**
@@ -818,6 +986,7 @@ public class SqlUtil extends BaseObject {
 		return sql.toString();
 
 	}
+
 
 
 }

@@ -21,45 +21,34 @@ import net.dstone.common.utils.XmlUtil;
 
 public class ParseUtil {
 
-	static List<String> TAG_TO_BE_REMOVED_LIST = new ArrayList<String>();
+	static List<String> MYBATIS_REMOVE_TAG_LIST = new ArrayList<String>();
 	static {
-		/*
-		TAG_TO_BE_REMOVED_LIST.add("choose");
-		TAG_TO_BE_REMOVED_LIST.add("foreach");
-		TAG_TO_BE_REMOVED_LIST.add("isEqual");
-		TAG_TO_BE_REMOVED_LIST.add("isNull");
-		TAG_TO_BE_REMOVED_LIST.add("isNotNull");
-		TAG_TO_BE_REMOVED_LIST.add("isNotEqual");
-		TAG_TO_BE_REMOVED_LIST.add("isEmpty");
-		TAG_TO_BE_REMOVED_LIST.add("isNotEmpty");
-		TAG_TO_BE_REMOVED_LIST.add("isGreaterThan");
-		TAG_TO_BE_REMOVED_LIST.add("isGreaterEqual");
-		TAG_TO_BE_REMOVED_LIST.add("isLessEqual");
-		TAG_TO_BE_REMOVED_LIST.add("isPropertyAvailable");
-		TAG_TO_BE_REMOVED_LIST.add("isNotPropertyAvailable");
-		TAG_TO_BE_REMOVED_LIST.add("isParameterPresent");
-		TAG_TO_BE_REMOVED_LIST.add("isNotParameterPresent");
-		TAG_TO_BE_REMOVED_LIST.add("dynamic");
-		*/
-	}
-	
-	/**
-	 * 파일내용을 파싱하기 편하게 변환.(탭을 스페이스로 변환, 다중스페이스를 단일스페이스로 변환)
-	 * @param conts
-	 * @return
-	 */
-	public static String adjustConts(String conts) {
-		conts = StringUtil.replace(conts, "\t", " ");
-		conts = StringUtil.replace(conts, "   ", " ");
-		conts = StringUtil.replace(conts, "  ", " ");
-		conts = StringUtil.replace(conts, " ;", ";");
-		conts = StringUtil.replace(conts, " (", "(");
-		conts = StringUtil.replace(conts, " )", ")");
-		conts = StringUtil.replace(conts, " {", "{");
-		conts = StringUtil.replace(conts, " }", "}");
-		return conts;
+		/*****************************************************
+		MYBATIS_DIV_TAG_LIST.add("choose");
+		MYBATIS_DIV_TAG_LIST.add("foreach");
+		MYBATIS_DIV_TAG_LIST.add("dynamic");
+		*****************************************************/
 	}
 
+	static List<String> MYBATIS_DIV_TAG_LIST = new ArrayList<String>();
+	static {
+		/*****************************************************
+		MYBATIS_DIV_TAG_LIST.add("isEqual");
+		MYBATIS_DIV_TAG_LIST.add("isNull");
+		MYBATIS_DIV_TAG_LIST.add("isNotNull");
+		MYBATIS_DIV_TAG_LIST.add("isNotEqual");
+		MYBATIS_DIV_TAG_LIST.add("isEmpty");
+		MYBATIS_DIV_TAG_LIST.add("isNotEmpty");
+		MYBATIS_DIV_TAG_LIST.add("isGreaterThan");
+		MYBATIS_DIV_TAG_LIST.add("isGreaterEqual");
+		MYBATIS_DIV_TAG_LIST.add("isLessEqual");
+		MYBATIS_DIV_TAG_LIST.add("isPropertyAvailable");
+		MYBATIS_DIV_TAG_LIST.add("isNotPropertyAvailable");
+		MYBATIS_DIV_TAG_LIST.add("isParameterPresent");
+		MYBATIS_DIV_TAG_LIST.add("isNotParameterPresent");
+		*****************************************************/
+	}
+	
 	/**
 	 * Mybatis 내부 태그 제거.
 	 * @param xml
@@ -71,6 +60,8 @@ public class ParseUtil {
 		StringBuffer outBuff = new StringBuffer();
 		Node node = xml.getNodeByExp(nodeExp);
 		if(node != null) {
+			
+			XmlUtil innerXml = null;
 			NodeList nodeList = node.getChildNodes();
 			if(nodeList != null) {
 				
@@ -78,6 +69,7 @@ public class ParseUtil {
 				String refid = "";
 				String cNodeExp = "";
 				String[] refidArr = null;
+				
 				for(int i=0; i<nodeList.getLength(); i++) {
 					cNode = nodeList.item(i);
 					
@@ -98,9 +90,7 @@ public class ParseUtil {
 					*******************************************************/
 					//System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
 					
-					if (cNode.getNodeType() == Node.TEXT_NODE) {
-						outBuff.append(cNode.getNodeValue());
-					}else if( cNode.getNodeType() == Node.ELEMENT_NODE) {
+					if( cNode.getNodeType() == Node.ELEMENT_NODE) {
 						if("include".equals(cNode.getNodeName())) {
 							if( recursivelyYn) {
 								refid = cNode.getAttributes().getNamedItem("refid").getTextContent();
@@ -133,12 +123,23 @@ public class ParseUtil {
 									outBuff.append( " 1=1 ");
 								}
 							}
-						}else if(TAG_TO_BE_REMOVED_LIST.contains(cNode.getNodeName())) {
+						}else if(MYBATIS_DIV_TAG_LIST.contains(cNode.getNodeName())) {
+							String ifElseConts = cNode.getTextContent().trim().toUpperCase();
+							ifElseConts = StringUtil.trimTextForParse(ifElseConts);
+							int ifElseCnt = xml.getNodeCountByExp( nodeExp +"/"+cNode.getNodeName() );
+							if(ifElseConts.startsWith("(SELECT") || ifElseConts.startsWith("( SELECT")) {
+								innerXml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_STRING, "<sqlMap><select>" + ifElseConts + "</select></sqlMap>");
+								String ifElseSql = removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
+								outBuff.append(ifElseSql);
+							}
+							
+						}else if(MYBATIS_REMOVE_TAG_LIST.contains(cNode.getNodeName())) {
 							continue;
 						}else {
 							outBuff.append(cNode.getTextContent());
 						}
-
+					}else if (cNode.getNodeType() == Node.TEXT_NODE) {
+						outBuff.append(cNode.getNodeValue());
 					}else if(cNode.getNodeType() == Node.COMMENT_NODE) {
 						outBuff.append("");
 					}else {
@@ -163,7 +164,7 @@ public class ParseUtil {
 		// 주석제거 및 쿼리정리
 		sqlBody = XmlUtil.removeCommentsFromXml(sqlBody);
 		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
-		sqlBody = adjustConts(sqlBody);
+		sqlBody = StringUtil.trimTextForParse(sqlBody);
 		
 		HashMap<String, String> replMap = new HashMap<String, String>();
 		// XML의 CDATA 태그제거
@@ -472,7 +473,7 @@ public class ParseUtil {
 				String conts = FileUtil.readFile(webPageFile);
 				conts = StringUtil.replace(conts, "\r\n", "");
 				conts = StringUtil.replace(conts, "\n", "");
-				conts = adjustConts(conts);
+				conts = StringUtil.trimTextForParse(conts);
 				conts = StringUtil.replace(conts, "\"", "'");
 				
 				String contsForAtag = new String(conts);
@@ -545,9 +546,9 @@ public class ParseUtil {
 				String nextWord = "";
 				
 				String conts = FileUtil.readFile(webPageFile);
+				conts = StringUtil.trimTextForParse(conts);
 				conts = StringUtil.replace(conts, "\r\n", "");
 				conts = StringUtil.replace(conts, "\n", "");
-				conts = adjustConts(conts);
 				conts = StringUtil.replace(conts, "\"", "'");
 				
 				String contsForAction = new String(conts);
@@ -619,7 +620,7 @@ public class ParseUtil {
 		if(!StringUtil.isEmpty(annotationLine) && annotationLine.indexOf("@")>-1) {
 			if(annotationLine.indexOf("(")>-1) {
 				annotationLine = annotationLine.trim();
-				annotationLine = adjustConts(annotationLine);
+				annotationLine = StringUtil.trimTextForParse(annotationLine);
 				annotationLine = annotationLine.substring(annotationLine.indexOf("("));
 				annotationLine = StringUtil.replace(annotationLine, "(", "");
 				annotationLine = StringUtil.replace(annotationLine, "value", "");
