@@ -274,8 +274,8 @@ public class SvcAnalyzer extends BaseObject{
 		 * @param queryInfoFile
 		 * @return
 		 */
-		static List<String> getCallTblList(String queryInfoFile) throws Exception {
-			return getQuery().getTblInfoList(queryInfoFile);
+		static List<String> getCallTblList(String queryInfoFile, List<String> allTblList) throws Exception {
+			return getQuery().getTblInfoList(queryInfoFile, allTblList);
 		}
 		
 	}
@@ -335,6 +335,7 @@ public class SvcAnalyzer extends BaseObject{
 		String[] 	analyzedUiFileList = null;			/* UI분석파일리스트 */
 		
 		ArrayList<String> filteredFileList = null;
+		List<String> allTblList = null;
 		try {
 			
 			getLogger().info("/**************************************** A.클래스 분석 시작 ****************************************/");
@@ -386,7 +387,9 @@ public class SvcAnalyzer extends BaseObject{
 			if(jobKind <= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {return;}
 			
 			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
-			this.analyzeQueryCallTbl(analyzedQueryFileList);
+			/* DB에서 테이블ID를 가지고 오고자 할 때 주석을 제거 */
+			//allTblList = DbUtil.getTabs(AppAnalyzer.DBID).getDataSetListVal("TBL_LIST", "TABLE_NAME");
+			this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
 			if(jobKind <= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {return;}
 			getLogger().info("/**************************************** B.쿼리 분석 끝 ****************************************/");
 			
@@ -696,8 +699,9 @@ public class SvcAnalyzer extends BaseObject{
 	/**
 	 * 쿼리분석파일리스트 에 호출테이블ID정보목록 추출
 	 * @param analyzedQueryFileList 쿼리분석파일리스트
+	 * @param analyzedQueryFileList 전체테이블목록리스트
 	 */
-	protected void analyzeQueryCallTbl(String[] analyzedQueryFileList) throws Exception {
+	protected void analyzeQueryCallTbl(String[] analyzedQueryFileList, List<String> allTblList) throws Exception {
 
 		QueryVo queryVo = null;
 		String key = "";
@@ -709,7 +713,7 @@ public class SvcAnalyzer extends BaseObject{
 				queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
 				
 				// 테이블ID정보목록
-				queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile));
+				queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile, allTblList));
 				
 				// 파일저장	
 				ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");

@@ -968,34 +968,69 @@ public class StringUtil {
 	 */
 	public static String nextWord(String inputStr, String startStr, int step, String[] div) {
 		String input = inputStr;
-		String nextToken = "";
+		String selectedDiv = "";
 		String nextStr = "";
+		
+		for (int l = 0; l < div.length; l++) {
+			
+			if(input.startsWith(div[l])) {
+				input = input.substring(input.indexOf(div[l])+div[l].length());
+			}
+			if(input.endsWith(div[l])) {
+				input = input.substring(0, input.indexOf(div[l]));
+			}
+			
+			if(startStr.startsWith(div[l])) {
+				startStr = startStr.substring(startStr.indexOf(div[l])+div[l].length());
+			}
+			if(startStr.endsWith(div[l])) {
+				startStr = startStr.substring(0, startStr.indexOf(div[l]));
+			}
+		}
+		
+		// STEP-1. 검색시작문자열 이 없을 경우 첫번째 단어분리변수를 검색시작문자열로 지정하고 체크할 전체문자열의 앞에 붙여줌으로써 검색시작문자열 없이도 첫번째 단어분리변수를 기준으로 순차적으로 검색이 되도록 처리.
 		if( isEmpty(startStr) && div.length>0 ) {
 			input = div[0] + input;
 		}
-		if(step > 0  && div.length>0 ) {
+		// STEP-2. 만큼 반복처리 하면서 단어분리변수 이후의 문자를 검색.
+		if(step > 0) {
 			for(int i=0; i<step; i++) {
 				for (int l = 0; l < div.length; l++) {
 					input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr); 
 					if( input.indexOf(div[l])>-1 ) {
 						input = input.substring(input.indexOf(div[l])+div[l].length());
+						selectedDiv = div[l];
 						break;
 					}
 				}
 			}
 		}else {
-			input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr);
-		}
-		for (int l = 0; l < div.length; l++) {
-			if (input.indexOf(div[l]) != -1) {
-				nextToken = input.substring(input.indexOf(div[l])+div[l].length());
-				if(!isEmpty(nextToken)) {
-					nextToken = org.apache.commons.lang3.StringUtils.substringBefore(nextToken, div[l]);
-					nextStr = nextToken;
+			for (int l = 0; l < div.length; l++) {
+				input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr); 
+				if( input.indexOf(div[l])>-1 ) {
+					input = input.substring(input.indexOf(div[l])+div[l].length());
+					selectedDiv = div[l];
 					break;
 				}
 			}
 		}
+System.out.println("input["+input+"] " + "selectedDiv["+selectedDiv+"]");		
+		// STEP-3. 검색된 문자를 단어분리변수 이하로(앞으로) 절삭하여 결과문자열 완성.
+		if(!isEmpty(input)) {
+			input = org.apache.commons.lang3.StringUtils.substringBefore(input, selectedDiv);
+			nextStr = input;
+		}
+
+		// STEP-4. STEP-3에서 검색된 결과문자열은 최초에 만난 단어분리변수만 분리되어 있으므로(break를 만났기 때문에) 나머지 단어분리변수가 붙어있을 수도 있으므로 이또한 삭제해준다.
+		for (int l = 0; l < div.length; l++) {
+			if(nextStr.startsWith(div[l])) {
+				nextStr = nextStr.substring(nextStr.indexOf(div[l])+div[l].length());
+			}
+			if(nextStr.endsWith(div[l])) {
+				nextStr = nextStr.substring(0, nextStr.indexOf(div[l]));
+			}
+		}
+		
 		return nextStr;
 	}
 	

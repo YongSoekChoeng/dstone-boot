@@ -86,15 +86,20 @@ public class DefaultQuery implements Query {
 	/**
 	 * 쿼리정보파일로부터 테이블ID정보목록 추출
 	 * @param queryInfoFile
+	 * @param allTblList
 	 * @return
 	 */
 	@Override
-	public List<String> getTblInfoList(String queryInfoFile) throws Exception {
+	public List<String> getTblInfoList(String queryInfoFile, List<String> allTblList) throws Exception {
 		List<String> tblNameList = new ArrayList<String>();
 		QueryVo queryVo = ParseUtil.readQueryVo(FileUtil.getFileName(queryInfoFile, false), AppAnalyzer.WRITE_PATH + "/query");
 		if(queryVo != null) {
 			if(!StringUtil.isEmpty(queryVo.getQueryBody())) {
-				tblNameList = SqlUtil.getTableNames(queryVo.getQueryBody());
+				if(allTblList != null && allTblList.size() > 0) {
+					tblNameList = SqlUtil.getTableNamesWithTblList(queryVo.getQueryBody(), allTblList);
+				}else {
+					tblNameList = SqlUtil.getTableNames(queryVo.getQueryBody());
+				}
 			}
 			if(tblNameList.isEmpty()) {
 				LogUtil.sysout(this.getClass().getName() + ".getTblInfoList :: 파일["+queryInfoFile+"] 을 분석하였으나 테이블명 조회 하지 못함.");

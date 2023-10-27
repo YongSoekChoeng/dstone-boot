@@ -237,8 +237,8 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
     					if(isUsed) {
     						callClassAlias = new HashMap<String, String>();
     						
-    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
-    						//callClassAlias.put("FULL_CLASS", type);
+    						//callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
+    						callClassAlias.put("FULL_CLASS", type);
     						
     						callClassAlias.put("ALIAS", alias);
                     		callClassAliasList.add(callClassAlias);

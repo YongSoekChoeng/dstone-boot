@@ -934,8 +934,8 @@ public class DataSet implements java.io.Serializable {
 							for(int k=0; k<childMember.getArrayCount(); k++ ){
 								dsVal = "";
 								childId = childMember.getId()+"-배열("+k+")";
-								if( this.getDatumArray(childMember.getId()) != null && k < this.getDatumArray(childMember.getId()).length ){
-									dsVal = this.getDatumArray(childMember.getId())[k];
+								if( this.getArrayDatum(childMember.getId()) != null && k < this.getArrayDatum(childMember.getId()).length ){
+									dsVal = this.getArrayDatum(childMember.getId())[k];
 								}
 								/************************** 고정길이세팅처리 시작 **************************/
 								//strByteArray = StringUtil.appendByte(strByteArray, setValToFld(childMember.getId(), dsVal, childMember.getSize() ));
@@ -1553,12 +1553,14 @@ public class DataSet implements java.io.Serializable {
 		return val;
 	}
 	
+
+	
 	/**
 	 * key로 저장된 원자성(ATOMIC)정보값(배열)을 반환
 	 * @param key(조회하고자 하는 정보의 key값)
 	 * @return String[](key로 저장된 정보값)
 	 */	
-	public String[] getDatumArray(String key){
+	public String[] getArrayDatum(String key){
 		String[] valArr = null;
 		if( datumMap.containsKey(key) ){
 			valArr = datumMap.get(key).getArrayVal();
@@ -1797,6 +1799,41 @@ public class DataSet implements java.io.Serializable {
 				dataSetMap.put(key, dsList);
 			}
 		}
+	}
+	
+	/**
+	 * dskey에 해당하는 데이터셋의 datumkey정보값을 배열로 반환
+	 * @param dskey(조회하고자 하는 정보의 데이터셋key값)
+	 * @param datumkey(조회하고자 하는 정보의 key값)
+	 * @return String[](key로 저장된 정보값)
+	 */	
+	public String[] getDataSetArrayVal(String dskey, String datumkey){
+		String[] valArr = null;
+		if( dataSetMap.containsKey(dskey) ){
+			int cnt = this.getDataSetRowCount(dskey);
+			valArr = new String[cnt];
+			for(int i=0; i<cnt; i++) {
+				valArr[i] = this.getDataSet(dskey, i).getDatum(datumkey);
+			}
+		}
+		return valArr;
+	}
+	
+	/**
+	 * dskey에 해당하는 데이터셋의 datumkey정보값을 List로 반환
+	 * @param dskey(조회하고자 하는 정보의 데이터셋key값)
+	 * @param datumkey(조회하고자 하는 정보의 key값)
+	 * @return String[](key로 저장된 정보값)
+	 */	
+	public List<String> getDataSetListVal(String dskey, String datumkey){
+		List<String> valList = new ArrayList<String>();
+		if( dataSetMap.containsKey(dskey) ){
+			int cnt = this.getDataSetRowCount(dskey);
+			for(int i=0; i<cnt; i++) {
+				valList.add(this.getDataSet(dskey, i).getDatum(datumkey));
+			}
+		}
+		return valList;
 	}
 	
 

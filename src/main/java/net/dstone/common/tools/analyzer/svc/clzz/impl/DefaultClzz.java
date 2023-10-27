@@ -160,12 +160,13 @@ public class DefaultClzz extends BaseObject implements Clzz {
 					importLine = StringUtil.replace(importLine, ";", "");
 					importList.add(importLine);
 				}
-				if(line.indexOf(" implements ") != -1) {
+				if(line.indexOf(" implements ") != -1) {	
 					searchLine = line;
 				}
 				if(!StringUtil.isEmpty(searchLine)) {
 					String[] div = {"{"};
 					interfaceClass = StringUtil.nextWord(searchLine, " implements ", div);
+System.out.println( "classFile:" + classFile + ", searchLine:" + searchLine  + ", interfaceClass:" + interfaceClass );	
 					break;
 				}
 			}

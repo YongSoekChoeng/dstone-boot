@@ -15,6 +15,6 @@ public interface Query {
 	 * @param file
 	 * @return
 	 */
-	public List<String> getTblInfoList(String queryInfoFile) throws Exception ;
+	public List<String> getTblInfoList(String queryInfoFile, List<String> allTblList) throws Exception ;
 	
 }
