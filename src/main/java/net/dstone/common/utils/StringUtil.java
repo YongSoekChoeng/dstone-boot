@@ -962,72 +962,80 @@ public class StringUtil {
 	 * 
 	 * @param input 체크할 전체문자열
 	 * @param startStr 검색시작문자열
-	 * @param step 몇번째다음문자열인지 지정
+	 * @param step 몇번째다음문자열인지 지정(0:다음문자, 1:다다음문자, ...)
 	 * @param div 단어분리 변수배열
 	 * @return String
 	 */
 	public static String nextWord(String inputStr, String startStr, int step, String[] div) {
+
 		String input = inputStr;
 		String selectedDiv = "";
+		int selectedIndex = Integer.MAX_VALUE;
+		String remainStr = "";
 		String nextStr = "";
-		
-		for (int l = 0; l < div.length; l++) {
-			
-			if(input.startsWith(div[l])) {
-				input = input.substring(input.indexOf(div[l])+div[l].length());
-			}
-			if(input.endsWith(div[l])) {
-				input = input.substring(0, input.indexOf(div[l]));
-			}
-			
-			if(startStr.startsWith(div[l])) {
-				startStr = startStr.substring(startStr.indexOf(div[l])+div[l].length());
-			}
-			if(startStr.endsWith(div[l])) {
-				startStr = startStr.substring(0, startStr.indexOf(div[l]));
-			}
-		}
-		
-		// STEP-1. 검색시작문자열 이 없을 경우 첫번째 단어분리변수를 검색시작문자열로 지정하고 체크할 전체문자열의 앞에 붙여줌으로써 검색시작문자열 없이도 첫번째 단어분리변수를 기준으로 순차적으로 검색이 되도록 처리.
-		if( isEmpty(startStr) && div.length>0 ) {
-			input = div[0] + input;
-		}
-		// STEP-2. 만큼 반복처리 하면서 단어분리변수 이후의 문자를 검색.
-		if(step > 0) {
-			for(int i=0; i<step; i++) {
-				for (int l = 0; l < div.length; l++) {
-					input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr); 
-					if( input.indexOf(div[l])>-1 ) {
-						input = input.substring(input.indexOf(div[l])+div[l].length());
-						selectedDiv = div[l];
-						break;
+
+		// 검색시작문자열 이 분리변수로 시작할 경우 제거해준다.
+		if( div != null && div.length > 0 ) {
+			for(int k=0; k<div.length; k++) {
+				if(!StringUtil.isEmpty(startStr)) {
+					if( startStr.startsWith(div[k])) {
+						startStr = startStr.substring(startStr.indexOf(div[k])+div[k].length());
 					}
 				}
 			}
-		}else {
-			for (int l = 0; l < div.length; l++) {
-				input = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr); 
-				if( input.indexOf(div[l])>-1 ) {
-					input = input.substring(input.indexOf(div[l])+div[l].length());
-					selectedDiv = div[l];
-					break;
+		}
+		// 전체문자열  이 분리변수로 끝나지 않을 경우 분리변수를 붙여준다.(전체문자열은 반드시 분리변수로 끝나도록 처리.)
+		if( div != null && div.length > 0 ) {
+			boolean isEndsWithDiv = false;
+			selectedDiv = "";
+			selectedIndex = Integer.MAX_VALUE;
+			for(int k=0; k<div.length; k++) {
+				// 전체문자열에서 최초로 만나는 분리변수를 구한다.
+				if(input.indexOf(div[k])>-1 ) {
+					selectedIndex = Math.min(input.indexOf(div[k]), selectedIndex);
+					if(selectedIndex == input.indexOf(div[k]) ) {
+						selectedDiv = div[k];
+					}
+				}
+				if( !isEndsWithDiv && input.endsWith(div[k]) ) {
+					isEndsWithDiv = true;
 				}
 			}
-		}
-System.out.println("input["+input+"] " + "selectedDiv["+selectedDiv+"]");		
-		// STEP-3. 검색된 문자를 단어분리변수 이하로(앞으로) 절삭하여 결과문자열 완성.
-		if(!isEmpty(input)) {
-			input = org.apache.commons.lang3.StringUtils.substringBefore(input, selectedDiv);
-			nextStr = input;
-		}
-
-		// STEP-4. STEP-3에서 검색된 결과문자열은 최초에 만난 단어분리변수만 분리되어 있으므로(break를 만났기 때문에) 나머지 단어분리변수가 붙어있을 수도 있으므로 이또한 삭제해준다.
-		for (int l = 0; l < div.length; l++) {
-			if(nextStr.startsWith(div[l])) {
-				nextStr = nextStr.substring(nextStr.indexOf(div[l])+div[l].length());
+			if( !isEndsWithDiv ) {
+				if(StringUtil.isEmpty(selectedDiv)) {
+					selectedDiv = div[0];
+				}
+				input = input + selectedDiv;
 			}
-			if(nextStr.endsWith(div[l])) {
-				nextStr = nextStr.substring(0, nextStr.indexOf(div[l]));
+		}		
+		
+		// 전체문자열에서 검색시작문자 이후의 문자열을 잔여문자열로 저장.
+		remainStr = org.apache.commons.lang3.StringUtils.substringAfter(input, startStr); 
+		
+		if((step+1) > 0) {
+			selectedDiv = "";
+			selectedIndex = Integer.MAX_VALUE;
+			for(int i=0; i<(step+1); i++) {
+				if( div != null && div.length > 0 ) {
+					for(int k=0; k<div.length; k++) {
+						// 잔여문자열 이 분리변수로 시작할 경우 제거해준다.
+						if( remainStr.startsWith(div[k])) {
+							remainStr = remainStr.substring(remainStr.indexOf(div[k])+div[k].length());
+						}
+						// 잔여문자열에서 최초로 만나는 분리변수를 구한다.
+						if(remainStr.indexOf(div[k])>-1 ) {
+							selectedIndex = Math.min(remainStr.indexOf(div[k]), selectedIndex);
+							if(selectedIndex == remainStr.indexOf(div[k]) ) {
+								selectedDiv = div[k];
+							}
+						}
+					}
+				}
+				// 잔여문자열에서 최초로 만나는 분리변수 이전의 문자열(검색시작문자 이후 분리변수를 만나기 이전의 최초의 문자열)을 구하여 반환값인 다음문자열 에 저장한다.
+				nextStr = org.apache.commons.lang3.StringUtils.substringBefore(remainStr, selectedDiv);
+				//LogUtil.sysout("input["+ input +"]" + " startStr["+ startStr +"]"  + " selectedDiv["+ selectedDiv +"]" + " nextStr["+ nextStr +"]" + " remainStr["+ remainStr +"]");
+				// 잔여문자열에서 최초로 만나는 분리변수 이후의 문자열을 다시 잔여문자열에 저장하여 LOOP를 수행할 수 있도록 한다.
+				remainStr = org.apache.commons.lang3.StringUtils.substringAfter(remainStr, selectedDiv);
 			}
 		}
 		

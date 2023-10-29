@@ -184,7 +184,6 @@ public class SqlUtil extends BaseObject {
 		//LogUtil.sysout( "paramSql:"+paramSql);
 		ArrayList<String> tblList = new ArrayList<String>();
 		try {
-
 			String sql = "";
 			String fromPhaseStr = "";
 			String beforeSql = "";
@@ -227,7 +226,7 @@ public class SqlUtil extends BaseObject {
 				}
 			
 				while( sql.indexOf(fromKeyword)>-1 ) {
-					
+
 					// FROM 시작(FROM 이후의 쿼리문 발췌)
 					fromStarted = true;
 					tableNum = 0; // FROM 이후에 나열된 테이블 순서. 첫번째는 콤마 없이 시작, 이후에는 콤마로 시작. JOIN 으로 연결될 때는 콤마 없이 연결. UNION 으로 연결될 때는 콤마 없이 연결.
@@ -263,28 +262,23 @@ public class SqlUtil extends BaseObject {
 						sql = StringUtil.trimTextForParse(sql);
 						sql = StringUtil.replace(sql, ", ,", ",");
 					}
-					
+
 					while( fromStarted && !fromEnded ) {
-						nextKeyword = "";
-						nextNextKeyword = "";
-						nextNextNextKeyword = "";
+						nextKeyword = StringUtil.nextWord(sql, "", 0, div); 					// 첫번째 다음단어
+						nextNextKeyword = StringUtil.nextWord(sql, "", 1, div);					// 두번째 다음단어
+						nextNextNextKeyword = StringUtil.nextWord(sql, "", 2, div);				// 세번째 다음단어
 
 						// 첫번째는 테이블구분 단어가 없으므로 처음단어가 테이블명.
 						if( tableNum == 0 ) {
-							nextKeyword = StringUtil.nextWord(sql, "", 0, div);
 							if(!StringUtil.isEmpty(nextKeyword)) {
 								tableNum++;
 								if(!tblList.contains(nextKeyword)) {
 									tblList.add(nextKeyword);
 								}
-								sql = StringUtil.subStringAfter(sql, nextKeyword).trim();
 							}
+							sql = StringUtil.subStringAfter(sql, nextKeyword).trim();
 						// 두번째부터는 다다다음단어, 다다다다음단어까지 비교하여 분석
 						}else {
-							nextKeyword = StringUtil.nextWord(sql, "", 0, div); 					// 첫번째 다음단어
-							nextNextKeyword = StringUtil.nextWord(sql, "", 1, div);					// 두번째 다음단어
-							nextNextNextKeyword = StringUtil.nextWord(sql, "", 2, div);				// 세번째 다음단어
-							
 							// UNION - FROM 테이블 이후 UNION 으로 이어질 경우. 알리아스가 존재할 수 있으므로 다음단어, 다다음단어까지 비교.
 							if(nextKeyword.equals("UNION") || nextNextKeyword.equals("UNION")) {
 								sql = StringUtil.subStringAfter(sql, fromKeyword).trim();			// 첫번째 다음단어 => UNION
@@ -314,20 +308,21 @@ public class SqlUtil extends BaseObject {
 							// JOIN	(JOIN/INNER JOIN/LEFT OUTER JOIN/RIGHT OUTER JOIN/FULL OUTER JOIN)
 							}else{	
 								sql = StringUtil.subStringAfter(sql, "JOIN").trim();
-								nextKeyword = StringUtil.nextWord(sql, "", 0, div); 				// JOIN 이후의 첫번째 다음단어
+								String nextKeywordAfterJoin = StringUtil.nextWord(sql, "", 0, div); 				// JOIN 이후의 첫번째 다음단어
+								sql = StringUtil.subStringAfter(sql, nextKeywordAfterJoin).trim();
 								
-								if(!StringUtil.isEmpty(nextKeyword)) {
+								if(!StringUtil.isEmpty(nextKeywordAfterJoin)) {
 									tableNum++;
-									if(!tblList.contains(nextKeyword)) {
-										tblList.add(nextKeyword);									// JOIN 이후의 첫번째 다음단어 가 테이블
+									if(!tblList.contains(nextKeywordAfterJoin)) {
+										tblList.add(nextKeywordAfterJoin);									// JOIN 이후의 첫번째 다음단어 가 테이블
 									}
-									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();
+									
 								}
 							}
 						}
-
 						// FROM 끝
-						if(fromEndKeywordList.contains(nextKeyword)) {
+						//if( fromEndKeywordList.contains(nextKeyword) || (StringUtil.isEmpty(nextKeyword)&&StringUtil.isEmpty(nextNextKeyword)&&StringUtil.isEmpty(nextNextNextKeyword)) ) {
+						if( fromEndKeywordList.contains(nextKeyword) ) {
 							fromEnded = true;
 							break;
 						}
@@ -336,8 +331,7 @@ public class SqlUtil extends BaseObject {
 							break;
 						}
 					}
-					if(StringUtil.isEmpty(sql)) {
-						fromEnded = true;
+					if(fromEnded || StringUtil.isEmpty(sql)) {
 						break;
 					}
 				}
