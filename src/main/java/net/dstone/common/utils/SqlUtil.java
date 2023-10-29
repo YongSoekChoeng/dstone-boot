@@ -224,15 +224,16 @@ public class SqlUtil extends BaseObject {
 					fromStarted = false;
 					fromEnded = false;
 				}
-			
+
+				/*** FROM 시작(FROM ~ 이후의 쿼리문 발췌) **/
 				while( sql.indexOf(fromKeyword)>-1 ) {
 
-					// FROM 시작(FROM 이후의 쿼리문 발췌)
 					fromStarted = true;
 					tableNum = 0; // FROM 이후에 나열된 테이블 순서. 첫번째는 콤마 없이 시작, 이후에는 콤마로 시작. JOIN 으로 연결될 때는 콤마 없이 연결. UNION 으로 연결될 때는 콤마 없이 연결.
 					sql = StringUtil.subStringAfter(sql, fromKeyword);
 
-					// FROM 안에 괄호()로 묶여있는부분에 대한 분리 처리를 우선적으로 해준다.
+					/*** 1. FROM 안에 괄호()로 묶여있는부분에 대한 분리 START **/
+					// FROM 안에 괄호()로 묶여있는부분에 대해 분리하는 작업을 우선적으로 해준다. 분리하여 독립적으로 재귀적인 처리.
 					while(sql.indexOf(divOpen)>-1 && sql.indexOf(divClose)>-1) {
 						// 구분자 추출
 						startIndex = sql.indexOf(divOpen);
@@ -262,12 +263,15 @@ public class SqlUtil extends BaseObject {
 						sql = StringUtil.trimTextForParse(sql);
 						sql = StringUtil.replace(sql, ", ,", ",");
 					}
+					/*** 1. FROM 안에 괄호()로 묶여있는부분에 대한 분리 END **/
 
+					/*** 2. 테이블 발췌 START **/
 					while( fromStarted && !fromEnded ) {
-						nextKeyword = StringUtil.nextWord(sql, "", 0, div); 					// 첫번째 다음단어
-						nextNextKeyword = StringUtil.nextWord(sql, "", 1, div);					// 두번째 다음단어
-						nextNextNextKeyword = StringUtil.nextWord(sql, "", 2, div);				// 세번째 다음단어
+						nextKeyword = StringUtil.nextWord(sql, "", 0, div); 							// 첫번째 다음단어
+						nextNextKeyword = StringUtil.nextWord(sql, "", 1, div);							// 두번째 다음단어
+						nextNextNextKeyword = StringUtil.nextWord(sql, "", 2, div);						// 세번째 다음단어
 
+						/*** 2-1. FROM 이후 첫번째 테이블 **/
 						// 첫번째는 테이블구분 단어가 없으므로 처음단어가 테이블명.
 						if( tableNum == 0 ) {
 							if(!StringUtil.isEmpty(nextKeyword)) {
@@ -277,60 +281,65 @@ public class SqlUtil extends BaseObject {
 								}
 							}
 							sql = StringUtil.subStringAfter(sql, nextKeyword).trim();
-						// 두번째부터는 다다다음단어, 다다다다음단어까지 비교하여 분석
+						/*** 2-2. FROM 이후 두번째 이후 테이블 **/
 						}else {
-							// UNION - FROM 테이블 이후 UNION 으로 이어질 경우. 알리아스가 존재할 수 있으므로 다음단어, 다다음단어까지 비교.
+							/*** 2-2-1. UNION - FROM 테이블 이후 UNION 으로 이어질 경우. 알리아스가 존재할 수 있으므로 다음단어, 다다음단어까지 비교. **/
 							if(nextKeyword.equals("UNION") || nextNextKeyword.equals("UNION")) {
-								sql = StringUtil.subStringAfter(sql, fromKeyword).trim();			// 첫번째 다음단어 => UNION
+								sql = StringUtil.subStringAfter(sql, fromKeyword).trim();				// 첫번째 다음단어 => UNION
 								tableNum = 0;
 								continue;
-							// COMMA - 알리아스가 존재할 수 있으므로 다음단어, 다다음단어까지 비교
+							/*** 2-2-2. COMMA - 알리아스가 존재할 수 있으므로 다음단어, 다다음단어까지 비교. **/	
+							// 다음단어에 콤마가 올 경우
 							}else if(nextKeyword.equals(",")) {
 								if(!StringUtil.isEmpty(nextNextKeyword)) {
 									tableNum++;
 									if(!tblList.contains(nextNextKeyword)) {
-										tblList.add(nextNextKeyword); 								// 두번째 다음단어 가 테이블
+										tblList.add(nextNextKeyword); 									// 두번째 다음단어 가 테이블
 									}
-									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();		// 첫번째 다음단어 => 구분자(콤마)
+									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();			// 첫번째 다음단어 => 구분자(콤마)
 									sql = StringUtil.subStringAfter(sql, nextNextKeyword).trim();
 								}
+							// 다다음단어에 콤마가 올 경우
 							}else if(nextNextKeyword.equals(",")) {	
 								if(!StringUtil.isEmpty(nextNextNextKeyword)) {
 									tableNum++;
 									if(!tblList.contains(nextNextNextKeyword)) {
-										tblList.add(nextNextNextKeyword);							// 세번째 다음단어 가 테이블
+										tblList.add(nextNextNextKeyword);								// 세번째 다음단어 가 테이블
 									}
-									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();		// 첫번째 다음단어 => 앞 테이블의 알리아스
-									sql = StringUtil.subStringAfter(sql, nextNextKeyword).trim(); 	// 두번째 다음단어 => 구분자(콤마)
+									sql = StringUtil.subStringAfter(sql, nextKeyword).trim();			// 첫번째 다음단어 => 앞 테이블의 알리아스
+									sql = StringUtil.subStringAfter(sql, nextNextKeyword).trim(); 		// 두번째 다음단어 => 구분자(콤마)
 									sql = StringUtil.subStringAfter(sql, nextNextNextKeyword).trim();
 								}
-
-							// JOIN	(JOIN/INNER JOIN/LEFT OUTER JOIN/RIGHT OUTER JOIN/FULL OUTER JOIN)
+							/*** 2-2-3. JOIN - (JOIN/INNER JOIN/LEFT OUTER JOIN/RIGHT OUTER JOIN/FULL OUTER JOIN)으로 이어질 경우. **/	
 							}else{	
 								sql = StringUtil.subStringAfter(sql, "JOIN").trim();
-								String nextKeywordAfterJoin = StringUtil.nextWord(sql, "", 0, div); 				// JOIN 이후의 첫번째 다음단어
+								String nextKeywordAfterJoin = StringUtil.nextWord(sql, "", 0, div); 	// JOIN 이후의 첫번째 다음단어
 								sql = StringUtil.subStringAfter(sql, nextKeywordAfterJoin).trim();
 								
 								if(!StringUtil.isEmpty(nextKeywordAfterJoin)) {
 									tableNum++;
 									if(!tblList.contains(nextKeywordAfterJoin)) {
-										tblList.add(nextKeywordAfterJoin);									// JOIN 이후의 첫번째 다음단어 가 테이블
+										tblList.add(nextKeywordAfterJoin);								// JOIN 이후의 첫번째 다음단어 가 테이블
 									}
 									
 								}
 							}
 						}
-						// FROM 끝
+						/*** 2-3. FROM 종료 처리 **/
+						// FROM 이 종료 되는 문구를 만나는 경우
 						//if( fromEndKeywordList.contains(nextKeyword) || (StringUtil.isEmpty(nextKeyword)&&StringUtil.isEmpty(nextNextKeyword)&&StringUtil.isEmpty(nextNextNextKeyword)) ) {
 						if( fromEndKeywordList.contains(nextKeyword) ) {
 							fromEnded = true;
 							break;
 						}
+						// 쿼리가 전부 다 처리되었을 경우
 						if(StringUtil.isEmpty(sql)) {
 							fromEnded = true;
 							break;
 						}
 					}
+					/*** 2. 테이블 발췌 END **/
+					
 					if(fromEnded || StringUtil.isEmpty(sql)) {
 						break;
 					}
