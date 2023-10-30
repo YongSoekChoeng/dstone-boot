@@ -66,6 +66,14 @@ public class SvcAnalyzer extends BaseObject{
 				isValid = true;
 			}
 		}
+		if( isValid ) {
+			for(String packagePattern : AppAnalyzer.EXCLUDE_PACKAGE_PATTERN) {
+				if( StringUtil.replace(StringUtil.replace(file, AppAnalyzer.CLASS_ROOT_PATH, ""), "/", ".").indexOf(packagePattern) > -1) {
+					isValid = false;
+					break;
+				}
+			}
+		}
 		return isValid;
 	}
 

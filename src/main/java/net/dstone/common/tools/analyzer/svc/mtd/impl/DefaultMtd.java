@@ -44,6 +44,8 @@ public class DefaultMtd extends BaseObject implements Mtd {
 		
 		// 클래스VO 정보 획득
 		String packageClassId = functionId.substring(0, functionId.lastIndexOf("."));
+
+		packageClassId = ParseUtil.findImplClassId(packageClassId, null);
 		ClzzVo clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
 
 		// 클래스 호출알리아스 정보
@@ -55,6 +57,7 @@ public class DefaultMtd extends BaseObject implements Mtd {
 		String keyword = "";
 		String callMtd = "";
 		String[] div = {"("};
+		ClzzVo classOrInterfaceVo = null;
 		
 		if( !StringUtil.isEmpty(mtdVo.getMethodBody()) ) {
 			mtdBody = mtdVo.getMethodBody();
@@ -65,6 +68,11 @@ public class DefaultMtd extends BaseObject implements Mtd {
 				if(callClassAliasList != null) {
 					for(Map<String, String> callClassAlias : callClassAliasList) {
 						callPackageClassId = callClassAlias.get("FULL_CLASS");
+						// callPackageClassId 가 인터페이스 일 경우 구현클래스를 찾아서 대체하여 callMtd 에 삽입
+						classOrInterfaceVo = ParseUtil.readClassVo(callPackageClassId, AppAnalyzer.WRITE_PATH + "/class");
+						if("I".equals(classOrInterfaceVo.getClassOrInterface())) {
+							callPackageClassId = ParseUtil.findImplClassId(classOrInterfaceVo.getClassId(), classOrInterfaceVo.getResourceId());
+						}
 						callAlias = callClassAlias.get("ALIAS");
 						keyword =  callAlias+ "." ;
 						// 클래스 호출알리아스+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)

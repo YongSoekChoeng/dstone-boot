@@ -23,6 +23,7 @@ import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class JavaParserClzz extends DefaultClzz implements Clzz {
@@ -131,6 +132,10 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	public String getInterfaceId(String classFile) throws Exception{
 		return super.getInterfaceId(classFile);
 	}
+	/**
+	 * 상위(부모)클래스ID 추출.
+	 * @param classFile
+	 */
 	@Override
 	public String getParentClassId(String classFile) throws Exception {
 		return super.getParentClassId(classFile);
@@ -166,6 +171,7 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
         for(ImportDeclaration item : imports) {
         	importMap.put(item.getNameAsString().substring(item.getNameAsString().lastIndexOf(".")+1), item);
         }
+        
 		String type = "";
 		String alias = "";
 		String resourceId = "";
@@ -187,8 +193,6 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
                         	if(type.indexOf(".") == -1) {
                                 if(importMap.containsKey(type) ) {
                                 	type = importMap.get(type).getNameAsString();
-                                }else {
-                                	type = cu.getPackageDeclaration().get().getNameAsString()+"."+type;
                                 }
                         	}
                             //Print the field's name
@@ -219,8 +223,6 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
                         	if(type.indexOf(".") == -1) {
                                 if(importMap.containsKey(type) ) {
                                 	type = importMap.get(type).getNameAsString();
-                                }else {
-                                	type = cu.getPackageDeclaration().get().getNameAsString()+"."+type;
                                 }
                         	}
                             //Print the field's name
@@ -236,8 +238,8 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
     					}
     					if(isUsed) {
     						callClassAlias = new HashMap<String, String>();
-    						
-    						//callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
+    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
+    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
     						callClassAlias.put("FULL_CLASS", type);
     						
     						callClassAlias.put("ALIAS", alias);

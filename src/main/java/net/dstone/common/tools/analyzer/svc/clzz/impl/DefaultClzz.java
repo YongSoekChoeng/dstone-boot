@@ -166,7 +166,7 @@ public class DefaultClzz extends BaseObject implements Clzz {
 				if(!StringUtil.isEmpty(searchLine)) {
 					String[] div = {"{"};
 					interfaceClass = StringUtil.nextWord(searchLine, " implements ", div);
-System.out.println( "classFile:" + classFile + ", searchLine:" + searchLine  + ", interfaceClass:" + interfaceClass );	
+//System.out.println( "classFile:" + classFile + ", searchLine:" + searchLine  + ", interfaceClass:" + interfaceClass );	
 					break;
 				}
 			}
@@ -185,6 +185,10 @@ System.out.println( "classFile:" + classFile + ", searchLine:" + searchLine  + "
 		}
 		return interfaceId;
 	}
+	/**
+	 * 상위(부모)클래스ID 추출.
+	 * @param classFile
+	 */
 	@Override
 	public String getParentClassId(String classFile) throws Exception {
 		String returnParentClassId = "";

@@ -639,6 +639,7 @@ public class ParseUtil {
 	/**
 	 * 인터페이스인 클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 구현클래스의 클래스ID을 추출하는 메소드.
 	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
+	 * 구현클래스를 찾지 못하면 인터페이스ID를 반환한다.
 	 * @param interfaceId
 	 * @param resourceId
 	 * @return
@@ -672,6 +673,23 @@ public class ParseUtil {
 			implClassId = interfaceId;
 		}
 		return implClassId;
+	}
+	
+	/**
+	 * 구현클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 인터페이스ID을 추출하는 메소드.
+	 * 인터페이스를 찾지 못하면 구현클래스ID를 반환한다.
+	 * @param classId
+	 * @return
+	 */
+	public static String findInterfaceId(String classId) {
+		String interfaceId = "";
+		ClzzVo implClzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
+		if( "C".equals(implClzzVo.getClassOrInterface()) ) {
+			interfaceId = implClzzVo.getInterfaceId();
+		}else {
+			interfaceId = classId;
+		}
+		return interfaceId;
 	}
 	
 	/**

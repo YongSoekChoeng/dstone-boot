@@ -92,7 +92,7 @@ public class DbGen {
 				MYSQL_CREATE.append("  FUNCTION_NAME_"+i+" VARCHAR(200) COMMENT '기능명_"+i+"', ").append("\n");
 				MYSQL_CREATE.append("  CLASS_KIND_"+i+" VARCHAR(2) COMMENT '클래스종류"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
 			}
-			MYSQL_CREATE.append("  CALL_TBL VARCHAR(1000) COMMENT '호출테이블', ").append("\n");
+			MYSQL_CREATE.append("  CALL_TBL VARCHAR(4000) COMMENT '호출테이블', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID' ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '종합메트릭스'; ").append("\n");
 
@@ -348,7 +348,7 @@ public class DbGen {
 				ORACLE_CREATE.append("  FUNCTION_NAME_"+i+" VARCHAR2(200), ").append("\n");
 				ORACLE_CREATE.append("  CLASS_KIND_"+i+" VARCHAR2(2), ").append("\n");
 			}
-			ORACLE_CREATE.append("  CALL_TBL VARCHAR2(1000), ").append("\n");
+			ORACLE_CREATE.append("  CALL_TBL VARCHAR2(4000), ").append("\n");
 			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL").append("\n");
 			ORACLE_CREATE.append("); ").append("\n");			
 			ORACLE_CREATE.append("COMMENT ON TABLE TB_METRIX IS '종합메트릭스' ; ").append("\n");

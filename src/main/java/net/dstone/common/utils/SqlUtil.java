@@ -82,7 +82,7 @@ public class SqlUtil extends BaseObject {
 
 			}
 		} catch (Exception e) {
-			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNames() 수행중 예외발생. 쿼리:\n" +paramSql);
+			//LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNames() 수행중 예외발생. 쿼리:\n" +paramSql);
 			//e.printStackTrace();
 			getTableNamesByText(paramSql);
 		}
@@ -135,7 +135,7 @@ public class SqlUtil extends BaseObject {
 				}
 			}
 		} catch (Exception e) {
-			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNamesByText() 수행중 예외발생. 쿼리:\n" + paramSql);
+			//LogUtil.sysout("net.dstone.common.utils.SqlUtil.getTableNamesByText() 수행중 예외발생. 쿼리:\n" + paramSql);
 			//e.printStackTrace();
 			throw e;
 		}
@@ -347,9 +347,9 @@ public class SqlUtil extends BaseObject {
 			}
 			
 		} catch (Exception e) {
-			LogUtil.sysout("net.dstone.common.utils.SqlUtil.getSelectTableNamesByText() 수행중 예외발생. 상세사항:" + e.toString());
+			//LogUtil.sysout("net.dstone.common.utils.SqlUtil.getSelectTableNamesByText() 수행중 예외발생. 상세사항:" + e.toString());
 			//e.printStackTrace();
-			throw e;
+			//throw e;
 		} 
 		
 		return tblList;
