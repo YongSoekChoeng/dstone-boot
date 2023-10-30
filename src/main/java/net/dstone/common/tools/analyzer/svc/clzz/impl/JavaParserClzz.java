@@ -17,6 +17,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
@@ -162,93 +163,102 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
-		String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
-		boolean isUsed = false;
-		CompilationUnit cu = StaticJavaParser.parse(new File(selfClzzVo.getFileName()));
-		
-        HashMap<String, ImportDeclaration> importMap = new HashMap<String, ImportDeclaration>();
-        List<ImportDeclaration> imports = cu.getImports();
-        for(ImportDeclaration item : imports) {
-        	importMap.put(item.getNameAsString().substring(item.getNameAsString().lastIndexOf(".")+1), item);
-        }
-        
-		String type = "";
-		String alias = "";
-		String resourceId = "";
-        for (TypeDeclaration typeDec : cu.getTypes()) {
-            List<BodyDeclaration> members = typeDec.getMembers();
-            if(members != null) {
-                for (BodyDeclaration  member : members) {
-            		type = "";
-            		alias = "";
-            		resourceId = "";
-            		isUsed = false;
-                	if( member instanceof FieldDeclaration ) {
-                		FieldDeclaration field = ((FieldDeclaration) member);
-                		List<VariableDeclarator> fieldVariableDeclaratorList = field.getVariables();
-                        for (VariableDeclarator variable : fieldVariableDeclaratorList) {
+		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
+			String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
 
-                        	//Print the field's class typr
-                        	type = variable.getType().asString();
-                        	if(type.indexOf(".") == -1) {
-                                if(importMap.containsKey(type) ) {
-                                	type = importMap.get(type).getNameAsString();
-                                }
-                        	}
-                            //Print the field's name
-                            alias = variable.getName().asString();
-                                
-                            //Print the field's annotation name
-							if(member.getAnnotations().isNonEmpty()) { 
-								String varType = variable.getTypeAsString();
-								// variable의 타입과 필드의 타입이 동일한 경우 해당 필드의 어노테이션을 가지고 와서 resourceId를 구해낸다.
-								if( varType.indexOf(".")>-1 && type.equals(varType) || varType.indexOf(".")==-1 && type.endsWith("."+varType) ) {
-									for(AnnotationExpr an : field.getAnnotations()) {  
-										if( an.isSingleMemberAnnotationExpr() ) {
-											resourceId = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
-										}else if( an.isNormalAnnotationExpr() ) {
-											resourceId = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
+			boolean isUsed = false;
+			CompilationUnit cu = StaticJavaParser.parse(new File(selfClzzVo.getFileName()));
+			
+	        HashMap<String, ImportDeclaration> importMap = new HashMap<String, ImportDeclaration>();
+	        List<ImportDeclaration> imports = cu.getImports();
+	        for(ImportDeclaration item : imports) {
+	        	importMap.put(item.getNameAsString().substring(item.getNameAsString().lastIndexOf(".")+1), item);
+	        }
+	        
+			String type = "";
+			String alias = "";
+			String resourceId = "";
+	        for (TypeDeclaration typeDec : cu.getTypes()) {
+	            List<BodyDeclaration> members = typeDec.getMembers();
+	            if(members != null) {
+	                for (BodyDeclaration  member : members) {
+	            		type = "";
+	            		alias = "";
+	            		resourceId = "";
+	            		isUsed = false;
+	                	if( member instanceof FieldDeclaration ) {
+	                		FieldDeclaration field = ((FieldDeclaration) member);
+	                		List<VariableDeclarator> fieldVariableDeclaratorList = field.getVariables();
+	                        for (VariableDeclarator variable : fieldVariableDeclaratorList) {
+
+	                        	//Print the field's class typr
+	                        	type = variable.getType().asString();
+	                        	if(type.indexOf(".") == -1) {
+	                                if(importMap.containsKey(type) ) {
+	                                	type = importMap.get(type).getNameAsString();
+	                                }
+	                        	}
+	                            //Print the field's name
+	                            alias = variable.getName().asString();
+	                                
+	                            //Print the field's annotation name
+								if(member.getAnnotations().isNonEmpty()) { 
+									String varType = variable.getTypeAsString();
+									// variable의 타입과 필드의 타입이 동일한 경우 해당 필드의 어노테이션을 가지고 와서 resourceId를 구해낸다.
+									if( varType.indexOf(".")>-1 && type.equals(varType) || varType.indexOf(".")==-1 && type.endsWith("."+varType) ) {
+										for(AnnotationExpr an : field.getAnnotations()) {  
+											if( an.isSingleMemberAnnotationExpr() ) {
+												resourceId = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
+											}else if( an.isNormalAnnotationExpr() ) {
+												resourceId = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
+											}
 										}
 									}
 								}
-							}
 
-                        }
-                	}else if( member instanceof MethodDeclaration ) {
-                		MethodDeclaration method = ((MethodDeclaration) member);
-                		List<VariableDeclarator> methodVariableDeclaratorList = method.findAll(VariableDeclarator.class);
-                        for (VariableDeclarator variable : methodVariableDeclaratorList) {
-                            //Print the field's class typr
-                            type = variable.getType().asString();
-                        	if(type.indexOf(".") == -1) {
-                                if(importMap.containsKey(type) ) {
-                                	type = importMap.get(type).getNameAsString();
-                                }
-                        	}
-                            //Print the field's name
-                            alias = variable.getName().asString();
-                        }
-                	}
-                	if(!StringUtil.isEmpty(alias)) {
-                		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
-                			continue;
-                		}
-    					if (fileConts.indexOf(alias + ".")>-1) {
-    						isUsed = true;
-    					}
-    					if(isUsed) {
-    						callClassAlias = new HashMap<String, String>();
-    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
-    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
-    						callClassAlias.put("FULL_CLASS", type);
-    						
-    						callClassAlias.put("ALIAS", alias);
-                    		callClassAliasList.add(callClassAlias);
-    					}
-                	}
-                }
-            }
-        }
+	                        }
+	                	}else if( member instanceof MethodDeclaration ) {
+	                		MethodDeclaration method = ((MethodDeclaration) member);
+	                		List<VariableDeclarator> methodVariableDeclaratorList = method.findAll(VariableDeclarator.class);
+	                        for (VariableDeclarator variable : methodVariableDeclaratorList) {
+	                            //Print the field's class typr
+	                            type = variable.getType().asString();
+	                        	if(type.indexOf(".") == -1) {
+	                                if(importMap.containsKey(type) ) {
+	                                	type = importMap.get(type).getNameAsString();
+	                                }
+	                        	}
+	                            //Print the field's name
+	                            alias = variable.getName().asString();
+	                        }
+	                	}
+	                	if(!StringUtil.isEmpty(alias)) {
+	                		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
+	                			continue;
+	                		}
+	    					if (fileConts.indexOf(alias + ".")>-1) {
+	    						isUsed = true;
+	    					}
+	    					if(isUsed) {
+	    						callClassAlias = new HashMap<String, String>();
+	    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
+	    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
+	    						callClassAlias.put("FULL_CLASS", type);
+	    						
+	    						callClassAlias.put("ALIAS", alias);
+	                    		callClassAliasList.add(callClassAlias);
+	    					}
+	                	}
+	                }
+	            }
+	        }
+			
+	        if(!StringUtil.isEmpty(selfClzzVo.getParentClassId())) {
+	        	ClzzVo parentClzzVo = ParseUtil.readClassVo(selfClzzVo.getParentClassId(), AppAnalyzer.WRITE_PATH + "/class");	
+	        	callClassAliasList.addAll(this.getCallClassAlias(parentClzzVo, analyzedClassFileList));
+	        }
+		}
+
 		return callClassAliasList;
 	}
 

@@ -1092,7 +1092,7 @@ public class SvcAnalyzer extends BaseObject{
 					conts.append(row.getDatum("FUNCTION_NAME_"+i, "")).append("\t");
 					conts.append(row.getDatum("CLASS_KIND_"+i, "")).append("\t");
 				}
-				conts.append(row.getDatum("CALL_TBL", "")).append("\t");
+				conts.append( this.makeAnalyzeTblInfo(row.getDatum("CALL_TBL", "")) ).append("\t");
 				conts.append("\n");
 			}
 		}
@@ -1228,6 +1228,31 @@ public class SvcAnalyzer extends BaseObject{
 		/********************************* 호출메소드 재귀적 처리 끝 *********************************/
 		
 		return dsList;
+	}
+	
+	protected String makeAnalyzeTblInfo(String input) throws Exception {
+		StringBuffer tblInfo = new StringBuffer();
+		// DMST03002!SELECT|DMOR01003!SELECT|DUAL!SELECT
+		if(!StringUtil.isEmpty(input)) {
+			String[] tblInfoArr = StringUtil.toStrArray(input, "|");
+			if( tblInfoArr != null && tblInfoArr.length > 0 ) {
+				for(String tblInfoRow : tblInfoArr) {
+					String[] tblArr = StringUtil.toStrArray(tblInfoRow, "!");
+					if( tblArr != null ) {
+						if(tblInfo.length() > 0) {
+							tblInfo.append(", ");
+						}
+						if(tblArr.length > 0) {
+							tblInfo.append(tblArr[0]);
+						}
+						if( tblArr.length > 1 && tblArr[1].length() > 0) {
+							tblInfo.append("-").append(tblArr[1].substring(0, 1));
+						}
+					}
+				}
+			}
+		}
+		return tblInfo.toString();
 	}
 
 

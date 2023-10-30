@@ -269,88 +269,92 @@ public class DefaultClzz extends BaseObject implements Clzz {
 	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception  {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
+		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
+			String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
+			fileConts = StringUtil.trimTextForParse(fileConts);
+			String[] lines = StringUtil.toStrArray(fileConts, "\n", false, true);
 
-		String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
-		fileConts = StringUtil.trimTextForParse(fileConts);
-		String[] lines = StringUtil.toStrArray(fileConts, "\n", false, true);
-
-		boolean isAliasExists = false;
-		boolean isUsed = false;
-		String alias = "";
-		String[] div = {" ", ";", "=", " ="};
-		String selfPkg = selfClzzVo.getPackageId();
-		String selfClassId = selfClzzVo.getClassId();
-		selfClassId = selfClassId.substring(selfClassId.lastIndexOf(".")+1);
-		
-		for(String packageClassId : analyzedClassFileList) {
+			boolean isAliasExists = false;
+			boolean isUsed = false;
+			String alias = "";
+			String[] div = {" ", ";", "=", " ="};
+			String selfPkg = selfClzzVo.getPackageId();
+			String selfClassId = selfClzzVo.getClassId();
+			selfClassId = selfClassId.substring(selfClassId.lastIndexOf(".")+1);
 			
-			isAliasExists = false;
-			isUsed = false;
-			String pkg = packageClassId.substring(0, packageClassId.lastIndexOf("."));
-			String classIdWithoutPkg = packageClassId.substring(packageClassId.lastIndexOf(".")+1);
-			String beforeLine = "";
-			String resourceId = "";
+			for(String packageClassId : analyzedClassFileList) {
+				
+				isAliasExists = false;
+				isUsed = false;
+				String pkg = packageClassId.substring(0, packageClassId.lastIndexOf("."));
+				String classIdWithoutPkg = packageClassId.substring(packageClassId.lastIndexOf(".")+1);
+				String beforeLine = "";
+				String resourceId = "";
 
-			if( pkg.equals(selfPkg) && classIdWithoutPkg.equals(selfClassId)) {
-				continue;
-			}
-			// [Full클래스 알리아스] 형식으로 선언되어있을 경우
-			if( !( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg)  ) && fileConts.indexOf(packageClassId + " ")>-1 ) {
-				//getLogger().sysout("[Full클래스 알리아스] 형식으로 선언되어있음 : classFile[" + classFile + "] packageClassId[" + packageClassId + "]");
-				for(String line : lines) {
-					if (!ParseUtil.isValidAliasLine(line)) { 
-						continue;
+				if( pkg.equals(selfPkg) && classIdWithoutPkg.equals(selfClassId)) {
+					continue;
+				}
+				// [Full클래스 알리아스] 형식으로 선언되어있을 경우
+				if( !( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg)  ) && fileConts.indexOf(packageClassId + " ")>-1 ) {
+					//getLogger().sysout("[Full클래스 알리아스] 형식으로 선언되어있음 : classFile[" + classFile + "] packageClassId[" + packageClassId + "]");
+					for(String line : lines) {
+						if (!ParseUtil.isValidAliasLine(line)) { 
+							continue;
+						}
+						if( line.indexOf(packageClassId + " ")>-1 ) {
+							alias = StringUtil.nextWord(line, packageClassId, div);
+							if(!StringUtil.isEmpty(alias)) {
+								isAliasExists = true;
+								break;
+							}
+						}
+						beforeLine = line;
 					}
-					if( line.indexOf(packageClassId + " ")>-1 ) {
-						alias = StringUtil.nextWord(line, packageClassId, div);
-						if(!StringUtil.isEmpty(alias)) {
-							isAliasExists = true;
-							break;
+					if (isAliasExists) {
+						//getLogger().sysout(classFile + " packageClassId[" + packageClassId + "] alias1=============>>>[" + alias + "]");
+						if (fileConts.indexOf(alias + ".")>-1) {
+							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
+							isUsed = true;
 						}
 					}
-					beforeLine = line;
-				}
-				if (isAliasExists) {
-					//getLogger().sysout(classFile + " packageClassId[" + packageClassId + "] alias1=============>>>[" + alias + "]");
-					if (fileConts.indexOf(alias + ".")>-1) {
-						resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
-						isUsed = true;
+				// import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있을 경우
+				}else if( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg)  ) {
+					//getLogger().sysout("import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있음 : classFile[" + classFile + "] packageClassId[" + packageClassId + "]");
+					for(String line : lines) {
+						if (!ParseUtil.isValidAliasLine(line)) { 
+							continue;
+						}
+						if( line.indexOf(packageClassId + " ")>-1 || line.indexOf(classIdWithoutPkg + " ")>-1 ) {
+							alias = StringUtil.nextWord(line, classIdWithoutPkg, div);
+							if(!StringUtil.isEmpty(alias)) {
+								isAliasExists = true;
+								break;
+							}
+						}
+						beforeLine = line;
 					}
-				}
-			// import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있을 경우
-			}else if( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg)  ) {
-				//getLogger().sysout("import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있음 : classFile[" + classFile + "] packageClassId[" + packageClassId + "]");
-				for(String line : lines) {
-					if (!ParseUtil.isValidAliasLine(line)) { 
-						continue;
-					}
-					if( line.indexOf(packageClassId + " ")>-1 || line.indexOf(classIdWithoutPkg + " ")>-1 ) {
-						alias = StringUtil.nextWord(line, classIdWithoutPkg, div);
-						if(!StringUtil.isEmpty(alias)) {
-							isAliasExists = true;
-							break;
+					if (isAliasExists) {
+						//getLogger().sysout(classFile + " packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
+						if (fileConts.indexOf(alias + ".")>-1) {
+							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
+							isUsed = true;
 						}
 					}
-					beforeLine = line;
 				}
-				if (isAliasExists) {
-					//getLogger().sysout(classFile + " packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
-					if (fileConts.indexOf(alias + ".")>-1) {
-						resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
-						isUsed = true;
+				if(isUsed) {
+					//getLogger().sysout(classFile + " packageClassId["+packageClassId + "] alias3=============>>>[" + alias + "]");
+					callClassAlias = new HashMap<String, String>();
+					callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
+					callClassAlias.put("ALIAS",alias);
+					if( !callClassAliasList.contains(callClassAlias) ) {
+						callClassAliasList.add(callClassAlias);
 					}
 				}
 			}
-			
-			if(isUsed) {
-				//getLogger().sysout(classFile + " packageClassId["+packageClassId + "] alias3=============>>>[" + alias + "]");
-				callClassAlias = new HashMap<String, String>();
-				callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
-				callClassAlias.put("ALIAS",alias);
-				if( !callClassAliasList.contains(callClassAlias) ) {
-					callClassAliasList.add(callClassAlias);
-				}
-			}
+	        if(!StringUtil.isEmpty(selfClzzVo.getParentClassId())) {
+	        	ClzzVo parentClzzVo = ParseUtil.readClassVo(selfClzzVo.getParentClassId(), AppAnalyzer.WRITE_PATH + "/class");		
+	        	callClassAliasList.addAll(this.getCallClassAlias(parentClzzVo, analyzedClassFileList));
+	        }
 		}
 		
 		return callClassAliasList;

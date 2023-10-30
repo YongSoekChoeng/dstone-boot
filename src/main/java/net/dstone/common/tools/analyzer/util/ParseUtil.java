@@ -669,7 +669,8 @@ public class ParseUtil {
 					}
 				}
 			}
-		}else {
+		}
+		if(StringUtil.isEmpty(implClassId)) {
 			implClassId = interfaceId;
 		}
 		return implClassId;
