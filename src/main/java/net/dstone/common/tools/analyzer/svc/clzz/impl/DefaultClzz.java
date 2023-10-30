@@ -317,7 +317,6 @@ public class DefaultClzz extends BaseObject implements Clzz {
 						isUsed = true;
 					}
 				}
-
 			// import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있을 경우
 			}else if( fileConts.indexOf( "import " + pkg + ".*;")>-1 || fileConts.indexOf( "import " + packageClassId + ";")>-1 || pkg.equals(selfPkg)  ) {
 				//getLogger().sysout("import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있음 : classFile[" + classFile + "] packageClassId[" + packageClassId + "]");
