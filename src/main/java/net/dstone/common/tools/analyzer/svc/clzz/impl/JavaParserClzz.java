@@ -242,17 +242,18 @@ public class JavaParserClzz extends DefaultClzz implements Clzz {
 	    					if(isUsed) {
 	    						callClassAlias = new HashMap<String, String>();
 	    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
+	    						// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
 	    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
-	    						callClassAlias.put("FULL_CLASS", type);
-	    						
 	    						callClassAlias.put("ALIAS", alias);
-	                    		callClassAliasList.add(callClassAlias);
+	    						if( !callClassAliasList.contains(callClassAlias) ) {
+	    							callClassAliasList.add(callClassAlias);
+	    						}
 	    					}
 	                	}
 	                }
 	            }
 	        }
-			
+			// 부모클래스가 존재할 경우 부모클래스의 호출알리아스도 가져와서 합쳐준다.
 	        if(!StringUtil.isEmpty(selfClzzVo.getParentClassId())) {
 	        	ClzzVo parentClzzVo = ParseUtil.readClassVo(selfClzzVo.getParentClassId(), AppAnalyzer.WRITE_PATH + "/class");	
 	        	callClassAliasList.addAll(this.getCallClassAlias(parentClzzVo, analyzedClassFileList));

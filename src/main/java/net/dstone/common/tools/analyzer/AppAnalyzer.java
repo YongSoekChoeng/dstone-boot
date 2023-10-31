@@ -103,7 +103,7 @@ public class AppAnalyzer extends BaseObject{
 	/**
 	 * WORKER_THREAD_NUM - 분석작업을 진행 할 쓰레드 갯수
 	 */
-	public static int WORKER_THREAD_NUM = 10;
+	public static int WORKER_THREAD_NUM = 1;
 
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 
@@ -121,9 +121,10 @@ public class AppAnalyzer extends BaseObject{
 	 * @param writePath - 중간산출물 저장디렉토리
 	 * @param isTableNameFromDb - 테이블명을 DB로부터 읽어올지 여부
 	 * @param tableNameLikeStr - 테이블명을 DB로부터 읽어올때 적용할 프리픽스(isTableNameFromDb 가 true일 경우에만 유효)
+	 * @param workerThreadNum - 분석작업을 진행 할 쓰레드 갯수
 	 * @return
 	 */
-	public static AppAnalyzer getInstance(String DBID, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath, boolean isTableNameFromDb, String tableNameLikeStr){
+	public static AppAnalyzer getInstance(String DBID, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath, boolean isTableNameFromDb, String tableNameLikeStr, int workerThreadNum){
 		if(analizer == null){
 			analizer = new AppAnalyzer();
 			
@@ -156,6 +157,8 @@ public class AppAnalyzer extends BaseObject{
 			AppAnalyzer.IS_TABLE_NAME_FROM_DB = isTableNameFromDb;
 			
 			AppAnalyzer.TABLE_NAME_LIKE_STR = tableNameLikeStr;
+
+			AppAnalyzer.WORKER_THREAD_NUM = workerThreadNum;
 		}
 		return analizer;
 	}
