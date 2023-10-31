@@ -709,28 +709,53 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param analyzedQueryFileList 쿼리분석파일리스트
 	 * @param analyzedQueryFileList 전체테이블목록리스트
 	 */
-	protected void analyzeQueryCallTbl(String[] analyzedQueryFileList, List<String> allTblList) throws Exception {
+	protected void analyzeQueryCallTbl(String[] paramFileList, List<String> allTblList) throws Exception {
 
-		QueryVo queryVo = null;
-		String key = "";
-		String analyzedQueryFile= "";
-		try {
-			for(int i=0; i<analyzedQueryFileList.length; i++) {
-				analyzedQueryFile = analyzedQueryFileList[i];
-				key = FileUtil.getFileName(analyzedQueryFile, false);
-				queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
-				
-				// 테이블ID정보목록
-				queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile, allTblList));
-				
-				// 파일저장	
-				ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
-			}
-		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
-			e.printStackTrace();
-			throw e;
+		if(paramFileList == null || paramFileList.length == 0) {return;}
+		List<List<String>> divQueryFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
+		for(int n=0; n<divQueryFileList.size(); n++) {
+			List<String> divQueryFileListItem = divQueryFileList.get(n);
+			String[] queryFileList = new String[divQueryFileListItem.size()];
+			divQueryFileListItem.toArray(queryFileList);
+			TaskItem taskItem = new TaskItem(){
+				@Override
+				public TaskItem doTheTask(){
+					
+					/************************ 작업세팅 시작 ************************/
+					String[] queryFileList = (String[])this.getObj("queryFileList");
+					QueryVo queryVo = null;
+					String key = "";
+					String analyzedQueryFile= "";
+					try {
+						for(int i=0; i<queryFileList.length; i++) {
+							analyzedQueryFile = queryFileList[i];
+							key = FileUtil.getFileName(analyzedQueryFile, false);
+							queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
+							
+							// 테이블ID정보목록
+							queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile, allTblList));
+							
+							// 파일저장	
+							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+						}
+					} catch (Exception e) {
+						LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
+						e.printStackTrace();
+					}
+			
+					/************************ 작업세팅 종료 ************************/
+			
+					return this;
+				}
+			};
+			taskItem.setObj("queryFileList", queryFileList);
+			taskItem.setId("analyzeQueryCallTbl-" + n);
+			taskItemList.add(taskItem);
 		}
+		String executorServiceId = "analyzeQuery-Task";
+		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+
 	}
 	
 

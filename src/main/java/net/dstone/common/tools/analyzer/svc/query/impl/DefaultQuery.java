@@ -102,7 +102,7 @@ public class DefaultQuery implements Query {
 				}
 			}
 			if(tblNameList.isEmpty()) {
-				LogUtil.sysout(this.getClass().getName() + ".getTblInfoList :: 파일["+queryInfoFile+"] 을 분석하였으나 테이블명 조회 하지 못함.");
+				LogUtil.sysout("DefaultQuery.getTblInfoList :: 파일["+queryInfoFile+"] 을 분석하였으나 테이블명 조회 하지 못함.");
 			}
 		}
 		return tblNameList;
