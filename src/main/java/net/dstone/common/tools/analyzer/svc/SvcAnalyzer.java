@@ -396,7 +396,9 @@ public class SvcAnalyzer extends BaseObject{
 			
 			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 			/* DB에서 테이블ID를 가지고 오고자 할 때 주석을 제거 */
-			//allTblList = DbUtil.getTabs(AppAnalyzer.DBID).getDataSetListVal("TBL_LIST", "TABLE_NAME");
+			if(AppAnalyzer.IS_TABLE_NAME_FROM_DB) {
+				allTblList = DbUtil.getTabs(AppAnalyzer.DBID, AppAnalyzer.TABLE_NAME_LIKE_STR).getDataSetListVal("TBL_LIST", "TABLE_NAME");
+			}
 			this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
 			if(jobKind <= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {return;}
 			getLogger().info("/**************************************** B.쿼리 분석 끝 ****************************************/");
