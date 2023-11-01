@@ -2,7 +2,7 @@ package net.dstone.common.tools.analyzer.svc.ui;
 
 import java.util.List;
 
-public interface Ui {
+public interface ParseUi {
 
 	/**
 	 * UI파일로부터 UI아이디 추출

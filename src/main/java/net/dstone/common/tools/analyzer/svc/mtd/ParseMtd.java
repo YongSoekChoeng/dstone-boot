@@ -3,7 +3,7 @@ package net.dstone.common.tools.analyzer.svc.mtd;
 import java.util.List;
 import java.util.Map;
 
-public interface Mtd {
+public interface ParseMtd {
 	/**
 	 * 파일로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
 	 * @param classFile

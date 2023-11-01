@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
-import net.dstone.common.tools.analyzer.svc.ui.Ui;
+import net.dstone.common.tools.analyzer.svc.ui.ParseUi;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
-public class DefaultUi implements Ui {
+public class JspParseUi implements ParseUi {
 	
 	/**
 	 * UI파일로부터 UI아이디 추출

@@ -12,14 +12,14 @@ import net.dstone.common.task.TaskHandler;
 import net.dstone.common.task.TaskItem;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
-import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParserClzz;
-import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
-import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParserMtd;
-import net.dstone.common.tools.analyzer.svc.query.Query;
-import net.dstone.common.tools.analyzer.svc.query.impl.DefaultQuery;
-import net.dstone.common.tools.analyzer.svc.ui.Ui;
-import net.dstone.common.tools.analyzer.svc.ui.impl.DefaultUi;
+import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParseClzz;
+import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
+import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParseMtd;
+import net.dstone.common.tools.analyzer.svc.query.ParseQuery;
+import net.dstone.common.tools.analyzer.svc.query.impl.MybatisParseQuery;
+import net.dstone.common.tools.analyzer.svc.ui.ParseUi;
+import net.dstone.common.tools.analyzer.svc.ui.impl.JspParseUi;
 import net.dstone.common.tools.analyzer.util.DbGen;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -128,9 +128,9 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class ClassFactory {
 		
-		static Clzz getClzz() {
-			//return new DefaultClzz(); 
-			return new JavaParserClzz(); 
+		static ParseClzz getClzz() {
+			//return new TextParseClzz(); 
+			return new JavaParseClzz(); 
 		}
 		
 		/**
@@ -225,9 +225,9 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class MethodFactory {
 
-		static Mtd getMethod() {
-			//return new DefaultMtd(); 
-			return new JavaParserMtd();
+		static ParseMtd getMethod() {
+			//return new TextParseMtd(); 
+			return new JavaParseMtd();
 		}
 		
 		/**
@@ -265,8 +265,8 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class QueryFactory {
 
-		static Query getQuery() {
-			return new DefaultQuery(); 
+		static ParseQuery getQuery() {
+			return new MybatisParseQuery(); 
 		}
 		
 		/**
@@ -295,8 +295,8 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class UiFactory {
 
-		static Ui getUi() {
-			return new DefaultUi(); 
+		static ParseUi getUi() {
+			return new JspParseUi(); 
 		}
 		
 		/**

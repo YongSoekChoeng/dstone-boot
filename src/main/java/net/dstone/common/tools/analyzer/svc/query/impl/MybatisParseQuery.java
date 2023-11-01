@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
-import net.dstone.common.tools.analyzer.svc.query.Query;
+import net.dstone.common.tools.analyzer.svc.query.ParseQuery;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
@@ -19,7 +19,7 @@ import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.XmlUtil;
 
-public class DefaultQuery implements Query {
+public class MybatisParseQuery implements ParseQuery {
 	
 	/**
 	 * 파일로부터 쿼리정보목록 추출

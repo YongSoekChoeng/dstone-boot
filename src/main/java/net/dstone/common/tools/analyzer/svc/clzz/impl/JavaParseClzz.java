@@ -20,14 +20,14 @@ import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
-import net.dstone.common.tools.analyzer.svc.clzz.Clzz;
+import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
-public class JavaParserClzz extends DefaultClzz implements Clzz {
+public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 
 	/**
 	 * 패키지ID 추출

@@ -3,7 +3,7 @@ package net.dstone.common.tools.analyzer.svc.query;
 import java.util.List;
 import java.util.Map;
 
-public interface Query {
+public interface ParseQuery {
 	/**
 	 * 파일로부터 쿼리정보목록 추출
 	 * @param file

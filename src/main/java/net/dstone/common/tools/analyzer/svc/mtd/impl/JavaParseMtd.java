@@ -12,11 +12,11 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 
-import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
+import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.StringUtil;
 
-public class JavaParserMtd extends DefaultMtd implements Mtd {
+public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 
 	/**
 	 * 파일로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출

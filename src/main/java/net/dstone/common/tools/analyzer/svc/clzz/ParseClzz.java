@@ -6,7 +6,7 @@ import java.util.Map;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 
-public interface Clzz {
+public interface ParseClzz {
 	/**
 	 * 패키지ID 추출
 	 * @param classFile 클래스파일

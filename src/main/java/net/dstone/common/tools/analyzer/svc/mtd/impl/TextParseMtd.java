@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
-import net.dstone.common.tools.analyzer.svc.mtd.Mtd;
+import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
@@ -14,7 +14,7 @@ import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
-public class DefaultMtd extends BaseObject implements Mtd {
+public class TextParseMtd extends BaseObject implements ParseMtd {
 
 	/**
 	 * 파일로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
