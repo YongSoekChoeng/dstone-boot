@@ -270,7 +270,20 @@ public class SvcAnalyzer extends BaseObject{
 		}
 		
 		/**
-		 * 쿼리정보 추출
+		 * 파일로부터 쿼리KEY(아이디)를 추출. 쿼리KEY는 파일명으로 사용됨.
+		 * @param queryInfo(쿼리KEY를 추출할 수 있는 각종 정보를 담은 맵)
+		 * @return
+		 */
+		static public String getQueryKey(Map<String, String> queryInfo) throws Exception {
+			return getQuery().getQueryKey(queryInfo);
+		}
+		
+		/**
+		 * 파일로부터 쿼리정보목록 추출. 쿼리정보는 아래와 같은 항목을 추출해야 한다.
+		 * SQL_NAMESPACE - 네임스페이스
+		 * SQL_ID - SQL아이디
+		 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
+		 * SQL_BODY - SQL구문
 		 * @param classFile
 		 * @return
 		 */
@@ -669,19 +682,21 @@ public class SvcAnalyzer extends BaseObject{
 			for(int i=0; i<queryFileList.length; i++) {
 				file = queryFileList[i];
 				if( isValidQueryFile(file) ) {
-					// KEY/네임스페이스/쿼리ID/쿼리종류 추출
+					
+					/*** 파일로부터 쿼리정보목록 추출. ***
+					 * SQL_NAMESPACE - 네임스페이스
+					 * SQL_ID - SQL아이디
+					 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
+					 * SQL_BODY - SQL구문
+					****************************/
 					queryInfoList = QueryFactory.getQueryInfoList(file);
+					
 					if( queryInfoList != null ) {
 						for(Map<String, String> queryInfo : queryInfoList) {
 							queryVo = new QueryVo();
 
 							// KEY
-							if(StringUtil.isEmpty(queryInfo.get("SQL_NAMESPACE"))) {
-								key = "NO_NAMESPACE" + "_" + queryInfo.get("SQL_ID");
-							}else {
-								key = queryInfo.get("SQL_NAMESPACE") + "_" + queryInfo.get("SQL_ID");
-							}
-							queryVo.setKey(key);
+							queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
 							// 네임스페이스
 							queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
 							// 쿼리ID
