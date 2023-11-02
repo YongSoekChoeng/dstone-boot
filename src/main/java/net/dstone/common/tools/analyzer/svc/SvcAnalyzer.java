@@ -13,11 +13,11 @@ import net.dstone.common.task.TaskItem;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.TextParseClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.TossParseClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
-import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParseMtd;
+import net.dstone.common.tools.analyzer.svc.mtd.impl.TossParseMtd;
 import net.dstone.common.tools.analyzer.svc.query.ParseQuery;
-import net.dstone.common.tools.analyzer.svc.query.impl.MybatisParseQuery;
+import net.dstone.common.tools.analyzer.svc.query.impl.TossParseQuery;
 import net.dstone.common.tools.analyzer.svc.ui.ParseUi;
 import net.dstone.common.tools.analyzer.svc.ui.impl.JspParseUi;
 import net.dstone.common.tools.analyzer.util.DbGen;
@@ -129,8 +129,9 @@ public class SvcAnalyzer extends BaseObject{
 	private static class ClassFactory {
 		
 		static ParseClzz getClzz() {
-			return new TextParseClzz(); 
+			//return new TextParseClzz(); 
 			//return new JavaParseClzz(); 
+			return new TossParseClzz(); 
 		}
 		
 		/**
@@ -227,7 +228,8 @@ public class SvcAnalyzer extends BaseObject{
 
 		static ParseMtd getMethod() {
 			//return new TextParseMtd(); 
-			return new JavaParseMtd();
+			//return new JavaParseMtd();
+			return new TossParseMtd(); 
 		}
 		
 		/**
@@ -266,7 +268,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class QueryFactory {
 
 		static ParseQuery getQuery() {
-			return new MybatisParseQuery(); 
+			//return new MybatisParseQuery(); 
+			return new TossParseQuery(); 
 		}
 		
 		/**
@@ -411,7 +414,10 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 			/* DB에서 테이블ID를 가지고 오고자 할 때 주석을 제거 */
 			if(AppAnalyzer.IS_TABLE_NAME_FROM_DB) {
-				allTblList = DbUtil.getTabs(AppAnalyzer.DBID, AppAnalyzer.TABLE_NAME_LIKE_STR).getDataSetListVal("TBL_LIST", "TABLE_NAME");
+				allTblList = ParseUtil.getMannalTableList();
+				if( allTblList == null || allTblList.size() == 0 ) {
+					allTblList = DbUtil.getTabs(AppAnalyzer.DBID, AppAnalyzer.TABLE_NAME_LIKE_STR).getDataSetListVal("TBL_LIST", "TABLE_NAME");
+				}
 			}
 			this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
 			if(jobKind <= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {return;}
@@ -677,7 +683,6 @@ public class SvcAnalyzer extends BaseObject{
 		QueryVo queryVo = null;
 		List<Map<String, String>> queryInfoList = null;
 		String file= "";
-		String key = "";
 		try {
 			for(int i=0; i<queryFileList.length; i++) {
 				file = queryFileList[i];
@@ -704,7 +709,7 @@ public class SvcAnalyzer extends BaseObject{
 							// 쿼리종류
 							queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
 							// 파일명
-							queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + key + ".txt");
+							queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
 							// 쿼리내용
 							queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
 

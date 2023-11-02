@@ -167,8 +167,16 @@ public class AppAnalyzer extends BaseObject{
 		try {
 			
 			/*** 파일정보 삭제 ***/
-			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH);
-			FileUtil.makeDir(AppAnalyzer.WRITE_PATH);
+			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH + "/class" );
+			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH + "/query" );
+			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH + "/method" );
+			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH + "/ui" );
+
+			/*** 파일정보 생성 ***/
+			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/class" );
+			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/query" );
+			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/method" );
+			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/ui" );
 			
 		} catch (Exception e) {
 			e.printStackTrace();

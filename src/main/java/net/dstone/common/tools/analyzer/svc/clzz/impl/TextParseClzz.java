@@ -380,6 +380,7 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 				String alias = "";
 				boolean isUsed = false;
 				for(Map<String, String> callClassAlias : allClassAliasList) {
+					isUsed = false;
 					type = callClassAlias.get("FULL_CLASS");
 					alias = callClassAlias.get("ALIAS");
 	            	if(!StringUtil.isEmpty(alias)) {

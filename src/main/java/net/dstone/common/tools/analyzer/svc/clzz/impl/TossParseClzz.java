@@ -27,7 +27,7 @@ import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
-public class JavaParseClzz extends TextParseClzz implements ParseClzz {
+public class TossParseClzz extends TextParseClzz implements ParseClzz {
 
 	/**
 	 * 패키지ID 추출

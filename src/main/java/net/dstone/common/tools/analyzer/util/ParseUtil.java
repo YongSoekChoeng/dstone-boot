@@ -48,6 +48,8 @@ public class ParseUtil {
 		MYBATIS_DIV_TAG_LIST.add("isNotParameterPresent");
 		*****************************************************/
 	}
+
+	static List<String> MANNUAL_TABLE_LIST = new ArrayList<String>();
 	
 	/**
 	 * Mybatis 내부 태그 제거.
@@ -722,6 +724,28 @@ public class ParseUtil {
 			}
 		}
 		return fieldName;
+	}
+	
+	/**
+	 * 수동으로 모아 놓은 테이블목록을 반환한다.
+	 * @return
+	 */
+	public static List<String> getMannalTableList() {
+		if( MANNUAL_TABLE_LIST.isEmpty() ) {
+			if( FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/TableList.txt") ) {
+				String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/TableList.txt");
+				for(String line : lines) {
+					if(line.trim().equals("")) {
+						continue;
+					}
+					String[] words = StringUtil.toStrArray(line, "\t", true);
+					if(words != null && words.length > 0 && !StringUtil.isEmpty(words[0])) {
+						MANNUAL_TABLE_LIST.add(words[0].toUpperCase());
+					}
+				}
+			}
+		}
+		return MANNUAL_TABLE_LIST;
 	}
 	
 	/**

@@ -14,11 +14,15 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
+import net.dstone.common.tools.analyzer.vo.MtdVo;
+import net.dstone.common.tools.analyzer.vo.QueryVo;
+import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
-public class JavaParseMtd extends TextParseMtd implements ParseMtd {
+public class TossParseMtd extends TextParseMtd implements ParseMtd {
 
 	/**
 	 * 파일로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
@@ -140,7 +144,63 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	 */
 	@Override
 	public List<String> getCallTblList(String analyzedMethodFile) throws Exception {
-		return super.getCallTblList(analyzedMethodFile);
+		List<String> callTblList = new ArrayList<String>();
+		
+		// 메소드VO 정보 획득
+		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
+		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+
+		// 쿼리목록 정보 획득
+		String[] queryFileArr = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/query", false);
+		List<String> queryKeyList = new ArrayList<String>();
+		if(queryFileArr != null) {
+			for(String item : queryFileArr) {
+				queryKeyList.add(item);
+			}
+		}
+
+		QueryVo queryVo = null;
+		String mtdBody = "";
+		String keyword = "";
+		
+		if( !StringUtil.isEmpty(mtdVo.getMethodBody()) ) {
+			mtdBody = mtdVo.getMethodBody();
+			String[] lines = StringUtil.toStrArray(mtdBody, "\n");
+			for(String line : lines) {
+				keyword = "";
+				for(String queryKey : queryKeyList) {
+					/********************************************
+					아래와 같이 queryKey => keyword 로 치환하는 작업.
+					queryKey 	: net.dstone.sample.AdminDao_listUser
+					keyword 	: "net.dstone.sample.AdminDao.listUser"
+					********************************************/
+					keyword = queryKey;
+					if( keyword.indexOf("_")>-1 ) {
+						keyword = keyword.substring(0, keyword.lastIndexOf("_")) + "." + keyword.substring(keyword.lastIndexOf("_")+1);
+					}
+					keyword = "\"" + keyword + "\"";
+					if( line.indexOf(keyword) > -1 ) {
+						queryVo = ParseUtil.readQueryVo(queryKey, AppAnalyzer.WRITE_PATH + "/query");
+						if(queryVo != null && queryVo.getCallTblList() != null && queryVo.getCallTblList().size() > 0) {
+							String tblKey = "";
+							for(String callTbl : queryVo.getCallTblList()) {
+								/********************************************
+								메소드VO.호출테이블 항목을 테이블명 + "!" + 쿼리종류 로 저장.
+								예)SAMPLE_MEMBER!UPDATE
+								********************************************/
+								tblKey = callTbl + "!" + queryVo.getQueryKind();
+								if( !callTblList.contains(tblKey ) ) {
+									callTblList.add(tblKey);
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		return callTblList;
 	}
 
 }
