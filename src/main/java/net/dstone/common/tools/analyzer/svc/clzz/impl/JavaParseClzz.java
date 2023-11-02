@@ -159,8 +159,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
+	private List<Map<String, String>> getAllClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
@@ -207,6 +206,11 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 									// variable의 타입과 필드의 타입이 동일한 경우 해당 필드의 어노테이션을 가지고 와서 resourceId를 구해낸다.
 									if( varType.indexOf(".")>-1 && type.equals(varType) || varType.indexOf(".")==-1 && type.endsWith("."+varType) ) {
 										for(AnnotationExpr an : field.getAnnotations()) {  
+						            		/***************************************************
+						            		<SingleMemberAnnotation/NormalAnnotation 의 차이>
+						            		- @RequestMapping("/sample/admin.do")       ===>> SingleMemberAnnotation
+						            		- @RequestMapping(value="/sample/admin.do") ===>> NormalAnnotation
+						            		***************************************************/
 											if( an.isSingleMemberAnnotationExpr() ) {
 												resourceId = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
 											}else if( an.isNormalAnnotationExpr() ) {
@@ -236,19 +240,14 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	                		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
 	                			continue;
 	                		}
-	    					if (fileConts.indexOf(alias + ".")>-1) {
-	    						isUsed = true;
-	    					}
-	    					if(isUsed) {
-	    						callClassAlias = new HashMap<String, String>();
-	    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
-	    						// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
-	    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
-	    						callClassAlias.put("ALIAS", alias);
-	    						if( !callClassAliasList.contains(callClassAlias) ) {
-	    							callClassAliasList.add(callClassAlias);
-	    						}
-	    					}
+    						callClassAlias = new HashMap<String, String>();
+    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
+    						// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
+    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
+    						callClassAlias.put("ALIAS", alias);
+    						if( !callClassAliasList.contains(callClassAlias) ) {
+    							callClassAliasList.add(callClassAlias);
+    						}
 	                	}
 	                }
 	            }
@@ -256,10 +255,49 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 			// 부모클래스가 존재할 경우 부모클래스의 호출알리아스도 가져와서 합쳐준다.
 	        if(!StringUtil.isEmpty(selfClzzVo.getParentClassId())) {
 	        	ClzzVo parentClzzVo = ParseUtil.readClassVo(selfClzzVo.getParentClassId(), AppAnalyzer.WRITE_PATH + "/class");	
-	        	callClassAliasList.addAll(this.getCallClassAlias(parentClzzVo, analyzedClassFileList));
+	        	callClassAliasList.addAll(this.getAllClassAlias(parentClzzVo, analyzedClassFileList));
 	        }
 		}
 
+		return callClassAliasList;
+	}
+	
+	/**
+	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
+	 * @param selfClzzVo
+	 * @param analyzedClassFileList
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
+		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
+		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
+			List<Map<String, String>> allClassAliasList = this.getAllClassAlias(selfClzzVo, analyzedClassFileList);
+			if( allClassAliasList != null ) {
+				String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
+				String type = "";
+				String alias = "";
+				boolean isUsed = false;
+				for(Map<String, String> callClassAlias : allClassAliasList) {
+					type = callClassAlias.get("FULL_CLASS");
+					alias = callClassAlias.get("ALIAS");
+	            	if(!StringUtil.isEmpty(alias)) {
+	            		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
+	            			continue;
+	            		}
+						if (fileConts.indexOf(alias + ".")>-1) {
+							isUsed = true;
+						}
+						if(isUsed) {
+							if( !callClassAliasList.contains(callClassAlias) ) {
+								callClassAliasList.add(callClassAlias);
+							}
+						}
+	            	}
+				}
+			}
+		}
 		return callClassAliasList;
 	}
 

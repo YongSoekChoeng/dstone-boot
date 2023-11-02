@@ -8,6 +8,7 @@ import java.util.Map;
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
+import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -265,8 +266,7 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 	 * @param analyzedClassFileList
 	 * @return
 	 */
-	@Override
-	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception  {
+	private List<Map<String, String>> getAllClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception  {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAlias = new HashMap<String, String>();
 		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
@@ -275,7 +275,6 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 			String[] lines = StringUtil.toStrArray(fileConts, "\n", false, true);
 
 			boolean isAliasExists = false;
-			boolean isUsed = false;
 			String alias = "";
 			String[] div = {" ", ";", "=", " ="};
 			String selfPkg = selfClzzVo.getPackageId();
@@ -285,7 +284,6 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 			for(String packageClassId : analyzedClassFileList) {
 				
 				isAliasExists = false;
-				isUsed = false;
 				String pkg = packageClassId.substring(0, packageClassId.lastIndexOf("."));
 				String classIdWithoutPkg = packageClassId.substring(packageClassId.lastIndexOf(".")+1);
 				String beforeLine = "";
@@ -311,10 +309,16 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 						beforeLine = line;
 					}
 					if (isAliasExists) {
-						//getLogger().sysout(classFile + " packageClassId[" + packageClassId + "] alias1=============>>>[" + alias + "]");
-						if (fileConts.indexOf(alias + ".")>-1) {
+						if ( fileConts.indexOf(alias + ".")>-1) {
 							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
-							isUsed = true;
+							callClassAlias = new HashMap<String, String>();
+							// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
+							callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
+							callClassAlias.put("ALIAS",alias);
+							if( !callClassAliasList.contains(callClassAlias) ) {
+								//getLogger().sysout("CASE-1 packageClassId[" + packageClassId + "] alias =============>>>[" + alias + "]");
+								callClassAliasList.add(callClassAlias);
+							}
 						}
 					}
 				// import 패키지 이후 [클래스ID 알리아스] 형식으로 선언되어있을 경우
@@ -334,31 +338,66 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 						beforeLine = line;
 					}
 					if (isAliasExists) {
-						//getLogger().sysout(classFile + " packageClassId[" + packageClassId + "] alias2=============>>>[" + alias + "]");
 						if (fileConts.indexOf(alias + ".")>-1) {
 							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
-							isUsed = true;
+							callClassAlias = new HashMap<String, String>();
+							// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
+							callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
+							callClassAlias.put("ALIAS",alias);
+							if( !callClassAliasList.contains(callClassAlias) ) {
+								//getLogger().sysout("CASE-2 packageClassId[" + packageClassId + "] alias =============>>>[" + alias + "]");
+								callClassAliasList.add(callClassAlias);
+							}
 						}
-					}
-				}
-				if(isUsed) {
-					//getLogger().sysout(classFile + " packageClassId["+packageClassId + "] alias3=============>>>[" + alias + "]");
-					callClassAlias = new HashMap<String, String>();
-					// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
-					callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
-					callClassAlias.put("ALIAS",alias);
-					if( !callClassAliasList.contains(callClassAlias) ) {
-						callClassAliasList.add(callClassAlias);
 					}
 				}
 			}
 			// 부모클래스가 존재할 경우 부모클래스의 호출알리아스도 가져와서 합쳐준다.
 	        if(!StringUtil.isEmpty(selfClzzVo.getParentClassId())) {
 	        	ClzzVo parentClzzVo = ParseUtil.readClassVo(selfClzzVo.getParentClassId(), AppAnalyzer.WRITE_PATH + "/class");		
-	        	callClassAliasList.addAll(this.getCallClassAlias(parentClzzVo, analyzedClassFileList));
+	        	callClassAliasList.addAll(this.getAllClassAlias(parentClzzVo, analyzedClassFileList));
 	        }
 		}
 		
+		return callClassAliasList;
+	}
+	
+	/**
+	 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
+	 * @param selfClzzVo
+	 * @param analyzedClassFileList
+	 * @return
+	 */
+	@Override
+	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception  {
+		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
+		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
+			List<Map<String, String>> allClassAliasList = this.getAllClassAlias(selfClzzVo, analyzedClassFileList);
+			//getLogger().sysout(selfClzzVo.getClassId() + ":: allClassAliasList ===>>> " + allClassAliasList);			
+			if( allClassAliasList != null ) {
+				String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
+				String type = "";
+				String alias = "";
+				boolean isUsed = false;
+				for(Map<String, String> callClassAlias : allClassAliasList) {
+					type = callClassAlias.get("FULL_CLASS");
+					alias = callClassAlias.get("ALIAS");
+	            	if(!StringUtil.isEmpty(alias)) {
+	            		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
+	            			continue;
+	            		}
+						if (fileConts.indexOf(alias + ".")>-1) {
+							isUsed = true;
+						}
+						if(isUsed) {
+							if( !callClassAliasList.contains(callClassAlias) ) {
+								callClassAliasList.add(callClassAlias);
+							}
+						}
+	            	}
+				}
+			}
+		}
 		return callClassAliasList;
 	}
 
