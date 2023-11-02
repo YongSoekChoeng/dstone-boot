@@ -268,7 +268,6 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 * @param analyzedClassFileList
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
@@ -286,7 +285,8 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	            		if( !SvcAnalyzer.isValidSvcPackage(type) ) {
 	            			continue;
 	            		}
-						if (fileConts.indexOf(alias + ".")>-1) {
+	            		// 변수명.메소드  or 변수Getter.메소드 의 형태가 존재할 경우 사용된걸로 간주한다.
+						if (fileConts.indexOf(alias + ".")>-1 || fileConts.indexOf(ParseUtil.getGetterNmFromField(alias) + ".")>-1) {
 							isUsed = true;
 						}
 						if(isUsed) {

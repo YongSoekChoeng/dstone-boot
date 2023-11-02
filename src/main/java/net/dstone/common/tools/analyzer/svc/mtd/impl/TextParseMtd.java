@@ -74,8 +74,14 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 							callPackageClassId = ParseUtil.findImplClassId(classOrInterfaceVo.getClassId(), classOrInterfaceVo.getResourceId());
 						}
 						callAlias = callClassAlias.get("ALIAS");
-						keyword =  callAlias+ "." ;
 						// 클래스 호출알리아스+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
+						keyword =  callAlias+ "." ;
+						if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
+							callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
+							break;
+						}
+						// 클래스 호출알리아스Getter+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
+						keyword =  ParseUtil.getGetterNmFromField(callAlias)+ "." ;
 						if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
 							callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
 							break;

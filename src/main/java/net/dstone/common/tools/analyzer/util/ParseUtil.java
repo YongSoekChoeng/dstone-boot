@@ -694,6 +694,37 @@ public class ParseUtil {
 	}
 	
 	/**
+	 * 필드 명으로 Getter 명을 추출하여 반환하는 메소드. Getter 는 카멜표기법에 기반하는걸로 간주.
+	 * @param fieldName
+	 * @return
+	 */
+	public static String getGetterNmFromField(String fieldName) {
+		String getterNm = "";
+		if(!StringUtil.isEmpty(fieldName)) {
+			getterNm = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1)  + "()";
+		}
+		return getterNm;
+	}
+
+	/**
+	 * Getter 명으로  필드 명을 추출하여 반환하는 메소드. Getter 는 카멜표기법에 기반하는걸로 간주.
+	 * @param getterNm
+	 * @return
+	 */
+	public static String getFieldFromGetterNm(String getterNm) {
+		String fieldName = "";
+		if(!StringUtil.isEmpty(getterNm)) {
+			if(getterNm.startsWith("get")) {
+				fieldName = fieldName.substring(3);
+			}
+			if(getterNm.endsWith("()")) {
+				fieldName = StringUtil.replace(fieldName, "()", "");
+			}
+		}
+		return fieldName;
+	}
+	
+	/**
 	 * 클래스VO를 특정디렉토리에 파일로 저장하는 메소드
 	 * @param vo
 	 * @param writeFilePath
