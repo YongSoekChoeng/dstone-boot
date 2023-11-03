@@ -231,5 +231,56 @@ if("kr.co.gnx.system.commoncode.CommonCodeDAO.SelectCommonCodeList".equals(funct
 
 		return callTblList;
 	}
+	
+	private static Map<String, String> MEMBER_VALUE_MAP = new HashMap<String, String>();
+	private static Map<String, String> GETTER_MAPPER_MAP = new HashMap<String, String>();
+	
+	private String getTableSpace(String getterName) {
+		String tableSpace = "";
+		// getBoardmapper()
+		
+		if(MEMBER_VALUE_MAP.size() == 0) {
+
+			String[] lines = FileUtil.readFileByLines( AppAnalyzer.CLASS_ROOT_PATH + "/kr/co/gnx/base/BaseDAO.java");
+			if( lines != null ) {
+				String member = "";
+				String memberVal = "";
+				String keyword = "";
+				String[] div = {" ", ";"};
+				
+				for(String line : lines) {
+					line = line.trim();
+					line = StringUtil.trimTextForParse(line);
+					keyword = "private static final String ";
+					if(line.startsWith(keyword)) {
+						member = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
+						line = line.substring(line.indexOf(member) + member.length());
+						keyword = "=";
+						memberVal = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
+						memberVal = net.dstone.common.utils.StringUtil.replace(memberVal, "\"", "");
+					}
+					MEMBER_VALUE_MAP.put(member, memberVal);
+				}
+
+				for(String line : lines) {
+					line = line.trim();
+					line = StringUtil.trimTextForParse(line);
+					keyword = "public static String get";
+					if(line.startsWith(keyword)) {
+						member = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
+						line = line.substring(line.indexOf(member) + member.length());
+						keyword = "=";
+						memberVal = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
+						memberVal = net.dstone.common.utils.StringUtil.replace(memberVal, "\"", "");
+					}
+					MEMBER_VALUE_MAP.put(member, memberVal);
+				}
+			}
+			
+		}
+		
+		
+		return tableSpace;
+	}
 
 }
