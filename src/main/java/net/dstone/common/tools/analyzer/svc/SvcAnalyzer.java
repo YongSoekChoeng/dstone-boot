@@ -3,9 +3,12 @@ package net.dstone.common.tools.analyzer.svc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.naming.java.javaURLContextFactory;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.task.TaskHandler;
@@ -19,7 +22,7 @@ import net.dstone.common.tools.analyzer.svc.mtd.impl.TossParseMtd;
 import net.dstone.common.tools.analyzer.svc.query.ParseQuery;
 import net.dstone.common.tools.analyzer.svc.query.impl.TossParseQuery;
 import net.dstone.common.tools.analyzer.svc.ui.ParseUi;
-import net.dstone.common.tools.analyzer.svc.ui.impl.JspParseUi;
+import net.dstone.common.tools.analyzer.svc.ui.impl.TossParseUi;
 import net.dstone.common.tools.analyzer.util.DbGen;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -312,7 +315,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class UiFactory {
 
 		static ParseUi getUi() {
-			return new JspParseUi(); 
+			//return new JspParseUi(); 
+			return new TossParseUi(); 
 		}
 		
 		/**
@@ -347,24 +351,25 @@ public class SvcAnalyzer extends BaseObject{
 	}
 
 	/*********************** Factory 끝 ***********************/
-	
-	@SuppressWarnings("unused")
+
 	public void analyze(int jobKind) {
+		this.analyze(jobKind, false);
+	}
+	
+	public void analyze(int jobKind, boolean isUnitOnly) {
 		String[] 	classFileList = null;				/* 클래스파일리스트 */
 		String[] 	queryFileList = null;				/* 쿼리파일리스트 */
 		String[] 	uiFileList = null;					/* UI파일리스트 */
 
-		String[] 	analyzedClassFileList = null;		/* 클래스분석파일리스트 */
-		String[] 	analyzedQueryFileList = null;		/* 쿼리파분석일리스트 */
+		String[] 	analyzedQueryFileList = null;		/* 쿼리분석파일리스트 */
 		String[] 	analyzedMethodFileList = null;		/* 메소드분석파일리스트 */
-		String[] 	analyzedUiFileList = null;			/* UI분석파일리스트 */
 		
 		ArrayList<String> filteredFileList = null;
 		List<String> allTblList = new ArrayList<String>();
 		try {
 			
 			getLogger().info("/**************************************** A.클래스 분석 시작 ****************************************/");
-			getLogger().info("/*** A-1.클래스 파일추출 시작 ***/");
+			/*** 클래스 파일추출 시작 ***/
 			classFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : classFileList) {
@@ -378,21 +383,42 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.clear();
 			filteredFileList = null;
 			
-			getLogger().info("/*** A-2.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
-			this.analyzeClass(classFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {return;}
+			/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {
+					this.analyzeClass(classFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {
+					this.analyzeClass(classFileList);
+				}
+			}
+
+			/*** A-2.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {
+					this.analyzeClassImpl(classFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {
+					this.analyzeClassImpl(classFileList);
+				}
+			}
 			
-			getLogger().info("/*** A-3.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
-			this.analyzeClassImpl(classFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {return;}
-			
-			getLogger().info("/*** A-4.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
-			this.analyzeClassAlias(classFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {return;}
+			/*** A-3.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {
+					this.analyzeClassAlias(classFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {
+					this.analyzeClassAlias(classFileList);
+				}
+			}
 			getLogger().info("/**************************************** A.클래스 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** B.쿼리 분석 시작 ****************************************/");
-			getLogger().info("/*** B-1.쿼리 파일추출 시작 ***/");
+			/*** 쿼리 파일추출 시작 ***/
 			queryFileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : queryFileList) {
@@ -406,12 +432,18 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.clear();
 			filteredFileList = null;
 			
-			getLogger().info("/*** B-2.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
-			this.analyzeQuery(queryFileList);
-			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
-			if(jobKind <= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {return;}
+			/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {
+					this.analyzeQuery(queryFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {
+					this.analyzeQuery(queryFileList);
+				}
+			}
 			
-			getLogger().info("/*** B-3.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
+			/*** B-2.쿼리분석파일리스트 에 호출테이블ID정보목록 추가 ***/
 			/* DB에서 테이블ID를 가지고 오고자 할 때 주석을 제거 */
 			if(AppAnalyzer.IS_TABLE_NAME_FROM_DB) {
 				allTblList = ParseUtil.getMannalTableList();
@@ -419,27 +451,56 @@ public class SvcAnalyzer extends BaseObject{
 					allTblList = DbUtil.getTabs(AppAnalyzer.DBID, AppAnalyzer.TABLE_NAME_LIKE_STR).getDataSetListVal("TBL_LIST", "TABLE_NAME");
 				}
 			}
-			this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {return;}
+			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {
+					this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {
+					this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
+				}
+			}
 			getLogger().info("/**************************************** B.쿼리 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** C.메소드 분석 시작 ****************************************/");
-			getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
-			this.analyzeMtd(classFileList);
+			/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {
+					this.analyzeMtd(classFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {
+					this.analyzeMtd(classFileList);
+				}
+			}
+
+			/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가 ***/
 			analyzedMethodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
-			if(jobKind <= AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {return;}
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {
+					this.analyzeMtdCallMtd(analyzedMethodFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {
+					this.analyzeMtdCallMtd(analyzedMethodFileList);
+				}
+			}
 			
-			getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
-			this.analyzeMtdCallMtd(analyzedMethodFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {return;}
-			
-			getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
-			this.analyzeMtdCallTbl(analyzedMethodFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {return;}
+			/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {
+					this.analyzeMtdCallTbl(analyzedMethodFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {
+					this.analyzeMtdCallTbl(analyzedMethodFileList);
+				}
+			}
 			getLogger().info("/**************************************** C.메소드 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** D.UI 분석 시작 ****************************************/");
-			getLogger().info("/*** D-1.UI 파일추출 시작 ***/");
+			/*** UI 파일추출 시작 ***/
 			uiFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : uiFileList) {
@@ -453,17 +514,39 @@ public class SvcAnalyzer extends BaseObject{
 			filteredFileList.clear();
 			filteredFileList = null;
 			
-			getLogger().info("/*** D-2.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
-			this.analyzeUi(uiFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {return;}
+			/*** D-1.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {
+					this.analyzeUi(uiFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {
+					this.analyzeUi(uiFileList);
+				}
+			}
 			
-			getLogger().info("/*** D-3.UI파일로부터 링크 추출");
-			this.analyzeUiLink(uiFileList);
-			if(jobKind <= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {return;}
+			/*** D-2.UI파일로부터 링크 추출 ***/
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {
+					this.analyzeUiLink(uiFileList);
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {
+					this.analyzeUiLink(uiFileList);
+				}
+			}
 			getLogger().info("/**************************************** D.UI 분석 끝 ****************************************/");
 			
 			getLogger().info("/**************************************** F.분석결과파일저장 시작 ****************************************/");
-			this.saveAnalyzeFile();
+			if(isUnitOnly) {
+				if(jobKind == AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
+					this.saveAnalyzeFile();
+				}
+			}else {
+				if(jobKind >= AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
+					this.saveAnalyzeFile();
+				}
+			}
 			getLogger().info("/**************************************** F.분석결과파일저장 끝 ****************************************/");	
 			
 		} catch (Exception e) {
@@ -476,7 +559,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param classFileList	클래스파일리스트
 	 */
 	protected void analyzeClass(String[] paramFileList)throws Exception {
-		
+		getLogger().info("/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
@@ -546,7 +629,13 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeClass-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	
 	/**
@@ -554,7 +643,8 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param classFileList 클래스파일리스트
 	 */
 	protected void analyzeClassImpl(String[] paramFileList) throws Exception {
-
+		getLogger().info("/*** A-2.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
+		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
@@ -609,8 +699,13 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeClassImpl-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	
 	/**
@@ -618,7 +713,8 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param classFileList 클래스파일리스트
 	 */
 	protected void analyzeClassAlias(String[] paramFileList) throws Exception {
-
+		getLogger().info("/*** A-3.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
+		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
@@ -670,8 +766,13 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeClassAlias-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 
 	/**
@@ -679,7 +780,8 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param queryFileList 쿼리파일리스트
 	 */
 	protected void analyzeQuery(String[] queryFileList) throws Exception {
-
+		getLogger().info("/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
+		
 		QueryVo queryVo = null;
 		List<Map<String, String>> queryInfoList = null;
 		String file= "";
@@ -733,7 +835,8 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param analyzedQueryFileList 전체테이블목록리스트
 	 */
 	protected void analyzeQueryCallTbl(String[] paramFileList, List<String> allTblList) throws Exception {
-
+		getLogger().info("/*** B-2.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
+		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divQueryFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
@@ -776,9 +879,14 @@ public class SvcAnalyzer extends BaseObject{
 			taskItem.setId("analyzeQueryCallTbl-" + n);
 			taskItemList.add(taskItem);
 		}
-		String executorServiceId = "analyzeQuery-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-
+		String executorServiceId = "analyzeQueryCallTbl-Task";
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	
 
@@ -787,6 +895,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param classFileList 클래스파일리스트
 	 */
 	protected void analyzeMtd(String[] paramFileList) throws Exception {
+		getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
@@ -850,7 +959,13 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeMtd-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	
 	/**
@@ -858,6 +973,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param analyzedMethodFileList 메소드분석파일리스트
 	 */
 	protected void analyzeMtdCallMtd(String[] paramFileList) throws Exception {
+		getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
@@ -910,13 +1026,20 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeMtdCallMtd-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	/**
 	 * 메소드내 호출테이블 목록 추출
 	 * @param analyzedMethodFileList 메소드분석파일리스트
 	 */
 	protected void analyzeMtdCallTbl(String[] paramFileList) throws Exception {
+		getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
@@ -968,7 +1091,13 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeMtdCallTbl-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	
 	/**
@@ -976,6 +1105,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param uiFileList UI파일리스트
 	 */
 	protected void analyzeUi(String[] paramFileList) throws Exception {
+		getLogger().info("/*** D-1.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
@@ -1028,13 +1158,20 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeUi-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 	/**
 	 * UI파일리스트 에서 링크정보를 추출하여 UI분석파일리스트 에 추가
 	 * @param uiFileList UI파일리스트
 	 */
 	protected void analyzeUiLink(String[] paramFileList) throws Exception {
+		getLogger().info("/*** D-2.UI파일로부터 링크 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
@@ -1081,13 +1218,21 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		String executorServiceId = "analyzeUiLink-Task";
-		this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
 	}
 
 	protected void saveAnalyzeFile() throws Exception{
+		getLogger().info("/*** F.분석결과파일저장 ");
 		
 		StringBuffer conts = new StringBuffer();
 		List<DataSet> dsList = new ArrayList<DataSet>();
+		List<DataSet> dsCopyList = null;
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
 
@@ -1097,13 +1242,13 @@ public class SvcAnalyzer extends BaseObject{
 
 		getLogger().info("/*** F-2.호출구조 세팅 시작 ***/");
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
-			for(int i=0; i<ds.getDataSetRowCount("METRIX"); i++) {
-				dsRow = ds.getDataSet("METRIX", i);
+			dsList = ds.getDataSetList("METRIX");
+			for(int i=0; i<dsList.size(); i++) {
+				dsRow = dsList.get(i);
 				String functionId = dsRow.getDatum("BASIC_ID");
-				dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, functionId, 1));
+				this.makeAnalyzeCallChainFileConts(dsRow, functionId, 1, new ArrayList<String>());
 			}
 		}
-		ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsList);
 		getLogger().info("/*** F-2.호출구조 세팅 끝 ***/");
 
 		getLogger().info("/*** F-3.MAX호출레벨 세팅 시작 ***/");
@@ -1159,62 +1304,99 @@ public class SvcAnalyzer extends BaseObject{
 		
 		String[] analyzedClassFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/class", false );
 		String[] analyzedMethodFileList = null;
+		ArrayList<DataSet> dsMetrixList = new ArrayList<DataSet>();
+		HashMap<String, ArrayList<DataSet>> urlDsMap = new HashMap<String, ArrayList<DataSet>>();
+		ArrayList<DataSet> dsRowList = null;
+		HashMap<String, ArrayList<UiVo>> urlUiMap = new HashMap<String, ArrayList<UiVo>>();
+		ArrayList<UiVo> uiVoList = null;
 
-		/*** 컨트롤러메소드 기준 ***/
+		/*** 컨트롤러 URL 정보추출 ***/
+		getLogger().info("/*** F-1-1.컨트롤러 URL 정보추출  ***/");
 		if( analyzedClassFileList != null ) {
 			for(String classId : analyzedClassFileList) {		
-				clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
+				clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");	
 				if( ClzzKind.CT.getClzzKindCd().equals(clzzVo.getClassKind().getClzzKindCd()) ) {
 					analyzedMethodFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/method", clzzVo.getClassId(), false);
 					if( analyzedMethodFileList != null ) {
 						for(String functionId : analyzedMethodFileList) {
-							dsRow = ds.addDataSet("METRIX");
 							mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+							if( StringUtil.isEmpty(mtdVo.getMethodUrl()) ) {continue;}
+
+							dsRow = new DataSet();
 							dsRow.setDatum("BASIC_ID", mtdVo.getFunctionId());
 							dsRow.setDatum("BASIC_URL", mtdVo.getMethodUrl());
+							dsRowList = new ArrayList<DataSet>();
+							dsRowList.add(dsRow);
+							
+							urlDsMap.put(dsRow.getDatum("BASIC_URL"), dsRowList);
 						}
 					}
 				}
 			}
 		}
 
-		/*** UI 정보 추가 ***/
+		/*** UI URL 정보추출 ***/
+		getLogger().info("/*** F-1-2.UI URL 정보추출  ***/");
 		String[] analyzedUiFileList = FileUtil.readFileList( AppAnalyzer.WRITE_PATH + "/ui", false );
-		DataSet dsRowForCopy = null;
 		if( analyzedUiFileList != null ) {
 			UiVo uiVo = null;
-			HashMap<String, DataSet> urlDsMap = new HashMap<String, DataSet>();
 			for(String uiId : analyzedUiFileList) {
 				uiVo = ParseUtil.readUiVo(uiId, AppAnalyzer.WRITE_PATH + "/ui");
 				if( uiVo.getLinkList() != null ) {
+					// UI 의 링크 루프
 					for(String link : uiVo.getLinkList()) {
+						link = link.trim();
 						if( StringUtil.isEmpty(link) ) {continue;}
-						for(int rowIndex=0; rowIndex<ds.getDataSetRowCount("METRIX"); rowIndex++) {
-							dsRow = ds.getDataSet("METRIX", rowIndex);
-							if( StringUtil.isEmpty(dsRow.getDatum("BASIC_URL")) ) {continue;}
-							if( link.indexOf(dsRow.getDatum("BASIC_URL"))>-1 ) {
-								if( urlDsMap.containsKey(dsRow.getDatum("BASIC_URL")) ) {
-									dsRowForCopy = urlDsMap.get(dsRow.getDatum("BASIC_URL")).copy();
-									ds.insertDataSet("METRIX", dsRowForCopy, rowIndex+1);
-								}else {
-									dsRowForCopy = dsRow;
-									urlDsMap.put(dsRow.getDatum("BASIC_URL"), dsRow);
-								}
-								dsRowForCopy.setDatum("UI_ID", uiVo.getUiId());
-								dsRowForCopy.setDatum("UI_NAME", StringUtil.nullCheck(uiVo.getUiName(), "") );
-							}
+						if(!urlUiMap.containsKey(link)) {
+							uiVoList = new ArrayList<UiVo>();
+							urlUiMap.put(link, uiVoList);
 						}
+						urlUiMap.get(link).add(uiVo);
 					}
 				}
 			}
 		}
+
+		/*** 컨트롤러, UI 조합 ***/
+		getLogger().info("/*** F-1-3.컨트롤러, UI 조합  ***/");
+		Iterator<String> urlDsMapIter = urlDsMap.keySet().iterator();
+		String urlDs = "";
+		Iterator<String> urlUiMapIter = urlUiMap.keySet().iterator();
+		String urlUi = "";
+		DataSet dsRowForCopy = null;
+		boolean isUiAdded = false;
+		while(urlDsMapIter.hasNext()) {
+			urlDs = urlDsMapIter.next();
+			dsRowList = urlDsMap.get(urlDs);
+			dsRow = dsRowList.get(0);
+
+			isUiAdded = false;
+			urlUiMapIter = urlUiMap.keySet().iterator();
+			while(urlUiMapIter.hasNext()) {
+				urlUi = urlUiMapIter.next();
+				if( urlUi.indexOf(urlDs)>-1 ) {
+					uiVoList = urlUiMap.get(urlUi);
+					for(UiVo uiVo : uiVoList) {
+						dsRowForCopy = dsRow.copy();
+						dsRowForCopy.setDatum("UI_ID", uiVo.getUiId());
+						dsRowForCopy.setDatum("UI_NAME", StringUtil.nullCheck(uiVo.getUiName(), "") );
+						dsMetrixList.add(dsRowForCopy);
+						isUiAdded = true;
+					}
+				}
+			}
+			if(!isUiAdded) {
+				dsMetrixList.add(dsRow);
+			}
+		}
+		ds.setDataSetList("METRIX", dsMetrixList);
 
 		return ds;
 	}
 	
 	
-	protected List<DataSet> makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel) throws Exception {
-		List<DataSet> dsList = new ArrayList<DataSet>();		
+	protected void makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel, List<String> callStackList) throws Exception {
+		callStackList.add(functionId);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 		String classId = "";
 		if( functionId.indexOf(".")>-1 ) {
@@ -1223,6 +1405,10 @@ public class SvcAnalyzer extends BaseObject{
 		ClzzVo clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
 		
 		/********************************* 메소드별 사용할 항목 시작 *********************************/
+		if(callStackList.size() == 1) {
+			getLogger().info("/*** F-2-1.functionId["+callStackList.get(0)+"] 메소드별 사용할 항목 추출 ***/");
+		}
+		
 		dsRow.setDatum("FUNCTION_ID_" + callLevel, mtdVo.getFunctionId());		// 기능ID
 		dsRow.setDatum("FUNCTION_NAME_" + callLevel, mtdVo.getMethodName());	// 기능명
 		dsRow.setDatum("CLASS_KIND_" + callLevel, "");							// 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)
@@ -1259,23 +1445,20 @@ public class SvcAnalyzer extends BaseObject{
 		/********************************* 메소드별 사용할 항목 끝 *********************************/
 
 		/********************************* 호출메소드 재귀적 처리 시작 *********************************/
+		if(callStackList.size() == 1) {
+			getLogger().info("/*** F-2-2.functionId["+callStackList.get(0)+"] 호출메소드 재귀적 처리  ***/");
+		}
+		
 		if( mtdVo.getCallMtdVoList() != null ) {
 			int childCallLevel = callLevel+1;
 			for(int i=0; i<mtdVo.getCallMtdVoList().size(); i++) {
 				String callFunctionId = mtdVo.getCallMtdVoList().get(i);
-				if(i==0) {
-					dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, callFunctionId, childCallLevel));
-				}else {
-					DataSet dsRowCopy = dsRow.copy();
-					dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRowCopy, callFunctionId, childCallLevel));
+				if( !callStackList.contains(callFunctionId) ) {
+					this.makeAnalyzeCallChainFileConts(dsRow, callFunctionId, childCallLevel, callStackList);
 				}
 			}
-		}else {
-			dsList.add(dsRow);
 		}
 		/********************************* 호출메소드 재귀적 처리 끝 *********************************/
-		
-		return dsList;
 	}
 	
 	protected String makeAnalyzeTblInfo(String input) throws Exception {

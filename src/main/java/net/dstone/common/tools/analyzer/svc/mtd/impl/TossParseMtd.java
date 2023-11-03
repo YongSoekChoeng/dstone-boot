@@ -145,7 +145,6 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 	@Override
 	public List<String> getCallTblList(String analyzedMethodFile) throws Exception {
 		List<String> callTblList = new ArrayList<String>();
-		
 		// 메소드VO 정보 획득
 		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
@@ -163,23 +162,53 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 		String mtdBody = "";
 		String keyword = "";
 		
+		String queryKeyNameSpace = "";
+		String queryKeyQueryId = "";
+		boolean isUsed = false;
+		
 		if( !StringUtil.isEmpty(mtdVo.getMethodBody()) ) {
 			mtdBody = mtdVo.getMethodBody();
 			String[] lines = StringUtil.toStrArray(mtdBody, "\n");
 			for(String line : lines) {
 				keyword = "";
 				for(String queryKey : queryKeyList) {
+					queryKeyNameSpace = "";
+					queryKeyQueryId = "";
+					isUsed = false;
 					/********************************************
 					아래와 같이 queryKey => keyword 로 치환하는 작업.
-					queryKey 	: net.dstone.sample.AdminDao_listUser
-					keyword 	: "net.dstone.sample.AdminDao.listUser"
+					queryKey 	: Board_deleteBoard
+					keyword 	: "Board.deleteBoard" 혹은 getBoardmapper() + "deleteBoard"
 					********************************************/
+					// CASE-1. 정석적인 경우. 예)getSqlSession().insert("Board.deleteBoard", boardVO).
 					keyword = queryKey;
 					if( keyword.indexOf("_")>-1 ) {
 						keyword = keyword.substring(0, keyword.lastIndexOf("_")) + "." + keyword.substring(keyword.lastIndexOf("_")+1);
 					}
 					keyword = "\"" + keyword + "\"";
 					if( line.indexOf(keyword) > -1 ) {
+						isUsed = true;
+					}
+					// CASE-2. 메소드로 감싼 경우. 예)getSqlSession().insert(getBoardmapper() + "deleteBoard", boardVO). getBoardmapper()는 "Board."를 반환.
+if("kr.co.gnx.system.commoncode.CommonCodeDAO.SelectCommonCodeList".equals(functionId) && "CommonCode_SelectCommonCodeList".equals(queryKey)) {
+	System.out.println("isUsed["+isUsed+"]" + " queryKey["+queryKey+"]");
+}
+					if( !isUsed && queryKey.indexOf("_")>-1 ) {
+						keyword = queryKey; 													// Board_deleteBoard				
+						queryKeyNameSpace = keyword.substring(0, keyword.lastIndexOf("_"));		// Board
+						queryKeyNameSpace = "get"+queryKeyNameSpace+"mapper()";
+						queryKeyQueryId = keyword.substring(keyword.lastIndexOf("_")+1);		// deleteBoard
+						queryKeyQueryId = "\"" + queryKeyQueryId + "\"";
+						keyword = queryKeyNameSpace + "+" + queryKeyQueryId;
+						keyword = StringUtil.replace(StringUtil.trimTextForParse(keyword), " ", "").toUpperCase();
+if("kr.co.gnx.system.commoncode.CommonCodeDAO.SelectCommonCodeList".equals(functionId) && "CommonCode_SelectCommonCodeList".equals(queryKey)) {
+	System.out.println("keyword["+keyword+"]" + " line["+StringUtil.replace(StringUtil.trimTextForParse(line), " ", "").toUpperCase()+"]");
+}
+						if( StringUtil.replace(StringUtil.trimTextForParse(line), " ", "").toUpperCase().indexOf(keyword) > -1 ) {
+							isUsed = true;
+						}
+					}
+					if(isUsed) {
 						queryVo = ParseUtil.readQueryVo(queryKey, AppAnalyzer.WRITE_PATH + "/query");
 						if(queryVo != null && queryVo.getCallTblList() != null && queryVo.getCallTblList().size() > 0) {
 							String tblKey = "";

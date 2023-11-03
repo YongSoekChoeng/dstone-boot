@@ -92,16 +92,37 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static int JOB_KIND_41_ANALYZE_UI		     = 41;
 	/**
-	 * 작업종류 - UI파일로부터 Include된 타 UI파일목록의 추출
+	 * 작업종류 - UI파일로부터 링크정보 추출
 	 */
-	public static int JOB_KIND_42_ANALYZE_UI_INCLUDE     = 42;
+	public static int JOB_KIND_42_ANALYZE_UI_LINK		 = 42;
 	/**
-	 * 작업종류 - UI파일로부터 링크 추출
+	 * 작업종류 - METRIX 추출
 	 */
-	public static int JOB_KIND_42_ANALYZE_UI_LINK        = 42;
+	public static int JOB_KIND_51_ANALYZE_SAVE_METRIX    = 51;
+
 	
 	/**
-	 * WORKER_THREAD_NUM - 분석작업을 진행 할 쓰레드 갯수
+	 * WORKER_THREAD_KIND_SINGLE - 분석작업을 진행 할 쓰레드핸들러 종류(싱글 쓰레드풀 생성)
+	 */
+	public static int WORKER_THREAD_KIND_SINGLE = 1;
+
+	/**
+	 * WORKER_THREAD_KIND_FIXED - 분석작업을 진행 할 쓰레드핸들러 종류(Fixed 쓰레드풀 생성)
+	 */
+	public static int WORKER_THREAD_KIND_FIXED = 2;
+
+	/**
+	 * WORKER_THREAD_KIND_CACHED - 분석작업을 진행 할 쓰레드핸들러 종류(Cached 쓰레드풀 생성)
+	 */
+	public static int WORKER_THREAD_KIND_CACHED = 3;
+
+	/**
+	 * WORKER_THREAD_KIND - 분석작업을 진행 할 쓰레드핸들러 종류
+	 */
+	public static int WORKER_THREAD_KIND = WORKER_THREAD_KIND_FIXED;
+
+	/**
+	 * WORKER_THREAD_NUM - 분석작업을 진행 할 쓰레드 갯수(Fixed 쓰레드풀 일 경우에만 유효)
 	 */
 	public static int WORKER_THREAD_NUM = 1;
 
@@ -173,21 +194,23 @@ public class AppAnalyzer extends BaseObject{
 			FileUtil.deleteDir(AppAnalyzer.WRITE_PATH + "/ui" );
 
 			/*** 파일정보 생성 ***/
+			/*
 			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/class" );
 			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/query" );
 			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/method" );
 			FileUtil.makeDir(AppAnalyzer.WRITE_PATH + "/ui" );
+			*/
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void analyzeApp(int jobKind) {
+	public void analyzeApp(int jobKind, boolean isUnitOnly) {
 		try {
 			
 			/*** 서버소스 분석 ***/
-			svcAnalyzer.analyze(jobKind);
+			svcAnalyzer.analyze(jobKind, isUnitOnly);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

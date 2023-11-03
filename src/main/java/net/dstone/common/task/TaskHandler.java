@@ -34,6 +34,7 @@ public class TaskHandler extends BaseObject{
 	 * @throws Exception
 	 */
 	public TaskHandler addSingleExecutorService(String executorServiceId) throws Exception{
+		getLogger().info("TaskHandler.addSingleExecutorService("+executorServiceId+") has been called !!!");
 		if(!EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
 			ExecutorService executorService = null;
 	        executorService = Executors.newSingleThreadExecutor(threadFactory);
@@ -51,6 +52,7 @@ public class TaskHandler extends BaseObject{
 	 * @throws Exception
 	 */
 	public TaskHandler addFixedExecutorService(String executorServiceId, int threadNumWhenFixed) throws Exception{
+		getLogger().info("TaskHandler.addFixedExecutorService("+executorServiceId+", "+threadNumWhenFixed+") has been called !!!");
 		if(!EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
 			ExecutorService executorService = null;
 			if(threadNumWhenFixed < 1) {
@@ -70,6 +72,7 @@ public class TaskHandler extends BaseObject{
 	 * @throws Exception
 	 */
 	public TaskHandler addCachedExecutorService(String executorServiceId) throws Exception{
+		getLogger().info("TaskHandler.addCachedExecutorService("+executorServiceId+") has been called !!!");
 		if(!EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
 			ExecutorService executorService = null;
 	        executorService = Executors.newCachedThreadPool(threadFactory);
@@ -90,6 +93,7 @@ public class TaskHandler extends BaseObject{
 	 * @throws Exception
 	 */
 	public TaskHandler addCustomExecutorService(String executorServiceId, int corePoolSize, int maximumPoolSize, int queueCapacity, long keepAliveTime) throws Exception{
+		getLogger().info("TaskHandler.addCustomExecutorService("+executorServiceId+", "+corePoolSize+", "+maximumPoolSize+" ,"+queueCapacity+", "+keepAliveTime+") has been called !!!");
 		if(!EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
 			ThreadPoolExecutor executorService;
 			BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(queueCapacity);
