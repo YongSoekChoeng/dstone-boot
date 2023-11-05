@@ -371,7 +371,9 @@ public class SqlUtil extends BaseObject {
 				sql = paramSql.toUpperCase(); 
 				sql = StringUtil.replace(sql, "\r\n", " ");
 				sql = StringUtil.replace(sql, "\n", " ");
-				sql = StringUtil.trimTextForParse(sql);
+				sql = StringUtil.replace(sql, "\t", " ");
+				sql = StringUtil.replace(sql, "   ", " ");
+				sql = StringUtil.replace(sql, "  ", " ");
 				sql = sql.toUpperCase().trim();
 				for(String tbl : allTblList) {
 					tbl = tbl.toUpperCase();

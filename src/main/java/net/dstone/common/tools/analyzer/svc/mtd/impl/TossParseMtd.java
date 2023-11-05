@@ -11,6 +11,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
@@ -164,6 +165,7 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 		
 		String queryKeyNameSpace = "";
 		String queryKeyQueryId = "";
+		String getterName = "";
 		boolean isUsed = false;
 		
 		if( !StringUtil.isEmpty(mtdVo.getMethodBody()) ) {
@@ -174,6 +176,7 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 				for(String queryKey : queryKeyList) {
 					queryKeyNameSpace = "";
 					queryKeyQueryId = "";
+					getterName = "";
 					isUsed = false;
 					/********************************************
 					아래와 같이 queryKey => keyword 로 치환하는 작업.
@@ -190,20 +193,16 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 						isUsed = true;
 					}
 					// CASE-2. 메소드로 감싼 경우. 예)getSqlSession().insert(getBoardmapper() + "deleteBoard", boardVO). getBoardmapper()는 "Board."를 반환.
-if("kr.co.gnx.system.commoncode.CommonCodeDAO.SelectCommonCodeList".equals(functionId) && "CommonCode_SelectCommonCodeList".equals(queryKey)) {
-	System.out.println("isUsed["+isUsed+"]" + " queryKey["+queryKey+"]");
-}
-					if( !isUsed && queryKey.indexOf("_")>-1 ) {
-						keyword = queryKey; 													// Board_deleteBoard				
-						queryKeyNameSpace = keyword.substring(0, keyword.lastIndexOf("_"));		// Board
-						queryKeyNameSpace = "get"+queryKeyNameSpace+"mapper()";
-						queryKeyQueryId = keyword.substring(keyword.lastIndexOf("_")+1);		// deleteBoard
-						queryKeyQueryId = "\"" + queryKeyQueryId + "\"";
-						keyword = queryKeyNameSpace + "+" + queryKeyQueryId;
-						keyword = StringUtil.replace(StringUtil.trimTextForParse(keyword), " ", "").toUpperCase();
-if("kr.co.gnx.system.commoncode.CommonCodeDAO.SelectCommonCodeList".equals(functionId) && "CommonCode_SelectCommonCodeList".equals(queryKey)) {
-	System.out.println("keyword["+keyword+"]" + " line["+StringUtil.replace(StringUtil.trimTextForParse(line), " ", "").toUpperCase()+"]");
-}
+					if( !isUsed && queryKey.indexOf("_")>-1  && ( line.indexOf("getSqlSession().")>-1 || line.indexOf("sqlSession.")>-1 ) ) {
+						keyword = queryKey;
+						queryKeyNameSpace = StringUtil.toStrArray(keyword, "_")[0]; // Board
+						getterName = this.getGetterMethodNameByNameSpace(queryKeyNameSpace)+"()"; // getBoardmapper()
+						queryKeyQueryId = StringUtil.toStrArray(keyword, "_")[1]; // deleteBoard
+						queryKeyQueryId = "\"" + queryKeyQueryId + "\"";	// "deleteBoard"
+						
+						keyword = getterName + "+" + queryKeyQueryId; // getBoardmapper()+"deleteBoard"
+						keyword = keyword.toUpperCase(); // GETBOARDMAPPER()+"DELETEBOARD"
+						keyword = StringUtil.replace(StringUtil.trimTextForParse(keyword), " ", "");
 						if( StringUtil.replace(StringUtil.trimTextForParse(line), " ", "").toUpperCase().indexOf(keyword) > -1 ) {
 							isUsed = true;
 						}
@@ -232,55 +231,76 @@ if("kr.co.gnx.system.commoncode.CommonCodeDAO.SelectCommonCodeList".equals(funct
 		return callTblList;
 	}
 	
-	private static Map<String, String> MEMBER_VALUE_MAP = new HashMap<String, String>();
-	private static Map<String, String> GETTER_MAPPER_MAP = new HashMap<String, String>();
-	
-	private String getTableSpace(String getterName) {
-		String tableSpace = "";
-		// getBoardmapper()
-		
-		if(MEMBER_VALUE_MAP.size() == 0) {
-
-			String[] lines = FileUtil.readFileByLines( AppAnalyzer.CLASS_ROOT_PATH + "/kr/co/gnx/base/BaseDAO.java");
-			if( lines != null ) {
-				String member = "";
-				String memberVal = "";
-				String keyword = "";
-				String[] div = {" ", ";"};
-				
-				for(String line : lines) {
-					line = line.trim();
-					line = StringUtil.trimTextForParse(line);
-					keyword = "private static final String ";
-					if(line.startsWith(keyword)) {
-						member = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
-						line = line.substring(line.indexOf(member) + member.length());
-						keyword = "=";
-						memberVal = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
-						memberVal = net.dstone.common.utils.StringUtil.replace(memberVal, "\"", "");
+	private static Map<String, String> METHOD_NAME_VALUE_MAP = new HashMap<String, String>();
+	private static Map<String, String> METHOD_VALUE_NAME_MAP = new HashMap<String, String>();
+	static {
+		try {
+			if(METHOD_NAME_VALUE_MAP.size() == 0 || METHOD_VALUE_NAME_MAP.size() == 0) {
+				Map<String, String> MEMBER_VALUE_MAP = new HashMap<String, String>();
+				com.github.javaparser.ast.CompilationUnit cu = com.github.javaparser.StaticJavaParser.parse(new java.io.File( AppAnalyzer.CLASS_ROOT_PATH + "/kr/co/gnx/base/BaseDAO.java" ));
+				java.util.List<com.github.javaparser.ast.body.FieldDeclaration> fieldDeclarationList = cu.findAll(com.github.javaparser.ast.body.FieldDeclaration.class);
+				String fieldName = "";
+				String fieldValue = "";
+				for(com.github.javaparser.ast.body.FieldDeclaration fieldDec : fieldDeclarationList) {
+					fieldName = "";
+					fieldValue = "";
+					com.github.javaparser.ast.body.VariableDeclarator varDec = fieldDec.getVariables().get(0);
+					fieldName = varDec.getNameAsString();
+					if( fieldDec.isPrivate() && fieldDec.isStatic() && fieldDec.isFinal() && fieldName.toLowerCase().endsWith("mapper") ){
+						java.util.List<com.github.javaparser.ast.Node> nodeList = varDec.getChildNodes();
+						if(nodeList.size()>2) {
+							fieldValue = nodeList.get(2).toString();
+							fieldValue = net.dstone.common.utils.StringUtil.replace(fieldValue, "\"", "");
+							fieldValue = net.dstone.common.utils.StringUtil.replace(fieldValue, ".", "");
+							MEMBER_VALUE_MAP.put(fieldName, fieldValue);
+						}
 					}
-					MEMBER_VALUE_MAP.put(member, memberVal);
 				}
-
-				for(String line : lines) {
-					line = line.trim();
-					line = StringUtil.trimTextForParse(line);
-					keyword = "public static String get";
-					if(line.startsWith(keyword)) {
-						member = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
-						line = line.substring(line.indexOf(member) + member.length());
-						keyword = "=";
-						memberVal = net.dstone.common.utils.StringUtil.nextWord(line, keyword, div);
-						memberVal = net.dstone.common.utils.StringUtil.replace(memberVal, "\"", "");
+				
+				java.util.List<com.github.javaparser.ast.body.MethodDeclaration> methodDeclarationList = cu.findAll(com.github.javaparser.ast.body.MethodDeclaration.class);
+				String methodName = "";
+				String methodReturnValue = "";
+				String methodBody = "";
+				String[] div = {";"};
+				for(com.github.javaparser.ast.body.MethodDeclaration methodDec : methodDeclarationList) {
+					methodName = methodDec.getNameAsString();
+					methodReturnValue = "";
+					methodBody = methodDec.getBody().get().toString();
+					if( methodDec.isStatic() && methodName.toLowerCase().startsWith("get") && methodName.toLowerCase().endsWith("mapper") && "String".equals(methodDec.getTypeAsString()) ){
+						methodReturnValue = net.dstone.common.utils.StringUtil.nextWord(methodBody, "return ", div);
+						METHOD_NAME_VALUE_MAP.put(methodName, MEMBER_VALUE_MAP.get(methodReturnValue));
+						METHOD_VALUE_NAME_MAP.put(MEMBER_VALUE_MAP.get(methodReturnValue), methodName);
 					}
-					MEMBER_VALUE_MAP.put(member, memberVal);
 				}
 			}
-			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		
-		return tableSpace;
+	}
+	
+	@SuppressWarnings("unused")
+	private String getNameSpaceByGetterMethodName(String getterMethodName) throws Exception {
+		String nameSpace = "";
+		if( getterMethodName.endsWith("()") ) {
+			getterMethodName = net.dstone.common.utils.StringUtil.replace(getterMethodName, "()", "");
+		}
+		if(METHOD_NAME_VALUE_MAP.containsKey(getterMethodName)) {
+			nameSpace = METHOD_NAME_VALUE_MAP.get(getterMethodName);
+		}
+		return nameSpace;
+	}
+
+	private String getGetterMethodNameByNameSpace(String nameSpace) throws Exception {
+		String getterMethodName = "";
+		if( nameSpace.endsWith("_") ) {
+			getterMethodName = nameSpace;
+			getterMethodName = net.dstone.common.utils.StringUtil.replace(getterMethodName, "_", "");
+			getterMethodName = net.dstone.common.utils.StringUtil.replace(getterMethodName, ".", "");
+		}
+		if(METHOD_VALUE_NAME_MAP.containsKey(nameSpace)) {
+			getterMethodName = METHOD_VALUE_NAME_MAP.get(nameSpace);
+		}
+		return getterMethodName;
 	}
 
 }

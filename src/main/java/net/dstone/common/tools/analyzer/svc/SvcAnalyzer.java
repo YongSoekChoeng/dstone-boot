@@ -2,6 +2,7 @@ package net.dstone.common.tools.analyzer.svc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1232,7 +1233,6 @@ public class SvcAnalyzer extends BaseObject{
 		
 		StringBuffer conts = new StringBuffer();
 		List<DataSet> dsList = new ArrayList<DataSet>();
-		List<DataSet> dsCopyList = null;
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
 
@@ -1243,11 +1243,13 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** F-2.호출구조 세팅 시작 ***/");
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
 			dsList = ds.getDataSetList("METRIX");
+			List<DataSet> dsCopyList = new ArrayList<DataSet>();
 			for(int i=0; i<dsList.size(); i++) {
 				dsRow = dsList.get(i);
 				String functionId = dsRow.getDatum("BASIC_ID");
-				this.makeAnalyzeCallChainFileConts(dsRow, functionId, 1, new ArrayList<String>());
+				dsCopyList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, functionId, 1, new ArrayList<String>()));
 			}
+			ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsCopyList);
 		}
 		getLogger().info("/*** F-2.호출구조 세팅 끝 ***/");
 
@@ -1315,7 +1317,7 @@ public class SvcAnalyzer extends BaseObject{
 		if( analyzedClassFileList != null ) {
 			for(String classId : analyzedClassFileList) {		
 				clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");	
-				if( ClzzKind.CT.getClzzKindCd().equals(clzzVo.getClassKind().getClzzKindCd()) ) {
+				if( clzzVo.getClassKind() != null && ClzzKind.CT.getClzzKindCd().equals(clzzVo.getClassKind().getClzzKindCd()) ) {
 					analyzedMethodFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/method", clzzVo.getClassId(), false);
 					if( analyzedMethodFileList != null ) {
 						for(String functionId : analyzedMethodFileList) {
@@ -1395,7 +1397,8 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	
-	protected void makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel, List<String> callStackList) throws Exception {
+	protected List<DataSet> makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel, List<String> callStackList) throws Exception {
+		List<DataSet> dsList = new ArrayList<DataSet>();
 		callStackList.add(functionId);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 		String classId = "";
@@ -1432,15 +1435,19 @@ public class SvcAnalyzer extends BaseObject{
 				}
 				if(!StringUtil.isEmpty(tblId) && tblId.indexOf("!")>-1) {
 					words = StringUtil.toStrArray(tblId, "!");
-					tblDs = DbUtil.getTabs(AppAnalyzer.DBID, words[0]);
-					if( tblDs.getDataSetRowCount("TBL_LIST") > 0 && !StringUtil.isEmpty(tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT"))) {
-						tblNm = tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT");
-						tblId = words[0] + "(" + tblNm + ")" + "!" + words[1];
+					if(AppAnalyzer.IS_TABLE_NAME_FROM_DB) {
+						tblDs = DbUtil.getTabs(AppAnalyzer.DBID, words[0]);
+						if( tblDs.getDataSetRowCount("TBL_LIST") > 0 && !StringUtil.isEmpty(tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT"))) {
+							tblNm = tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT");
+							tblId = words[0] + "(" + tblNm + ")" + "!" + words[1];
+						}
+					}else {
+						tblId = words[0];
 					}
 				}
 				tblBuff.append(tblId);
 			}
-			dsRow.setDatum("CALL_TBL", tblBuff.toString());						// 호출테이블
+			dsRow.setDatum("CALL_TBL [테이블명-S:조회, I:입력, U:수정, D:삭제]", tblBuff.toString());						// 호출테이블
 		}
 		/********************************* 메소드별 사용할 항목 끝 *********************************/
 
@@ -1448,17 +1455,32 @@ public class SvcAnalyzer extends BaseObject{
 		if(callStackList.size() == 1) {
 			getLogger().info("/*** F-2-2.functionId["+callStackList.get(0)+"] 호출메소드 재귀적 처리  ***/");
 		}
-		
-		if( mtdVo.getCallMtdVoList() != null ) {
+		if( mtdVo.getCallMtdVoList() != null && mtdVo.getCallMtdVoList().size() > 0 ) {
 			int childCallLevel = callLevel+1;
-			for(int i=0; i<mtdVo.getCallMtdVoList().size(); i++) {
-				String callFunctionId = mtdVo.getCallMtdVoList().get(i);
-				if( !callStackList.contains(callFunctionId) ) {
-					this.makeAnalyzeCallChainFileConts(dsRow, callFunctionId, childCallLevel, callStackList);
+			DataSet dsRowCopy = null;
+			int index = 0;
+			for(String callFunctionId : mtdVo.getCallMtdVoList()) {
+				if(FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/method/" + callFunctionId + ".txt")) {
+					if( !callStackList.contains(callFunctionId) ) {
+						List<String> callStackListCopy = new ArrayList<String>();
+						callStackListCopy.addAll(callStackList);
+						if(index == 0) {
+							dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, callFunctionId, childCallLevel, callStackListCopy));
+						}else {
+							dsRowCopy = dsRow.copy();
+							dsList.addAll(this.makeAnalyzeCallChainFileConts(dsRowCopy, callFunctionId, childCallLevel, callStackListCopy));
+						}
+						index++;
+					}
 				}
+			}
+		}else {
+			if(FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/method/" + functionId + ".txt")) {
+				dsList.add(dsRow);
 			}
 		}
 		/********************************* 호출메소드 재귀적 처리 끝 *********************************/
+		return dsList;
 	}
 	
 	protected String makeAnalyzeTblInfo(String input) throws Exception {
