@@ -94,7 +94,7 @@ public class MybatisParseQuery implements ParseQuery {
 						sqlBody = ParseUtil.removeMybatisTagFromSql(xml, nodeExp, true);
 						// 테이블명을 파싱하기 좋게 SQL을 간소화.
 						sqlBody = ParseUtil.removeBasicTagFromSql(sqlBody, row.get("SQL_KIND"));
-						row.put("SQL_BODY", sqlBody);
+						row.put("SQL_BODY", sqlBody.toUpperCase());
 
 						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
 							qList.add(row);

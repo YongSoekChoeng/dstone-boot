@@ -42,13 +42,17 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static String WRITE_PATH;
 	/**
-	 * 테이블명을 DB로부터 읽어올지 여부
+	 * 테이블목록을 DB로부터 읽어올지 여부
 	 */
-	public static boolean IS_TABLE_NAME_FROM_DB;
+	public static boolean IS_TABLE_LIST_FROM_DB;
 	/**
 	 * 테이블명을 DB로부터 읽어올때 적용할 프리픽스(IS_TABLE_NAME_FROM_DB 가 true일 경우에만 유효)
 	 */
 	public static String TABLE_NAME_LIKE_STR;
+	/**
+	 * 작업결과를 DB로 저장할지 여부
+	 */
+	public static boolean IS_SAVE_TO_DB;
 	
 	
 	/**
@@ -140,12 +144,13 @@ public class AppAnalyzer extends BaseObject{
 	 * @param excludePackagePattern - 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.)
 	 * @param queryRootPath - 쿼리 루트 디렉토리
 	 * @param writePath - 중간산출물 저장디렉토리
-	 * @param isTableNameFromDb - 테이블명을 DB로부터 읽어올지 여부
+	 * @param isTableListFromDb - 테이블목록을 DB로부터 읽어올지 여부
 	 * @param tableNameLikeStr - 테이블명을 DB로부터 읽어올때 적용할 프리픽스(isTableNameFromDb 가 true일 경우에만 유효)
 	 * @param workerThreadNum - 분석작업을 진행 할 쓰레드 갯수
+	 * @param isSaveToDb - 작업결과를 DB에 저장할지 여부
 	 * @return
 	 */
-	public static AppAnalyzer getInstance(String DBID, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath, boolean isTableNameFromDb, String tableNameLikeStr, int workerThreadNum){
+	public static AppAnalyzer getInstance(String DBID, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath, boolean isTableListFromDb, String tableNameLikeStr, int workerThreadNum, boolean isSaveToDb){
 		if(analizer == null){
 			analizer = new AppAnalyzer();
 			
@@ -175,9 +180,11 @@ public class AppAnalyzer extends BaseObject{
 			if(writePath.endsWith("/")) {writePath = writePath.substring(0, writePath.lastIndexOf("/"));}
 			AppAnalyzer.WRITE_PATH = writePath;
 			
-			AppAnalyzer.IS_TABLE_NAME_FROM_DB = isTableNameFromDb;
+			AppAnalyzer.IS_TABLE_LIST_FROM_DB = isTableListFromDb;
 			
 			AppAnalyzer.TABLE_NAME_LIKE_STR = tableNameLikeStr;
+			
+			AppAnalyzer.IS_SAVE_TO_DB = isSaveToDb;
 
 			AppAnalyzer.WORKER_THREAD_NUM = workerThreadNum;
 		}

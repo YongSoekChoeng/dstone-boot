@@ -19,7 +19,7 @@ import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.XmlUtil;
 
-public class TossParseQuery implements ParseQuery {
+public class TossParseQuery extends MybatisParseQuery implements ParseQuery {
 	
 	/**
 	 * 파일로부터 쿼리KEY(아이디)를 추출. 쿼리KEY는 파일명으로 사용됨.
@@ -28,16 +28,7 @@ public class TossParseQuery implements ParseQuery {
 	 */
 	@Override
 	public String getQueryKey(Map<String, String> queryInfo) throws Exception {
-		String queryKey = "";
-		if( queryInfo != null ) {
-			// KEY
-			if(StringUtil.isEmpty(queryInfo.get("SQL_NAMESPACE"))) {
-				queryKey = "NO_NAMESPACE" + "_" + queryInfo.get("SQL_ID");
-			}else {
-				queryKey = queryInfo.get("SQL_NAMESPACE") + "_" + queryInfo.get("SQL_ID");
-			}
-		}
-		return queryKey;
+		return super.getQueryKey(queryInfo);
 	}
 	
 	/**
@@ -51,59 +42,7 @@ public class TossParseQuery implements ParseQuery {
 	 */
 	@Override
 	public List<Map<String, String>> getQueryInfoList(String queryFile) {
-		List<Map<String, String>> qList = new ArrayList<Map<String, String>>();
-		if(FileUtil.isFileExist(queryFile)) {
-			XmlUtil xml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
-			String rootKeyword = "";
-			List<String> queryKinds = new ArrayList<String>();
-			queryKinds.add("select");
-			queryKinds.add("insert");
-			queryKinds.add("update");
-			queryKinds.add("delete");
-			queryKinds.add("sql");
-			
-			// Mibatis
-			if(xml.hasNode("mapper")) {
-				rootKeyword = "mapper";
-			}else if(xml.hasNode("Mapper")) {
-					rootKeyword = "Mapper";
-			// Ibatis
-			}else if(xml.hasNode("sqlMap")) {
-				rootKeyword = "sqlMap";
-			}else if(xml.hasNode("SqlMap")) {
-				rootKeyword = "SqlMap";
-			}
-			if( xml.hasNode(rootKeyword) && xml.getNode(rootKeyword).getAttributes() != null ) {
-				String namespace = xml.getNode(rootKeyword).getAttributes().getNamedItem("namespace").getTextContent();
-				String nodeExp = "/"+rootKeyword+"/*";
-				NodeList nodeList = xml.getNodeListByExp(nodeExp);
-				if( nodeList != null ){
-					Map<String, String> row = new HashMap<String, String>();
-					String sqlBody = "";
-					for(int i=0; i<nodeList.getLength(); i++){
-						Node item =	nodeList.item(i);
-						if( !queryKinds.contains(item.getNodeName()) ) {continue;}
-						
-						row = new HashMap<String, String>();
-						row.put("SQL_NAMESPACE", namespace);
-						row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
-						row.put("SQL_KIND", item.getNodeName().toUpperCase());
-						
-						nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
-						// Mybatis/Ibatis 쿼리의 내부 태그 제거.
-						sqlBody = ParseUtil.removeMybatisTagFromSql(xml, nodeExp, true);
-						// 테이블명을 파싱하기 좋게 SQL을 간소화.
-						sqlBody = ParseUtil.removeBasicTagFromSql(sqlBody, row.get("SQL_KIND"));
-						row.put("SQL_BODY", sqlBody.toUpperCase());
-
-						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
-							qList.add(row);
-						}
-					}
-				}
-			}
-		}
-		return qList;
+		return super.getQueryInfoList(queryFile);
 	}
 
 	/**
@@ -114,21 +53,7 @@ public class TossParseQuery implements ParseQuery {
 	 */
 	@Override
 	public List<String> getTblInfoList(String queryInfoFile, List<String> allTblList) throws Exception {
-		List<String> tblNameList = new ArrayList<String>();
-		QueryVo queryVo = ParseUtil.readQueryVo(FileUtil.getFileName(queryInfoFile, false), AppAnalyzer.WRITE_PATH + "/query");
-		if(queryVo != null) {
-			if(!StringUtil.isEmpty(queryVo.getQueryBody())) {
-				if(allTblList != null && allTblList.size() > 0) {
-					tblNameList = SqlUtil.getTableNamesWithTblList(queryVo.getQueryBody(), allTblList);
-				}else {
-					tblNameList = SqlUtil.getTableNames(queryVo.getQueryBody());
-				}
-			}
-			if(tblNameList.isEmpty()) {
-				LogUtil.sysout("DefaultQuery.getTblInfoList :: 파일["+queryInfoFile+"] 을 분석하였으나 테이블명 조회 하지 못함.");
-			}
-		}
-		return tblNameList;
+		return super.getTblInfoList(queryInfoFile, allTblList);
 	}
 
 }

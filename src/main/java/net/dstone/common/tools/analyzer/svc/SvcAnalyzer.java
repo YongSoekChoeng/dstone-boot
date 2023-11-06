@@ -2,14 +2,11 @@ package net.dstone.common.tools.analyzer.svc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.naming.java.javaURLContextFactory;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.task.TaskHandler;
@@ -445,12 +442,10 @@ public class SvcAnalyzer extends BaseObject{
 			}
 			
 			/*** B-2.쿼리분석파일리스트 에 호출테이블ID정보목록 추가 ***/
-			/* DB에서 테이블ID를 가지고 오고자 할 때 주석을 제거 */
-			if(AppAnalyzer.IS_TABLE_NAME_FROM_DB) {
+			if(AppAnalyzer.IS_TABLE_LIST_FROM_DB) {
+				allTblList = DbUtil.getTabs(AppAnalyzer.DBID, AppAnalyzer.TABLE_NAME_LIKE_STR).getDataSetListVal("TBL_LIST", "TABLE_NAME");
+			}else {
 				allTblList = ParseUtil.getMannalTableList();
-				if( allTblList == null || allTblList.size() == 0 ) {
-					allTblList = DbUtil.getTabs(AppAnalyzer.DBID, AppAnalyzer.TABLE_NAME_LIKE_STR).getDataSetListVal("TBL_LIST", "TABLE_NAME");
-				}
 			}
 			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
 			if(isUnitOnly) {
@@ -1263,7 +1258,7 @@ public class SvcAnalyzer extends BaseObject{
 			}
 		}
 		getLogger().info("/*** F-3.MAX호출레벨 세팅 끝 ***/");
-
+		
 		getLogger().info("/*** F-4.파일생성 시작 ***/");
 		// 컬럼
 		conts.append("UI_ID").append("\t");
@@ -1435,7 +1430,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 				if(!StringUtil.isEmpty(tblId) && tblId.indexOf("!")>-1) {
 					words = StringUtil.toStrArray(tblId, "!");
-					if(AppAnalyzer.IS_TABLE_NAME_FROM_DB) {
+					if(AppAnalyzer.IS_TABLE_LIST_FROM_DB) {
 						tblDs = DbUtil.getTabs(AppAnalyzer.DBID, words[0]);
 						if( tblDs.getDataSetRowCount("TBL_LIST") > 0 && !StringUtil.isEmpty(tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT"))) {
 							tblNm = tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT");
@@ -1447,7 +1442,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 				tblBuff.append(tblId);
 			}
-			dsRow.setDatum("CALL_TBL [테이블명-S:조회, I:입력, U:수정, D:삭제]", tblBuff.toString());						// 호출테이블
+			dsRow.setDatum("CALL_TBL", tblBuff.toString());						// 호출테이블
 		}
 		/********************************* 메소드별 사용할 항목 끝 *********************************/
 
@@ -1484,8 +1479,7 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	protected String makeAnalyzeTblInfo(String input) throws Exception {
-		StringBuffer tblInfo = new StringBuffer();
-		// DMST03002!SELECT|DMOR01003!SELECT|DUAL!SELECT
+		StringBuffer tblInfo = new StringBuffer();	
 		if(!StringUtil.isEmpty(input)) {
 			String[] tblInfoArr = StringUtil.toStrArray(input, "|");
 			if( tblInfoArr != null && tblInfoArr.length > 0 ) {
@@ -1511,6 +1505,10 @@ public class SvcAnalyzer extends BaseObject{
 
 	public void saveToDb(String DBID) {
 		try {
+			if( ! AppAnalyzer.IS_SAVE_TO_DB ) {
+				getLogger().sysout("IS_SAVE_TO_DB["+AppAnalyzer.IS_SAVE_TO_DB+"]가 false 이므로 DB저장은 Skip 합니다.");
+				return;
+			}
 			getLogger().info("/**************************************** G-1.기존데이터삭제 시작 ****************************************/");
 			this.deleteFromDb(DBID);
 			getLogger().info("/**************************************** G-1.기존데이터삭제 끝 ****************************************/");
