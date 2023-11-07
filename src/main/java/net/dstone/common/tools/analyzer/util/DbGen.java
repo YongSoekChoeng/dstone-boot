@@ -37,7 +37,7 @@ public class DbGen {
 			MYSQL_CREATE.append(") COMMENT '클래스'; ").append("\n");
 			/* <기능메서드-TB_FUNC> */
 			MYSQL_CREATE.append("CREATE TABLE TB_FUNC ( ").append("\n");
-			MYSQL_CREATE.append("  FUNC_ID VARCHAR(100) NOT NULL COMMENT '기능ID', ").append("\n");
+			MYSQL_CREATE.append("  FUNC_ID VARCHAR(200) NOT NULL COMMENT '기능ID', ").append("\n");
 			MYSQL_CREATE.append("  MTD_ID VARCHAR(100) COMMENT '메서드ID', ").append("\n");
 			MYSQL_CREATE.append("  MTD_NM VARCHAR(200) COMMENT '메서드명', ").append("\n");
 			MYSQL_CREATE.append("  CLZZ_ID VARCHAR(100) NOT NULL COMMENT '클래스ID', ").append("\n");
@@ -55,14 +55,14 @@ public class DbGen {
 			MYSQL_CREATE.append(") COMMENT '테이블'; ").append("\n");
 			/* <기능간맵핑-TB_FUNC_FUNC_MAPPING> */
 			MYSQL_CREATE.append("CREATE TABLE TB_FUNC_FUNC_MAPPING ( ").append("\n");
-			MYSQL_CREATE.append("  FUNC_ID VARCHAR(100) NOT NULL COMMENT '기능ID', ").append("\n");
-			MYSQL_CREATE.append("  CALL_FUNC_ID VARCHAR(100) NOT NULL COMMENT '호출기능ID', ").append("\n");
+			MYSQL_CREATE.append("  FUNC_ID VARCHAR(200) NOT NULL COMMENT '기능ID', ").append("\n");
+			MYSQL_CREATE.append("  CALL_FUNC_ID VARCHAR(200) NOT NULL COMMENT '호출기능ID', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
 			MYSQL_CREATE.append("  PRIMARY KEY (FUNC_ID, CALL_FUNC_ID) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '기능간맵핑'; ").append("\n");
 			/* <테이블맵핑-TB_FUNC_TBL_MAPPING> */
 			MYSQL_CREATE.append("CREATE TABLE TB_FUNC_TBL_MAPPING ( ").append("\n");
-			MYSQL_CREATE.append("  FUNC_ID VARCHAR(100) NOT NULL COMMENT '기능ID', ").append("\n");
+			MYSQL_CREATE.append("  FUNC_ID VARCHAR(200) NOT NULL COMMENT '기능ID', ").append("\n");
 			MYSQL_CREATE.append("  TBL_ID VARCHAR(100) NOT NULL COMMENT '테이블ID', ").append("\n");
 			MYSQL_CREATE.append("  JOB_KIND VARCHAR(10) COMMENT '작업종류', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
@@ -88,7 +88,7 @@ public class DbGen {
 			MYSQL_CREATE.append("  UI_NM VARCHAR(200) COMMENT '화면명', ").append("\n");
 			MYSQL_CREATE.append("  BASIC_URL VARCHAR(200) COMMENT '기준URL', ").append("\n");
 			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
-				MYSQL_CREATE.append("  FUNCTION_ID_"+i+" VARCHAR(100) COMMENT '기능ID_"+i+"', ").append("\n");
+				MYSQL_CREATE.append("  FUNCTION_ID_"+i+" VARCHAR(200) COMMENT '기능ID_"+i+"', ").append("\n");
 				MYSQL_CREATE.append("  FUNCTION_NAME_"+i+" VARCHAR(200) COMMENT '기능명_"+i+"', ").append("\n");
 				MYSQL_CREATE.append("  CLASS_KIND_"+i+" VARCHAR(2) COMMENT '클래스종류"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
 			}
@@ -103,14 +103,14 @@ public class DbGen {
 			MYSQL_FUNCTION.append("*******************************************************/").append("\n");
 			MYSQL_FUNCTION.append("DROP FUNCTION IF EXISTS FN_FUNC_FUNC_MAPPING;").append("\n");
 			MYSQL_FUNCTION.append("DELIMITER$$").append("\n");
-			MYSQL_FUNCTION.append("CREATE FUNCTION FN_FUNC_FUNC_MAPPING(V_FUNC_ID VARCHAR(100), V_RECURSIVE_YN VARCHAR(1)) RETURNS VARCHAR(4000)").append("\n");
+			MYSQL_FUNCTION.append("CREATE FUNCTION FN_FUNC_FUNC_MAPPING(V_FUNC_ID VARCHAR(200), V_RECURSIVE_YN VARCHAR(1)) RETURNS VARCHAR(4000)").append("\n");
 			MYSQL_FUNCTION.append("DETERMINISTIC").append("\n");
 			MYSQL_FUNCTION.append("READS SQL DATA").append("\n");
 			MYSQL_FUNCTION.append("BEGIN").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE RETURN_CALL_CHAIN VARCHAR(4000) DEFAULT '';").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE FINISHED INTEGER DEFAULT 0;").append("\n");
-			MYSQL_FUNCTION.append("	DECLARE CUR_FUNC_ID VARCHAR(100);	").append("\n");
-			MYSQL_FUNCTION.append("	DECLARE CUR_CALL_FUNC_ID VARCHAR(100);").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_FUNC_ID VARCHAR(200);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_CALL_FUNC_ID VARCHAR(200);").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CALL_CHAIN_UNIT VARCHAR(200);	").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CURSOR_FUNC_FUNC_MAPPING CURSOR FOR").append("\n");
 			MYSQL_FUNCTION.append("		SELECT").append("\n");
@@ -172,13 +172,13 @@ public class DbGen {
 			MYSQL_FUNCTION.append("*******************************************************/").append("\n");
 			MYSQL_FUNCTION.append("DROP FUNCTION IF EXISTS FN_FUNC_TBL_MAPPING;").append("\n");
 			MYSQL_FUNCTION.append("DELIMITER$$").append("\n");
-			MYSQL_FUNCTION.append("CREATE FUNCTION FN_FUNC_TBL_MAPPING(V_FUNC_ID VARCHAR(100), V_RECURSIVE_YN VARCHAR(1)) RETURNS VARCHAR(4000)").append("\n");
+			MYSQL_FUNCTION.append("CREATE FUNCTION FN_FUNC_TBL_MAPPING(V_FUNC_ID VARCHAR(200), V_RECURSIVE_YN VARCHAR(1)) RETURNS VARCHAR(4000)").append("\n");
 			MYSQL_FUNCTION.append("DETERMINISTIC").append("\n");
 			MYSQL_FUNCTION.append("READS SQL DATA").append("\n");
 			MYSQL_FUNCTION.append("BEGIN").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE RETURN_CALL_CHAIN VARCHAR(4000) DEFAULT '';").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE FINISHED INTEGER DEFAULT 0;").append("\n");
-			MYSQL_FUNCTION.append("	DECLARE CUR_FUNC_ID VARCHAR(100);	").append("\n");
+			MYSQL_FUNCTION.append("	DECLARE CUR_FUNC_ID VARCHAR(200);	").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CUR_TBL_ID VARCHAR(100);	").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CUR_JOB_KIND VARCHAR(10);	").append("\n");
 			MYSQL_FUNCTION.append("	DECLARE CALL_CHAIN_UNIT VARCHAR(200);	").append("\n");
@@ -264,7 +264,7 @@ public class DbGen {
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_CLZZ.WORKER_ID IS '입력자ID'; ").append("\n");
 			/* <기능메서드-TB_FUNC> */
 			ORACLE_CREATE.append("CREATE TABLE TB_FUNC ( ").append("\n");
-			ORACLE_CREATE.append("  FUNC_ID VARCHAR2(100) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  FUNC_ID VARCHAR2(200) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  MTD_ID VARCHAR2(100), ").append("\n");
 			ORACLE_CREATE.append("  MTD_NM VARCHAR2(200), ").append("\n");
 			ORACLE_CREATE.append("  CLZZ_ID VARCHAR2(100), ").append("\n");
@@ -294,8 +294,8 @@ public class DbGen {
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_TBL.WORKER_ID IS '입력자ID'; ").append("\n");
 			/* <기능간맵핑-TB_FUNC_FUNC_MAPPING> */
 			ORACLE_CREATE.append("CREATE TABLE TB_FUNC_FUNC_MAPPING ( ").append("\n");
-			ORACLE_CREATE.append("  FUNC_ID VARCHAR2(100) NOT NULL, ").append("\n");
-			ORACLE_CREATE.append("  CALL_FUNC_ID VARCHAR2(100) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  FUNC_ID VARCHAR2(200) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  CALL_FUNC_ID VARCHAR2(200) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  PRIMARY KEY (FUNC_ID, CALL_FUNC_ID) ").append("\n");
 			ORACLE_CREATE.append("); ").append("\n");			
@@ -305,7 +305,7 @@ public class DbGen {
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_FUNC_FUNC_MAPPING.WORKER_ID IS '입력자ID'; ").append("\n");
 			/* <테이블맵핑-TB_FUNC_TBL_MAPPING> */
 			ORACLE_CREATE.append("CREATE TABLE TB_FUNC_TBL_MAPPING ( ").append("\n");
-			ORACLE_CREATE.append("  FUNC_ID VARCHAR2(100) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  FUNC_ID VARCHAR2(200) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  TBL_ID VARCHAR2(100) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  JOB_KIND VARCHAR2(10), ").append("\n");
 			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL, ").append("\n");
@@ -344,7 +344,7 @@ public class DbGen {
 			ORACLE_CREATE.append("  UI_NM VARCHAR2(200), ").append("\n");
 			ORACLE_CREATE.append("  BASIC_URL VARCHAR2(200), ").append("\n");
 			for(int i=1; i<=FUNC_DEPTH_CNT; i++) {
-				ORACLE_CREATE.append("  FUNCTION_ID_"+i+" VARCHAR2(100), ").append("\n");
+				ORACLE_CREATE.append("  FUNCTION_ID_"+i+" VARCHAR2(200), ").append("\n");
 				ORACLE_CREATE.append("  FUNCTION_NAME_"+i+" VARCHAR2(200), ").append("\n");
 				ORACLE_CREATE.append("  CLASS_KIND_"+i+" VARCHAR2(2), ").append("\n");
 			}
@@ -727,6 +727,11 @@ public class DbGen {
 			for(int i=0; i<fileList.length; i++) {
 				String file = fileList[i];
 				clzzVo = ParseUtil.readClassVo(file, subPath);
+
+				if(StringUtil.isEmpty(clzzVo.getClassId())) {
+					continue;
+				}
+				
 				parameterIndex = 0;
 				parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getClassId());	/* 클래스ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, clzzVo.getPackageId());	/* 패키지ID */
@@ -769,6 +774,10 @@ public class DbGen {
 				String file = fileList[i];
 				mtdVo = ParseUtil.readMethodVo(file, subPath);
 				String classId = StringUtil.replace(mtdVo.getFunctionId(), "." + mtdVo.getMethodId(), "") ;
+
+				if(StringUtil.isEmpty(mtdVo.getFunctionId())) {
+					continue;
+				}
 				
 				parameterIndex = 0;
 				parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
@@ -813,6 +822,11 @@ public class DbGen {
 			
 			for(int i=0; i<dsTblList.getDataSetRowCount("TBL_LIST") ; i++) {
 				dsTblRow = dsTblList.getDataSet("TBL_LIST", i);
+
+				if(StringUtil.isEmpty(dsTblRow.getDatum("TABLE_NAME"))) {
+					continue;
+				}
+				
 				parameterIndex = 0;
 				parameterIndex = setParam(db.pstmt, parameterIndex, dsTblRow.getDatum("TABLE_NAME").toUpperCase());		/* 테이블ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, dsTblRow.getDatum("TABLE_OWNER"));		/* 테이블오너 */
@@ -855,6 +869,10 @@ public class DbGen {
 				if( mtdVo.getCallMtdVoList() != null && mtdVo.getCallMtdVoList().size()>0 ) {
 					for(String callMtdFunctionId : mtdVo.getCallMtdVoList()) {
 
+						if(StringUtil.isEmpty(mtdVo.getFunctionId()) || StringUtil.isEmpty(callMtdFunctionId)) {
+							continue;
+						}
+						
 						parameterIndex = 0;
 						parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
 						parameterIndex = setParam(db.pstmt, parameterIndex, callMtdFunctionId);	/* 호출기능ID */
@@ -916,6 +934,10 @@ public class DbGen {
 						if(words.length > 1) {
 							jobKind = words[1];
 						}
+
+						if(StringUtil.isEmpty(mtdVo.getFunctionId()) || StringUtil.isEmpty(tblId)) {
+							continue;
+						}
 						
 						parameterIndex = 0;
 						parameterIndex = setParam(db.pstmt, parameterIndex, mtdVo.getFunctionId());	/* 기능ID */
@@ -959,6 +981,10 @@ public class DbGen {
 				String file = fileList[i];	
 				uiVo = ParseUtil.readUiVo(file, subPath);
 
+				if(StringUtil.isEmpty(uiVo.getUiId())) {
+					continue;
+				}
+				
 				parameterIndex = 0;
 				parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiName());	/* 화면명 */
@@ -1000,6 +1026,11 @@ public class DbGen {
 
 				if( uiVo.getLinkList() != null && uiVo.getLinkList().size()>0 ) {
 					for(String link : uiVo.getLinkList()) {
+
+						if(StringUtil.isEmpty(uiVo.getUiId())) {
+							continue;
+						}
+						
 						parameterIndex = 0;
 						parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
 						parameterIndex = setParam(db.pstmt, parameterIndex, link);	/* 링크 */
