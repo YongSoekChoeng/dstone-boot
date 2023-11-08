@@ -1437,7 +1437,7 @@ public class SvcAnalyzer extends BaseObject{
 							tblId = words[0] + "(" + tblNm + ")" + "!" + words[1];
 						}
 					}else {
-						tblId = words[0];
+						tblId = words[0] + "!" + words[1];
 					}
 				}
 				tblBuff.append(tblId);

@@ -148,7 +148,7 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 								/********************************************
 								메소드VO.호출테이블 항목을 테이블명 + "!" + 쿼리종류 로 저장.
 								예)SAMPLE_MEMBER!UPDATE
-								********************************************/
+								********************************************/							
 								tblKey = callTbl + "!" + queryVo.getQueryKind();
 								if( !callTblList.contains(tblKey ) ) {
 									callTblList.add(tblKey);

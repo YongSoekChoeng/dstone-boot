@@ -377,7 +377,7 @@ public class SqlUtil extends BaseObject {
 				sql = sql.toUpperCase().trim();
 				for(String tbl : allTblList) {
 					tbl = tbl.toUpperCase();
-					if( sql.indexOf(tbl + " ")>-1 ) {
+					if( sql.indexOf(tbl + " ")>-1 ||  sql.indexOf(tbl + "(")>-1 ) {
 						tblList.add(tbl);
 					}
 				}
