@@ -536,11 +536,11 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/**************************************** F.분석결과파일저장 시작 ****************************************/");
 			if(isUnitOnly) {
 				if(jobKind == AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
-					this.saveAnalyzeFile();
+					this.saveToFile();
 				}
 			}else {
 				if(jobKind >= AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
-					this.saveAnalyzeFile();
+					this.saveToFile();
 				}
 			}
 			getLogger().info("/**************************************** F.분석결과파일저장 끝 ****************************************/");	
@@ -554,7 +554,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출
 	 * @param classFileList	클래스파일리스트
 	 */
-	protected void analyzeClass(String[] paramFileList)throws Exception {
+	private void analyzeClass(String[] paramFileList)throws Exception {
 		getLogger().info("/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
@@ -638,7 +638,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스파일리스트 에서 해당클래스파일이 인터페이스인 경우 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가
 	 * @param classFileList 클래스파일리스트
 	 */
-	protected void analyzeClassImpl(String[] paramFileList) throws Exception {
+	private void analyzeClassImpl(String[] paramFileList) throws Exception {
 		getLogger().info("/*** A-2.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -708,7 +708,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가
 	 * @param classFileList 클래스파일리스트
 	 */
-	protected void analyzeClassAlias(String[] paramFileList) throws Exception {
+	private void analyzeClassAlias(String[] paramFileList) throws Exception {
 		getLogger().info("/*** A-3.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -775,7 +775,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출
 	 * @param queryFileList 쿼리파일리스트
 	 */
-	protected void analyzeQuery(String[] queryFileList) throws Exception {
+	private void analyzeQuery(String[] queryFileList) throws Exception {
 		getLogger().info("/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 		
 		QueryVo queryVo = null;
@@ -830,7 +830,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * @param analyzedQueryFileList 쿼리분석파일리스트
 	 * @param analyzedQueryFileList 전체테이블목록리스트
 	 */
-	protected void analyzeQueryCallTbl(String[] paramFileList, List<String> allTblList) throws Exception {
+	private void analyzeQueryCallTbl(String[] paramFileList, List<String> allTblList) throws Exception {
 		getLogger().info("/*** B-2.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -890,7 +890,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출
 	 * @param classFileList 클래스파일리스트
 	 */
-	protected void analyzeMtd(String[] paramFileList) throws Exception {
+	private void analyzeMtd(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -968,7 +968,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 메소드내 타 호출메소드 목록 추출
 	 * @param analyzedMethodFileList 메소드분석파일리스트
 	 */
-	protected void analyzeMtdCallMtd(String[] paramFileList) throws Exception {
+	private void analyzeMtdCallMtd(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -1034,7 +1034,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * 메소드내 호출테이블 목록 추출
 	 * @param analyzedMethodFileList 메소드분석파일리스트
 	 */
-	protected void analyzeMtdCallTbl(String[] paramFileList) throws Exception {
+	private void analyzeMtdCallTbl(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -1100,7 +1100,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * UI파일리스트 에서 UI아이디/UI명 등이 담긴 UI분석파일리스트 추출
 	 * @param uiFileList UI파일리스트
 	 */
-	protected void analyzeUi(String[] paramFileList) throws Exception {
+	private void analyzeUi(String[] paramFileList) throws Exception {
 		getLogger().info("/*** D-1.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -1166,7 +1166,7 @@ public class SvcAnalyzer extends BaseObject{
 	 * UI파일리스트 에서 링크정보를 추출하여 UI분석파일리스트 에 추가
 	 * @param uiFileList UI파일리스트
 	 */
-	protected void analyzeUiLink(String[] paramFileList) throws Exception {
+	private void analyzeUiLink(String[] paramFileList) throws Exception {
 		getLogger().info("/*** D-2.UI파일로부터 링크 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -1223,7 +1223,7 @@ public class SvcAnalyzer extends BaseObject{
 		}
 	}
 
-	protected void saveAnalyzeFile() throws Exception{
+	public void saveToFile() throws Exception{
 		getLogger().info("/*** F.분석결과파일저장 ");
 		
 		StringBuffer conts = new StringBuffer();
@@ -1286,14 +1286,14 @@ public class SvcAnalyzer extends BaseObject{
 				conts.append("\n");
 			}
 		}
-		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, "AppMetrix.ouput", conts.toString());
+		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, AppAnalyzer.SAVE_FILE_NAME, conts.toString());
 		getLogger().info("/*** F-4.파일생성 끝 ***/");
 
 	}
 	
 
 	
-	protected DataSet makeAnalyzeBasicFileConts() throws Exception {
+	private DataSet makeAnalyzeBasicFileConts() throws Exception {
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
 		ClzzVo clzzVo = null;
@@ -1392,7 +1392,7 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	
-	protected List<DataSet> makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel, List<String> callStackList) throws Exception {
+	private List<DataSet> makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel, List<String> callStackList) throws Exception {
 		List<DataSet> dsList = new ArrayList<DataSet>();
 		callStackList.add(functionId);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
@@ -1478,22 +1478,37 @@ public class SvcAnalyzer extends BaseObject{
 		return dsList;
 	}
 	
-	protected String makeAnalyzeTblInfo(String input) throws Exception {
+	private String makeAnalyzeTblInfo(String input) throws Exception {
 		StringBuffer tblInfo = new StringBuffer();	
 		if(!StringUtil.isEmpty(input)) {
 			String[] tblInfoArr = StringUtil.toStrArray(input, "|");
+			String tableName = "";
+			String tableComment = "";
+			String queryKind = "";
 			if( tblInfoArr != null && tblInfoArr.length > 0 ) {
 				for(String tblInfoRow : tblInfoArr) {
+					tableName = "";
+					tableComment = "";
+					queryKind = "";
 					String[] tblArr = StringUtil.toStrArray(tblInfoRow, "!");
 					if( tblArr != null ) {
 						if(tblInfo.length() > 0) {
 							tblInfo.append(", ");
 						}
 						if(tblArr.length > 0) {
-							tblInfo.append(tblArr[0]);
+							tableName = tblArr[0].toUpperCase();
+							tblInfo.append(tableName);
+							Map<String, String> tableMap = ParseUtil.getMannalTableMap(tableName);
+							if( tableMap != null ) {
+								tableComment = tableMap.get("TABLE_COMMENT");
+							}
+							if(!StringUtil.isEmpty(tableComment)) {
+								tblInfo.append("(").append(tableComment).append(")");
+							}
 						}
 						if( tblArr.length > 1 && tblArr[1].length() > 0) {
-							tblInfo.append("-").append(tblArr[1].substring(0, 1));
+							queryKind = tblArr[1].substring(0, 1);
+							tblInfo.append("-").append(queryKind);
 						}
 					}
 				}
@@ -1503,6 +1518,7 @@ public class SvcAnalyzer extends BaseObject{
 	}
 
 
+	@SuppressWarnings("static-access")
 	public void saveToDb(String DBID) {
 		try {
 			if( ! AppAnalyzer.IS_SAVE_TO_DB ) {
@@ -1522,16 +1538,13 @@ public class SvcAnalyzer extends BaseObject{
 		}
 	}
 	
-	protected void deleteFromDb(String DBID) throws Exception {
+	private void deleteFromDb(String DBID) throws Exception {
 		DbGen.deleteAll(DBID);
 	}
 
-	protected void insertToDb(String DBID) throws Exception {
+	private void insertToDb(String DBID) throws Exception {
 		String[] fileList = null;
 		String subPath = "";
-		ClzzVo clzzVo = null;
-		MtdVo mtdVo = null;
-		UiVo uiVo = null;
 		
 		try {
 			// 클래스

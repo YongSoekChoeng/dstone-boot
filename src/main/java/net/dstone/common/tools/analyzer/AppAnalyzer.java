@@ -130,6 +130,11 @@ public class AppAnalyzer extends BaseObject{
 	 */
 	public static int WORKER_THREAD_NUM = 1;
 
+	/**
+	 * SAVE_FILE_NAME - 저장파일명(디렉토리 미포함)
+	 */
+	public static String SAVE_FILE_NAME = "AppMetrix.ouput";
+
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 
 	private AppAnalyzer(){

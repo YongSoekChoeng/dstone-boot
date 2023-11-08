@@ -51,6 +51,7 @@ public class ParseUtil {
 
 	static List<String> MANNUAL_TABLE_LIST = new ArrayList<String>();
 	static List<Map<String, String>> MANNUAL_TABLE_MAP_LIST = new ArrayList<Map<String, String>>();
+	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
 	
 	/**
 	 * Mybatis 내부 태그 제거.
@@ -731,22 +732,30 @@ public class ParseUtil {
 		if( MANNUAL_TABLE_LIST.isEmpty() ) {
 			if( FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/TableList.txt") ) {
 				String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/TableList.txt");
+				String tableName = "";
+				String tableComment = "";
 				for(String line : lines) {
+					tableName = "";
+					tableComment = "";
 					if(line.trim().equals("")) {
 						continue;
 					}
 					String[] words = StringUtil.toStrArray(line, "\t", true);
 					if(words != null && words.length > 0 && !StringUtil.isEmpty(words[0])) {
-						if( MANNUAL_TABLE_LIST.contains(words[0].toUpperCase()) ) {
+						tableName = words[0].toUpperCase();
+						if( MANNUAL_TABLE_LIST.contains(tableName) ) {
 							continue;
 						}
-						MANNUAL_TABLE_LIST.add(words[0].toUpperCase());
+						MANNUAL_TABLE_LIST.add(tableName);
+						
 						Map<String, String> row = new HashMap<String, String>();
-						row.put("TABLE_NAME", words[0].toUpperCase());
+						row.put("TABLE_NAME", tableName);
 						if(words.length > 1 && !StringUtil.isEmpty(words[1])) {
+							tableComment = words[1].toUpperCase();
 							row.put("TABLE_COMMENT", words[1].toUpperCase());
 						}
 						MANNUAL_TABLE_MAP_LIST.add(row);
+						MANNUAL_TABLE_LIST_MAP.put(tableName, row);
 					}
 				}
 			}
@@ -768,6 +777,15 @@ public class ParseUtil {
 	public static List<Map<String, String>> getMannalTableMapList() {
 		initMannalTableInfo();
 		return MANNUAL_TABLE_MAP_LIST;
+	}
+
+	/**
+	 * 수동으로 모아 놓은 테이블정보맵을 반환한다.
+	 * @return
+	 */
+	public static Map<String, String> getMannalTableMap(String tableName) {
+		initMannalTableInfo();
+		return MANNUAL_TABLE_LIST_MAP.get(tableName);
 	}
 	
 	/**
