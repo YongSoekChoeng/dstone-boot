@@ -1,12 +1,17 @@
 package net.dstone.common.tools.analyzer.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DataSet;
-import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.DbUtil;
 import net.dstone.common.utils.DbUtil.LoggableStatement;
+import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -804,15 +809,29 @@ public class DbGen {
 	}
 	
 	public static void insertTB_TBL(String DBID) throws Exception {
-		net.dstone.common.utils.DbUtil db = null;
-		int parameterIndex = 0;
+		DbUtil db = null;
+		DataSet dsTblList = new DataSet();
+		DataSet dsTblRow = null;
 		
+		int parameterIndex = 0;
 		int chunkSize = 500;
 		
 		try {
-			
-			net.dstone.common.utils.DataSet dsTblList = net.dstone.common.utils.DbUtil.getTabs(DBID);
-			net.dstone.common.utils.DataSet dsTblRow = null;
+			if( AppAnalyzer.IS_TABLE_LIST_FROM_DB ) {
+				dsTblList = DbUtil.getTabs(DBID);
+			}else {
+				List<Map<String, String>> mannalTableMapList = ParseUtil.getMannalTableMapList();
+				if(mannalTableMapList != null && mannalTableMapList.size() > 0) {
+					List<DataSet> dslList = new ArrayList<DataSet>();
+					for(Map<String, String> mannalTableMap : mannalTableMapList) {
+						dsTblRow = new  DataSet();
+						dsTblRow.setDatum("TABLE_NAME", mannalTableMap.get("TABLE_NAME"));
+						dsTblRow.setDatum("TABLE_COMMENT", mannalTableMap.get("TABLE_COMMENT"));
+						dslList.add(dsTblRow);
+					}
+					dsTblList.setDataSetList("TBL_LIST", (ArrayList<DataSet>)dslList);
+				}
+			}
 
 			db = new net.dstone.common.utils.DbUtil(DBID);
 			db.getConnection();
@@ -822,11 +841,9 @@ public class DbGen {
 			
 			for(int i=0; i<dsTblList.getDataSetRowCount("TBL_LIST") ; i++) {
 				dsTblRow = dsTblList.getDataSet("TBL_LIST", i);
-
 				if(StringUtil.isEmpty(dsTblRow.getDatum("TABLE_NAME"))) {
 					continue;
 				}
-				
 				parameterIndex = 0;
 				parameterIndex = setParam(db.pstmt, parameterIndex, dsTblRow.getDatum("TABLE_NAME").toUpperCase());		/* 테이블ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, dsTblRow.getDatum("TABLE_OWNER"));		/* 테이블오너 */
