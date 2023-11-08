@@ -730,7 +730,7 @@ public class ParseUtil {
 	
 	private static void initMannalTableInfo() {
 		if( MANNUAL_TABLE_LIST.isEmpty() ) {
-			if( FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/TableList.txt") ) {
+			if( FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + AppAnalyzer.TABLE_LIST_FILE_NAME) ) {
 				String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/TableList.txt");
 				String tableName = "";
 				String tableComment = "";
