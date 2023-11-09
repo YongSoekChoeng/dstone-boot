@@ -2668,6 +2668,7 @@ public class DbUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
+			LogUtil.sysout(sql.toString());
 			db.release();
 		}
 		return ds;

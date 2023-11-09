@@ -1421,8 +1421,6 @@ public class SvcAnalyzer extends BaseObject{
 		if( mtdVo.getCallTblVoList() != null ) {
 			StringBuffer tblBuff = new StringBuffer();
 			String[] words = null;
-			String tblNm = "";
-			DataSet tblDs = null;
 			for(int i=0; i<mtdVo.getCallTblVoList().size(); i++) {
 				String tblId = mtdVo.getCallTblVoList().get(i);
 				if(tblBuff.length() > 0) {
@@ -1430,15 +1428,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 				if(!StringUtil.isEmpty(tblId) && tblId.indexOf("!")>-1) {
 					words = StringUtil.toStrArray(tblId, "!");
-					if(AppAnalyzer.IS_TABLE_LIST_FROM_DB) {
-						tblDs = DbUtil.getTabs(AppAnalyzer.DBID, words[0]);
-						if( tblDs.getDataSetRowCount("TBL_LIST") > 0 && !StringUtil.isEmpty(tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT"))) {
-							tblNm = tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT");
-							tblId = words[0] + "(" + tblNm + ")" + "!" + words[1];
-						}
-					}else {
-						tblId = words[0] + "!" + words[1];
-					}
+					tblId = words[0] + "!" + words[1];
 				}
 				tblBuff.append(tblId);
 			}
@@ -1486,6 +1476,8 @@ public class SvcAnalyzer extends BaseObject{
 			String tableComment = "";
 			String queryKind = "";
 			if( tblInfoArr != null && tblInfoArr.length > 0 ) {
+				DataSet tblDs = null;
+				Map<String, String> tableMap = null;
 				for(String tblInfoRow : tblInfoArr) {
 					tableName = "";
 					tableComment = "";
@@ -1498,9 +1490,16 @@ public class SvcAnalyzer extends BaseObject{
 						if(tblArr.length > 0) {
 							tableName = tblArr[0].toUpperCase();
 							tblInfo.append(tableName);
-							Map<String, String> tableMap = ParseUtil.getMannalTableMap(tableName);
-							if( tableMap != null ) {
-								tableComment = tableMap.get("TABLE_COMMENT");
+							if(AppAnalyzer.IS_TABLE_LIST_FROM_DB) {
+								tblDs = DbUtil.getTabs(AppAnalyzer.DBID, tableName);
+								if( tblDs.getDataSetRowCount("TBL_LIST") > 0 && !StringUtil.isEmpty(tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT"))) {
+									tableComment = tblDs.getDataSet("TBL_LIST", 0).getDatum("TABLE_COMMENT");
+								}
+							}else {
+								tableMap = ParseUtil.getMannalTableMap(tableName);
+								if( tableMap != null && tableMap.size() > 0 && tableMap.containsKey("TABLE_COMMENT") ) {
+									tableComment = tableMap.get("TABLE_COMMENT");
+								}
 							}
 							if(!StringUtil.isEmpty(tableComment)) {
 								tblInfo.append("(").append(tableComment).append(")");

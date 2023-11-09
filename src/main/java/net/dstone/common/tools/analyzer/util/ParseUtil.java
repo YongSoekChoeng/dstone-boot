@@ -1,6 +1,7 @@
 package net.dstone.common.tools.analyzer.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.tools.analyzer.vo.MtdVo;
 import net.dstone.common.tools.analyzer.vo.QueryVo;
 import net.dstone.common.tools.analyzer.vo.UiVo;
+import net.dstone.common.utils.DataSet;
+import net.dstone.common.utils.DbUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
@@ -728,10 +731,89 @@ public class ParseUtil {
 		return fieldName;
 	}
 	
+	/**
+	 * 수동 테이블목록파일을 생성한다. 기존에 존재하는 테이블목록은 유지한다.
+	 * @param DBID
+	 * @param tableNameLikeStr
+	 */
+	public static void makeMannalTableListFileFromDb( String DBID, String tableNameLikeStr) {
+		
+		HashMap<String, DataSet> tblMap = new HashMap<String, DataSet>();
+		DataSet dsTblRow = null;
+		DataSet dsTblListFromFile = new DataSet();
+		DataSet dsTblListFromDb = new DataSet();
+		
+		String tblListFilePath = AppAnalyzer.WRITE_PATH + "/" +  AppAnalyzer.TABLE_LIST_FILE_NAME;
+		StringBuffer fileConts = new StringBuffer();
+		
+		// 파일에 존재하는 테이블목록
+		if( FileUtil.isFileExist(tblListFilePath) ) {
+			String[] lines = FileUtil.readFileByLines(tblListFilePath);
+			String tableName = "";
+			String tableComment = "";
+			for(String line : lines) {
+				tableName = "";
+				tableComment = "";
+				if(line.trim().equals("")) {
+					continue;
+				}
+				dsTblRow = dsTblListFromFile.addDataSet("TBL_LIST");
+				String[] words = StringUtil.toStrArray(line, "\t", true);
+				if(words != null && words.length > 0 && !StringUtil.isEmpty(words[0])) {
+					tableName = words[0].toUpperCase();
+					dsTblRow.setDatum("TABLE_NAME", tableName);
+				}
+				if(words != null && words.length > 1 && !StringUtil.isEmpty(words[1])) {
+					tableComment = words[1].toUpperCase();
+					dsTblRow.setDatum("TABLE_COMMENT", tableComment);
+				}
+			}
+		}
+		// DB에서 읽어온 테이블목록
+		dsTblListFromDb = DbUtil.getTabs(DBID, tableNameLikeStr);
+		
+		// 파일에 존재하는 테이블목록 맵에 추가
+		if(dsTblListFromFile.isChildExists("TBL_LIST")) {
+			for(int i=0; i<dsTblListFromFile.getDataSetRowCount("TBL_LIST"); i++) {
+				dsTblRow = dsTblListFromFile.getDataSet("TBL_LIST", i);
+				dsTblRow.setDatum("TABLE_NAME", dsTblRow.getDatum("TABLE_NAME").toUpperCase());
+				if(!tblMap.containsKey(dsTblRow.getDatum("TABLE_NAME"))) {
+					tblMap.put(dsTblRow.getDatum("TABLE_NAME"), dsTblRow);
+				}
+			}
+		}
+
+		// DB에서 읽어온 테이블목록 맵에 추가
+		if(dsTblListFromDb.isChildExists("TBL_LIST")) {
+			for(int i=0; i<dsTblListFromDb.getDataSetRowCount("TBL_LIST"); i++) {
+				dsTblRow = dsTblListFromDb.getDataSet("TBL_LIST", i);
+				dsTblRow.setDatum("TABLE_NAME", dsTblRow.getDatum("TABLE_NAME").toUpperCase());
+				if(!tblMap.containsKey(dsTblRow.getDatum("TABLE_NAME"))) {
+					tblMap.put(dsTblRow.getDatum("TABLE_NAME"), dsTblRow);
+				}
+			}
+		}
+		
+		// 맵에 담긴 테이블정보 파일로 저장.
+        List<String> keySet = new ArrayList<>(tblMap.keySet());
+        Collections.sort(keySet);
+        for (String key : keySet) {
+        	dsTblRow = tblMap.get(key);
+        	if( fileConts.length() > 0 ) {
+        		fileConts.append("\n");
+        	}
+        	fileConts.append(dsTblRow.getDatum("TABLE_NAME"));
+        	fileConts.append("\t");
+        	fileConts.append(dsTblRow.getDatum("TABLE_COMMENT"));
+        }
+        FileUtil.writeFile(AppAnalyzer.WRITE_PATH, AppAnalyzer.TABLE_LIST_FILE_NAME, fileConts.toString());
+	}
+	
 	private static void initMannalTableInfo() {
 		if( MANNUAL_TABLE_LIST.isEmpty() ) {
-			if( FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + AppAnalyzer.TABLE_LIST_FILE_NAME) ) {
-				String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/TableList.txt");
+			String tblListFilePath = AppAnalyzer.WRITE_PATH + "/" +  AppAnalyzer.TABLE_LIST_FILE_NAME;
+			if( FileUtil.isFileExist(tblListFilePath) ) {
+				String[] lines = FileUtil.readFileByLines(tblListFilePath);
 				String tableName = "";
 				String tableComment = "";
 				for(String line : lines) {
@@ -752,7 +834,7 @@ public class ParseUtil {
 						row.put("TABLE_NAME", tableName);
 						if(words.length > 1 && !StringUtil.isEmpty(words[1])) {
 							tableComment = words[1].toUpperCase();
-							row.put("TABLE_COMMENT", words[1].toUpperCase());
+							row.put("TABLE_COMMENT", tableComment.toUpperCase());
 						}
 						MANNUAL_TABLE_MAP_LIST.add(row);
 						MANNUAL_TABLE_LIST_MAP.put(tableName, row);
