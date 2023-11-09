@@ -740,8 +740,8 @@ public class ParseUtil {
 		
 		HashMap<String, DataSet> tblMap = new HashMap<String, DataSet>();
 		DataSet dsTblRow = null;
-		DataSet dsTblListFromFile = new DataSet();
-		DataSet dsTblListFromDb = new DataSet();
+		DataSet dsTblListFromFile = null;
+		DataSet dsTblListFromDb = null;
 		String tableName = "";
 		String tableComment = "";
 		
@@ -749,6 +749,7 @@ public class ParseUtil {
 		StringBuffer fileConts = new StringBuffer();
 		
 		// 파일에 존재하는 테이블목록
+		dsTblListFromFile = new DataSet();
 		if( FileUtil.isFileExist(tblListFilePath) ) {
 			String[] lines = FileUtil.readFileByLines(tblListFilePath);
 			for(String line : lines) {
