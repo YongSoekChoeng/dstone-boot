@@ -742,6 +742,8 @@ public class ParseUtil {
 		DataSet dsTblRow = null;
 		DataSet dsTblListFromFile = new DataSet();
 		DataSet dsTblListFromDb = new DataSet();
+		String tableName = "";
+		String tableComment = "";
 		
 		String tblListFilePath = AppAnalyzer.WRITE_PATH + "/" +  AppAnalyzer.TABLE_LIST_FILE_NAME;
 		StringBuffer fileConts = new StringBuffer();
@@ -749,8 +751,6 @@ public class ParseUtil {
 		// 파일에 존재하는 테이블목록
 		if( FileUtil.isFileExist(tblListFilePath) ) {
 			String[] lines = FileUtil.readFileByLines(tblListFilePath);
-			String tableName = "";
-			String tableComment = "";
 			for(String line : lines) {
 				tableName = "";
 				tableComment = "";
@@ -777,9 +777,10 @@ public class ParseUtil {
 		if(dsTblListFromFile.isChildExists("TBL_LIST")) {
 			for(int i=0; i<dsTblListFromFile.getDataSetRowCount("TBL_LIST"); i++) {
 				dsTblRow = dsTblListFromFile.getDataSet("TBL_LIST", i);
-				dsTblRow.setDatum("TABLE_NAME", dsTblRow.getDatum("TABLE_NAME").toUpperCase());
-				if(!tblMap.containsKey(dsTblRow.getDatum("TABLE_NAME"))) {
-					tblMap.put(dsTblRow.getDatum("TABLE_NAME"), dsTblRow);
+				tableName = dsTblRow.getDatum("TABLE_NAME").toUpperCase();
+				dsTblRow.setDatum("TABLE_NAME", tableName);
+				if(!tblMap.containsKey(tableName)) {
+					tblMap.put(tableName, dsTblRow);
 				}
 			}
 		}
@@ -788,9 +789,10 @@ public class ParseUtil {
 		if(dsTblListFromDb.isChildExists("TBL_LIST")) {
 			for(int i=0; i<dsTblListFromDb.getDataSetRowCount("TBL_LIST"); i++) {
 				dsTblRow = dsTblListFromDb.getDataSet("TBL_LIST", i);
-				dsTblRow.setDatum("TABLE_NAME", dsTblRow.getDatum("TABLE_NAME").toUpperCase());
-				if(!tblMap.containsKey(dsTblRow.getDatum("TABLE_NAME"))) {
-					tblMap.put(dsTblRow.getDatum("TABLE_NAME"), dsTblRow);
+				tableName = dsTblRow.getDatum("TABLE_NAME").toUpperCase();
+				dsTblRow.setDatum("TABLE_NAME", tableName);
+				if(!tblMap.containsKey(tableName)) {
+					tblMap.put(tableName, dsTblRow);
 				}
 			}
 		}
@@ -803,9 +805,11 @@ public class ParseUtil {
         	if( fileConts.length() > 0 ) {
         		fileConts.append("\n");
         	}
-        	fileConts.append(dsTblRow.getDatum("TABLE_NAME"));
+        	tableName = dsTblRow.getDatum("TABLE_NAME");
+        	tableComment = dsTblRow.getDatum("TABLE_COMMENT");
+        	fileConts.append(tableName);
         	fileConts.append("\t");
-        	fileConts.append(dsTblRow.getDatum("TABLE_COMMENT"));
+        	fileConts.append(tableComment);
         }
         FileUtil.writeFile(AppAnalyzer.WRITE_PATH, AppAnalyzer.TABLE_LIST_FILE_NAME, fileConts.toString());
 	}
