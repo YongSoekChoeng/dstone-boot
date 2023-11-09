@@ -1274,15 +1274,22 @@ public class SvcAnalyzer extends BaseObject{
 		// 내용
 		if( ds.getDataSetRowCount("METRIX") > 0 ) {
 			for(DataSet row : ds.getDataSetList("METRIX")) {
-				conts.append(row.getDatum("UI_ID", "")).append("\t");
-				conts.append(row.getDatum("UI_NAME", "")).append("\t");
-				conts.append(row.getDatum("BASIC_URL", "")).append("\t");
-				for(int i=1; i<=maxCallLevel; i++) {
-					conts.append(row.getDatum("FUNCTION_ID_"+i, "")).append("\t");
-					conts.append(row.getDatum("FUNCTION_NAME_"+i, "")).append("\t");
-					conts.append(row.getDatum("CLASS_KIND_"+i, "")).append("\t");
+				String uiId = row.getDatum("UI_ID", " ");
+				if( !StringUtil.isEmpty(uiId.trim()) ) {
+					uiId = StringUtil.replace(uiId, ".", "/");
+					if(!uiId.startsWith("/")) {
+						uiId = "/" + uiId; 
+					}
 				}
-				conts.append( this.makeAnalyzeTblInfo(row.getDatum("CALL_TBL", "")) ).append("\t");
+				conts.append(uiId).append("\t");
+				conts.append(row.getDatum("UI_NAME", " ")).append("\t");
+				conts.append(row.getDatum("BASIC_URL", " ")).append("\t");
+				for(int i=1; i<=maxCallLevel; i++) {
+					conts.append(row.getDatum("FUNCTION_ID_"+i, " ")).append("\t");
+					conts.append(row.getDatum("FUNCTION_NAME_"+i, " ")).append("\t");
+					conts.append(row.getDatum("CLASS_KIND_"+i, " ")).append("\t");
+				}
+				conts.append( this.makeAnalyzeTblInfo(row.getDatum("CALL_TBL", " ")) ).append("\t");
 				conts.append("\n");
 			}
 		}
