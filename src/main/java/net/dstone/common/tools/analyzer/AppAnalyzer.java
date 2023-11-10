@@ -133,12 +133,12 @@ public class AppAnalyzer extends BaseObject{
 	/**
 	 * SAVE_FILE_NAME - 저장파일명(디렉토리 -WRITE_PATH)
 	 */
-	public static String SAVE_FILE_NAME = "AppMetrix.ouput";
+	public static final String SAVE_FILE_NAME = "AppMetrix.ouput";
 
 	/**
 	 * TABLE_LIST_FILE_NAME - 테이블목록정보파일명(디렉토리 -WRITE_PATH)
 	 */
-	public static String TABLE_LIST_FILE_NAME = "TableList.txt";
+	public static final String TABLE_LIST_FILE_NAME = "TableList.txt";
 
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 
