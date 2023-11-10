@@ -182,6 +182,7 @@ public class ParseUtil {
 		replMap.put("#", "'");
 		replMap.put("${", "'");
 		replMap.put("$", "'");
+		replMap.put("{", "'");
 		replMap.put("}", "'");
 		// 내용없는 연속쉼표 랜덤스트링값으로 치환
 		replMap.put(", ,", ", 'AAA',");
