@@ -27,9 +27,9 @@ public class ParseUtil {
 	static List<String> MYBATIS_REMOVE_TAG_LIST = new ArrayList<String>();
 	static {
 		/*****************************************************
-		MYBATIS_DIV_TAG_LIST.add("choose");
-		MYBATIS_DIV_TAG_LIST.add("foreach");
-		MYBATIS_DIV_TAG_LIST.add("dynamic");
+		MYBATIS_REMOVE_TAG_LIST.add("choose");
+		MYBATIS_REMOVE_TAG_LIST.add("foreach");
+		MYBATIS_REMOVE_TAG_LIST.add("dynamic");
 		*****************************************************/
 	}
 
@@ -139,7 +139,6 @@ public class ParseUtil {
 								String ifElseSql = removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
 								outBuff.append(ifElseSql);
 							}
-							
 						}else if(MYBATIS_REMOVE_TAG_LIST.contains(cNode.getNodeName())) {
 							continue;
 						}else {
