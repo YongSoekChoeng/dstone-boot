@@ -118,11 +118,7 @@ public class MybatisParseQuery implements ParseQuery {
 		QueryVo queryVo = ParseUtil.readQueryVo(FileUtil.getFileName(queryInfoFile, false), AppAnalyzer.WRITE_PATH + "/query");
 		if(queryVo != null) {
 			if(!StringUtil.isEmpty(queryVo.getQueryBody())) {
-				if(allTblList != null && allTblList.size() > 0) {
-					tblNameList = SqlUtil.getTableNamesWithTblList(queryVo.getQueryBody(), allTblList);
-				}else {
-					tblNameList = SqlUtil.getTableNames(queryVo.getQueryBody());
-				}
+				tblNameList = SqlUtil.getTableNames(queryVo.getQueryBody(), allTblList);
 			}
 			if(tblNameList.isEmpty()) {
 				LogUtil.sysout("DefaultQuery.getTblInfoList :: 파일["+queryInfoFile+"] 을 분석하였으나 테이블명 조회 하지 못함.");

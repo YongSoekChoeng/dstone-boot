@@ -172,22 +172,18 @@ public class ParseUtil {
 		sqlBody = SqlUtil.removeCommentsFromSql(sqlBody);
 		sqlBody = StringUtil.trimTextForParse(sqlBody);
 		
-		HashMap<String, String> replMap = new HashMap<String, String>();
 		// XML의 CDATA 태그제거
-		replMap.put("<![CDATA[", "");
-		replMap.put("]]>", "");
+		sqlBody = StringUtil.replace(sqlBody, "<![CDATA[", "");
+		sqlBody = StringUtil.replace(sqlBody, "]]>", "");
 		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
-		replMap.put("#{", "'");
-		replMap.put("#", "'");
-		replMap.put("${", "'");
-		replMap.put("$", "'");
-		replMap.put("{", "'");
-		replMap.put("}", "'");
-		// 내용없는 연속쉼표 랜덤스트링값으로 치환
-		replMap.put(", ,", ", 'AAA',");
-		sqlBody = StringUtil.replace(sqlBody, replMap).trim();
+		sqlBody = StringUtil.replace(sqlBody, "#{", "'");
+		sqlBody = StringUtil.replace(sqlBody, "#", "'");
+		sqlBody = StringUtil.replace(sqlBody, "${", "'");
+		sqlBody = StringUtil.replace(sqlBody, "$", "'");
+		sqlBody = StringUtil.replace(sqlBody, "}", "'");
+		sqlBody = StringUtil.replace(sqlBody, ", ,", ", 'AAA',");
 		
-		return sqlBody;
+		return sqlBody.trim();
 	}
 	
 	/**

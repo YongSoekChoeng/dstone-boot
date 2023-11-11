@@ -10,6 +10,43 @@ import net.dstone.common.core.BaseObject;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
 public class SqlUtil extends BaseObject {
+	/**
+	 * 쿼리내의 테이블명 목록을 반환한다.
+	 * 1. 전체테이블목록 을 참조하여 쿼리문에서 테이블명을 추출한다.(allTblList 전체테이블목록이 존재할 경우)
+	 * 2. 라이브러리로  테이블명을 추출(실패시 자체분석)한다.
+	 * @param paramSql
+	 * @param allTblList 전체테이블목록
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getTableNames(String paramSql, List<String> allTblList) throws Exception{
+		List<String> tableNameList = new ArrayList<String>();
+		List<String> tempList = new ArrayList<String>();
+		
+		// 1. 전체테이블목록 을 참조하여 쿼리문에서 테이블명을 추출한다.
+		if( allTblList != null && allTblList.size()>0 ) {
+			tempList = getTableNamesWithTblList(paramSql, allTblList);
+			if( tempList != null ) {
+				for(String tableName : tempList) {
+					if( !tableNameList.contains(tableName) ) {
+						tableNameList.add(tableName);
+					}
+				}
+			}
+		}
+		
+		// 2. 쿼리문을 라이브러리로  테이블명 추출한다(실패시 자체분석).
+		tempList = getTableNames(paramSql);
+		if( tempList != null ) {
+			for(String tableName : tempList) {
+				if( !tableNameList.contains(tableName) ) {
+					tableNameList.add(tableName);
+				}
+			}
+		}
+		
+		return tableNameList;
+	}
 	
 	/**
 	 * 쿼리내의 테이블명 목록을 반환한다.(라이브러리로분석)
@@ -196,6 +233,7 @@ public class SqlUtil extends BaseObject {
 				
 				sql = paramSql; 
 				sql = StringUtil.replace(sql, "UNION ALL", "UNION");
+				sql = StringUtil.replace(sql, "\r\n", " ");
 				sql = StringUtil.replace(sql, "\n", " ");
 				sql = StringUtil.trimTextForParse(sql);
 				sql = sql.toUpperCase().trim();
