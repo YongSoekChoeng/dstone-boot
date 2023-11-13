@@ -822,6 +822,33 @@ public class ParseUtil {
         }
         FileUtil.writeFile(AppAnalyzer.WRITE_PATH, AppAnalyzer.TABLE_LIST_FILE_NAME, fileConts.toString());
 	}
+
+	/**
+	 * 수동으로 모아 놓은 테이블목록을 반환한다.
+	 * @return
+	 */
+	public static List<String> getMannalTableList() {
+		initMannalTableInfo();
+		return MANNUAL_TABLE_LIST;
+	}
+
+	/**
+	 * 수동으로 모아 놓은 테이블정보맵목록을 반환한다.
+	 * @return
+	 */
+	public static List<Map<String, String>> getMannalTableMapList() {
+		initMannalTableInfo();
+		return MANNUAL_TABLE_MAP_LIST;
+	}
+
+	/**
+	 * 수동으로 모아 놓은 테이블정보맵을 반환한다.
+	 * @return
+	 */
+	public static Map<String, String> getMannalTableMap(String tableName) {
+		initMannalTableInfo();
+		return MANNUAL_TABLE_LIST_MAP.get(tableName);
+	}
 	
 	private static void initMannalTableInfo() {
 		if( MANNUAL_TABLE_LIST.isEmpty() ) {
@@ -857,33 +884,6 @@ public class ParseUtil {
 			}
 		}
 	}
-	/**
-	 * 수동으로 모아 놓은 테이블목록을 반환한다.
-	 * @return
-	 */
-	public static List<String> getMannalTableList() {
-		initMannalTableInfo();
-		return MANNUAL_TABLE_LIST;
-	}
-
-	/**
-	 * 수동으로 모아 놓은 테이블정보맵목록을 반환한다.
-	 * @return
-	 */
-	public static List<Map<String, String>> getMannalTableMapList() {
-		initMannalTableInfo();
-		return MANNUAL_TABLE_MAP_LIST;
-	}
-
-	/**
-	 * 수동으로 모아 놓은 테이블정보맵을 반환한다.
-	 * @return
-	 */
-	public static Map<String, String> getMannalTableMap(String tableName) {
-		initMannalTableInfo();
-		return MANNUAL_TABLE_LIST_MAP.get(tableName);
-	}
-	
 	/**
 	 * 클래스VO를 특정디렉토리에 파일로 저장하는 메소드
 	 * @param vo
