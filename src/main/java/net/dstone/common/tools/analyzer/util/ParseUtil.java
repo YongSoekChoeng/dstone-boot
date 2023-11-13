@@ -81,7 +81,7 @@ public class ParseUtil {
 					cNode = nodeList.item(i);
 					
 					/*******************************************************
-					멤버필드이름							정수값	노드종류
+					노드타입이름							정수값	노드종류
 					Node.ELEMENT_NODE					1		Element
 					Node.ATTRIBUTE_NODE					2		Attr
 					Node.TEXT_NODE						3		Text
