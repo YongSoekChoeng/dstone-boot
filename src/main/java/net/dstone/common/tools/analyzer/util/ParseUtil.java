@@ -57,7 +57,7 @@ public class ParseUtil {
 	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
 	
 	/**
-	 * Mybatis 내부 태그 제거.
+	 * Mybatis 내부 태그 제거. 쿼리분석을 위해서 Mybatis 관련태그를 제거하는 메소드.
 	 * @param xml
 	 * @param nodeExp
 	 * @param recursivelyYn
@@ -96,15 +96,20 @@ public class ParseUtil {
 					Node.NOTATION_NODE					12		Notation
 					*******************************************************/
 					//System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
-					
+
+					// 노드타입이 Element 의 경우
 					if( cNode.getNodeType() == Node.ELEMENT_NODE) {
+						// 노드명이 include 의 경우
 						if("include".equals(cNode.getNodeName())) {
+							// 재귀조회일 경우
 							if( recursivelyYn) {
+								// include된 노드의 내용을 읽어서 대치해준다.
 								refid = cNode.getAttributes().getNamedItem("refid").getTextContent();
 								if( xml.hasNodeById(refid)) {
 									 cNodeExp = "//*[@id='"+refid+"']";
 									 outBuff.append(removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
 								}else {
+									// refid 에 namespace 가 함께 붙어있다면 (예:Board.commonSql)
 									if(refid.indexOf(".") > -1) {
 										refidArr = StringUtil.toStrArray(refid, ".");
 										refid = refidArr[refidArr.length-1];
@@ -117,12 +122,14 @@ public class ParseUtil {
 							}else {
 								outBuff.append(cNode.getTextContent());
 							}
+						// 노드명이 where 의 경우 WHERE 1=1 AND ~ 로 대체해준다.
 						}else if("where".equals(cNode.getNodeName())) {
 							outBuff.append( " WHERE ");
 							if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
 								outBuff.append( " 1=1 ");
 							}
 							outBuff.append( cNode.getTextContent());
+						// 노드명이 trim 의 경우 prefix 를 제거해주고  WHERE 1=1 AND ~ 로 대체해준다.
 						}else if("trim".equals(cNode.getNodeName())) {
 							if( cNode.getAttributes().getNamedItem("prefix") != null && "WHERE".equalsIgnoreCase(cNode.getAttributes().getNamedItem("prefix").getTextContent())) {
 								outBuff.append( " WHERE ");
@@ -130,6 +137,7 @@ public class ParseUtil {
 									outBuff.append( " 1=1 ");
 								}
 							}
+						// 노드명이 MYBATIS_DIV_TAG_LIST(분기태그)의 경우
 						}else if(MYBATIS_DIV_TAG_LIST.contains(cNode.getNodeName())) {
 							String ifElseConts = cNode.getTextContent().trim().toUpperCase();
 							ifElseConts = StringUtil.trimTextForParse(ifElseConts);
@@ -139,13 +147,16 @@ public class ParseUtil {
 								String ifElseSql = removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
 								outBuff.append(ifElseSql);
 							}
+						// 노드명이 MYBATIS_REMOVE_TAG_LIST(무시태그)의 경우
 						}else if(MYBATIS_REMOVE_TAG_LIST.contains(cNode.getNodeName())) {
 							continue;
 						}else {
 							outBuff.append(cNode.getTextContent());
 						}
+					// 노드타입이 텍스트 의 경우
 					}else if (cNode.getNodeType() == Node.TEXT_NODE) {
 						outBuff.append(cNode.getNodeValue());
+					// 노드타입이 코멘트 의 경우
 					}else if(cNode.getNodeType() == Node.COMMENT_NODE) {
 						outBuff.append("");
 					}else {
@@ -175,6 +186,7 @@ public class ParseUtil {
 		// XML의 CDATA 태그제거
 		sqlBody = StringUtil.replace(sqlBody, "<![CDATA[", "");
 		sqlBody = StringUtil.replace(sqlBody, "]]>", "");
+		
 		// MYBATIS의 파라메터 태그제거하고 스몰쿼테이션추가
 		sqlBody = StringUtil.replace(sqlBody, "#{", "'");
 		sqlBody = StringUtil.replace(sqlBody, "#", "'");
