@@ -579,31 +579,31 @@ public class SvcAnalyzer extends BaseObject{
 								
 								clzzVo = new ClzzVo();
 								
-								// 패키지ID
+								/*** 패키지ID ***/
 								clzzVo.setPackageId(ClassFactory.getPackageId(classFile));
 								
-								// 클래스ID
+								/*** 클래스ID ***/
 								clzzVo.setClassId(ClassFactory.getClassId(classFile));
 								
-								// 클래스명
+								/*** 클래스명 ***/
 								clzzVo.setClassName(ClassFactory.getClassName(classFile));
 								
-								// 기능종류
+								/*** 기능종류 ***/
 								clzzVo.setClassKind(ClassFactory.getClassKind(classFile));
 
-								// 리소스ID
+								/*** 리소스ID ***/
 								clzzVo.setResourceId(ClassFactory.getResourceId(classFile));
 
-								// 클래스or인터페이스
+								/*** 클래스or인터페이스 ***/
 								clzzVo.setClassOrInterface(ClassFactory.getClassOrInterface(classFile));
 
-								// 상위인터페이스ID
+								/*** 상위인터페이스ID ***/
 								clzzVo.setInterfaceId(ClassFactory.getInterfaceId(classFile));
 
-								// 상위클래스ID
+								/*** 상위클래스ID ***/
 								clzzVo.setParentClassId(ClassFactory.getParentClassId(classFile));
 								
-								// 파일명
+								/*** 파일명 ***/
 								clzzVo.setFileName(classFile);
 								
 								// 파일저장			
@@ -672,7 +672,8 @@ public class SvcAnalyzer extends BaseObject{
 
 								clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
 								if( "I".equals(clzzVo.getClassOrInterface()) ) {
-									// 인터페이스구현하위클래스ID목록
+									
+									/*** 인터페이스구현하위클래스ID목록 ***/
 									clzzVo.setImplClassIdList(ClassFactory.getImplClassIdList(clzzVo, analyzedClassFileList));
 									
 									// 파일저장	
@@ -741,7 +742,7 @@ public class SvcAnalyzer extends BaseObject{
 								pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
 								clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
 								
-								// 호출알리아스
+								/*** 호출알리아스 ***/
 								clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(clzzVo, analyzedClassFileList));
 								
 								// 파일저장	
@@ -798,17 +799,22 @@ public class SvcAnalyzer extends BaseObject{
 						for(Map<String, String> queryInfo : queryInfoList) {
 							queryVo = new QueryVo();
 
-							// KEY
+							/*** KEY ***/
 							queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
-							// 네임스페이스
+							
+							/*** 네임스페이스 ***/
 							queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
-							// 쿼리ID
+
+							/*** 쿼리ID ***/
 							queryVo.setQueryId(queryInfo.get("SQL_ID"));
-							// 쿼리종류
+							
+							/*** 쿼리종류 ***/
 							queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
-							// 파일명
+
+							/*** 파일명 ***/
 							queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
-							// 쿼리내용
+
+							/*** 쿼리내용 ***/
 							queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
 
 							// 파일저장			
@@ -855,7 +861,7 @@ public class SvcAnalyzer extends BaseObject{
 							key = FileUtil.getFileName(analyzedQueryFile, false);
 							queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
 							
-							// 테이블ID정보목록
+							/*** 테이블ID정보목록 ***/
 							queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile, allTblList));
 							
 							// 파일저장	
@@ -920,18 +926,23 @@ public class SvcAnalyzer extends BaseObject{
 									for(Map<String, String> methodInfo : methodInfoList) {
 										mtdVo = new MtdVo();
 
-										// 기능ID
+										/*** 기능ID ***/
 										functionId = ClassFactory.getClassId(classFile) + "." + methodInfo.get("METHOD_ID");
 										mtdVo.setFunctionId(functionId);
-										// 메소드ID
+
+										/*** 메소드ID ***/
 										mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
-										// 메소드명
+
+										/*** 메소드명 ***/
 										mtdVo.setMethodName(methodInfo.get("METHOD_NAME"));
-										// 메소드URL
+
+										/*** 메소드URL ***/
 										mtdVo.setMethodUrl(methodInfo.get("METHOD_URL"));
-										// 파일명
+
+										/*** 파일명 ***/
 										mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + functionId + ".txt");
-										// 메소드내용
+
+										/*** 메소드내용 ***/
 										mtdVo.setMethodBody(methodInfo.get("METHOD_BODY"));
 
 										// 파일저장			
@@ -1000,7 +1011,7 @@ public class SvcAnalyzer extends BaseObject{
 								functionId = StringUtil.replace(functionId, "/", ".");
 								mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 								
-								// 호출메소드
+								/*** 호출메소드 ***/
 								mtdVo.setCallMtdVoList(MethodFactory.getCallMtdList(analyzedMethodFile));
 								
 								// 파일저장	
@@ -1065,7 +1076,7 @@ public class SvcAnalyzer extends BaseObject{
 								functionId = StringUtil.replace(functionId, "/", ".");
 								mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 								
-								// 호출테이블
+								/*** 호출테이블 ***/
 								mtdVo.setCallTblVoList(MethodFactory.getCallTblList(analyzedMethodFile));
 								
 								// 파일저장	
@@ -1126,13 +1137,13 @@ public class SvcAnalyzer extends BaseObject{
 								// UI아이디/UI명/인크루드파일/링크 추출
 								uiVo = new UiVo();
 								
-								// UI아이디
+								/*** UI아이디 ***/
 								uiVo.setUiId(UiFactory.getUiId(uiFile));
 								
-								// UI명
+								/*** UI명 ***/
 								uiVo.setUiName(UiFactory.getUiName(uiFile));
 
-								// 파일명
+								/*** 파일명 ***/
 								uiVo.setFileName(uiFile);
 								
 								// 파일저장			
@@ -1192,7 +1203,7 @@ public class SvcAnalyzer extends BaseObject{
 								// UI Vo
 								uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
 								
-								// 링크
+								/*** 링크 ***/
 								uiVo.setLinkList(UiFactory.getUiLinkList(uiFile));
 
 								// 파일저장			
