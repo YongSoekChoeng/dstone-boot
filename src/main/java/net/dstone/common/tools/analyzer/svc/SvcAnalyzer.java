@@ -1311,6 +1311,16 @@ public class SvcAnalyzer extends BaseObject{
 	
 
 	
+	/**
+	 * 분석결과파일 기본내용을 만들어 반환하는 메소드. 
+	 * UI_ID <-> BASIC_URL을 기본 축으로 하되 여러개의 UI_ID가 동일한 BASIC_URL을 호출을 하는 거라면 Multi Rows로 표현한다.
+	 * 예)
+	 * UI_ID         BASIC_URL
+	 * /test/test1   test/testList.ajax
+	 * /test/test2   test/testList.ajax
+	 * @return
+	 * @throws Exception
+	 */
 	private DataSet makeAnalyzeBasicFileConts() throws Exception {
 		DataSet ds = new DataSet();
 		DataSet dsRow = null;
@@ -1410,6 +1420,15 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	
+	/**
+	 * 기능에 대한 추가정보 및 해당기능이 호출하는 타기능에 대한 정보를 재귀적으로 추적하여 반환하는 메소드. 
+	 * @param dsRow 기능ID의 정보가 담긴(추가정보가 담길) DataSet.
+	 * @param functionId 기능ID
+	 * @param callLevel 호출레벨(재귀적으로 호출될 때마다 1씩 증가)
+	 * @param callStackList 호출스택(동일기능ID의 재귀호출로 인한 무한루프를 방지하기 위해 호출스택을 쌓고 이미 호출된 기능ID를 재호출 한 경우 재귀호출을 멈추도록 구현한다.)
+	 * @return
+	 * @throws Exception
+	 */
 	private List<DataSet> makeAnalyzeCallChainFileConts(DataSet dsRow, String functionId, int callLevel, List<String> callStackList) throws Exception {
 		List<DataSet> dsList = new ArrayList<DataSet>();
 		callStackList.add(functionId);
@@ -1486,6 +1505,12 @@ public class SvcAnalyzer extends BaseObject{
 		return dsList;
 	}
 	
+	/**
+	 * 테이블정보를 가공해서 반환하는 메소드
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
 	private String makeAnalyzeTblInfo(String input) throws Exception {
 		StringBuffer tblInfo = new StringBuffer();	
 		if(!StringUtil.isEmpty(input)) {
