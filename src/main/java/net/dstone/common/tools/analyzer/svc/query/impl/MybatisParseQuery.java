@@ -348,11 +348,14 @@ public class MybatisParseQuery implements ParseQuery {
 						row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
 						row.put("SQL_KIND", item.getNodeName().toUpperCase());
 						
-						nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
 						// Mybatis/Ibatis 쿼리의 내부 태그 제거.
+						nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
 						sqlBody = removeMybatisTagFromSql(xml, nodeExp, true);
+						
 						// 테이블명을 파싱하기 좋게 SQL을 간소화.
 						sqlBody = ParseUtil.removeBasicTagFromSql(sqlBody, row.get("SQL_KIND"));
+						
+						// SQL 세팅
 						row.put("SQL_BODY", sqlBody.toUpperCase());
 
 						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {
