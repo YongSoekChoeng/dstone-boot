@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -24,150 +21,10 @@ import net.dstone.common.utils.XmlUtil;
 
 public class ParseUtil {
 
-	static List<String> MYBATIS_REMOVE_TAG_LIST = new ArrayList<String>();
-	static {
-		/*****************************************************
-		MYBATIS_REMOVE_TAG_LIST.add("choose");
-		MYBATIS_REMOVE_TAG_LIST.add("foreach");
-		MYBATIS_REMOVE_TAG_LIST.add("dynamic");
-		*****************************************************/
-	}
-
-	static List<String> MYBATIS_DIV_TAG_LIST = new ArrayList<String>();
-	static {
-		/*****************************************************
-		MYBATIS_DIV_TAG_LIST.add("isEqual");
-		MYBATIS_DIV_TAG_LIST.add("isNull");
-		MYBATIS_DIV_TAG_LIST.add("isNotNull");
-		MYBATIS_DIV_TAG_LIST.add("isNotEqual");
-		MYBATIS_DIV_TAG_LIST.add("isEmpty");
-		MYBATIS_DIV_TAG_LIST.add("isNotEmpty");
-		MYBATIS_DIV_TAG_LIST.add("isGreaterThan");
-		MYBATIS_DIV_TAG_LIST.add("isGreaterEqual");
-		MYBATIS_DIV_TAG_LIST.add("isLessEqual");
-		MYBATIS_DIV_TAG_LIST.add("isPropertyAvailable");
-		MYBATIS_DIV_TAG_LIST.add("isNotPropertyAvailable");
-		MYBATIS_DIV_TAG_LIST.add("isParameterPresent");
-		MYBATIS_DIV_TAG_LIST.add("isNotParameterPresent");
-		*****************************************************/
-	}
-
 	static List<String> MANNUAL_TABLE_LIST = new ArrayList<String>();
 	static List<Map<String, String>> MANNUAL_TABLE_MAP_LIST = new ArrayList<Map<String, String>>();
 	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
-	
-	/**
-	 * Mybatis 내부 태그 제거. 쿼리분석을 위해서 Mybatis 관련태그를 제거하는 메소드.
-	 * @param xml
-	 * @param nodeExp
-	 * @param recursivelyYn
-	 * @return
-	 */
-	public static String removeMybatisTagFromSql(XmlUtil xml, String nodeExp, boolean recursivelyYn) {
-		StringBuffer outBuff = new StringBuffer();
-		Node node = xml.getNodeByExp(nodeExp);
-		if(node != null) {
-			
-			XmlUtil innerXml = null;
-			NodeList nodeList = node.getChildNodes();
-			if(nodeList != null) {
-				
-				Node cNode = null;
-				String refid = "";
-				String cNodeExp = "";
-				String[] refidArr = null;
-				
-				for(int i=0; i<nodeList.getLength(); i++) {
-					cNode = nodeList.item(i);
-					
-					/*******************************************************
-					노드타입이름							정수값	노드종류
-					Node.ELEMENT_NODE					1		Element
-					Node.ATTRIBUTE_NODE					2		Attr
-					Node.TEXT_NODE						3		Text
-					Node.CDATA_SECTION_NODE				4		CDATASection
-					Node.ENTITY_REFERENCE_NODE			5		EntityReference
-					Node.ENTITY_NODE					6		Entity
-					Node.PROCESSING_INSTRUCTION_NODE	7		ProcessingInstruction
-					Node.COMMENT_NODE					8		Comment
-					Node.DOCUMENT_NODE					9		Document
-					Node.DOCUMENT_TYPE_NODE				10		DocumentType
-					Node.DOCUMENT_FRAGMENT_NODE			11		DocumentFragment
-					Node.NOTATION_NODE					12		Notation
-					*******************************************************/
-					//System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
 
-					// 노드타입이 Element 의 경우
-					if( cNode.getNodeType() == Node.ELEMENT_NODE) {
-						// 노드명이 include 의 경우
-						if("include".equals(cNode.getNodeName())) {
-							// 재귀조회일 경우
-							if( recursivelyYn) {
-								// include된 노드의 내용을 읽어서 대치해준다.
-								refid = cNode.getAttributes().getNamedItem("refid").getTextContent();
-								if( xml.hasNodeById(refid)) {
-									 cNodeExp = "//*[@id='"+refid+"']";
-									 outBuff.append(removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
-								}else {
-									// refid 에 namespace 가 함께 붙어있다면 (예:Board.commonSql)
-									if(refid.indexOf(".") > -1) {
-										refidArr = StringUtil.toStrArray(refid, ".");
-										refid = refidArr[refidArr.length-1];
-										if( xml.hasNodeById(refid)) {
-											cNodeExp = "//*[@id='"+refid+"']";
-											outBuff.append(removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
-										}
-									}
-								}
-							}else {
-								outBuff.append(cNode.getTextContent());
-							}
-						// 노드명이 where 의 경우 WHERE 1=1 AND ~ 로 대체해준다.
-						}else if("where".equals(cNode.getNodeName())) {
-							outBuff.append( " WHERE ");
-							if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
-								outBuff.append( " 1=1 ");
-							}
-							outBuff.append( cNode.getTextContent());
-						// 노드명이 trim 의 경우 prefix 를 제거해주고  WHERE 1=1 AND ~ 로 대체해준다.
-						}else if("trim".equals(cNode.getNodeName())) {
-							if( cNode.getAttributes().getNamedItem("prefix") != null && "WHERE".equalsIgnoreCase(cNode.getAttributes().getNamedItem("prefix").getTextContent())) {
-								outBuff.append( " WHERE ");
-								if( cNode.getTextContent().trim().toUpperCase().startsWith("AND") ) {
-									outBuff.append( " 1=1 ");
-								}
-							}
-						// 노드명이 MYBATIS_DIV_TAG_LIST(분기태그)의 경우
-						}else if(MYBATIS_DIV_TAG_LIST.contains(cNode.getNodeName())) {
-							String ifElseConts = cNode.getTextContent().trim().toUpperCase();
-							ifElseConts = StringUtil.trimTextForParse(ifElseConts);
-							int ifElseCnt = xml.getNodeCountByExp( nodeExp +"/"+cNode.getNodeName() );
-							if(ifElseConts.startsWith("(SELECT") || ifElseConts.startsWith("( SELECT")) {
-								innerXml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_STRING, "<sqlMap><select>" + ifElseConts + "</select></sqlMap>");
-								String ifElseSql = removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
-								outBuff.append(ifElseSql);
-							}
-						// 노드명이 MYBATIS_REMOVE_TAG_LIST(무시태그)의 경우
-						}else if(MYBATIS_REMOVE_TAG_LIST.contains(cNode.getNodeName())) {
-							continue;
-						}else {
-							outBuff.append(cNode.getTextContent());
-						}
-					// 노드타입이 텍스트 의 경우
-					}else if (cNode.getNodeType() == Node.TEXT_NODE) {
-						outBuff.append(cNode.getNodeValue());
-					// 노드타입이 코멘트 의 경우
-					}else if(cNode.getNodeType() == Node.COMMENT_NODE) {
-						outBuff.append("");
-					}else {
-						outBuff.append(cNode.getTextContent());
-					}
-				}
-			}
-		}
-		return outBuff.toString();
-	}
-	
 	/**
 	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드(주석제거, XML의 CDATA 태그제거, MYBATIS의 파라메터 세팅부분 변환)
 	 * @param sqlBody
