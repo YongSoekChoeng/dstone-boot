@@ -60,6 +60,7 @@ public class MybatisParseQuery implements ParseQuery {
 	private static void fillMybatisIncludeSql() {
 		
 		if(!IS_MYBATIS_INCLUDE_SQL_DONE) {
+			
 			String[] queryFileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
 			XmlUtil xml = null;
 			String rootKeyword = "";
@@ -117,6 +118,7 @@ public class MybatisParseQuery implements ParseQuery {
 					}
 				}
 			}
+			
 			// 2. MYBATIS_INCLUDE_SQL 맵에 include태그가 있는 SQL들의 include를 해당 쿼리로 치환.(재귀적처리)
 			Iterator<String> iter = MYBATIS_INCLUDE_SQL.keySet().iterator();
 			String sqlConts = "";
@@ -142,7 +144,10 @@ public class MybatisParseQuery implements ParseQuery {
 					MYBATIS_INCLUDE_SQL.put(sqlKey, sqlBody.toString());
 				}
 			}
+			
+			// 3. IS_MYBATIS_INCLUDE_SQL_DONE 을 true 로 세팅.
 			IS_MYBATIS_INCLUDE_SQL_DONE = true;
+			
 		}
 	}
 	
