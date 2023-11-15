@@ -23,10 +23,10 @@ import net.dstone.common.utils.XmlUtil;
 
 public class MybatisParseQuery implements ParseQuery {
 
-	static Map<String, String> MYBATIS_INCLUDE_SQL = new HashMap<String, String>();
-	static boolean IS_MYBATIS_INCLUDE_SQL_DONE = false;
+	private static Map<String, String> MYBATIS_INCLUDE_SQL = new HashMap<String, String>();
+	private static boolean IS_MYBATIS_INCLUDE_SQL_DONE = false;
 	
-	static List<String> MYBATIS_REMOVE_TAG_LIST = new ArrayList<String>();
+	private static List<String> MYBATIS_REMOVE_TAG_LIST = new ArrayList<String>();
 	static {
 		/*****************************************************
 		MYBATIS_REMOVE_TAG_LIST.add("choose");
@@ -35,7 +35,7 @@ public class MybatisParseQuery implements ParseQuery {
 		*****************************************************/
 	}
 
-	static List<String> MYBATIS_DIV_TAG_LIST = new ArrayList<String>();
+	private static List<String> MYBATIS_DIV_TAG_LIST = new ArrayList<String>();
 	static {
 		/*****************************************************
 		MYBATIS_DIV_TAG_LIST.add("isEqual");
