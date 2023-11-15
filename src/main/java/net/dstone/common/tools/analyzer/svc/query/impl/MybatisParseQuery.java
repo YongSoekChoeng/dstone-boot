@@ -81,7 +81,7 @@ public class MybatisParseQuery implements ParseQuery {
 				if(xml.hasNode("mapper")) {
 					rootKeyword = "mapper";
 				}else if(xml.hasNode("Mapper")) {
-						rootKeyword = "Mapper";
+					rootKeyword = "Mapper";
 				// Ibatis
 				}else if(xml.hasNode("sqlMap")) {
 					rootKeyword = "sqlMap";
@@ -325,7 +325,7 @@ public class MybatisParseQuery implements ParseQuery {
 			if(xml.hasNode("mapper")) {
 				rootKeyword = "mapper";
 			}else if(xml.hasNode("Mapper")) {
-					rootKeyword = "Mapper";
+				rootKeyword = "Mapper";
 			// Ibatis
 			}else if(xml.hasNode("sqlMap")) {
 				rootKeyword = "sqlMap";
