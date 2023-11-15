@@ -133,7 +133,7 @@ public class MybatisParseQuery implements ParseQuery {
 						for(String line : lines) {
 							if(line.indexOf("<include")>-1) {
 								refid = StringUtil.nextWord(line, "<include refid=\"", div);
-								sqlBody.append(getMybatisIncludeSql(refid)).append("\n");
+								sqlBody.append(MybatisParseQuery.getMybatisIncludeSql(refid)).append("\n");
 							}else {
 								sqlBody.append(line).append("\n");
 							}
@@ -162,7 +162,7 @@ public class MybatisParseQuery implements ParseQuery {
 					for(String line : lines) {
 						if(line.indexOf("<include")>-1) {
 							String subRefid = StringUtil.nextWord(line, "<include refid=\"", div);
-							sqlBody.append(getMybatisIncludeSql(subRefid)).append("\n");
+							sqlBody.append(MybatisParseQuery.getMybatisIncludeSql(subRefid)).append("\n");
 						}else {
 							sqlBody.append(line).append("\n");
 						}
@@ -221,7 +221,7 @@ public class MybatisParseQuery implements ParseQuery {
 								// 자체 XML에 존재하는 쿼리 라면
 								if( xml.hasNodeById(refid)) {
 									 cNodeExp = "//*[@id='"+refid+"']";
-									 outBuff.append(removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
+									 outBuff.append(MybatisParseQuery.removeMybatisTagFromSql(xml, cNodeExp, recursivelyYn));
 								// 별도 XML에 존재하는 쿼리 라면(공통 include 쿼리 라면)
 								}else {
 									if( MYBATIS_INCLUDE_SQL.containsKey(refid) ) {
@@ -252,7 +252,7 @@ public class MybatisParseQuery implements ParseQuery {
 							ifElseConts = StringUtil.trimTextForParse(ifElseConts);
 							if(ifElseConts.startsWith("(SELECT") || ifElseConts.startsWith("( SELECT")) {
 								innerXml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_STRING, "<sqlMap><select>" + ifElseConts + "</select></sqlMap>");
-								String ifElseSql = removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
+								String ifElseSql = MybatisParseQuery.removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
 								outBuff.append(ifElseSql);
 							}
 						// 노드명이 MYBATIS_REMOVE_TAG_LIST(무시태그)의 경우
@@ -308,7 +308,7 @@ public class MybatisParseQuery implements ParseQuery {
 	public List<Map<String, String>> getQueryInfoList(String queryFile) {
 		
 		/*** 공통 include 쿼리 정보를 추출하여 맵(MYBATIS_INCLUDE_SQL)에 저장한다. ***/
-		fillMybatisIncludeSql();
+		MybatisParseQuery.fillMybatisIncludeSql();
 		
 		List<Map<String, String>> qList = new ArrayList<Map<String, String>>();
 		if(FileUtil.isFileExist(queryFile)) {
@@ -350,7 +350,7 @@ public class MybatisParseQuery implements ParseQuery {
 						
 						// Mybatis/Ibatis 쿼리의 내부 태그 제거.
 						nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
-						sqlBody = removeMybatisTagFromSql(xml, nodeExp, true);
+						sqlBody = MybatisParseQuery.removeMybatisTagFromSql(xml, nodeExp, true);
 						
 						// 테이블명을 파싱하기 좋게 SQL을 간소화.
 						sqlBody = ParseUtil.removeBasicTagFromSql(sqlBody, row.get("SQL_KIND"));
