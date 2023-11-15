@@ -55,7 +55,7 @@ public class MybatisParseQuery implements ParseQuery {
 	}
 
 	/**
-	 * 공통 include 쿼리 정보를 추출하는 메소드
+	 * 공통 include 쿼리 정보를 추출하여 맵(MYBATIS_INCLUDE_SQL)에 저장하는 메소드
 	 */
 	private static void fillMybatisIncludeSql() {
 		
@@ -71,7 +71,7 @@ public class MybatisParseQuery implements ParseQuery {
 			String sqlId = "";
 			StringBuffer sqlBody = new StringBuffer();
 			
-			// 1. MYBATIS_INCLUDE_SQL 맵에 공통 SQL를 세팅. (include 가 있는 SQL은 include 그대로 저장)
+			// 1. MYBATIS_INCLUDE_SQL 맵에 공통 SQL를 세팅. (include태그 가 있는 SQL은 include태그 그대로 저장)
 			for(String queryFile : queryFileList) {
 				if( !SvcAnalyzer.isValidQueryFile(queryFile) ) {
 					continue;
@@ -117,7 +117,7 @@ public class MybatisParseQuery implements ParseQuery {
 					}
 				}
 			}
-			// 2. MYBATIS_INCLUDE_SQL 맵에 include가 있는 SQL들의 include를 해당 쿼리로 치환
+			// 2. MYBATIS_INCLUDE_SQL 맵에 include태그가 있는 SQL들의 include를 해당 쿼리로 치환.(재귀적처리)
 			Iterator<String> iter = MYBATIS_INCLUDE_SQL.keySet().iterator();
 			String sqlConts = "";
 			String refid = "";
@@ -186,16 +186,12 @@ public class MybatisParseQuery implements ParseQuery {
 		StringBuffer outBuff = new StringBuffer();
 		Node node = xml.getNodeByExp(nodeExp);
 		if(node != null) {
-			
 			XmlUtil innerXml = null;
 			NodeList nodeList = node.getChildNodes();
 			if(nodeList != null) {
-				
 				Node cNode = null;
 				String refid = "";
 				String cNodeExp = "";
-				String[] refidArr = null;
-				
 				for(int i=0; i<nodeList.getLength(); i++) {
 					cNode = nodeList.item(i);
 					
@@ -214,8 +210,6 @@ public class MybatisParseQuery implements ParseQuery {
 					Node.DOCUMENT_FRAGMENT_NODE			11		DocumentFragment
 					Node.NOTATION_NODE					12		Notation
 					*******************************************************/
-					//System.out.println( "NodeName:" + cNode.getNodeName() + ", NodeType:" + cNode.getNodeType() );
-
 					// 노드타입이 Element 의 경우
 					if( cNode.getNodeType() == Node.ELEMENT_NODE) {
 						// 노드명이 include 의 경우
@@ -256,7 +250,6 @@ public class MybatisParseQuery implements ParseQuery {
 						}else if(MYBATIS_DIV_TAG_LIST.contains(cNode.getNodeName())) {
 							String ifElseConts = cNode.getTextContent().trim().toUpperCase();
 							ifElseConts = StringUtil.trimTextForParse(ifElseConts);
-							int ifElseCnt = xml.getNodeCountByExp( nodeExp +"/"+cNode.getNodeName() );
 							if(ifElseConts.startsWith("(SELECT") || ifElseConts.startsWith("( SELECT")) {
 								innerXml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_STRING, "<sqlMap><select>" + ifElseConts + "</select></sqlMap>");
 								String ifElseSql = removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
