@@ -827,7 +827,6 @@ public class SvcAnalyzer extends BaseObject{
 		} catch (Exception e) {
 			LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
 			e.printStackTrace();
-			throw e;
 		}
 	}
 	
