@@ -100,6 +100,7 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 
 	/**
 	 * 호출테이블 목록 추출
+	 * 파일에서 매칭되는 queryKey를 찾아내어 해당 [쿼리정보.테이블목록]을 읽어온 후 [메소드정보.호출테이블]에 저장.
 	 * @param analyzedMethodFile
 	 * @return
 	 */
