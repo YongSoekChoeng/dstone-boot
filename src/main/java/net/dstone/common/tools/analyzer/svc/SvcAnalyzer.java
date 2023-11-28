@@ -371,7 +371,7 @@ public class SvcAnalyzer extends BaseObject{
 			classFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : classFileList) {
-				if( !isValidSvcFile(file) ||  !isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
+				if( !SvcAnalyzer.isValidSvcFile(file) ||  !SvcAnalyzer.isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
 					continue;
 				}
 				filteredFileList.add(file);
@@ -420,7 +420,7 @@ public class SvcAnalyzer extends BaseObject{
 			queryFileList = FileUtil.readFileListAll(AppAnalyzer.QUERY_ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : queryFileList) {
-				if( !isValidQueryFile(file) ) {
+				if( !SvcAnalyzer.isValidQueryFile(file) ) {
 					continue;
 				}
 				filteredFileList.add(file);
@@ -500,7 +500,7 @@ public class SvcAnalyzer extends BaseObject{
 			uiFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : uiFileList) {
-				if( !isValidUiFile(file) ) {
+				if( !SvcAnalyzer.isValidUiFile(file) ) {
 					continue;
 				}
 				filteredFileList.add(file);
@@ -575,7 +575,7 @@ public class SvcAnalyzer extends BaseObject{
 					try {
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
-							if( isValidSvcFile(classFile) ) {
+							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
 								
 								clzzVo = new ClzzVo();
 								
@@ -662,7 +662,7 @@ public class SvcAnalyzer extends BaseObject{
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
-							if( isValidSvcFile(classFile) ) {
+							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
 								String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
 								pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
 								if(pkgClassId.startsWith("/")) {
@@ -733,7 +733,7 @@ public class SvcAnalyzer extends BaseObject{
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
-							if( isValidSvcFile(classFile) ) {
+							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
 								String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
 								pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
 								if(pkgClassId.startsWith("/")) {
@@ -785,7 +785,7 @@ public class SvcAnalyzer extends BaseObject{
 		try {
 			for(int i=0; i<queryFileList.length; i++) {
 				file = queryFileList[i];
-				if( isValidQueryFile(file) ) {
+				if( SvcAnalyzer.isValidQueryFile(file) ) {
 					
 					/*** 파일로부터 쿼리정보목록 추출. ***
 					 * SQL_NAMESPACE - 네임스페이스
@@ -918,7 +918,7 @@ public class SvcAnalyzer extends BaseObject{
 					try {
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
-							if( isValidSvcFile(classFile) ) {
+							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
 								// 메소드ID/메소드명/메소드URL/메소드내용 추출
 								methodInfoList = MethodFactory.getMtdInfoList(classFile);
 								if( methodInfoList != null ) {
@@ -1131,7 +1131,7 @@ public class SvcAnalyzer extends BaseObject{
 					try {
 						for(int i=0; i<uiFileList.length; i++) {
 							uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
-							if( isValidUiFile(uiFile) ) {
+							if( SvcAnalyzer.isValidUiFile(uiFile) ) {
 								
 								// UI아이디/UI명/인크루드파일/링크 추출
 								uiVo = new UiVo();
@@ -1197,7 +1197,7 @@ public class SvcAnalyzer extends BaseObject{
 					try {
 						for(int i=0; i<uiFileList.length; i++) {
 							uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
-							if( isValidUiFile(uiFile) ) {
+							if( SvcAnalyzer.isValidUiFile(uiFile) ) {
 								
 								// UI Vo
 								uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
