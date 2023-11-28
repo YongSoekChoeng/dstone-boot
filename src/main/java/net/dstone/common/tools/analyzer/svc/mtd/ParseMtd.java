@@ -6,6 +6,7 @@ import java.util.Map;
 public interface ParseMtd {
 	/**
 	 * 파일로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
+	 * LIST[ MAP<메서드ID(METHOD_ID), 메서드명(METHOD_NAME), 메서드URL(METHOD_URL), 메서드바디(METHOD_BODY)> ]
 	 * @param classFile
 	 * @return
 	 */
