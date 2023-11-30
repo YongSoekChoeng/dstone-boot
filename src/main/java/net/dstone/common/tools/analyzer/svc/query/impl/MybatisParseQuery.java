@@ -77,7 +77,7 @@ public class MybatisParseQuery implements ParseQuery {
 				if( !SvcAnalyzer.isValidQueryFile(queryFile) ) {
 					continue;
 				}
-				xml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
+				xml = XmlUtil.getNonSingletonInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
 				// Mibatis
 				if(xml.hasNode("mapper")) {
 					rootKeyword = "mapper";
@@ -256,7 +256,7 @@ public class MybatisParseQuery implements ParseQuery {
 							String ifElseConts = cNode.getTextContent().trim().toUpperCase();
 							ifElseConts = StringUtil.trimTextForParse(ifElseConts);
 							if(ifElseConts.startsWith("(SELECT") || ifElseConts.startsWith("( SELECT")) {
-								innerXml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_STRING, "<sqlMap><select>" + ifElseConts + "</select></sqlMap>");
+								innerXml = XmlUtil.getNonSingletonInstance(XmlUtil.XML_SOURCE_KIND_STRING, "<sqlMap><select>" + ifElseConts + "</select></sqlMap>");
 								String ifElseSql = MybatisParseQuery.removeMybatisTagFromSql(innerXml, "/sqlMap/select", recursivelyYn);
 								outBuff.append(ifElseSql);
 							}
@@ -306,18 +306,19 @@ public class MybatisParseQuery implements ParseQuery {
 	 * SQL_ID - SQL아이디
 	 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
 	 * SQL_BODY - SQL구문
-	 * @param file
+	 * @param queryFile
 	 * @return
 	 */
 	@Override
 	public List<Map<String, String>> getQueryInfoList(String queryFile) {
 		
-		/*** 공통 include 쿼리 정보를 추출하여 맵(MYBATIS_INCLUDE_SQL)에 저장한다. ***/
+		/*** 공통 include 쿼리 정보를 추출하여 맵(MYBATIS_INCLUDE_SQL)에 저장 시작 ***/
 		MybatisParseQuery.fillMybatisIncludeSql();
+		/*** 공통 include 쿼리 정보를 추출하여 맵(MYBATIS_INCLUDE_SQL)에 저장 끝 ***/
 		
 		List<Map<String, String>> qList = new ArrayList<Map<String, String>>();
 		if(FileUtil.isFileExist(queryFile)) {
-			XmlUtil xml = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
+			XmlUtil xml = XmlUtil.getNonSingletonInstance(XmlUtil.XML_SOURCE_KIND_PATH, queryFile);
 			String rootKeyword = "";
 			List<String> queryKinds = new ArrayList<String>();
 			queryKinds.add("select");
@@ -326,18 +327,19 @@ public class MybatisParseQuery implements ParseQuery {
 			queryKinds.add("delete");
 			queryKinds.add("sql");
 			
-			// Mibatis
-			if(xml.hasNode("mapper")) {
+			/*** Mibatis/Ibatis 구분 ***/
+			if(xml.hasNode("mapper")) {			// Mibatis
 				rootKeyword = "mapper";
 			}else if(xml.hasNode("Mapper")) {
 				rootKeyword = "Mapper";
-			// Ibatis
-			}else if(xml.hasNode("sqlMap")) {
+			}else if(xml.hasNode("sqlMap")) {	// Ibatis
 				rootKeyword = "sqlMap";
 			}else if(xml.hasNode("SqlMap")) {
 				rootKeyword = "SqlMap";
 			}
+			
 			if( xml.hasNode(rootKeyword) && xml.getNode(rootKeyword).getAttributes() != null ) {
+				/*** 네임스페이스 ***/
 				String namespace = xml.getNode(rootKeyword).getAttributes().getNamedItem("namespace").getTextContent();
 				String nodeExp = "/"+rootKeyword+"/*";
 				NodeList nodeList = xml.getNodeListByExp(nodeExp);
@@ -350,17 +352,18 @@ public class MybatisParseQuery implements ParseQuery {
 						
 						row = new HashMap<String, String>();
 						row.put("SQL_NAMESPACE", namespace);
+						/*** SQL아이디 ***/
 						row.put("SQL_ID", item.getAttributes().getNamedItem("id").getTextContent());
+						/*** SQL종류(SELECT/INSERT/UPDATE/DELETE) ***/
 						row.put("SQL_KIND", item.getNodeName().toUpperCase());
 						
 						// Mybatis/Ibatis 쿼리의 내부 태그 제거.
 						nodeExp = "/"+rootKeyword+"/" + item.getNodeName() + "[@id='" + item.getAttributes().getNamedItem("id").getTextContent() + "']";
 						sqlBody = MybatisParseQuery.removeMybatisTagFromSql(xml, nodeExp, true);
-						
 						// 테이블명을 파싱하기 좋게 SQL을 간소화.
 						sqlBody = ParseUtil.removeBasicTagFromSql(sqlBody, row.get("SQL_KIND"));
 						
-						// SQL 세팅
+						/*** SQL구문 ***/
 						row.put("SQL_BODY", sqlBody.toUpperCase());
 
 						if(!StringUtil.isEmpty(row.get("SQL_BODY"))) {

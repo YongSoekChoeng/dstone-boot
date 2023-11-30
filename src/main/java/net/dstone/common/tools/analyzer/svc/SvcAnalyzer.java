@@ -556,6 +556,7 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private void analyzeClass(String[] paramFileList)throws Exception {
 		getLogger().info("/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
+		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
@@ -774,60 +775,143 @@ public class SvcAnalyzer extends BaseObject{
 
 	/**
 	 * 쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출
-	 * @param queryFileList 쿼리파일리스트
+	 * @param paramFileList 쿼리파일리스트
 	 */
-	private void analyzeQuery(String[] queryFileList) throws Exception {
+	private void analyzeQuery(String[] paramFileList) throws Exception {
 		getLogger().info("/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 		
-		QueryVo queryVo = null;
-		List<Map<String, String>> queryInfoList = null;
-		String file= "";
-		try {
-			for(int i=0; i<queryFileList.length; i++) {
-				file = queryFileList[i];
-				if( SvcAnalyzer.isValidQueryFile(file) ) {
+//		QueryVo queryVo = null;
+//		List<Map<String, String>> queryInfoList = null;
+//		String file= "";
+//		try {
+//			for(int i=0; i<paramFileList.length; i++) {
+//				file = paramFileList[i];
+//				if( SvcAnalyzer.isValidQueryFile(file) ) {
+//					
+//					/*** 파일로부터 쿼리정보목록 추출. ***
+//					 * SQL_NAMESPACE - 네임스페이스
+//					 * SQL_ID - SQL아이디
+//					 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
+//					 * SQL_BODY - SQL구문
+//					****************************/
+//					queryInfoList = QueryFactory.getQueryInfoList(file);
+//					
+//					if( queryInfoList != null ) {
+//						for(Map<String, String> queryInfo : queryInfoList) {
+//							queryVo = new QueryVo();
+//
+//							/*** KEY ***/
+//							queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
+//							
+//							/*** 네임스페이스 ***/
+//							queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
+//
+//							/*** 쿼리ID ***/
+//							queryVo.setQueryId(queryInfo.get("SQL_ID"));
+//							
+//							/*** 쿼리종류 ***/
+//							queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
+//
+//							/*** 파일명 ***/
+//							queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
+//
+//							/*** 쿼리내용 ***/
+//							queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
+//
+//							// 파일저장			
+//							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+//						}
+//					}
+//					
+//				}
+//			}
+//		} catch (Exception e) {
+//			LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
+//			e.printStackTrace();
+//		}
+		
+		if(paramFileList == null || paramFileList.length == 0) {return;}
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
+		for(int n=0; n<divClassFileList.size(); n++) {
+			List<String> divClassFileListItem = divClassFileList.get(n);
+			String[] queryFileList = new String[divClassFileListItem.size()];
+			divClassFileListItem.toArray(queryFileList);
+			TaskItem taskItem = new TaskItem(){
+				@Override
+				public TaskItem doTheTask(){
 					
-					/*** 파일로부터 쿼리정보목록 추출. ***
-					 * SQL_NAMESPACE - 네임스페이스
-					 * SQL_ID - SQL아이디
-					 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
-					 * SQL_BODY - SQL구문
-					****************************/
-					queryInfoList = QueryFactory.getQueryInfoList(file);
+					/************************ 작업세팅 시작 ************************/
+					String[] queryFileList = (String[])this.getObj("queryFileList");
+					QueryVo queryVo = null;
+					List<Map<String, String>> queryInfoList = null;
+					String queryFile= "";
+					try {
+						for(int i=0; i<queryFileList.length; i++) {
+							queryFile = queryFileList[i];
+							if( SvcAnalyzer.isValidQueryFile(queryFile) ) {
+
+								/*** 파일로부터 쿼리정보목록 추출. ***
+								 * SQL_NAMESPACE - 네임스페이스
+								 * SQL_ID - SQL아이디
+								 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
+								 * SQL_BODY - SQL구문
+								****************************/
+								queryInfoList = QueryFactory.getQueryInfoList(queryFile);
+											
+								if( queryInfoList != null ) {
+									for(Map<String, String> queryInfo : queryInfoList) {
+										queryVo = new QueryVo();
+
+										/*** KEY ***/
+										queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
+										
+										/*** 네임스페이스 ***/
+										queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
+
+										/*** 쿼리ID ***/
+										queryVo.setQueryId(queryInfo.get("SQL_ID"));
+										
+										/*** 쿼리종류 ***/
+										queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
+
+										/*** 파일명 ***/
+										queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
+
+										/*** 쿼리내용 ***/
+										queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
+
+										// 파일저장			
+										ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+									}
+								}
+								
+							}
+						}	
 					
-					if( queryInfoList != null ) {
-						for(Map<String, String> queryInfo : queryInfoList) {
-							queryVo = new QueryVo();
+					} catch (Exception e) {
+						LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. queryFile["+queryFile+"]");
+						e.printStackTrace();
+					}					
+					/************************ 작업세팅 종료 ************************/
 
-							/*** KEY ***/
-							queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
-							
-							/*** 네임스페이스 ***/
-							queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
-
-							/*** 쿼리ID ***/
-							queryVo.setQueryId(queryInfo.get("SQL_ID"));
-							
-							/*** 쿼리종류 ***/
-							queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
-
-							/*** 파일명 ***/
-							queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
-
-							/*** 쿼리내용 ***/
-							queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
-
-							// 파일저장			
-							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
-						}
-					}
-					
+					return this;
 				}
-			}
-		} catch (Exception e) {
-			LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. file["+file+"]");
-			e.printStackTrace();
+			};
+			taskItem.setObj("queryFileList", queryFileList);
+			taskItem.setId("analyzeQuery-" + n);
+			taskItemList.add(taskItem);
 		}
+		String executorServiceId = "analyzeQuery-Task";
+		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
+		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		}
+		
+		
 	}
 	
 	/**

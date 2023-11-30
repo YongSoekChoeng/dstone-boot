@@ -40,6 +40,16 @@ public class XmlUtil {
 		return xml;
 	}
 
+	public static XmlUtil getNonSingletonInstance(int xmlSourceKind, String xmlSource) {
+		XmlUtil xmlInstance = new XmlUtil();
+		try {
+			xmlInstance.init(xmlSourceKind, xmlSource);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return xmlInstance;
+	}
+
 	String xmlPath;
 	XPathFactory xpathFactory;
 	XPath xPath;
@@ -67,6 +77,7 @@ public class XmlUtil {
 				this.document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.xmlSource); 
 			}
 		} catch (Exception e) {
+			logger.error("net.dstone.common.utils.XmlUtil.init(xmlSourceKind["+xmlSourceKind+"]" + " xmlSource["+xmlSource+"]) 수행중 예외발생.");
 			e.printStackTrace();
 		} finally {
 			if( fin != null ){try{ fin.close(); }catch(Exception e){}}
