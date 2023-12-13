@@ -368,7 +368,7 @@ public class SvcAnalyzer extends BaseObject{
 			
 			getLogger().info("/**************************************** A.클래스 분석 시작 ****************************************/");
 			/*** 클래스 파일추출 시작 ***/
-			classFileList = FileUtil.readFileListAll(AppAnalyzer.ROOT_PATH);
+			classFileList = FileUtil.readFileListAll(AppAnalyzer.CLASS_ROOT_PATH);
 			filteredFileList = new ArrayList<String>();
 			for(String file : classFileList) {
 				if( !SvcAnalyzer.isValidSvcFile(file) ||  !SvcAnalyzer.isValidSvcPackage(ClassFactory.getPackageId(file)) ) {
