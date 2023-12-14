@@ -64,6 +64,7 @@ public class SqlUtil extends BaseObject {
 			if(!StringUtil.isEmpty(paramSql)) {
 				
 				String sql = paramSql; 
+				sql = SqlUtil.removeCommentsFromSql(sql);
 				sql = StringUtil.trimTextForParse(sql);
 				sql = StringUtil.replace(sql, "\r\n", " ");
 				sql = StringUtil.replace(sql, "\n", " ");
