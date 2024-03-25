@@ -56,7 +56,7 @@ public class AnalyzerTest {
     	
         String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
 //    	String path = srcRoot + "/" + "net/dstone/sample/AdminController.java";
-    	String path = srcRoot + "/" + "net/dstone/sample/UserController.java";
+    	String path = srcRoot + "/" + "net/dstone/sample/MarketController.java";
 
         JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(new JavaParserTypeSolver(new File(srcRoot)));
         StaticJavaParser.getParserConfiguration().setSymbolResolver(javaSymbolSolver);

@@ -14,13 +14,13 @@ import net.dstone.common.task.TaskItem;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
-import net.dstone.common.tools.analyzer.svc.clzz.impl.TossParseClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParseClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
-import net.dstone.common.tools.analyzer.svc.mtd.impl.TossParseMtd;
+import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParseMtd;
 import net.dstone.common.tools.analyzer.svc.query.ParseQuery;
-import net.dstone.common.tools.analyzer.svc.query.impl.TossParseQuery;
+import net.dstone.common.tools.analyzer.svc.query.impl.MybatisParseQuery;
 import net.dstone.common.tools.analyzer.svc.ui.ParseUi;
-import net.dstone.common.tools.analyzer.svc.ui.impl.TossParseUi;
+import net.dstone.common.tools.analyzer.svc.ui.impl.JspParseUi;
 import net.dstone.common.tools.analyzer.util.DbGen;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -131,8 +131,8 @@ public class SvcAnalyzer extends BaseObject{
 		
 		static ParseClzz getClzz() {
 			//return new TextParseClzz(); 
-			//return new JavaParseClzz(); 
-			return new TossParseClzz(); 
+			return new JavaParseClzz(); 
+			//return new TossParseClzz(); 
 		}
 		
 		/**
@@ -229,8 +229,8 @@ public class SvcAnalyzer extends BaseObject{
 
 		static ParseMtd getMethod() {
 			//return new TextParseMtd(); 
-			//return new JavaParseMtd();
-			return new TossParseMtd(); 
+			return new JavaParseMtd();
+			//return new TossParseMtd(); 
 		}
 		
 		/**
@@ -269,8 +269,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class QueryFactory {
 
 		static ParseQuery getQuery() {
-			//return new MybatisParseQuery(); 
-			return new TossParseQuery(); 
+			return new MybatisParseQuery(); 
+			//return new TossParseQuery(); 
 		}
 		
 		/**
@@ -313,8 +313,8 @@ public class SvcAnalyzer extends BaseObject{
 	private static class UiFactory {
 
 		static ParseUi getUi() {
-			//return new JspParseUi(); 
-			return new TossParseUi(); 
+			return new JspParseUi(); 
+			//return new TossParseUi(); 
 		}
 		
 		/**
