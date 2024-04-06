@@ -5,11 +5,7 @@ import java.util.List;
 import net.dstone.sample.market.item.Item;
 
 public class AppleSeller extends Seller {
-	
-	private void debug(Object o) {
-		System.out.println(o);
-	}
-	
+		
 	@Override
 	public void addItemToStorage(String itemId, List<Item> itemList) {
 		super.addItemToStorage(itemId, itemList);
@@ -24,6 +20,10 @@ public class AppleSeller extends Seller {
 	public List<Item> sell(Item item, int itemCnt, int pay) {
 		List<Item> itemList = super.sell(item, itemCnt, pay);
 		return itemList;
+	}
+	
+	public void test() {
+		
 	}
 
 }

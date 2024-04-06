@@ -20,4 +20,24 @@ public class BaseObject {
 		return myLogger;
 	}
 	
+	protected void trace(Object o) {
+		getLogger().trace(o);
+	}
+
+	protected void debug(Object o) {
+		getLogger().debug(o);
+	}
+	
+	protected void info(Object o) {
+		getLogger().info(o);
+	}
+	
+	protected void warn(Object o) {
+		getLogger().warn(o);
+	}
+
+	protected void error(Object o) {
+		getLogger().error(o);
+	}
+	
 }

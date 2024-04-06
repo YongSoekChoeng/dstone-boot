@@ -69,6 +69,7 @@ public class FruitMarket implements Market {
 		Item item = null;
 		if("sample.item.Apple".equals(itemId)) {
 			seller = new AppleSeller();
+			((AppleSeller)seller).test();
 			item = new Apple();
 		}else if("sample.item.Peache".equals(itemId)) {
 			seller = new PeachSeller();

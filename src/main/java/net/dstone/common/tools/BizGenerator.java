@@ -55,7 +55,7 @@ public class BizGenerator extends BaseObject {
 
 	}
 
-	protected static void debug(Object o) {
+	protected static void sysout(Object o) {
 		net.dstone.common.utils.LogUtil.sysout(o);
 	}
 
@@ -564,13 +564,13 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genVoByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strVoPackageName, String strVoName, boolean fileGenYn) {
 
-			debug("||===================== genVoByTable(테이블명으로 VO 생성하는 메소드) =====================||");
-			debug("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
-			debug("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
-			debug("strVoPackageName (VO패키지명. 옵션(없을경우 CUD(입력/수정/삭제)용 패키지에 생성)) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 옵션(없을경우 테이블명으로 자동생성)) [" + strVoName + "]");
-			debug("fileGenYn (소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||===================== genVoByTable(테이블명으로 VO 생성하는 메소드) =====================||");
+			sysout("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
+			sysout("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
+			sysout("strVoPackageName (VO패키지명. 옵션(없을경우 CUD(입력/수정/삭제)용 패키지에 생성)) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 옵션(없을경우 테이블명으로 자동생성)) [" + strVoName + "]");
+			sysout("fileGenYn (소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String voStr = "";
 
@@ -680,12 +680,12 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genVoBySql(String strVoPackageName, String strVoName, boolean pageYn, boolean fileGenYn) {
 
-			debug("||========================= genVoBySql(SQL로 VO 생성하는 메소드) =========================||");
-			debug("strVoPackageName (VO패키지명. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
-			debug("pageYn (페이징용 카운트 멤버를 생성할지 여부. 페이징이 들어가는 화면에 사용되는 VO라면 true로 세팅.) [" + pageYn + "]");
-			debug("fileGenYn (소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||========================= genVoBySql(SQL로 VO 생성하는 메소드) =========================||");
+			sysout("strVoPackageName (VO패키지명. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 필수.) [" + strVoName + "]");
+			sysout("pageYn (페이징용 카운트 멤버를 생성할지 여부. 페이징이 들어가는 화면에 사용되는 VO라면 true로 세팅.) [" + pageYn + "]");
+			sysout("fileGenYn (소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String voStr = "";
 
@@ -839,15 +839,15 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genSqlByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, String strModuleName, boolean cudOnlyYn, boolean fileGenYn) {
 
-			debug("||==================== genSqlByTable(테이블명으로 SQL 생성하는 메소드) ====================||");
-			debug("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
-			debug("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
-			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
-			debug("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
-			debug("strModuleName (모듈명. 필수.) [" + strModuleName + "]");
-			debug("cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.) [" + cudOnlyYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||==================== genSqlByTable(테이블명으로 SQL 생성하는 메소드) ====================||");
+			sysout("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
+			sysout("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
+			sysout("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
+			sysout("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
+			sysout("strModuleName (모듈명. 필수.) [" + strModuleName + "]");
+			sysout("cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.) [" + cudOnlyYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String PACKAGE_NAME = strDaoPackageName;
 			String MODULE_NAME = strModuleName;
@@ -1082,17 +1082,17 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genSqlBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, String strModuleName, boolean pageYn, boolean fileGenYn) {
 
-			debug("||======================== genSqlBySql(SQL로 SQL 생성하는 메소드) ========================||");
-			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
-			debug("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
-			debug("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
-			debug("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
-			debug("strModuleName (모듈명. 필수.) [" + strModuleName + "]");
-			debug("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||======================== genSqlBySql(SQL로 SQL 생성하는 메소드) ========================||");
+			sysout("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
+			sysout("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
+			sysout("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 필수.) [" + strVoName + "]");
+			sysout("strModuleName (모듈명. 필수.) [" + strModuleName + "]");
+			sysout("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String sql = "";
 			String PACKAGE_NAME = strDaoPackageName;
@@ -1327,14 +1327,14 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genDaoByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, boolean cudOnlyYn, boolean fileGenYn) {
 
-			debug("||================ genDaoByTable(테이블명으로 DAO 소스코드를 생성하는 메소드) ================||");
-			debug("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
-			debug("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
-			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
-			debug("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
-			debug("cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.) [" + cudOnlyYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||================ genDaoByTable(테이블명으로 DAO 소스코드를 생성하는 메소드) ================||");
+			sysout("TABLE_NAME (물리테이블명. 필수.) [" + TABLE_NAME + "]");
+			sysout("TABLE_HAN_NAME (논리테이블명. 필수.) [" + TABLE_HAN_NAME + "]");
+			sysout("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
+			sysout("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
+			sysout("cudOnlyYn (CUD용인지여부. false일 경우 조회용 쿼리를 생성하지 않음.) [" + cudOnlyYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String PACKAGE_NAME = strDaoPackageName;
 			StringBuffer daoH = new StringBuffer();
@@ -1472,17 +1472,17 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genDaoBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, boolean listYn, boolean pageYn, boolean fileGenYn) {
 
-			debug("||=================== genDaoBySql(SQL로 DAO 소스코드를 생성하는 메소드) ===================||");
-			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
-			debug("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
-			debug("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
-			debug("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
-			debug("listYn (리스트성인지 상세조회성인지 여부.) [" + listYn + "]");
-			debug("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||=================== genDaoBySql(SQL로 DAO 소스코드를 생성하는 메소드) ===================||");
+			sysout("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
+			sysout("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
+			sysout("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 필수.) [" + strVoName + "]");
+			sysout("listYn (리스트성인지 상세조회성인지 여부.) [" + listYn + "]");
+			sysout("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String PACKAGE_NAME = strDaoPackageName;
 			StringBuffer daoH = new StringBuffer();
@@ -1605,20 +1605,20 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genSvc(String strSvcPackageName, String strSvcName, String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, int CRUD, String strTableName, boolean pageYn, boolean fileGenYn) {
 
-			debug("||======================= genSvc(SVC 소스코드를 생성하는 메소드) ==========================||");
-			debug("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
-			debug("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
-			debug("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
-			debug("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
-			debug("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
-			debug("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||======================= genSvc(SVC 소스코드를 생성하는 메소드) ==========================||");
+			sysout("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
+			sysout("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
+			sysout("strDaoPackageName (DAO 패키지명. 필수.) [" + strDaoPackageName + "]");
+			sysout("strDaoName (DAO 명. 필수.) [" + strDaoName + "]");
+			sysout("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 필수.) [" + strVoName + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String PACKAGE_NAME = strSvcPackageName;
 			StringBuffer svcH = new StringBuffer();
@@ -2041,23 +2041,23 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genCtrlForJsp(String strCtrlPackageName, String strCtrlName, String strSvcPackageName, String strSvcName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, int CRUD, String strTableName, String strPrefix, String strUri, String strReturnJsp, boolean pageYn, boolean fileGenYn) {
 
-			debug("||================== genCtrlForJsp(JSP용 CTRL 소스코드를 생성하는 메소드) ==================||");
-			debug("strCtrlPackageName (CTRL 패키지명. 필수.) [" + strCtrlPackageName + "]");
-			debug("strCtrlName (CTRL 명. 필수.) [" + strCtrlName + "]");
-			debug("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
-			debug("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
-			debug("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
-			debug("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
-			debug("strUri (메소드 URI. 메소드의 @RequestMapping(value =)에 들어갈 값. 필수.) [" + strUri + "]");
-			debug("strReturnJsp (CTRL 리턴JSP명. ModelAndView.setViewName( strPrefix + / + strReturnJsp )로 반환. 필수.) [" + strReturnJsp + "]");
-			debug("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||================== genCtrlForJsp(JSP용 CTRL 소스코드를 생성하는 메소드) ==================||");
+			sysout("strCtrlPackageName (CTRL 패키지명. 필수.) [" + strCtrlPackageName + "]");
+			sysout("strCtrlName (CTRL 명. 필수.) [" + strCtrlName + "]");
+			sysout("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
+			sysout("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
+			sysout("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 필수.) [" + strVoName + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
+			sysout("strUri (메소드 URI. 메소드의 @RequestMapping(value =)에 들어갈 값. 필수.) [" + strUri + "]");
+			sysout("strReturnJsp (CTRL 리턴JSP명. ModelAndView.setViewName( strPrefix + / + strReturnJsp )로 반환. 필수.) [" + strReturnJsp + "]");
+			sysout("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String PACKAGE_NAME = strCtrlPackageName;
 			net.dstone.common.utils.DbUtil db = null;
@@ -2314,22 +2314,22 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genCtrlForJson(String strCtrlPackageName, String strCtrlName, String strSvcPackageName, String strSvcName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, int CRUD, String strTableName, String strPrefix, String strUri, boolean pageYn, boolean fileGenYn) {
 
-			debug("||================ genCtrlForJson(JSON용 CTRL 소스코드를 생성하는 메소드) =================||");
-			debug("strCtrlPackageName (CTRL 패키지명. 필수.) [" + strCtrlPackageName + "]");
-			debug("strCtrlName (CTRL 명. 필수.) [" + strCtrlName + "]");
-			debug("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
-			debug("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
-			debug("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
-			debug("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO명. 필수.) [" + strVoName + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
-			debug("strUri (메소드 URI. 메소드의 @RequestMapping(value =)에 들어갈 값. 필수.) [" + strUri + "]");
-			debug("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
-			debug("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||================ genCtrlForJson(JSON용 CTRL 소스코드를 생성하는 메소드) =================||");
+			sysout("strCtrlPackageName (CTRL 패키지명. 필수.) [" + strCtrlPackageName + "]");
+			sysout("strCtrlName (CTRL 명. 필수.) [" + strCtrlName + "]");
+			sysout("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
+			sysout("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
+			sysout("strMethodName (DAO 메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strMethodComment (DAO 메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("strVoPackageName (VO 패키지명. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO명. 필수.) [" + strVoName + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
+			sysout("strUri (메소드 URI. 메소드의 @RequestMapping(value =)에 들어갈 값. 필수.) [" + strUri + "]");
+			sysout("pageYn (카운트 SQL을 생성할지 여부.) [" + pageYn + "]");
+			sysout("fileGenYn (SQL 소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String PACKAGE_NAME = strCtrlPackageName;
 			net.dstone.common.utils.DbUtil db = null;
@@ -2595,25 +2595,25 @@ public class BizGenerator extends BaseObject {
 		 */
 		protected void genWsForRestFul(String strWSPackageName, String strWSName, String strSvcPackageName, String strSvcName, String strWSPath, String strMethodKind, String strMethodName, String strMethodComment, String strWsVoPackageName, String strWsVoName, String strVoPackageName, String strVoName, int CRUD, String strTableName, String strMediaType, boolean pageYn, boolean fileGenYn) {
 
-			debug("||========= genWsForRestFul(RestFul Web Service 용 WS 소스코드를 생성하는 메소드) =========||");
-			debug("strWSPackageName (WS 패키지명. 필수.) [" + strWSPackageName + "]");
-			debug("strWSName (WS 명. 필수.) [" + strWSName + "]");
-			debug("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
-			debug("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
-			debug("strWSPath (WS Path. 필수.) [" + strWSPath + "]");
-			debug("strMethodKind (메소드종류:PUT/POST/DELETE. 필수.) [" + strMethodKind + "]");
-			debug("strMethodName (메소드명. 필수.) [" + strMethodName + "]");
-			debug("strMethodComment (메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
-			debug("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
-			debug("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
-			debug("pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음.) [" + pageYn + "]");
-			debug("fileGenYn (WS소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||========= genWsForRestFul(RestFul Web Service 용 WS 소스코드를 생성하는 메소드) =========||");
+			sysout("strWSPackageName (WS 패키지명. 필수.) [" + strWSPackageName + "]");
+			sysout("strWSName (WS 명. 필수.) [" + strWSName + "]");
+			sysout("strSvcPackageName (SVC 패키지명. 필수.) [" + strSvcPackageName + "]");
+			sysout("strSvcName (SVC 명. 필수.) [" + strSvcName + "]");
+			sysout("strWSPath (WS Path. 필수.) [" + strWSPath + "]");
+			sysout("strMethodKind (메소드종류:PUT/POST/DELETE. 필수.) [" + strMethodKind + "]");
+			sysout("strMethodName (메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strMethodComment (메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
+			sysout("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
+			sysout("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
+			sysout("pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음.) [" + pageYn + "]");
+			sysout("fileGenYn (WS소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String wsFileName = "";
 
@@ -2854,17 +2854,17 @@ public class BizGenerator extends BaseObject {
 		 */
 		private String genWsVo(String strWsVoPackageName, String strWsVoName, String strVoPackageName, String strVoName, String strMethodComment, int CRUD, String strTableName, String strMediaType, boolean fileGenYn) {
 
-			debug("||================= genWsVo(RestFul Web Service 용 VO코드를 생성하는 메소드) ===============||");
-			debug("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
-			debug("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
-			debug("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
-			debug("strMethodComment (메소드설명. 필수.) [" + strMethodComment + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
-			debug("fileGenYn (WS소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
-			debug("||====================================================================================||");
+			sysout("||================= genWsVo(RestFul Web Service 용 VO코드를 생성하는 메소드) ===============||");
+			sysout("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
+			sysout("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
+			sysout("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
+			sysout("strMethodComment (메소드설명. 필수.) [" + strMethodComment + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
+			sysout("fileGenYn (WS소스를 파일로 생성할지 여부.) [" + fileGenYn + "]");
+			sysout("||====================================================================================||");
 
 			String wsVoFileName = "";
 
@@ -3023,15 +3023,15 @@ public class BizGenerator extends BaseObject {
 		 */
 		private void genTestSrcForJsp(int CRUD, String strTableName, String strPrefix, String strUri, String strVoPackageName, String strVoName, boolean pageYn) {
 
-			debug("||============== genTestSrcForJsp(JSP 용 테스트 소스코드를 생성하는 메소드.) =================||");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
-			debug("strUri (메소드 URI. 메소드의 @RequestMapping(value = )에 들어갈 값. 필수.) [" + strUri + "]");
-			debug("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
-			debug("pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음. 필수.) [" + pageYn + "]");
-			debug("||====================================================================================||");
+			sysout("||============== genTestSrcForJsp(JSP 용 테스트 소스코드를 생성하는 메소드.) =================||");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
+			sysout("strUri (메소드 URI. 메소드의 @RequestMapping(value = )에 들어갈 값. 필수.) [" + strUri + "]");
+			sysout("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
+			sysout("pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음. 필수.) [" + pageYn + "]");
+			sysout("||====================================================================================||");
 
 			StringBuffer buff = new StringBuffer("\r\n");
 
@@ -3494,15 +3494,15 @@ public class BizGenerator extends BaseObject {
 		 */
 		private void genTestSrcForJson(int CRUD, String strTableName, String strPrefix, String strUri, String strVoPackageName, String strVoName, boolean pageYn) {
 
-			debug("||============== genTestSrcForJsp(JSP 용 테스트 소스코드를 생성하는 메소드.) =================||");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
-			debug("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
-			debug("strUri (메소드 URI. 메소드의 @RequestMapping(value = )에 들어갈 값. 필수.) [" + strUri + "]");
-			debug("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
-			debug("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
-			debug("pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음. 필수.) [" + pageYn + "]");
-			debug("||====================================================================================||");
+			sysout("||============== genTestSrcForJsp(JSP 용 테스트 소스코드를 생성하는 메소드.) =================||");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strTableName (테이블 명-CRUD가 2:입력, 3:수정, 4:삭제 일 경우에만 해당) [" + strTableName + "]");
+			sysout("strPrefix (CTRL 프리픽스. CTRL의 @RequestMapping(value=)에 들어갈 값. 필수.) [" + strPrefix + "]");
+			sysout("strUri (메소드 URI. 메소드의 @RequestMapping(value = )에 들어갈 값. 필수.) [" + strUri + "]");
+			sysout("strVoPackageName (VO 패키지명-파라메터. 필수.) [" + strVoPackageName + "]");
+			sysout("strVoName (VO 명-파라메터. 필수.) [" + strVoName + "]");
+			sysout("pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음. 필수.) [" + pageYn + "]");
+			sysout("||====================================================================================||");
 
 			StringBuffer buff = new StringBuffer("\r\n");
 
@@ -4187,15 +4187,15 @@ public class BizGenerator extends BaseObject {
 		 */
 		private void genTestSrcForWsJquery(String strWSPath, String strMethodKind, String strMethodName, String strWsVoPackageName, String strWsVoName, int CRUD, String strMediaType) {
 
-			debug("||=== genTestSrcForWsJquery(RestFul Web Service - JQUERY 용 테스트 소스코드를 생성하는 메소드) ===||");
-			debug("strWSPath (WS Path. 필수.) [" + strWSPath + "]");
-			debug("strMethodKind (메소드종류:PUT/POST/DELETE. 필수.) [" + strMethodKind + "]");
-			debug("strMethodName (메소드명. 필수.) [" + strMethodName + "]");
-			debug("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
-			debug("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
-			debug("||====================================================================================||");
+			sysout("||=== genTestSrcForWsJquery(RestFul Web Service - JQUERY 용 테스트 소스코드를 생성하는 메소드) ===||");
+			sysout("strWSPath (WS Path. 필수.) [" + strWSPath + "]");
+			sysout("strMethodKind (메소드종류:PUT/POST/DELETE. 필수.) [" + strMethodKind + "]");
+			sysout("strMethodName (메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
+			sysout("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
+			sysout("||====================================================================================||");
 
 			StringBuffer tBuff = new StringBuffer("\r\n");
 			tBuff.append("============================ JQUERY-TEST SRC START ============================").append("\r\n");
@@ -4245,15 +4245,15 @@ public class BizGenerator extends BaseObject {
 			tBuff.append(" ").append("\r\n");
 			tBuff.append("  var onSuccess = function(responseData, status, xhr) { ").append("\r\n");
 			tBuff.append("      alert(\"Success\"); ").append("\r\n");
-			tBuff.append("      debug(xhr); ").append("\r\n");
+			tBuff.append("      sysout(xhr); ").append("\r\n");
 			tBuff.append("  }; ").append("\r\n");
 			tBuff.append(" ").append("\r\n");
 			tBuff.append("  var onError = function(xhr) { ").append("\r\n");
 			tBuff.append("      alert(\"Failure\"); ").append("\r\n");
-			tBuff.append("      debug(xhr); ").append("\r\n");
+			tBuff.append("      sysout(xhr); ").append("\r\n");
 			tBuff.append("  } ").append("\r\n");
 			tBuff.append(" ").append("\r\n");
-			tBuff.append("  var debug = function(xhr) {		 ").append("\r\n");
+			tBuff.append("  var sysout = function(xhr) {		 ").append("\r\n");
 			tBuff.append("      if (xhr.readyState == 4) { ").append("\r\n");
 			tBuff.append("      alert(\"HTTP/1.1 \" + xhr.status + \" \" + xhr.statusText +  ").append("\r\n");
 			tBuff.append("            \"\\n\" + xhr.getAllResponseHeaders() +  ").append("\r\n");
@@ -4290,15 +4290,15 @@ public class BizGenerator extends BaseObject {
 		 */
 		private void genTestSrcForWsJava(String strWSPath, String strMethodKind, String strMethodName, String strWsVoPackageName, String strWsVoName, int CRUD, String strMediaType) {
 
-			debug("||=== genTestSrcForWsJava(RestFul Web Service - JAVA 용 테스트 소스코드를 생성하는 메소드) ===||");
-			debug("strWSPath (WS Path. 필수.) [" + strWSPath + "]");
-			debug("strMethodKind (메소드종류:PUT/POST/DELETE. 필수.) [" + strMethodKind + "]");
-			debug("strMethodName (메소드명. 필수.) [" + strMethodName + "]");
-			debug("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
-			debug("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
-			debug("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
-			debug("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
-			debug("||====================================================================================||");
+			sysout("||=== genTestSrcForWsJava(RestFul Web Service - JAVA 용 테스트 소스코드를 생성하는 메소드) ===||");
+			sysout("strWSPath (WS Path. 필수.) [" + strWSPath + "]");
+			sysout("strMethodKind (메소드종류:PUT/POST/DELETE. 필수.) [" + strMethodKind + "]");
+			sysout("strMethodName (메소드명. 필수.) [" + strMethodName + "]");
+			sysout("strWsVoPackageName (웹서비스VO 패키지명-파라메터. 필수.) [" + strWsVoPackageName + "]");
+			sysout("strWsVoName (웹서비스VO 명-파라메터. 필수.) [" + strWsVoName + "]");
+			sysout("CRUD (트랜젝션종류 - 0:다건조회, 1:단건조회, 2:입력, 3:수정, 4:삭제.) [" + CRUD + "]");
+			sysout("strMediaType (미디어타입:XML/JSON). 필수.) [" + strMediaType + "]");
+			sysout("||====================================================================================||");
 
 			StringBuffer tBuff = new StringBuffer("\r\n");
 			String testClassName = "HTTP4eFor" + strMethodName.substring(0, 1).toUpperCase() + strMethodName.substring(1);

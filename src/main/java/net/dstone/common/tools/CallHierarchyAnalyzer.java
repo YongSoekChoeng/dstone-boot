@@ -15,7 +15,7 @@ public class CallHierarchyAnalyzer extends BaseObject {
 	private CallHierarchyAnalyzer(){
 	}
 	
-	private void debug(Object msg){
+	private void sysout(Object msg){
 		net.dstone.common.utils.LogUtil.sysout(msg);
 	}
 	
@@ -156,7 +156,7 @@ public class CallHierarchyAnalyzer extends BaseObject {
 				report = findReculsivly(report);
 
 			}catch(Exception e){
-				debug(e);
+				sysout(e);
 			}
 			return report;
 		}
@@ -363,7 +363,7 @@ public class CallHierarchyAnalyzer extends BaseObject {
 				report = findReculsivly(report);
 
 			}catch(Exception e){
-				debug(e);
+				sysout(e);
 			}
 			return report;
 		}

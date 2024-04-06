@@ -52,14 +52,14 @@ public abstract class Buyer implements Buy {
 	
 	@Override
 	public void buy(List<Item> itemList) {
-//		debug( "before buy ["+itemList.size()+"] this.pocketMoney["+this.pocketMoney+"]" );
+		debug( "before buy ["+itemList.size()+"] this.pocketMoney["+this.pocketMoney+"]" );
 		if( itemList != null && itemList.size() > 0 ) {
 			if(this.isAffordable(itemList.get(0), itemList.size())) {
 				this.addItemToBasket(itemList.get(0).getId(), itemList);
 				this.pocketMoney = this.pocketMoney - itemList.get(0).getPrice() * itemList.size();
 			}
 		}
-//		debug( "after buy ["+itemList.size()+"] this.pocketMoney["+this.pocketMoney+"]" );
+		debug( "after buy ["+itemList.size()+"] this.pocketMoney["+this.pocketMoney+"]" );
 	}
 
 	@Override
