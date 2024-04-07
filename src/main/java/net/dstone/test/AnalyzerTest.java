@@ -2,15 +2,18 @@ package net.dstone.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.declarations.ResolvedDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
@@ -18,6 +21,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.StringUtil;
 
 public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
@@ -43,7 +47,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     	
         String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
     	String path = srcRoot + "/" + "net/dstone/sample/market";
-
+    	
     	CombinedTypeSolver combinedTypeSolver = setClassPath();
     	combinedTypeSolver.add(new JavaParserTypeSolver(new File(srcRoot)));
 
@@ -67,25 +71,16 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
             CompilationUnit cu = StaticJavaParser.parse(new File(file));
             
             cu.accept(new VoidVisitorAdapter<Void>(){
-            	
                 @Override
                 public void visit(MethodCallExpr methodCall, Void  arg) {
-
                 	//Optional<MethodDeclaration> caller = methodCall.findAncestor(MethodDeclaration.class);
                 	//Optional<MethodDeclaration> caller = methodCall.getParentNode().get().findFirst(MethodDeclaration.class);
-                	
                 	if( file.endsWith("FruitMarket.java") ) {
-
                 		if( methodCall.getScope().isPresent() ) {
-                			
-                			
                 			Node node = methodCall.getScope().get();
                 			debug(node + " ====>> " +  methodCall.getSymbolResolver() );
                 		}
-                		
-
                 	}
-                	
                     super.visit(methodCall, arg);
                 }
 
@@ -106,61 +101,71 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 			JavaParser javaParser = new JavaParser();
 			javaParser.getParserConfiguration().setSymbolResolver(javaSymbolSolver);
 			
+			String javaFilter = "MarketController";
 			
 			CompilationUnit cu = javaParser.parse(new File(file)).getResult().get();
-			java.util.LinkedList<String> methodList = new java.util.LinkedList<String>();
-            
-            cu.accept(new VoidVisitorAdapter<Void>(){
-            	
-                @Override
-				public void visit(MethodDeclaration methodParam, Void arg) {
+			
+			VoidVisitorAdapter methodVisitor = new VoidVisitorAdapter<Void>(){
+				
+				String classId = "";
+				String methodId = "";
+				
+				@Override
+				public void visit(ClassOrInterfaceDeclaration classRowInfo, Void arg) {
+					classId = classRowInfo.getFullyQualifiedName().get().toString();
+					debug("classId["+classId+"]");
 
-                	if( file.endsWith("FruitMarket.java") ) {
-                		
-                		ResolvedMethodDeclaration resolvedMethodDeclaration = methodParam.resolve();
+					super.visit(classRowInfo, arg);
+				}
+				
+                @Override
+				public void visit(MethodDeclaration methodRowInfo, Void arg) {
+                	ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
+                	methodId = resolvedMethodDeclaration.getQualifiedSignature();
+
+                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
                 		
                 		debug("");
                 		debug("================================================");
-                		debug("MethodDeclaration ::: " + resolvedMethodDeclaration.getQualifiedSignature()  );
+                		debug("MethodDeclaration ::: " + methodId );
                 		debug("================================================");
                 		debug("");
-                		
                 	}
                 	
-					super.visit(methodParam, arg);
+					super.visit(methodRowInfo, arg);
 				}
 
 
 				@Override
-                public void visit(MethodCallExpr methodParam, Void  arg) {
-                	
-                	if( file.endsWith("FruitMarket.java") ) {
-                		
-                		ResolvedMethodDeclaration resolvedMethodDeclaration = methodParam.resolve();
-                		
-                		
-                		
-                		debug("MethodCallExpr ::: " + resolvedMethodDeclaration.getQualifiedSignature()  );
-                		
-                		
-                		if(methodParam.getScope().isPresent()) {
+                public void visit(MethodCallExpr methodRowInfo, Void  arg) {
 
-                			//debug( methodParam.getScope().get().getMetaModel() );
-                			if(methodParam.getScope().get().isNameExpr()) {
-                				//debug( methodParam.getScope().get(). );
-                			}
-                		}
+					ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
+                	methodId = resolvedMethodDeclaration.getQualifiedSignature();
+                	classId = resolvedMethodDeclaration.getPackageName() + "." + resolvedMethodDeclaration.getClassName();
+
+                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
+
+                		debug("");
+                		debug("================================================");
+                		debug("MethodCallExpr ::: " + methodId );
+                		debug("================================================");
+                		debug("");
                 		
-                		//debug( resolvedMethodDeclaration.getQualifiedName() );
+
+                		debug("methodRowInfo.isReferenceType() >>> " + methodRowInfo.calculateResolvedType().describe());
+
+//                		debug("resolvedMethodDeclaration.declaringType() >>> " + methodRowInfo.getSymbolResolver().toTypeDeclaration(methodRowInfo.getParentNodeForChildren()) );
                 		
                 		debug("------------------------------------------------");
                 		
                 	}
                 	
                 	
-                    super.visit(methodParam, arg);
+                    super.visit(methodRowInfo, arg);
                 }
-            }, null);
+
+			};
+            cu.accept(methodVisitor, null);
             
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -170,7 +175,13 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 	
 	
     
-    private static CombinedTypeSolver setClassPath() {
+    @Override
+	public void visit(ClassOrInterfaceDeclaration n, Void arg) {
+		// TODO Auto-generated method stub
+		super.visit(n, arg);
+	}
+
+	private static CombinedTypeSolver setClassPath() {
     	CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
     	try {
     		

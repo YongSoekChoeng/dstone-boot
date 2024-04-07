@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import net.dstone.common.utils.RequestUtil;
 import net.dstone.sample.market.mart.FruitMarket;
-import net.dstone.sample.market.sell.actor.AppleSeller;
+import net.dstone.sample.market.mart.Market;
 @Controller
 @RequestMapping(value = "/sample/market/*")
 public class MarketController extends net.dstone.common.biz.BaseController { 
@@ -40,22 +40,22 @@ public class MarketController extends net.dstone.common.biz.BaseController {
    		/************************ 변수 선언 시작 ************************/
    		RequestUtil 									requestUtil;
    		Map 											returnObj;
-   		FruitMarket										fruitMarket;
+   		Market											market;
    		/************************ 변수 선언 끝 **************************/
    		
    		/************************ 변수 정의 시작 ************************/
    		requestUtil 			= new RequestUtil(request, response);
    		returnObj				= null;
-   		fruitMarket				= new FruitMarket();
+   		market					= new FruitMarket();
    		/************************ 변수 정의 끝 ************************/
    		
    		/************************ 컨트롤러 로직 시작 ************************/
-   		fruitMarket.setSellerForTrade("sample.item.Apple", 1000, 20);
-   		fruitMarket.setSellerForTrade("sample.item.Peache", 1500, 30);
+   		market.setSellerForTrade("sample.item.Apple", 1000, 20);
+   		market.setSellerForTrade("sample.item.Peache", 1500, 30);
    		
-   		fruitMarket.setBuyerForTrade("sample.buy.actor.HouseWife", 10000);
+   		market.setBuyerForTrade("sample.buy.actor.HouseWife", 10000);
    		
-   		fruitMarket.trade("sample.buy.actor.HouseWife", "sample.item.Apple", 15);
+   		market.trade("sample.buy.actor.HouseWife", "sample.item.Apple", 15);
 
    		/************************ 컨트롤러 로직 끝 ************************/
    		return mav;
