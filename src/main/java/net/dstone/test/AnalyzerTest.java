@@ -5,20 +5,27 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.TypeExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.declarations.ResolvedDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
@@ -105,6 +112,8 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 			
 			CompilationUnit cu = javaParser.parse(new File(file)).getResult().get();
 			
+
+			
 			VoidVisitorAdapter methodVisitor = new VoidVisitorAdapter<Void>(){
 				
 				String classId = "";
@@ -113,8 +122,23 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				@Override
 				public void visit(ClassOrInterfaceDeclaration classRowInfo, Void arg) {
 					classId = classRowInfo.getFullyQualifiedName().get().toString();
-					debug("classId["+classId+"]");
-
+					
+					if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
+	            		debug("");
+	            		debug("================================================");
+	            		debug("ClassOrInterfaceDeclaration ::: " + "classId["+classId+"]" + " isInterface["+classRowInfo.isInterface()+"]" );
+	            		debug("================================================");
+	            		debug("");
+					}
+					
+//					if( classRowInfo.getImplementedTypes() != null ) {
+//						NodeList<ClassOrInterfaceType> classOrInterfaceTypeList = classRowInfo.getImplementedTypes();
+//						debug("classOrInterfaceTypeList :" + classOrInterfaceTypeList);
+//						for( ClassOrInterfaceType row : classOrInterfaceTypeList) {
+//							debug( classId + " implemented by " + row.getNameAsString());
+//						}
+//					}
+					
 					super.visit(classRowInfo, arg);
 				}
 				
@@ -127,7 +151,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
                 		
                 		debug("");
                 		debug("================================================");
-                		debug("MethodDeclaration ::: " + methodId );
+                		debug("MethodDeclaration ::: " + "methodId["+methodId+"]" );
                 		debug("================================================");
                 		debug("");
                 	}
@@ -137,32 +161,114 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
 
 				@Override
-                public void visit(MethodCallExpr methodRowInfo, Void  arg) {
-
-					ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
-                	methodId = resolvedMethodDeclaration.getQualifiedSignature();
-                	classId = resolvedMethodDeclaration.getPackageName() + "." + resolvedMethodDeclaration.getClassName();
-
+				public void visit(ObjectCreationExpr n, Void arg) {
+					 
                 	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
 
                 		debug("");
                 		debug("================================================");
-                		debug("MethodCallExpr ::: " + methodId );
+                		debug("ObjectCreationExpr ::: " + "methodId["+methodId+"]" );
                 		debug("================================================");
                 		debug("");
+                		//debug("n.resolve().getPackageName+getClassName()  >>> " + n.resolve().getPackageName() + "." + n.resolve().getClassName());
+                	}
+					super.visit(n, arg);
+				}
+
+				@Override
+                public void visit(MethodCallExpr methodRowInfo, Void  arg) {
+					
+					ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
+                	methodId = resolvedMethodDeclaration.getQualifiedSignature();
+                	classId = resolvedMethodDeclaration.getPackageName() + "." + resolvedMethodDeclaration.getClassName();
+                	
+                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
+
+                		debug("");
+                		debug("================================================");
+                		debug("MethodCallExpr ::: " + "classId["+classId+"]" + " methodId["+methodId+"]" );
+                		debug("================================================");
+                		debug("");
+                	
+                		if( javaParser.parseName(classId).isSuccessful() ) {
+                			ClassOrInterfaceType ccu = javaParser.parseClassOrInterfaceType(classId).getResult().get();
+                			debug( " ccu >>" +   ccu );
+                			
+                			
+                			/*
+                			if( javaParser.parseName(classId).getResult().isPresent() ) {
+                				debug( "javaParser.parseName(classId).getResult().get() >>" + javaParser.parseName(classId).getResult().get() );
+                				debug( "javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class) >>" + javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class) );
+                				
+                				if( javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
+                        			ClassOrInterfaceDeclaration clz = javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class).get();
+                        			debug( " clz.isInterface() >>" +   clz.isInterface() );
+                        			if( clz.isInterface() ) {
+                        				debug( " clz.getImplementedTypes() >>" +   clz.getImplementedTypes() );
+                        			}
+                				}
+                			}
+                			*/
+                		}
+
                 		
-
-                		debug("methodRowInfo.isReferenceType() >>> " + methodRowInfo.calculateResolvedType().describe());
-
 //                		debug("resolvedMethodDeclaration.declaringType() >>> " + methodRowInfo.getSymbolResolver().toTypeDeclaration(methodRowInfo.getParentNodeForChildren()) );
-                		
-                		debug("------------------------------------------------");
+
+                    	if(resolvedMethodDeclaration.isAbstract()) {
+                    		
+                    		ResolvedType resolvedType = null;
+                    		if( methodRowInfo.getScope().isPresent() ) {
+                    			Expression expression = methodRowInfo.getScope().get();
+                    			if( expression.isSuperExpr() ) {
+                    				resolvedType = expression.asSuperExpr().calculateResolvedType();
+                    			}else {
+                    				resolvedType = expression.calculateResolvedType();
+                    			}
+                    			String clzzName = resolvedType.asReferenceType().getQualifiedName();
+
+                    			
+                    			debug("clzzName :" + clzzName + ",  cu.getInterfaceByName("+clzzName+").isPresent() :" +  cu.getInterfaceByName(clzzName).isPresent() );
+                    			if( cu.getInterfaceByName(clzzName).isPresent() ) {
+                    				ClassOrInterfaceDeclaration classOrInterfaceDeclaration = cu.getInterfaceByName(clzzName).get();
+                    				debug("classOrInterfaceDeclaration.getNameAsString() :" + classOrInterfaceDeclaration.getNameAsString());
+                    				NodeList<ClassOrInterfaceType> implTypes = classOrInterfaceDeclaration.getImplementedTypes();
+                    				debug("implTypes :" + implTypes);
+                    				for(ClassOrInterfaceType row : implTypes) {
+                    					debug("row >>>" + row.getNameAsString());
+                    				}
+                    			}
+
+
+                    			
+                    		}
+                    	}
+     
                 		
                 	}
                 	
                 	
                     super.visit(methodRowInfo, arg);
                 }
+
+				@Override
+				public void visit(TypeExpr typeExpr, Void arg) {
+
+                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
+                		
+                		String typeStr = typeExpr.getTypeAsString();
+
+                		debug("");
+                		debug("================================================");
+                		debug("TypeExpr ::: " + "methodId["+methodId+"]" + "typeStr["+typeStr+"]" );
+                		debug("================================================");
+                		debug("");
+                		
+                	}
+                	
+					super.visit(typeExpr, arg);
+				}
+
+
 
 			};
             cu.accept(methodVisitor, null);
@@ -315,6 +421,10 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/github/javaparser/javaparser-core/3.25.7/javaparser-core-3.25.7.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/github/javaparser/javaparser-symbol-solver-core/3.25.7/javaparser-symbol-solver-core-3.25.7.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/javassist/javassist/3.29.2-GA/javassist-3.29.2-GA.jar")));
+    		
+    		combinedTypeSolver.add(new JavaParserTypeSolver(new File("D:/AppHome/framework/dstone-boot/src/main/java")));
+
+    		combinedTypeSolver.add(new ReflectionTypeSolver());
 
 		} catch (Exception e) {
 			e.printStackTrace();

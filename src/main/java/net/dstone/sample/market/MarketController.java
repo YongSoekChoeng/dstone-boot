@@ -50,6 +50,7 @@ public class MarketController extends net.dstone.common.biz.BaseController {
    		/************************ 변수 정의 끝 ************************/
    		
    		/************************ 컨트롤러 로직 시작 ************************/
+   		userService.listUser(null);
    		market.setSellerForTrade("sample.item.Apple", 1000, 20);
    		market.setSellerForTrade("sample.item.Peache", 1500, 30);
    		
