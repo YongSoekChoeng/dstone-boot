@@ -271,6 +271,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
 
 			};
+			
             cu.accept(methodVisitor, null);
             
 		} catch (Exception e) {
