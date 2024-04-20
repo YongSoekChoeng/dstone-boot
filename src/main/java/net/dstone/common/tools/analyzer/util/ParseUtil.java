@@ -917,7 +917,7 @@ public class ParseUtil {
 		StringBuffer callTblVoListConts = new StringBuffer();
 		StringBuffer callMtdVoListConts = new StringBuffer();
 		try {
-			fileName = vo.getFunctionId() + ".txt";
+			
 			fileConts.append("기능ID" + div + StringUtil.nullCheck(vo.getFunctionId(), "")).append("\n");
 			fileConts.append("메서드ID" + div + StringUtil.nullCheck(vo.getMethodId(), "")).append("\n");
 			fileConts.append("메서드명" + div + StringUtil.nullCheck(vo.getMethodName(), "")).append("\n");
@@ -945,7 +945,9 @@ public class ParseUtil {
 			fileConts.append("호출테이블" + div + StringUtil.nullCheck(callTblVoListConts, "")).append("\n");
 			fileConts.append("메서드내용" + div + StringUtil.nullCheck(vo.getMethodBody(), "")).append("\n");
 			
+			fileName = StringUtil.replace(StringUtil.replace(vo.getFunctionId(), "<", "["), ">", "]") + ".txt";
 			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
+			
 		} catch (Exception e) {
 			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	
 			e.printStackTrace();
@@ -963,7 +965,7 @@ public class ParseUtil {
 		String fileName = "";
 		String div = "|";
 		try {
-			fileName = readFilePath + "/" + functionId+ ".txt";
+			fileName = readFilePath + "/" + StringUtil.replace(StringUtil.replace(functionId, "<", "["), ">", "]") + ".txt";
 			if(FileUtil.isFileExist(fileName)) {
 				String[] lines = FileUtil.readFileByLines(fileName);
 				for(String line : lines) {
