@@ -44,7 +44,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     	System.out.println("================ END ================");
     }
     
-    private void debug(Object o) {
+    private void d(Object o) {
     	System.out.println(o);
     }
     
@@ -53,7 +53,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     	
     	
         String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
-    	String path = srcRoot + "/" + "net/dstone/sample/market";
+    	String path = srcRoot + "/" + "net/dstone/sample/analyze";
     	
     	CombinedTypeSolver combinedTypeSolver = setClassPath();
     	combinedTypeSolver.add(new JavaParserTypeSolver(new File(srcRoot)));
@@ -63,7 +63,8 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
         	
             
         	//this.doStatic(combinedTypeSolver, file);            
-            this.doDynamic(combinedTypeSolver, file);
+            this.doDynamic(combinedTypeSolver, file);         
+            //this.doNew(combinedTypeSolver, file);
 
         }
         
@@ -71,7 +72,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 	
 	private void doStatic(CombinedTypeSolver combinedTypeSolver, String file) {
 
-		debug("||========================= "+file+" Start =========================||");
+		d("||========================= "+file+" Start =========================||");
 		try {
 
 			StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
@@ -85,7 +86,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
                 	if( file.endsWith("FruitMarket.java") ) {
                 		if( methodCall.getScope().isPresent() ) {
                 			Node node = methodCall.getScope().get();
-                			debug(node + " ====>> " +  methodCall.getSymbolResolver() );
+                			d(node + " ====>> " +  methodCall.getSymbolResolver() );
                 		}
                 	}
                     super.visit(methodCall, arg);
@@ -96,19 +97,18 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		debug("||========================= "+file+" End =========================||");
+		d("||========================= "+file+" End =========================||");
 	}
 
 	private void doDynamic(CombinedTypeSolver combinedTypeSolver, String file) {
 
-		debug("||========================= "+file+" Start =========================||");
+		d("||========================= "+file+" Start =========================||");
 		try {
 
 			JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 			JavaParser javaParser = new JavaParser();
 			javaParser.getParserConfiguration().setSymbolResolver(javaSymbolSolver);
 			
-			String javaFilter = "MarketController";
 			
 			CompilationUnit cu = javaParser.parse(new File(file)).getResult().get();
 			
@@ -123,13 +123,11 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				public void visit(ClassOrInterfaceDeclaration classRowInfo, Void arg) {
 					classId = classRowInfo.getFullyQualifiedName().get().toString();
 					
-					if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
-	            		debug("");
-	            		debug("================================================");
-	            		debug("ClassOrInterfaceDeclaration ::: " + "classId["+classId+"]" + " isInterface["+classRowInfo.isInterface()+"]" );
-	            		debug("================================================");
-	            		debug("");
-					}
+	            		d("");
+	            		d("================================================");
+	            		d("ClassOrInterfaceDeclaration ::: " + "classId["+classId+"]" + " isInterface["+classRowInfo.isInterface()+"]" );
+	            		d("================================================");
+	            		d("");
 					
 //					if( classRowInfo.getImplementedTypes() != null ) {
 //						NodeList<ClassOrInterfaceType> classOrInterfaceTypeList = classRowInfo.getImplementedTypes();
@@ -147,14 +145,12 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
                 	ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
                 	methodId = resolvedMethodDeclaration.getQualifiedSignature();
 
-                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
                 		
-                		debug("");
-                		debug("================================================");
-                		debug("MethodDeclaration ::: " + "methodId["+methodId+"]" );
-                		debug("================================================");
-                		debug("");
-                	}
+                		d("");
+                		d("================================================");
+                		d("MethodDeclaration ::: " + "methodId["+methodId+"]" );
+                		d("================================================");
+                		d("");
                 	
 					super.visit(methodRowInfo, arg);
 				}
@@ -163,15 +159,13 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				@Override
 				public void visit(ObjectCreationExpr n, Void arg) {
 					 
-                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
 
-                		debug("");
-                		debug("================================================");
-                		debug("ObjectCreationExpr ::: " + "methodId["+methodId+"]" );
-                		debug("================================================");
-                		debug("");
+                		d("");
+                		d("================================================");
+                		d("ObjectCreationExpr ::: " + "methodId["+methodId+"]" );
+                		d("================================================");
+                		d("");
                 		//debug("n.resolve().getPackageName+getClassName()  >>> " + n.resolve().getPackageName() + "." + n.resolve().getClassName());
-                	}
 					super.visit(n, arg);
 				}
 
@@ -182,17 +176,16 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
                 	methodId = resolvedMethodDeclaration.getQualifiedSignature();
                 	classId = resolvedMethodDeclaration.getPackageName() + "." + resolvedMethodDeclaration.getClassName();
                 	
-                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
 
-                		debug("");
-                		debug("================================================");
-                		debug("MethodCallExpr ::: " + "classId["+classId+"]" + " methodId["+methodId+"]" );
-                		debug("================================================");
-                		debug("");
+                		d("");
+                		d("================================================");
+                		d("MethodCallExpr ::: " + "classId["+classId+"]" + " methodId["+methodId+"]" );
+                		d("================================================");
+                		d("");
                 	
                 		if( javaParser.parseName(classId).isSuccessful() ) {
                 			ClassOrInterfaceType ccu = javaParser.parseClassOrInterfaceType(classId).getResult().get();
-                			debug( " ccu >>" +   ccu );
+                			d( " ccu >>" +   ccu );
                 			
                 			
                 			/*
@@ -227,14 +220,14 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
                     			String clzzName = resolvedType.asReferenceType().getQualifiedName();
 
                     			
-                    			debug("clzzName :" + clzzName + ",  cu.getInterfaceByName("+clzzName+").isPresent() :" +  cu.getInterfaceByName(clzzName).isPresent() );
+                    			d("clzzName :" + clzzName + ",  cu.getInterfaceByName("+clzzName+").isPresent() :" +  cu.getInterfaceByName(clzzName).isPresent() );
                     			if( cu.getInterfaceByName(clzzName).isPresent() ) {
                     				ClassOrInterfaceDeclaration classOrInterfaceDeclaration = cu.getInterfaceByName(clzzName).get();
-                    				debug("classOrInterfaceDeclaration.getNameAsString() :" + classOrInterfaceDeclaration.getNameAsString());
+                    				d("classOrInterfaceDeclaration.getNameAsString() :" + classOrInterfaceDeclaration.getNameAsString());
                     				NodeList<ClassOrInterfaceType> implTypes = classOrInterfaceDeclaration.getImplementedTypes();
-                    				debug("implTypes :" + implTypes);
+                    				d("implTypes :" + implTypes);
                     				for(ClassOrInterfaceType row : implTypes) {
-                    					debug("row >>>" + row.getNameAsString());
+                    					d("row >>>" + row.getNameAsString());
                     				}
                     			}
 
@@ -244,7 +237,6 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
                     	}
      
                 		
-                	}
                 	
                 	
                     super.visit(methodRowInfo, arg);
@@ -253,17 +245,15 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				@Override
 				public void visit(TypeExpr typeExpr, Void arg) {
 
-                	if( StringUtil.isEmpty(javaFilter) || file.endsWith( javaFilter + ".java") ) {
                 		
                 		String typeStr = typeExpr.getTypeAsString();
 
-                		debug("");
-                		debug("================================================");
-                		debug("TypeExpr ::: " + "methodId["+methodId+"]" + "typeStr["+typeStr+"]" );
-                		debug("================================================");
-                		debug("");
+                		d("");
+                		d("================================================");
+                		d("TypeExpr ::: " + "methodId["+methodId+"]" + "typeStr["+typeStr+"]" );
+                		d("================================================");
+                		d("");
                 		
-                	}
                 	
 					super.visit(typeExpr, arg);
 				}
@@ -277,7 +267,33 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		debug("||========================= "+file+" End =========================||");
+		d("||========================= "+file+" End =========================||");
+	}
+	
+	private void doNew(CombinedTypeSolver combinedTypeSolver, String file) {
+
+		d("||========================= "+file+" Start =========================||");
+		try {
+
+			JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
+			JavaParser javaParser = new JavaParser();
+			javaParser.getParserConfiguration().setSymbolResolver(javaSymbolSolver);
+			
+			CompilationUnit cu = javaParser.parse(new File(file)).getResult().get();
+
+			/*** A.클래스 ***/
+
+			/*** A-1.클래스 정보 ***/
+
+			/*** A-2.클래스변수 목록정보 ***/
+
+			/*** A-2.클래스변수 목록정보 ***/
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		d("||========================= "+file+" End =========================||");
 	}
 	
 	
