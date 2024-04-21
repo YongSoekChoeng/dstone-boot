@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -31,7 +32,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 		
 		List<Map<String, String>> mList = new ArrayList<Map<String, String>>();
 		
-		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
+		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
 
     	// classUrl
         String classUrl = "";

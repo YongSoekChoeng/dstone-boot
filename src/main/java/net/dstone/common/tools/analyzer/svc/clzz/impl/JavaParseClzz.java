@@ -6,16 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
+import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
@@ -24,11 +28,10 @@ import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.utils.FileUtil;
-import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class JavaParseClzz extends TextParseClzz implements ParseClzz {
-
+	
 	/**
 	 * 패키지ID 추출
 	 * @param classFile 클래스파일
@@ -37,7 +40,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	@Override
 	public String getPackageId(String classFile) throws Exception {
 		String pkg = "";
-		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
+		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
         // packageId
 		pkg = cu.getPackageDeclaration().get().getNameAsString();
 		return pkg;
@@ -51,7 +54,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	@Override
 	public String getClassId(String classFile) throws Exception {
 		String classId = "";
-		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
+		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
 		classId = cu.getPackageDeclaration().get().getNameAsString() + "." + cu.getType(0).getNameAsString();
 		return classId;
 	}
@@ -64,7 +67,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	@Override
 	public String getClassName(String classFile) throws Exception {
 		String className = "";
-		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
+		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
         if(cu.getType(0).getJavadocComment().isPresent()) {
         	className = ParseUtil.getFnNameFromComment(cu.getType(0).getJavadocComment().get().asString());
         }
@@ -79,7 +82,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	@Override
 	public ClzzKind getClassKind(String classFile) throws Exception {
 		ClzzKind classKind = ClzzKind.OT;
-		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
+		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
         String fileExt = FileUtil.getFileExt(classFile);
         String annotation = "";
         
@@ -111,6 +114,41 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 */
 	@Override
 	public String getResourceId(String classFile) throws Exception {
+		String resourceId = "";
+		
+		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
+		
+		List<AnnotationExpr> annotationExprList = cu.findAll(AnnotationExpr.class);
+		if( annotationExprList != null ) {
+			for( AnnotationExpr annotationExpr : annotationExprList) {
+				List<Node> nodeList = annotationExpr.getChildNodes();
+				
+				
+//debug(classFile + " :: resourceId annotationExpr===>>>" +  annotationExpr );
+debug(classFile + " :: resourceId getChildNodes ===>>>" +  annotationExpr.getChildNodes() );
+			    List<MemberValuePair>children = annotationExpr.findAll(MemberValuePair.class);
+			    for(MemberValuePair memberValuePair : children){
+
+debug(classFile + " :: memberValuePair ===>>>" +  memberValuePair );
+			    	if( "Controller".equals(memberValuePair.getNameAsString()) ) {
+			    		resourceId = memberValuePair.getValue().toString();
+			    	}else if( "Service".equals(memberValuePair.getNameAsString()) ) {
+			    		resourceId = memberValuePair.getValue().toString();
+			    	}else if( "Repository".equals(memberValuePair.getNameAsString()) ) {
+			    		resourceId = memberValuePair.getValue().toString();
+			    	}
+			    	if(!StringUtil.isEmpty(resourceId)) {
+			    		break;
+			    	}
+			    }
+		    	if(!StringUtil.isEmpty(resourceId)) {
+		    		break;
+		    	}
+			}
+		}
+
+//debug(classFile + " :: resourceId ===>>>" +  resourceId );
+		
 		return super.getResourceId(classFile);
 	}
 	
@@ -166,7 +204,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 			String fileConts = FileUtil.readFile(selfClzzVo.getFileName());
 
 			boolean isUsed = false;
-			CompilationUnit cu = StaticJavaParser.parse(new File(selfClzzVo.getFileName()));
+			CompilationUnit cu = ParseUtil.getCompilationUnit(selfClzzVo.getFileName());
 			
 	        HashMap<String, ImportDeclaration> importMap = new HashMap<String, ImportDeclaration>();
 	        List<ImportDeclaration> imports = cu.getImports();
@@ -302,4 +340,36 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 		return callClassAliasList;
 	}
 
+
+	private static CombinedTypeSolver setClassPath() {
+    	CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+    	try {
+    		
+    		String jdkHome = AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent();
+    		if(!StringUtil.isEmpty(jdkHome)) {
+    			jdkHome = StringUtil.replace(jdkHome, "\\", "/");
+    			combinedTypeSolver.add(new JarTypeSolver(new File( jdkHome + "/jre/lib/rt.jar")));
+    		}
+    		
+    		String classPathStr = AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent();
+    		if(!StringUtil.isEmpty(classPathStr)) {
+    			classPathStr = StringUtil.replace(classPathStr, "\t", "");
+    			classPathStr = StringUtil.replace(classPathStr, "\n", "");
+    			String[] classPathArr = StringUtil.toStrArray(classPathStr, ";");
+    			for(String classPath : classPathArr) {
+    				combinedTypeSolver.add(new JarTypeSolver(new File(classPath)));
+    			}
+    		}
+
+    		combinedTypeSolver.add(new JavaParserTypeSolver(new File(AppAnalyzer.CLASS_ROOT_PATH)));
+
+    		combinedTypeSolver.add(new ReflectionTypeSolver());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+    	return combinedTypeSolver;
+    }
+    
 }

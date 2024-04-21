@@ -354,7 +354,7 @@ public class SvcAnalyzer extends BaseObject{
 		this.analyze(jobKind, false);
 	}
 	
-	public void analyze(int jobKind, boolean isUnitOnly) {
+	public void analyze(int analyzeJobKind, boolean isUnitOnly) {
 		String[] 	classFileList = null;				/* 클래스파일리스트 */
 		String[] 	queryFileList = null;				/* 쿼리파일리스트 */
 		String[] 	uiFileList = null;					/* UI파일리스트 */
@@ -383,33 +383,33 @@ public class SvcAnalyzer extends BaseObject{
 			
 			/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {
 					this.analyzeClass(classFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_11_ANALYZE_CLASS) {
 					this.analyzeClass(classFileList);
 				}
 			}
 
 			/*** A-2.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {
 					this.analyzeClassImpl(classFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_12_ANALYZE_CLASS_IMPL) {
 					this.analyzeClassImpl(classFileList);
 				}
 			}
 			
 			/*** A-3.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {
 					this.analyzeClassAlias(classFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS) {
 					this.analyzeClassAlias(classFileList);
 				}
 			}
@@ -432,11 +432,11 @@ public class SvcAnalyzer extends BaseObject{
 			
 			/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {
 					this.analyzeQuery(queryFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_21_ANALYZE_QUERY) {
 					this.analyzeQuery(queryFileList);
 				}
 			}
@@ -449,11 +449,11 @@ public class SvcAnalyzer extends BaseObject{
 			}
 			analyzedQueryFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/query");
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {
 					this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_22_ANALYZE_QUERY_CALLTBL) {
 					this.analyzeQueryCallTbl(analyzedQueryFileList, allTblList);
 				}
 			}
@@ -462,11 +462,11 @@ public class SvcAnalyzer extends BaseObject{
 			getLogger().info("/**************************************** C.메소드 분석 시작 ****************************************/");
 			/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {
 					this.analyzeMtd(classFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_31_ANALYZE_MTD) {
 					this.analyzeMtd(classFileList);
 				}
 			}
@@ -474,22 +474,22 @@ public class SvcAnalyzer extends BaseObject{
 			/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가 ***/
 			analyzedMethodFileList = FileUtil.readFileListAll(AppAnalyzer.WRITE_PATH + "/method");
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {
 					this.analyzeMtdCallMtd(analyzedMethodFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_32_ANALYZE_MTD_CALLMTD) {
 					this.analyzeMtdCallMtd(analyzedMethodFileList);
 				}
 			}
 			
 			/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {
 					this.analyzeMtdCallTbl(analyzedMethodFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_33_ANALYZE_MTD_CALLTBL) {
 					this.analyzeMtdCallTbl(analyzedMethodFileList);
 				}
 			}
@@ -512,22 +512,22 @@ public class SvcAnalyzer extends BaseObject{
 			
 			/*** D-1.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {
 					this.analyzeUi(uiFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_41_ANALYZE_UI) {
 					this.analyzeUi(uiFileList);
 				}
 			}
 			
 			/*** D-2.UI파일로부터 링크 추출 ***/
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {
 					this.analyzeUiLink(uiFileList);
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_42_ANALYZE_UI_LINK) {
 					this.analyzeUiLink(uiFileList);
 				}
 			}
@@ -535,11 +535,11 @@ public class SvcAnalyzer extends BaseObject{
 			
 			getLogger().info("/**************************************** F.분석결과파일저장 시작 ****************************************/");
 			if(isUnitOnly) {
-				if(jobKind == AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
+				if(analyzeJobKind == AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
 					this.saveToFile();
 				}
 			}else {
-				if(jobKind >= AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
+				if(analyzeJobKind >= AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX) {
 					this.saveToFile();
 				}
 			}

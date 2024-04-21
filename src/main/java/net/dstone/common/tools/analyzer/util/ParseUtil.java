@@ -1,10 +1,21 @@
 package net.dstone.common.tools.analyzer.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
@@ -24,6 +35,76 @@ public class ParseUtil {
 	static List<String> MANNUAL_TABLE_LIST = new ArrayList<String>();
 	static List<Map<String, String>> MANNUAL_TABLE_MAP_LIST = new ArrayList<Map<String, String>>();
 	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
+	
+	static JavaParser javaParser = null;
+	public static JavaParser getJavaParser(){
+		if( javaParser != null ) {
+			return javaParser;
+		}else {
+	    	try {
+	    		javaParser = new JavaParser();
+	    		javaParser.getParserConfiguration().setSymbolResolver(getJavaSymbolSolver());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+    	return javaParser;
+    }
+	
+	public static JavaSymbolSolver getJavaSymbolSolver(){
+		JavaSymbolSolver javaSymbolSolver = null;
+    	try {
+    		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+    		String jdkHome = AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent();
+    		if(!StringUtil.isEmpty(jdkHome)) {
+    			jdkHome = StringUtil.replace(jdkHome, "\\", "/");
+    			combinedTypeSolver.add(new JarTypeSolver(new File( jdkHome + "/jre/lib/rt.jar")));
+    		}
+    		
+    		String classPathStr = AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent();
+    		if(!StringUtil.isEmpty(classPathStr)) {
+    			classPathStr = StringUtil.replace(classPathStr, "\t", "");
+    			classPathStr = StringUtil.replace(classPathStr, "\n", "");
+    			String[] classPathArr = StringUtil.toStrArray(classPathStr, ";");
+    			for(String classPath : classPathArr) {
+    				combinedTypeSolver.add(new JarTypeSolver(new File(classPath)));
+    			}
+    		}
+
+    		combinedTypeSolver.add(new JavaParserTypeSolver(new File(AppAnalyzer.CLASS_ROOT_PATH)));
+
+    		combinedTypeSolver.add(new ReflectionTypeSolver());
+    		
+    		javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return javaSymbolSolver;
+	}
+	
+	static HashMap<String, CompilationUnit> CompilationUnitMap = new HashMap<String, CompilationUnit>();
+	public static CompilationUnit getCompilationUnit(String fileName){
+		CompilationUnit cu = null;
+		if( CompilationUnitMap.containsKey(fileName) ) {
+			cu = CompilationUnitMap.get(fileName);
+		}else {
+			try {
+				javaParser = getJavaParser();
+				ParseResult<CompilationUnit> result = javaParser.parse(new File(fileName));
+				if( result.isSuccessful() ) {
+					cu = result.getResult().get();
+				}else {
+					cu = StaticJavaParser.parse(new File(fileName));
+				}
+				if( cu != null ) {
+					CompilationUnitMap.put(fileName, cu);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return cu;
+	}
 
 	/**
 	 * 테이블명을 파싱하기 위해 SQL을 간소화 하는 메소드(주석제거, XML의 CDATA 태그제거, MYBATIS의 파라메터 세팅부분 변환)

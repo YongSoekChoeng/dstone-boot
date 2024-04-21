@@ -4,10 +4,13 @@ import net.dstone.common.core.BaseObject;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
+import net.dstone.common.utils.XmlUtil;
 
 public class AppAnalyzer extends BaseObject{
 
 	private static AppAnalyzer analizer = null;
+	
+	public static XmlUtil CONF = null; 
 
 	/**
 	 * DBID
@@ -53,6 +56,22 @@ public class AppAnalyzer extends BaseObject{
 	 * 작업결과를 DB로 저장할지 여부
 	 */
 	public static boolean IS_SAVE_TO_DB;
+
+	/**
+	 * WORKER_THREAD_NUM - 분석작업을 진행 할 쓰레드 갯수(Fixed 쓰레드풀 일 경우에만 유효)
+	 */
+	public static int WORKER_THREAD_NUM = 1;
+
+	/**
+	 * SAVE_FILE_NAME - 저장파일명(디렉토리 -WRITE_PATH)
+	 */
+	public static String SAVE_FILE_NAME = "";
+
+	/**
+	 * TABLE_LIST_FILE_NAME - 테이블목록정보파일명(디렉토리 -WRITE_PATH)
+	 */
+	public static String TABLE_LIST_FILE_NAME = "";
+
 	
 	
 	/**
@@ -119,26 +138,12 @@ public class AppAnalyzer extends BaseObject{
 	 * WORKER_THREAD_KIND_CACHED - 분석작업을 진행 할 쓰레드핸들러 종류(Cached 쓰레드풀 생성)
 	 */
 	public static int WORKER_THREAD_KIND_CACHED = 3;
-
+	
 	/**
 	 * WORKER_THREAD_KIND - 분석작업을 진행 할 쓰레드핸들러 종류
 	 */
 	public static int WORKER_THREAD_KIND = WORKER_THREAD_KIND_FIXED;
 
-	/**
-	 * WORKER_THREAD_NUM - 분석작업을 진행 할 쓰레드 갯수(Fixed 쓰레드풀 일 경우에만 유효)
-	 */
-	public static int WORKER_THREAD_NUM = 1;
-
-	/**
-	 * SAVE_FILE_NAME - 저장파일명(디렉토리 -WRITE_PATH)
-	 */
-	public static final String SAVE_FILE_NAME = "AppMetrix.ouput";
-
-	/**
-	 * TABLE_LIST_FILE_NAME - 테이블목록정보파일명(디렉토리 -WRITE_PATH)
-	 */
-	public static final String TABLE_LIST_FILE_NAME = "TableList.txt";
 
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 
@@ -146,25 +151,23 @@ public class AppAnalyzer extends BaseObject{
 	}
 	
 	/**
-	 * @param DBID - DBID
+	 * @param configPath - 설정파일경로
 	 * @param rootPath - 프로젝트 루트 디렉토리
 	 * @param classRootPath - 클래스 루트 디렉토리
 	 * @param webRootPath - 웹 루트 디렉토리
 	 * @param includePackageRoot - 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
 	 * @param excludePackagePattern - 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.)
 	 * @param queryRootPath - 쿼리 루트 디렉토리
-	 * @param writePath - 중간산출물 저장디렉토리
-	 * @param isTableListFromDb - 테이블목록을 DB로부터 읽어올지 여부
-	 * @param tableNameLikeStr - 테이블명을 DB로부터 읽어올때 적용할 프리픽스(isTableNameFromDb 가 true일 경우에만 유효)
-	 * @param workerThreadNum - 분석작업을 진행 할 쓰레드 갯수
-	 * @param isSaveToDb - 작업결과를 DB에 저장할지 여부
 	 * @return
+	 * @throws Exception 
 	 */
-	public static AppAnalyzer getInstance(String DBID, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath, String writePath, boolean isTableListFromDb, String tableNameLikeStr, int workerThreadNum, boolean isSaveToDb){
-		if(analizer == null){
+	public static AppAnalyzer getInstance(String configPath, String rootPath, String classRootPath, String webRootPath, String[] includePackageRoot, String[] excludePackagePattern, String queryRootPath) throws Exception{
+		if(analizer == null){   
 			analizer = new AppAnalyzer();
-			
-			AppAnalyzer.DBID = DBID;
+			if( !FileUtil.isFileExist(configPath) ) {
+				throw new Exception("설정파일(configPath)["+configPath+"]이 존재하지 않습니다.");
+			}
+			CONF = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, configPath);
 
 			rootPath = StringUtil.replace(rootPath, "\\", "/");
 			if(rootPath.endsWith("/")) {rootPath = rootPath.substring(0, rootPath.lastIndexOf("/"));}
@@ -186,17 +189,18 @@ public class AppAnalyzer extends BaseObject{
 			if(queryRootPath.endsWith("/")) {queryRootPath = queryRootPath.substring(0, queryRootPath.lastIndexOf("/"));}
 			AppAnalyzer.QUERY_ROOT_PATH = queryRootPath;
 			
-			writePath = StringUtil.replace(writePath, "\\", "/");
+
+			AppAnalyzer.DBID = CONF.getNode("DBID").getTextContent();
+			String writePath = StringUtil.replace(CONF.getNode("WRITE_PATH").getTextContent(), "\\", "/");
 			if(writePath.endsWith("/")) {writePath = writePath.substring(0, writePath.lastIndexOf("/"));}
 			AppAnalyzer.WRITE_PATH = writePath;
-			
-			AppAnalyzer.IS_TABLE_LIST_FROM_DB = isTableListFromDb;
-			
-			AppAnalyzer.TABLE_NAME_LIKE_STR = tableNameLikeStr;
-			
-			AppAnalyzer.IS_SAVE_TO_DB = isSaveToDb;
-
-			AppAnalyzer.WORKER_THREAD_NUM = workerThreadNum;
+			AppAnalyzer.IS_TABLE_LIST_FROM_DB = Boolean.valueOf(CONF.getNode("IS_TABLE_LIST_FROM_DB").getTextContent());
+			AppAnalyzer.TABLE_NAME_LIKE_STR = CONF.getNode("TABLE_NAME_LIKE_STR").getTextContent();
+			AppAnalyzer.IS_SAVE_TO_DB = Boolean.valueOf(CONF.getNode("IS_SAVE_TO_DB").getTextContent());
+			AppAnalyzer.WORKER_THREAD_KIND = Integer.valueOf(CONF.getNode("WORKER_THREAD_KIND").getTextContent());
+			AppAnalyzer.WORKER_THREAD_NUM = Integer.valueOf(CONF.getNode("WORKER_THREAD_NUM").getTextContent());
+			AppAnalyzer.SAVE_FILE_NAME = CONF.getNode("SAVE_FILE_NAME").getTextContent();
+			AppAnalyzer.TABLE_LIST_FILE_NAME = CONF.getNode("SAVE_FILE_NAME").getTextContent();
 		}
 		return analizer;
 	}
@@ -223,11 +227,11 @@ public class AppAnalyzer extends BaseObject{
 		}
 	}
 	
-	public void analyzeApp(int jobKind, boolean isUnitOnly) {
+	public void analyzeApp(int analyzeJobKind, boolean isUnitOnly) {
 		try {
 			
 			/*** 서버소스 분석 ***/
-			svcAnalyzer.analyze(jobKind, isUnitOnly);
+			svcAnalyzer.analyze(analyzeJobKind, isUnitOnly);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
