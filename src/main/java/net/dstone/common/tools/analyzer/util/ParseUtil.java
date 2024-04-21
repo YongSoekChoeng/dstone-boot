@@ -82,11 +82,11 @@ public class ParseUtil {
 		return javaSymbolSolver;
 	}
 	
-	static HashMap<String, CompilationUnit> CompilationUnitMap = new HashMap<String, CompilationUnit>();
+	static HashMap<String, CompilationUnit> compilationUnitMap = new HashMap<String, CompilationUnit>();
 	public static CompilationUnit getCompilationUnit(String fileName){
 		CompilationUnit cu = null;
-		if( CompilationUnitMap.containsKey(fileName) ) {
-			cu = CompilationUnitMap.get(fileName);
+		if( compilationUnitMap.containsKey(fileName) ) {
+			cu = compilationUnitMap.get(fileName);
 		}else {
 			try {
 				javaParser = getJavaParser();
@@ -97,7 +97,7 @@ public class ParseUtil {
 					cu = StaticJavaParser.parse(new File(fileName));
 				}
 				if( cu != null ) {
-					CompilationUnitMap.put(fileName, cu);
+					compilationUnitMap.put(fileName, cu);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
