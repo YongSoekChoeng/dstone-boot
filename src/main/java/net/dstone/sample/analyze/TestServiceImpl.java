@@ -9,19 +9,19 @@ public class TestServiceImpl extends BaseService implements TestService {
 
     /********* DAO 정의부분 시작 *********/
     @Autowired 
-    private Test1Dao test1Dao;
-    @Qualifier("Test2Dao")
-    private Test2Dao test2Dao;
+    private TestDao testDao;
+    @Qualifier("TestDao2")
+    private TestDao testDao2;
     /********* DAO 정의부분 끝 *********/
     
 	@Override
 	public void doTestService01(String name) {
-		test1Dao.doTest1Dao01(name);
+		testDao.doTestDao01(name);
 	}
 
 	@Override
 	public void testBaseService(String id) {
-		test2Dao.doTest2Dao01(id);
+		testDao2.doTestDao01(id);
 	}
 
 	public void testMyService(String id) {

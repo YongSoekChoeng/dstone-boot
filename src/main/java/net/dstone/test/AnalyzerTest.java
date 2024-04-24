@@ -255,6 +255,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 			
 			for (FieldDeclaration clzzField: clzzFieldList) {
 				String name = clzzField.resolve().getName();
+d("d==>> name["+name+"] " + clzzField.findAll(com.github.javaparser.ast.expr.AnnotationExpr.class));				
 				ClassOrInterfaceDeclaration clzzFieldClzz = AnalyzerTest.getClassDec (parser, srcRoot, clzzField.resolve().getType().describe());
 				if( clzzFieldClzz != null) {
 					if(!clzzMemberMap.containsKey(name)) {
