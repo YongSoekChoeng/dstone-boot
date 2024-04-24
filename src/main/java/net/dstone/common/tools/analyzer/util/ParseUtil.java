@@ -6,6 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
@@ -17,6 +22,9 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -628,6 +636,28 @@ public class ParseUtil {
 			implClassId = interfaceId;
 		}
 		return implClassId;
+	}
+	
+	/**
+	 * 특정한 패키지 내에서 인터페이스인 클래스ID(interfaceId)로 구현클래스파일목록(List<String>)을 추출하는 메소드.
+	 * @param packageRoot
+	 * @param interfaceId
+	 * @return
+	 */
+	public static List<String> findImplClassList(String packageRoot, String interfaceId) {
+		List<String> implClassList = new ArrayList<String>();
+		
+		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(packageRoot).scan()) {
+			for (ClassInfo ci : scanResult.getClassesImplementing(interfaceId)) {
+				if(!implClassList.contains(ci.getName())) {
+					implClassList.add(ci.getName());
+				}
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return implClassList;
 	}
 	
 	/**

@@ -121,15 +121,20 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 		List<AnnotationExpr> annotationExprList = cu.findAll(AnnotationExpr.class);
 		if( annotationExprList != null ) {
 			for( AnnotationExpr annotationExpr : annotationExprList) {
+debug("annotationExpr===>>" + annotationExpr);
 				List<Node> nodeList = annotationExpr.getChildNodes();
+				for(Node node : nodeList){
+debug("annotationExpr.node===>>" + node);
+				}
 				
+
 				
 //debug(classFile + " :: resourceId annotationExpr===>>>" +  annotationExpr );
-debug(classFile + " :: resourceId getChildNodes ===>>>" +  annotationExpr.getChildNodes() );
+//debug(classFile + " :: resourceId getChildNodes ===>>>" +  annotationExpr.getChildNodes() );
 			    List<MemberValuePair>children = annotationExpr.findAll(MemberValuePair.class);
 			    for(MemberValuePair memberValuePair : children){
 
-debug(classFile + " :: memberValuePair ===>>>" +  memberValuePair );
+//debug(classFile + " :: memberValuePair ===>>>" +  memberValuePair );
 			    	if( "Controller".equals(memberValuePair.getNameAsString()) ) {
 			    		resourceId = memberValuePair.getValue().toString();
 			    	}else if( "Service".equals(memberValuePair.getNameAsString()) ) {

@@ -2,11 +2,11 @@ package net.dstone.sample.analyze;
 
 import org.springframework.stereotype.Repository;
 
-@Repository("TestDao") 
-public class TestDaoImpl extends BaseDao implements TestDao{
+@Repository("Test1Dao") 
+public class Test1DaoImpl extends BaseDao implements Test1Dao{
 
 	@Override
-	public void doTestDao01(String name) {
+	public void doTest1Dao01(String name) {
 		// TODO Auto-generated method stub
 
 	}

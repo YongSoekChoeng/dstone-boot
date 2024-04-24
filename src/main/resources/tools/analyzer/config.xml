@@ -162,6 +162,7 @@
 		D:/REPO/MAVEN/com/github/javaparser/javaparser-core/3.25.7/javaparser-core-3.25.7.jar;
 		D:/REPO/MAVEN/com/github/javaparser/javaparser-symbol-solver-core/3.25.7/javaparser-symbol-solver-core-3.25.7.jar;
 		D:/REPO/MAVEN/org/javassist/javassist/3.29.2-GA/javassist-3.29.2-GA.jar;
+		D:/REPO/MAVEN/io/github/classgraph/classgraph/4.8.165/classgraph-4.8.165.jar;
 	]]>
 	</APP_CLASSPATH>
     

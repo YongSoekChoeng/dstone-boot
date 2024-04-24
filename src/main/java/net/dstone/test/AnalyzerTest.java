@@ -2,23 +2,33 @@ package net.dstone.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.TypeExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -27,285 +37,29 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
 
     	System.out.println("================ START ================");
     	
-    	AnalyzerTest analyzerTest = new AnalyzerTest();
-
-    	analyzerTest.testAnalyzer();
+    	testAnalysis();
 
     	System.out.println("================ END ================");
     }
     
-    private void d(Object o) {
+    private static void d(Object o) {
     	System.out.println(o);
     }
     
-
-	public void testAnalyzer() throws IOException {
-    	
-    	
-        String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
-    	String path = srcRoot + "/" + "net/dstone/sample/analyze";
-    	
-    	CombinedTypeSolver combinedTypeSolver = setClassPath();
-    	combinedTypeSolver.add(new JavaParserTypeSolver(new File(srcRoot)));
-
-        String[] fileList = FileUtil.readFileListAll(path);
-        for(String file : fileList) {
-        	
-            
-        	//this.doStatic(combinedTypeSolver, file);            
-            this.doDynamic(combinedTypeSolver, file);         
-            //this.doNew(combinedTypeSolver, file);
-
-        }
-        
-    }
-	
-	private void doStatic(CombinedTypeSolver combinedTypeSolver, String file) {
-
-		d("||========================= "+file+" Start =========================||");
-		try {
-
-			StaticJavaParser.getParserConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
-            CompilationUnit cu = StaticJavaParser.parse(new File(file));
-            
-            cu.accept(new VoidVisitorAdapter<Void>(){
-                @Override
-                public void visit(MethodCallExpr methodCall, Void  arg) {
-                	//Optional<MethodDeclaration> caller = methodCall.findAncestor(MethodDeclaration.class);
-                	//Optional<MethodDeclaration> caller = methodCall.getParentNode().get().findFirst(MethodDeclaration.class);
-                	if( file.endsWith("FruitMarket.java") ) {
-                		if( methodCall.getScope().isPresent() ) {
-                			Node node = methodCall.getScope().get();
-                			d(node + " ====>> " +  methodCall.getSymbolResolver() );
-                		}
-                	}
-                    super.visit(methodCall, arg);
-                }
-
-            }, null);
-            
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		d("||========================= "+file+" End =========================||");
-	}
-
-	private void doDynamic(CombinedTypeSolver combinedTypeSolver, String file) {
-
-		d("||========================= "+file+" Start =========================||");
-		try {
-
-			JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
-			JavaParser javaParser = new JavaParser();
-			javaParser.getParserConfiguration().setSymbolResolver(javaSymbolSolver);
-			
-			
-			CompilationUnit cu = javaParser.parse(new File(file)).getResult().get();
-			
-
-			
-			VoidVisitorAdapter methodVisitor = new VoidVisitorAdapter<Void>(){
-				
-				String classId = "";
-				String methodId = "";
-				
-				@Override
-				public void visit(ClassOrInterfaceDeclaration classRowInfo, Void arg) {
-					classId = classRowInfo.getFullyQualifiedName().get().toString();
-					
-	            		d("");
-	            		d("================================================");
-	            		d("ClassOrInterfaceDeclaration ::: " + "classId["+classId+"]" + " isInterface["+classRowInfo.isInterface()+"]" );
-	            		d("================================================");
-	            		d("");
-					
-//					if( classRowInfo.getImplementedTypes() != null ) {
-//						NodeList<ClassOrInterfaceType> classOrInterfaceTypeList = classRowInfo.getImplementedTypes();
-//						debug("classOrInterfaceTypeList :" + classOrInterfaceTypeList);
-//						for( ClassOrInterfaceType row : classOrInterfaceTypeList) {
-//							debug( classId + " implemented by " + row.getNameAsString());
-//						}
-//					}
-					
-					super.visit(classRowInfo, arg);
-				}
-				
-                @Override
-				public void visit(MethodDeclaration methodRowInfo, Void arg) {
-                	ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
-                	methodId = resolvedMethodDeclaration.getQualifiedSignature();
-
-                		
-                		d("");
-                		d("================================================");
-                		d("MethodDeclaration ::: " + "methodId["+methodId+"]" );
-                		d("================================================");
-                		d("");
-                	
-					super.visit(methodRowInfo, arg);
-				}
-
-
-				@Override
-				public void visit(ObjectCreationExpr n, Void arg) {
-					 
-
-                		d("");
-                		d("================================================");
-                		d("ObjectCreationExpr ::: " + "methodId["+methodId+"]" );
-                		d("================================================");
-                		d("");
-                		//debug("n.resolve().getPackageName+getClassName()  >>> " + n.resolve().getPackageName() + "." + n.resolve().getClassName());
-					super.visit(n, arg);
-				}
-
-				@Override
-                public void visit(MethodCallExpr methodRowInfo, Void  arg) {
-					
-					ResolvedMethodDeclaration resolvedMethodDeclaration = methodRowInfo.resolve();
-                	methodId = resolvedMethodDeclaration.getQualifiedSignature();
-                	classId = resolvedMethodDeclaration.getPackageName() + "." + resolvedMethodDeclaration.getClassName();
-                	
-
-                		d("");
-                		d("================================================");
-                		d("MethodCallExpr ::: " + "classId["+classId+"]" + " methodId["+methodId+"]" );
-                		d("================================================");
-                		d("");
-                	
-                		if( javaParser.parseName(classId).isSuccessful() ) {
-                			ClassOrInterfaceType ccu = javaParser.parseClassOrInterfaceType(classId).getResult().get();
-                			d( " ccu >>" +   ccu );
-                			
-                			
-                			/*
-                			if( javaParser.parseName(classId).getResult().isPresent() ) {
-                				debug( "javaParser.parseName(classId).getResult().get() >>" + javaParser.parseName(classId).getResult().get() );
-                				debug( "javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class) >>" + javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class) );
-                				
-                				if( javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
-                        			ClassOrInterfaceDeclaration clz = javaParser.parseName(classId).getResult().get().findFirst(ClassOrInterfaceDeclaration.class).get();
-                        			debug( " clz.isInterface() >>" +   clz.isInterface() );
-                        			if( clz.isInterface() ) {
-                        				debug( " clz.getImplementedTypes() >>" +   clz.getImplementedTypes() );
-                        			}
-                				}
-                			}
-                			*/
-                		}
-
-                		
-//                		debug("resolvedMethodDeclaration.declaringType() >>> " + methodRowInfo.getSymbolResolver().toTypeDeclaration(methodRowInfo.getParentNodeForChildren()) );
-
-                    	if(resolvedMethodDeclaration.isAbstract()) {
-                    		
-                    		ResolvedType resolvedType = null;
-                    		if( methodRowInfo.getScope().isPresent() ) {
-                    			Expression expression = methodRowInfo.getScope().get();
-                    			if( expression.isSuperExpr() ) {
-                    				resolvedType = expression.asSuperExpr().calculateResolvedType();
-                    			}else {
-                    				resolvedType = expression.calculateResolvedType();
-                    			}
-                    			String clzzName = resolvedType.asReferenceType().getQualifiedName();
-
-                    			
-                    			d("clzzName :" + clzzName + ",  cu.getInterfaceByName("+clzzName+").isPresent() :" +  cu.getInterfaceByName(clzzName).isPresent() );
-                    			if( cu.getInterfaceByName(clzzName).isPresent() ) {
-                    				ClassOrInterfaceDeclaration classOrInterfaceDeclaration = cu.getInterfaceByName(clzzName).get();
-                    				d("classOrInterfaceDeclaration.getNameAsString() :" + classOrInterfaceDeclaration.getNameAsString());
-                    				NodeList<ClassOrInterfaceType> implTypes = classOrInterfaceDeclaration.getImplementedTypes();
-                    				d("implTypes :" + implTypes);
-                    				for(ClassOrInterfaceType row : implTypes) {
-                    					d("row >>>" + row.getNameAsString());
-                    				}
-                    			}
-
-
-                    			
-                    		}
-                    	}
-     
-                		
-                	
-                	
-                    super.visit(methodRowInfo, arg);
-                }
-
-				@Override
-				public void visit(TypeExpr typeExpr, Void arg) {
-
-                		
-                		String typeStr = typeExpr.getTypeAsString();
-
-                		d("");
-                		d("================================================");
-                		d("TypeExpr ::: " + "methodId["+methodId+"]" + "typeStr["+typeStr+"]" );
-                		d("================================================");
-                		d("");
-                		
-                	
-					super.visit(typeExpr, arg);
-				}
-
-
-
-			};
-			
-            cu.accept(methodVisitor, null);
-            
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		d("||========================= "+file+" End =========================||");
-	}
-	
-	private void doNew(CombinedTypeSolver combinedTypeSolver, String file) {
-
-		d("||========================= "+file+" Start =========================||");
-		try {
-
-			JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
-			JavaParser javaParser = new JavaParser();
-			javaParser.getParserConfiguration().setSymbolResolver(javaSymbolSolver);
-			
-			CompilationUnit cu = javaParser.parse(new File(file)).getResult().get();
-
-			/*** A.클래스 ***/
-
-			/*** A-1.클래스 정보 ***/
-
-			/*** A-2.클래스변수 목록정보 ***/
-
-			/*** A-2.클래스변수 목록정보 ***/
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		d("||========================= "+file+" End =========================||");
-	}
-	
-	
-    
-    @Override
-	public void visit(ClassOrInterfaceDeclaration n, Void arg) {
-		// TODO Auto-generated method stub
-		super.visit(n, arg);
-	}
-
-	private static CombinedTypeSolver setClassPath() {
-    	CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+	private static CombinedTypeSolver setClassPath(CombinedTypeSolver combinedTypeSolver) {
     	try {
     		
     		combinedTypeSolver.add(new JarTypeSolver(new File("C:/DEV/JDK/1.8/jre/lib/rt.jar")));
@@ -449,6 +203,197 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
     	return combinedTypeSolver;
     }
-    
+	
+	public static ClassOrInterfaceDeclaration getClassDec(JavaParser parser, String srcRoot, String clzzQualifiedName) { 
+		ClassOrInterfaceDeclaration classDec = null; 
+		String filePath = "";
+		try {
+			filePath = srcRoot+"/"+ StringUtil.replace(clzzQualifiedName,".", "/")+".java" ;
+			//d("filePath["+filePath+"]");
+			if( FileUtil.isFileExist(filePath)) {
+				CompilationUnit clzzCU = parser.parse(FileUtil.readFile(filePath)).getResult().get(); 
+				if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
+					classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return classDec;
+	}
+	
+	
+	public static void testAnalysis() throws Exception {
 
+        String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
+    	String path = srcRoot + "/" + "net/dstone/sample/analyze";
+    	
+		
+		JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver (AnalyzerTest.setClassPath(new CombinedTypeSolver())); 
+		ParserConfiguration parserConfiguration = new ParserConfiguration().setSymbolResolver(javaSymbolSolver);
+	
+		StaticJavaParser.setConfiguration(parserConfiguration);
+		JavaParser parser = new JavaParser (parserConfiguration);
+		String[] filelist = FileUtil.readFileListAll(path); 
+		String clzzNm = "";
+		ClassOrInterfaceDeclaration clzzDec = null;
+		List<MethodDeclaration> mtdDecList = null;
+		
+		for (String file: filelist) {
+			d("||------------------------------------------" + file + "-------------------------------------||");
+			
+			/*** A. 클래스 정보조회 ***/
+			CompilationUnit clzzCU = parser.parse(FileUtil.readFile(file)).getResult().get();
+			clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+			clzzNm = clzzDec.resolve().getQualifiedName();
+			d("ID:" + clzzNm);
+			
+			
+			/*** A-1. 클래스멤버 목록조회 ***/
+			HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> clzzMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
+			List<FieldDeclaration> clzzFieldList = clzzDec.getFields();
+			
+			for (FieldDeclaration clzzField: clzzFieldList) {
+				String name = clzzField.resolve().getName();
+				ClassOrInterfaceDeclaration clzzFieldClzz = AnalyzerTest.getClassDec (parser, srcRoot, clzzField.resolve().getType().describe());
+				if( clzzFieldClzz != null) {
+					if(!clzzMemberMap.containsKey(name)) {
+						clzzMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>()); 
+						clzzMemberMap.get(name).add(clzzFieldClzz);
+					}else if(!clzzMemberMap.get(name).contains(clzzFieldClzz)){
+						clzzMemberMap.get(name).add(clzzFieldClzz);
+					}
+					d("\t" + "클래스멤버:" + name + ", 클래스멤버타입:" + clzzFieldClzz.resolve().getQualifiedName() );
+				}
+			}
+
+			/*** B. 메서드 목록조회 ***/
+			mtdDecList = clzzDec.getMethods();
+			for (MethodDeclaration mtdDec : mtdDecList) {
+				/*** B-1. 메서드 정보조회 ***/
+				d("\t" + "메서드ID:" + mtdDec.resolve().getQualifiedSignature());
+				
+				/***B-2. 메서드멤버 목록조회 ***/
+				HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> mtdMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
+				ArrayList<String> mtdCallList = new ArrayList<String>(); 
+				List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
+				for (VariableDeclarationExpr var: varList) {
+					String name = var.getVariable (0).getNameAsString(); 
+					ClassOrInterfaceDeclaration valClzz = AnalyzerTest.getClassDec (parser, srcRoot, var.calculateResolvedType().describe());
+					if( valClzz != null) {
+						if( !valClzz.isInterface() && !valClzz.isAbstract()) {
+							if(!mtdMemberMap.containsKey(name)) {
+								mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+							}
+							ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
+							valClzzList.add(valClzz);
+							d("\t\t" + "메서드멤버:" + name + ", 메서드멤버타입:" + valClzz.resolve().getQualifiedName() );
+						}
+					}
+				}
+
+				/***B-3. 메서드멤버생성 목록조회 ***/
+				List<AssignExpr> assignList = mtdDec.findAll(AssignExpr.class);
+				for (AssignExpr assign : assignList) {
+					ObjectCreationExpr objCre = null;
+					if( assign.findFirst(ObjectCreationExpr.class).isPresent()) {
+						objCre = assign.findFirst(ObjectCreationExpr.class).get();
+						String name = assign.getTarget().toString();
+						ClassOrInterfaceDeclaration valClzz = AnalyzerTest.getClassDec(parser, srcRoot, objCre.getType().resolve().describe());
+						if( valClzz != null) {
+							if(!mtdMemberMap.containsKey(name)) {
+								mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+							}
+							ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
+							valClzzList.add(valClzz);
+							d("\t\t" + "메서드멤버생성:" + name + ", 메서드멤버생성타입:" + valClzz.resolve().getQualifiedName() );
+						}
+					}
+				}
+				
+				/*** B-4. 메서드 호출 목록조회 ***/
+				List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
+				for (MethodCallExpr meCall : meCallList) {
+					ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
+					ClassOrInterfaceDeclaration valClzz = null; 
+					Expression callerExp = null;
+					
+					String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
+					String clzzQualifiedName = "";
+					String methodSignature = "";
+					
+					clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
+					clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
+					methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
+					
+					d("\t\t" + "메서드호출(가공전): " + methodQualifiedSignature );
+					valClzz = AnalyzerTest.getClassDec (parser, srcRoot, clzzQualifiedName);
+					if( valClzz != null) {
+
+						// 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음)
+						if( !valClzz.isInterface()) {
+							/*** Class-Type. 메서드호출 목록조회 ***/
+							List<MethodDeclaration> methodList = valClzz.getMethods();
+							for (MethodDeclaration mDec : methodList) {
+								if(mDec.resolve().getQualifiedSignature().endsWith("." + methodSignature) ) { 
+									if( !mtdCallList.contains(mDec.resolve().getQualifiedSignature())) {
+										d("\t\t" + "Class-Type 메서드호출:"+ mDec.resolve().getQualifiedSignature() );
+										mtdCallList.add(mDec.resolve().getQualifiedSignature()); 
+										break;
+									}
+								}
+							}
+						// 인터페이스 일 경우
+						}else {
+							if(meCall.getScope().isPresent()) { 
+								callerExp = meCall.getScope().get();
+								String name= callerExp.toString(); 
+								
+								/*** Interface-Type. 메서드멤버.메서드호출 목록조회 **/
+								if( mtdMemberMap.containsKey(name)) {
+									ArrayList<ClassOrInterfaceDeclaration> mcList = mtdMemberMap.get(name);
+									for (ClassOrInterfaceDeclaration mc : mcList) {
+										Iterator<MethodUsage> mu = mc.resolve().getAllMethods().iterator(); 
+										while(mu.hasNext()) {
+											MethodUsage mur = mu.next();
+											if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
+												if(!mtdCallList.contains(mur.getQualifiedSignature())) {
+													d("\t\t" + "Interface-Type 메서드멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
+													mtdCallList.add(mur.getQualifiedSignature());
+													break;
+												}
+											}
+										}
+									}
+								}
+
+								/*** Interface-Type. 클래스멤버.메서드호출 목록조회 **/
+								if( clzzMemberMap.containsKey(name)) {
+									ArrayList<ClassOrInterfaceDeclaration> mcList = clzzMemberMap.get(name);
+									for (ClassOrInterfaceDeclaration mc : mcList) {
+										Iterator<MethodUsage> mu = mc.resolve().getAllMethods().iterator(); 
+										while(mu.hasNext()) {
+											MethodUsage mur = mu.next();
+											if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
+												if(!mtdCallList.contains(mur.getQualifiedSignature())) {
+													d("\t\t" + "Interface-Type 클래스멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
+													mtdCallList.add(mur.getQualifiedSignature());
+													break;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+		}
+	
+	}
+	
 }
+
+
