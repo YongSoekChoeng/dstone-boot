@@ -1,22 +1,15 @@
 package net.dstone.test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
-
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -24,22 +17,17 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
+import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
@@ -204,25 +192,6 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     	return combinedTypeSolver;
     }
 	
-	public static ClassOrInterfaceDeclaration getClassDec(JavaParser parser, String srcRoot, String clzzQualifiedName) { 
-		ClassOrInterfaceDeclaration classDec = null; 
-		String filePath = "";
-		try {
-			filePath = srcRoot+"/"+ StringUtil.replace(clzzQualifiedName,".", "/")+".java" ;
-			//d("filePath["+filePath+"]");
-			if( FileUtil.isFileExist(filePath)) {
-				CompilationUnit clzzCU = parser.parse(FileUtil.readFile(filePath)).getResult().get(); 
-				if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
-					classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
-				}
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return classDec;
-	}
-	
-	
 	public static void testAnalysis() throws Exception {
 
         String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
@@ -256,7 +225,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 			for (FieldDeclaration clzzField: clzzFieldList) {
 				String name = clzzField.resolve().getName();
 d("d==>> name["+name+"] " + clzzField.findAll(com.github.javaparser.ast.expr.AnnotationExpr.class));				
-				ClassOrInterfaceDeclaration clzzFieldClzz = AnalyzerTest.getClassDec (parser, srcRoot, clzzField.resolve().getType().describe());
+				ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec (parser, srcRoot, clzzField.resolve().getType().describe());
 				if( clzzFieldClzz != null) {
 					if(!clzzMemberMap.containsKey(name)) {
 						clzzMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>()); 
@@ -280,7 +249,7 @@ d("d==>> name["+name+"] " + clzzField.findAll(com.github.javaparser.ast.expr.Ann
 				List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
 				for (VariableDeclarationExpr var: varList) {
 					String name = var.getVariable (0).getNameAsString(); 
-					ClassOrInterfaceDeclaration valClzz = AnalyzerTest.getClassDec (parser, srcRoot, var.calculateResolvedType().describe());
+					ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec (parser, srcRoot, var.calculateResolvedType().describe());
 					if( valClzz != null) {
 						if( !valClzz.isInterface() && !valClzz.isAbstract()) {
 							if(!mtdMemberMap.containsKey(name)) {
@@ -300,7 +269,7 @@ d("d==>> name["+name+"] " + clzzField.findAll(com.github.javaparser.ast.expr.Ann
 					if( assign.findFirst(ObjectCreationExpr.class).isPresent()) {
 						objCre = assign.findFirst(ObjectCreationExpr.class).get();
 						String name = assign.getTarget().toString();
-						ClassOrInterfaceDeclaration valClzz = AnalyzerTest.getClassDec(parser, srcRoot, objCre.getType().resolve().describe());
+						ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(parser, srcRoot, objCre.getType().resolve().describe());
 						if( valClzz != null) {
 							if(!mtdMemberMap.containsKey(name)) {
 								mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
@@ -328,7 +297,7 @@ d("d==>> name["+name+"] " + clzzField.findAll(com.github.javaparser.ast.expr.Ann
 					methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 					
 					d("\t\t" + "메서드호출(가공전): " + methodQualifiedSignature );
-					valClzz = AnalyzerTest.getClassDec (parser, srcRoot, clzzQualifiedName);
+					valClzz = ParseUtil.getClassDec (parser, srcRoot, clzzQualifiedName);
 					if( valClzz != null) {
 
 						// 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음)

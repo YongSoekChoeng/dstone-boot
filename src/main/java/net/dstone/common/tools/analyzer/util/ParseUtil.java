@@ -16,6 +16,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
@@ -34,6 +35,7 @@ import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.DbUtil;
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.XmlUtil;
@@ -97,15 +99,19 @@ public class ParseUtil {
 			cu = compilationUnitMap.get(fileName);
 		}else {
 			try {
-				javaParser = getJavaParser();
-				ParseResult<CompilationUnit> result = javaParser.parse(new File(fileName));
-				if( result.isSuccessful() ) {
-					cu = result.getResult().get();
+				if( FileUtil.isFileExist(fileName) ) {
+					javaParser = getJavaParser();
+					ParseResult<CompilationUnit> result = javaParser.parse(new File(fileName));
+					if( result.isSuccessful() ) {
+						cu = result.getResult().get();
+					}else {
+						cu = StaticJavaParser.parse(new File(fileName));
+					}
+					if( cu != null ) {
+						compilationUnitMap.put(fileName, cu);
+					}
 				}else {
-					cu = StaticJavaParser.parse(new File(fileName));
-				}
-				if( cu != null ) {
-					compilationUnitMap.put(fileName, cu);
+					throw new Exception("존재하지 않은 파일입니다. fileName["+fileName+"]");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -706,6 +712,32 @@ public class ParseUtil {
 			}
 		}
 		return fieldName;
+	}
+	
+
+	/**
+	 * 클래스명(xx.xxx.TestBean)으로 ClassOrInterfaceDeclaration 찾아서 반환.
+	 * @param parser
+	 * @param srcRoot
+	 * @param clzzQualifiedName
+	 * @return
+	 */
+	public static ClassOrInterfaceDeclaration getClassDec(JavaParser parser, String srcRoot, String clzzQualifiedName) { 
+		ClassOrInterfaceDeclaration classDec = null; 
+		String filePath = "";
+		try {
+			filePath = srcRoot+"/"+ StringUtil.replace(clzzQualifiedName,".", "/")+".java" ;
+			//d("filePath["+filePath+"]");
+			if( FileUtil.isFileExist(filePath)) {
+				CompilationUnit clzzCU = parser.parse(FileUtil.readFile(filePath)).getResult().get(); 
+				if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
+					classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return classDec;
 	}
 	
 	/**

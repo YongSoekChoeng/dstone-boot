@@ -114,46 +114,6 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 */
 	@Override
 	public String getResourceId(String classFile) throws Exception {
-		String resourceId = "";
-		
-		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
-		
-		List<AnnotationExpr> annotationExprList = cu.findAll(AnnotationExpr.class);
-		if( annotationExprList != null ) {
-			for( AnnotationExpr annotationExpr : annotationExprList) {
-debug("annotationExpr===>>" + annotationExpr);
-				List<Node> nodeList = annotationExpr.getChildNodes();
-				for(Node node : nodeList){
-debug("annotationExpr.node===>>" + node);
-				}
-				
-
-				
-//debug(classFile + " :: resourceId annotationExpr===>>>" +  annotationExpr );
-//debug(classFile + " :: resourceId getChildNodes ===>>>" +  annotationExpr.getChildNodes() );
-			    List<MemberValuePair>children = annotationExpr.findAll(MemberValuePair.class);
-			    for(MemberValuePair memberValuePair : children){
-
-//debug(classFile + " :: memberValuePair ===>>>" +  memberValuePair );
-			    	if( "Controller".equals(memberValuePair.getNameAsString()) ) {
-			    		resourceId = memberValuePair.getValue().toString();
-			    	}else if( "Service".equals(memberValuePair.getNameAsString()) ) {
-			    		resourceId = memberValuePair.getValue().toString();
-			    	}else if( "Repository".equals(memberValuePair.getNameAsString()) ) {
-			    		resourceId = memberValuePair.getValue().toString();
-			    	}
-			    	if(!StringUtil.isEmpty(resourceId)) {
-			    		break;
-			    	}
-			    }
-		    	if(!StringUtil.isEmpty(resourceId)) {
-		    		break;
-		    	}
-			}
-		}
-
-//debug(classFile + " :: resourceId ===>>>" +  resourceId );
-		
 		return super.getResourceId(classFile);
 	}
 	
