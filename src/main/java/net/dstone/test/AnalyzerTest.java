@@ -13,13 +13,16 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.LiteralStringValueExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.MethodUsage;
+import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
@@ -27,6 +30,9 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
@@ -39,6 +45,8 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     	System.out.println("================ START ================");
     	
     	testAnalysis();
+    	
+    	//test();
 
     	System.out.println("================ END ================");
     }
@@ -208,162 +216,192 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 		ClassOrInterfaceDeclaration clzzDec = null;
 		List<MethodDeclaration> mtdDecList = null;
 		
-		for (String file: filelist) {
-			d("||------------------------------------------" + file + "-------------------------------------||");
+		ScanResult scanResult = null;
+		
+		try {
 			
-			/*** A. 클래스 정보조회 ***/
-			CompilationUnit clzzCU = parser.parse(FileUtil.readFile(file)).getResult().get();
-			clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
-			clzzNm = clzzDec.resolve().getQualifiedName();
-			d("ID:" + clzzNm);
-			
-			
-			/*** A-1. 클래스멤버 목록조회 ***/
-			HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> clzzMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
-			List<FieldDeclaration> clzzFieldList = clzzDec.getFields();
-			
-			for (FieldDeclaration clzzField: clzzFieldList) {
-				String name = clzzField.resolve().getName();
-d("d==>> name["+name+"] " + clzzField.findAll(com.github.javaparser.ast.expr.AnnotationExpr.class));				
-				ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec (parser, srcRoot, clzzField.resolve().getType().describe());
-				if( clzzFieldClzz != null) {
-					if(!clzzMemberMap.containsKey(name)) {
-						clzzMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>()); 
-						clzzMemberMap.get(name).add(clzzFieldClzz);
-					}else if(!clzzMemberMap.get(name).contains(clzzFieldClzz)){
-						clzzMemberMap.get(name).add(clzzFieldClzz);
-					}
-					d("\t" + "클래스멤버:" + name + ", 클래스멤버타입:" + clzzFieldClzz.resolve().getQualifiedName() );
-				}
-			}
+			scanResult = new ClassGraph().enableAllInfo().acceptPackages( StringUtil.replace( StringUtil.replace(path, srcRoot+"/", ""), "/", ".") ).scan();
 
-			/*** B. 메서드 목록조회 ***/
-			mtdDecList = clzzDec.getMethods();
-			for (MethodDeclaration mtdDec : mtdDecList) {
-				/*** B-1. 메서드 정보조회 ***/
-				d("\t" + "메서드ID:" + mtdDec.resolve().getQualifiedSignature());
+			for (String file: filelist) {
+				d("||------------------------------------------" + file + "-------------------------------------||");
 				
-				/***B-2. 메서드멤버 목록조회 ***/
-				HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> mtdMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
-				ArrayList<String> mtdCallList = new ArrayList<String>(); 
-				List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
-				for (VariableDeclarationExpr var: varList) {
-					String name = var.getVariable (0).getNameAsString(); 
-					ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec (parser, srcRoot, var.calculateResolvedType().describe());
-					if( valClzz != null) {
-						if( !valClzz.isInterface() && !valClzz.isAbstract()) {
-							if(!mtdMemberMap.containsKey(name)) {
-								mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
-							}
-							ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
-							valClzzList.add(valClzz);
-							d("\t\t" + "메서드멤버:" + name + ", 메서드멤버타입:" + valClzz.resolve().getQualifiedName() );
+				/*** A. 클래스 정보조회 ***/
+				CompilationUnit clzzCU = parser.parse(FileUtil.readFile(file)).getResult().get();
+				clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+				clzzNm = clzzDec.resolve().getQualifiedName();
+				d("ID:" + clzzNm);
+
+				/*** A-1. 클래스멤버 목록조회 ***/
+				HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> clzzMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
+				List<ResolvedFieldDeclaration> clzzFieldList = clzzDec.resolve().getAllFields();
+				
+				
+				for (ResolvedFieldDeclaration clzzField: clzzFieldList) {
+					String name = clzzField.getName();
+					ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec(parser, srcRoot, clzzField.getType().describe());
+					if( clzzFieldClzz != null) {
+						if(!clzzMemberMap.containsKey(name)) {
+							clzzMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>()); 
 						}
+						ArrayList<ClassOrInterfaceDeclaration> valClzzList = clzzMemberMap.get(name);
+						valClzzList.add(clzzFieldClzz);
+						d("\t" + "클래스멤버:" + name + ", 클래스멤버타입:" + clzzFieldClzz.resolve().getQualifiedName() + ", aa:" + clzzField.toAst(FieldDeclaration.class) );
+						
 					}
 				}
 
-				/***B-3. 메서드멤버생성 목록조회 ***/
-				List<AssignExpr> assignList = mtdDec.findAll(AssignExpr.class);
-				for (AssignExpr assign : assignList) {
-					ObjectCreationExpr objCre = null;
-					if( assign.findFirst(ObjectCreationExpr.class).isPresent()) {
-						objCre = assign.findFirst(ObjectCreationExpr.class).get();
-						String name = assign.getTarget().toString();
-						ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(parser, srcRoot, objCre.getType().resolve().describe());
+				/*** B. 메서드 목록조회 ***/
+				mtdDecList = clzzDec.getMethods();
+				for (MethodDeclaration mtdDec : mtdDecList) {
+					/*** B-1. 메서드 정보조회 ***/
+//					d("\t" + "메서드ID:" + mtdDec.resolve().getQualifiedSignature());
+					
+					/***B-2. 메서드멤버 목록조회 ***/
+					HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> mtdMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
+					List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
+					for (VariableDeclarationExpr var: varList) {
+						String name = var.getVariable (0).getNameAsString(); 
+						ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec (parser, srcRoot, var.calculateResolvedType().describe());
 						if( valClzz != null) {
-							if(!mtdMemberMap.containsKey(name)) {
-								mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+							if( !valClzz.isInterface() && !valClzz.isAbstract()) {
+								if(!mtdMemberMap.containsKey(name)) {
+									mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+								}
+								ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
+								valClzzList.add(valClzz);
+//								d("\t\t" + "메서드멤버:" + name + ", 메서드멤버타입:" + valClzz.resolve().getQualifiedName() );
 							}
-							ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
-							valClzzList.add(valClzz);
-							d("\t\t" + "메서드멤버생성:" + name + ", 메서드멤버생성타입:" + valClzz.resolve().getQualifiedName() );
 						}
 					}
-				}
-				
-				/*** B-4. 메서드 호출 목록조회 ***/
-				List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
-				for (MethodCallExpr meCall : meCallList) {
-					ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
-					ClassOrInterfaceDeclaration valClzz = null; 
-					Expression callerExp = null;
-					
-					String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
-					String clzzQualifiedName = "";
-					String methodSignature = "";
-					
-					clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
-					clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
-					methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
-					
-					d("\t\t" + "메서드호출(가공전): " + methodQualifiedSignature );
-					valClzz = ParseUtil.getClassDec (parser, srcRoot, clzzQualifiedName);
-					if( valClzz != null) {
 
-						// 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음)
-						if( !valClzz.isInterface()) {
-							/*** Class-Type. 메서드호출 목록조회 ***/
-							List<MethodDeclaration> methodList = valClzz.getMethods();
-							for (MethodDeclaration mDec : methodList) {
-								if(mDec.resolve().getQualifiedSignature().endsWith("." + methodSignature) ) { 
-									if( !mtdCallList.contains(mDec.resolve().getQualifiedSignature())) {
-										d("\t\t" + "Class-Type 메서드호출:"+ mDec.resolve().getQualifiedSignature() );
-										mtdCallList.add(mDec.resolve().getQualifiedSignature()); 
-										break;
+					/***B-3. 메서드멤버생성 목록조회 ***/
+					List<AssignExpr> assignList = mtdDec.findAll(AssignExpr.class);
+					for (AssignExpr assign : assignList) {
+						ObjectCreationExpr objCre = null;
+						if( assign.findFirst(ObjectCreationExpr.class).isPresent()) {
+							objCre = assign.findFirst(ObjectCreationExpr.class).get();
+							String name = assign.getTarget().toString();
+							ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(parser, srcRoot, objCre.getType().resolve().describe());
+							if( valClzz != null) {
+								if(!mtdMemberMap.containsKey(name)) {
+									mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+								}
+								ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
+								valClzzList.add(valClzz);
+//								d("\t\t" + "메서드멤버생성:" + name + ", 메서드멤버생성타입:" + valClzz.resolve().getQualifiedName() );
+							}
+						}
+					}
+					
+					/*** B-4. 메서드 호출 목록조회 ***/
+					ArrayList<String> mtdCallList = new ArrayList<String>(); 
+					List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
+					for (MethodCallExpr meCall : meCallList) {
+						ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
+						ClassOrInterfaceDeclaration valClzz = null; 
+						Expression callerExp = null;
+						
+						String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
+						String clzzQualifiedName = "";
+						String methodSignature = "";
+						
+						clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
+						clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
+						methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
+						
+//						d("\t\t" + "메서드호출(가공전): " + methodQualifiedSignature );
+						valClzz = ParseUtil.getClassDec (parser, srcRoot, clzzQualifiedName);
+						if( valClzz != null) {
+
+							// 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음)
+							if( !valClzz.isInterface()) {
+								/*** Class-Type. 메서드호출 목록조회 ***/
+								List<MethodDeclaration> methodList = valClzz.getMethods();
+								for (MethodDeclaration mDec : methodList) {
+									if(mDec.resolve().getQualifiedSignature().endsWith("." + methodSignature) ) { 
+										if( !mtdCallList.contains(mDec.resolve().getQualifiedSignature())) {
+//											d("\t\t" + "Class-Type 메서드호출:"+ mDec.resolve().getQualifiedSignature() );
+											mtdCallList.add(mDec.resolve().getQualifiedSignature()); 
+											break;
+										}
 									}
 								}
-							}
-						// 인터페이스 일 경우
-						}else {
-							if(meCall.getScope().isPresent()) { 
-								callerExp = meCall.getScope().get();
-								String name= callerExp.toString(); 
-								
-								/*** Interface-Type. 메서드멤버.메서드호출 목록조회 **/
-								if( mtdMemberMap.containsKey(name)) {
-									ArrayList<ClassOrInterfaceDeclaration> mcList = mtdMemberMap.get(name);
-									for (ClassOrInterfaceDeclaration mc : mcList) {
-										Iterator<MethodUsage> mu = mc.resolve().getAllMethods().iterator(); 
-										while(mu.hasNext()) {
-											MethodUsage mur = mu.next();
-											if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
-												if(!mtdCallList.contains(mur.getQualifiedSignature())) {
-													d("\t\t" + "Interface-Type 메서드멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
-													mtdCallList.add(mur.getQualifiedSignature());
-													break;
+							// 인터페이스 일 경우
+							}else {
+								if(meCall.getScope().isPresent()) { 
+									callerExp = meCall.getScope().get();
+									String name= callerExp.toString(); 
+									
+									/*** Interface-Type. 메서드멤버.메서드호출 목록조회 **/
+									if( mtdMemberMap.containsKey(name)) {
+										ArrayList<ClassOrInterfaceDeclaration> mcList = mtdMemberMap.get(name);
+										for (ClassOrInterfaceDeclaration mc : mcList) {
+											Iterator<MethodUsage> mu = mc.resolve().getAllMethods().iterator(); 
+											while(mu.hasNext()) {
+												MethodUsage mur = mu.next();
+												if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
+													if(!mtdCallList.contains(mur.getQualifiedSignature())) {
+//														d("\t\t" + "Interface-Type 메서드멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
+														mtdCallList.add(mur.getQualifiedSignature());
+														break;
+													}
+												}
+											}
+										}
+									}
+
+									/*** Interface-Type. 클래스멤버.메서드호출 목록조회 **/
+									if( clzzMemberMap.containsKey(name)) {
+										ArrayList<ClassOrInterfaceDeclaration> mcList = clzzMemberMap.get(name);
+										for (ClassOrInterfaceDeclaration mc : mcList) {
+											Iterator<MethodUsage> mu = mc.resolve().getAllMethods().iterator(); 
+											while(mu.hasNext()) {
+												MethodUsage mur = mu.next();
+												if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
+													if(!mtdCallList.contains(mur.getQualifiedSignature())) {
+//														d("\t\t" + "Interface-Type 클래스멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
+														mtdCallList.add(mur.getQualifiedSignature());
+														break;
+													}
 												}
 											}
 										}
 									}
 								}
-
-								/*** Interface-Type. 클래스멤버.메서드호출 목록조회 **/
-								if( clzzMemberMap.containsKey(name)) {
-									ArrayList<ClassOrInterfaceDeclaration> mcList = clzzMemberMap.get(name);
-									for (ClassOrInterfaceDeclaration mc : mcList) {
-										Iterator<MethodUsage> mu = mc.resolve().getAllMethods().iterator(); 
-										while(mu.hasNext()) {
-											MethodUsage mur = mu.next();
-											if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
-												if(!mtdCallList.contains(mur.getQualifiedSignature())) {
-													d("\t\t" + "Interface-Type 클래스멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
-													mtdCallList.add(mur.getQualifiedSignature());
-													break;
-												}
-											}
-										}
-									}
-								}
 							}
 						}
 					}
 				}
+
 			}
-
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(scanResult!=null) {scanResult.close();}
 		}
-	
+		
 	}
 	
+	private static void test() {
+		
+    	String param = "TestDao2";
+    	
+		List<String> implClassList = new ArrayList<String>();
+		ScanResult scanResult = null;
+		try {
+			scanResult = new ClassGraph().enableAllInfo().acceptPackages("net.dstone.sample.analyze").scan();
+			
+//d( "param["+param+"] ==>>" + scanResult.getAnnotationsOnClass("net.dstone.sample.analyze.TestServiceImpl") );			
+			for (ClassInfo ci : scanResult.getAnnotationsOnClass("net.dstone.sample.analyze.TestServiceImpl") ) {
+				d(ci.getAnnotationInfo().getAsStringsWithSimpleNames() );
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(scanResult!=null) {scanResult.close();}
+		}
+	}
 }
 
 

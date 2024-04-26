@@ -646,14 +646,15 @@ public class ParseUtil {
 	
 	/**
 	 * 특정한 패키지 내에서 인터페이스인 클래스ID(interfaceId)로 구현클래스파일목록(List<String>)을 추출하는 메소드.
-	 * @param packageRoot
 	 * @param interfaceId
+	 * @param packageRoot
 	 * @return
 	 */
-	public static List<String> findImplClassList(String packageRoot, String interfaceId) {
+	public static List<String> getImplClassList(String interfaceId, String... packageRoot) {
 		List<String> implClassList = new ArrayList<String>();
-		
-		try (ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(packageRoot).scan()) {
+		ScanResult scanResult = null;
+		try {
+			scanResult = new ClassGraph().enableAllInfo().acceptPackages(packageRoot).scan();
 			for (ClassInfo ci : scanResult.getClassesImplementing(interfaceId)) {
 				if(!implClassList.contains(ci.getName())) {
 					implClassList.add(ci.getName());
@@ -661,10 +662,12 @@ public class ParseUtil {
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if(scanResult!=null) {scanResult.close();}
 		}
-		
 		return implClassList;
 	}
+	
 	
 	/**
 	 * 구현클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 인터페이스ID을 추출하는 메소드.
@@ -672,15 +675,22 @@ public class ParseUtil {
 	 * @param classId
 	 * @return
 	 */
-	public static String findInterfaceId(String classId) {
-		String interfaceId = "";
-		ClzzVo implClzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
-		if( "C".equals(implClzzVo.getClassOrInterface()) ) {
-			interfaceId = implClzzVo.getInterfaceId();
-		}else {
-			interfaceId = classId;
+	public static List<String> getInterfaceIdList(String classId, String... packageRoot) {
+		List<String> interfaceIdList = new ArrayList<String>();
+		ScanResult scanResult = null;
+		try {
+			scanResult = new ClassGraph().enableAllInfo().acceptPackages(packageRoot).scan();
+			for (ClassInfo ci : scanResult.getInterfaces(classId) ) {
+				if(!interfaceIdList.contains(ci.getName())) {
+					interfaceIdList.add(ci.getName());
+				}
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(scanResult!=null) {scanResult.close();}
 		}
-		return interfaceId;
+		return interfaceIdList;
 	}
 	
 	/**
@@ -715,6 +725,16 @@ public class ParseUtil {
 	}
 	
 
+	/**
+	 * 클래스명(xx.xxx.TestBean)으로 ClassOrInterfaceDeclaration 찾아서 반환.
+	 * @param srcRoot
+	 * @param clzzQualifiedName
+	 * @return
+	 */
+	public static ClassOrInterfaceDeclaration getClassDec(String srcRoot, String clzzQualifiedName) { 
+		return getClassDec(getJavaParser(), srcRoot, clzzQualifiedName);
+	}
+	
 	/**
 	 * 클래스명(xx.xxx.TestBean)으로 ClassOrInterfaceDeclaration 찾아서 반환.
 	 * @param parser
