@@ -139,12 +139,21 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 */
 	@Override
 	public String getClassOrInterface(String classFile) throws Exception{
+		String classOrInterface = "";
 		CompilationUnit clzzCU = ParseUtil.getCompilationUnit(classFile);
-		if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get().isInterface() ) {
-			return "I";
-		}else {
-			return "C";
+		try {
+			if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
+				if (clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get().isInterface()) {
+					classOrInterface = "I";
+				} else {
+					classOrInterface = "C";
+				}
+			}
+
+		} catch (Exception e) {
+			throw e;
 		}
+		return classOrInterface;
 	}
 
 	/**
@@ -155,22 +164,22 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	@Override
 	public String getInterfaceId(String classFile) throws Exception{
 		StringBuffer interfaceIdBuff = new StringBuffer();
-		
 		CompilationUnit clzzCU = ParseUtil.getCompilationUnit(classFile);
-		ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
-		NodeList<ClassOrInterfaceType> interfaceList = clzzDec.getImplementedTypes();
-		if( interfaceList != null && interfaceList.isNonEmpty() ) {
-			for(ClassOrInterfaceType inter : interfaceList) {
-        		if( !SvcAnalyzer.isValidSvcPackage(inter.resolve().describe()) ) {
-        			continue;
-        		}
-				if( interfaceIdBuff.length()>0 ) {
-					interfaceIdBuff.append(",");
+		if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
+			ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+			NodeList<ClassOrInterfaceType> interfaceList = clzzDec.getImplementedTypes();
+			if( interfaceList != null && interfaceList.isNonEmpty() ) {
+				for(ClassOrInterfaceType inter : interfaceList) {
+	        		if( !SvcAnalyzer.isValidSvcPackage(inter.resolve().describe()) ) {
+	        			continue;
+	        		}
+					if( interfaceIdBuff.length()>0 ) {
+						interfaceIdBuff.append(",");
+					}
+					interfaceIdBuff.append(inter.resolve().describe());
 				}
-				interfaceIdBuff.append(inter.resolve().describe());
 			}
 		}
-		
 		return interfaceIdBuff.toString();
 	}
 	/**
@@ -181,15 +190,18 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	public String getParentClassId(String classFile) throws Exception {
 		String parentClassId = "";
 		CompilationUnit clzzCU = ParseUtil.getCompilationUnit(classFile);
-		ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
-		NodeList<ClassOrInterfaceType> parentList = clzzDec.getExtendedTypes();
-		if( parentList != null && parentList.isNonEmpty() ) {
-			ClassOrInterfaceType parent = parentList.get(0);
-			parentClassId = parent.resolve().describe();
-    		if( !SvcAnalyzer.isValidSvcPackage(parentClassId) ) {
-    			parentClassId = "";
-    		}
+		if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
+			ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+			NodeList<ClassOrInterfaceType> parentList = clzzDec.getExtendedTypes();
+			if( parentList != null && parentList.isNonEmpty() ) {
+				ClassOrInterfaceType parent = parentList.get(0);
+				parentClassId = parent.resolve().describe();
+	    		if( !SvcAnalyzer.isValidSvcPackage(parentClassId) ) {
+	    			parentClassId = "";
+	    		}
+			}
 		}
+
 		return parentClassId;
 	}
 
@@ -224,94 +236,96 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 		Map<String, String> callClassAliasMap = new HashMap<String, String>();
 		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
 			CompilationUnit clzzCU = ParseUtil.getCompilationUnit(selfClzzVo.getFileName());
-			ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
-			
-			List<ResolvedFieldDeclaration> clzzFieldList = clzzDec.resolve().getAllFields();
-			String classAlias = "";
-			String classType = "";
-			
-			for (ResolvedFieldDeclaration clzzField: clzzFieldList) {
-				ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzField.getType().describe());
-				if( clzzFieldClzz != null) {
+			if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
 
-					classType = clzzFieldClzz.resolve().getQualifiedName();	// Full클래스
-					classAlias = clzzField.getName();						// 알리아스
-					
-            		if( !SvcAnalyzer.isValidSvcPackage(classType) ) {
-            			continue;
-            		}
-            		
-					// 멤버가 클래스 일 경우
-					if( !clzzFieldClzz.isInterface() ) {
-						callClassAliasMap = new HashMap<String, String>();
-						callClassAliasMap.put("FULL_CLASS"	, classType);
-						callClassAliasMap.put("ALIAS"		, classAlias);
-						if( !callClassAliasList.contains(callClassAliasMap) ) {
-							callClassAliasList.add(callClassAliasMap);
-						}
-					// 멤버가 인터페이스 일 경우	
-					}else {
-						String annoVal = "";
-						// Annotation-Autowired (구현체는 클래스 내에서  하나만 존재.)
-						if( clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Autowired").isPresent() ) {
-							// 인터페이스를 구현한 클래스목록 추출
-							List<String> implClzzNmList = ParseUtil.getImplClassList(classType, AppAnalyzer.CLASS_ROOT_PATH);
-							if(implClzzNmList != null && implClzzNmList.size() > 0) {
-								classType = implClzzNmList.get(0);
-								callClassAliasMap = new HashMap<String, String>();
-								callClassAliasMap.put("FULL_CLASS"	, classType);
-								callClassAliasMap.put("ALIAS"		, classAlias);
-								if( !callClassAliasList.contains(callClassAliasMap) ) {
-									callClassAliasList.add(callClassAliasMap);
-								}
+				ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+				
+				List<ResolvedFieldDeclaration> clzzFieldList = clzzDec.resolve().getAllFields();
+				String classAlias = "";
+				String classType = "";
+				
+				for (ResolvedFieldDeclaration clzzField: clzzFieldList) {
+					ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzField.getType().describe());
+					if( clzzFieldClzz != null) {
+
+						classType = clzzFieldClzz.resolve().getQualifiedName();	// Full클래스
+						classAlias = clzzField.getName();						// 알리아스
+						
+	            		if( !SvcAnalyzer.isValidSvcPackage(classType) ) {
+	            			continue;
+	            		}
+	            		
+						// 멤버가 클래스 일 경우
+						if( !clzzFieldClzz.isInterface() ) {
+							callClassAliasMap = new HashMap<String, String>();
+							callClassAliasMap.put("FULL_CLASS"	, classType);
+							callClassAliasMap.put("ALIAS"		, classAlias);
+							if( !callClassAliasList.contains(callClassAliasMap) ) {
+								callClassAliasList.add(callClassAliasMap);
 							}
-						// Annotation-Qualifier (구현체는 클래스 내에서  여러개 존재 가능. @Qualifier("TestDao21") 혹은  @Qualifier(value ="TestDao22") 로 표현)
-						}else if( clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Qualifier").isPresent() ) {
-							AnnotationExpr annoExpr = clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Qualifier").get();
-							if(  annoExpr.findFirst(LiteralStringValueExpr.class).isPresent() ) {
-								LiteralStringValueExpr annoStrVal = annoExpr.findFirst(LiteralStringValueExpr.class).get();
-								annoVal = annoStrVal.getValue();	
-								classType = ParseUtil.findImplClassId(classType, annoVal);
-								callClassAliasMap = new HashMap<String, String>();
-								callClassAliasMap.put("FULL_CLASS"	, classType);
-								callClassAliasMap.put("ALIAS"		, classAlias);
-								if( !callClassAliasList.contains(callClassAliasMap) ) {
-									callClassAliasList.add(callClassAliasMap);
-								}
-							}
-						// Annotation-Resource (구현체는 클래스 내에서  여러개 존재 가능. @Qualifier("Resource") 혹은  @Qualifier(name ="Resource") 로 표현)
-						}else if( clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Resource").isPresent() ) {
-							AnnotationExpr annoExpr = clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Resource").get();
-							if(  annoExpr.findFirst(LiteralStringValueExpr.class).isPresent() ) {
-								LiteralStringValueExpr annoStrVal = annoExpr.findFirst(LiteralStringValueExpr.class).get();
-								annoVal = annoStrVal.getValue();
-								classType = ParseUtil.findImplClassId(classType, annoVal);
-								callClassAliasMap = new HashMap<String, String>();
-								callClassAliasMap.put("FULL_CLASS"	, classType);
-								callClassAliasMap.put("ALIAS"		, classAlias);
-								if( !callClassAliasList.contains(callClassAliasMap) ) {
-									callClassAliasList.add(callClassAliasMap);
-								}
-							}
+						// 멤버가 인터페이스 일 경우	
 						}else {
-							// 인터페이스를 구현한 클래스목록 추출
-							List<String> implClzzNmList = ParseUtil.getImplClassList(classType, AppAnalyzer.CLASS_ROOT_PATH);
-							if( implClzzNmList != null && !implClzzNmList.isEmpty() ) {
-								for (String implClzzNm: implClzzNmList) {
-									classType = implClzzNm;
+							String annoVal = "";
+							// Annotation-Autowired (구현체는 클래스 내에서  하나만 존재.)
+							if( clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Autowired").isPresent() ) {
+								// 인터페이스를 구현한 클래스목록 추출
+								List<String> implClzzNmList = ParseUtil.getImplClassList(classType, AppAnalyzer.CLASS_ROOT_PATH);
+								if(implClzzNmList != null && implClzzNmList.size() > 0) {
+									classType = implClzzNmList.get(0);
 									callClassAliasMap = new HashMap<String, String>();
 									callClassAliasMap.put("FULL_CLASS"	, classType);
 									callClassAliasMap.put("ALIAS"		, classAlias);
 									if( !callClassAliasList.contains(callClassAliasMap) ) {
 										callClassAliasList.add(callClassAliasMap);
-									}								
+									}
+								}
+							// Annotation-Qualifier (구현체는 클래스 내에서  여러개 존재 가능. @Qualifier("TestDao21") 혹은  @Qualifier(value ="TestDao22") 로 표현)
+							}else if( clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Qualifier").isPresent() ) {
+								AnnotationExpr annoExpr = clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Qualifier").get();
+								if(  annoExpr.findFirst(LiteralStringValueExpr.class).isPresent() ) {
+									LiteralStringValueExpr annoStrVal = annoExpr.findFirst(LiteralStringValueExpr.class).get();
+									annoVal = annoStrVal.getValue();	
+									classType = ParseUtil.findImplClassId(classType, annoVal);
+									callClassAliasMap = new HashMap<String, String>();
+									callClassAliasMap.put("FULL_CLASS"	, classType);
+									callClassAliasMap.put("ALIAS"		, classAlias);
+									if( !callClassAliasList.contains(callClassAliasMap) ) {
+										callClassAliasList.add(callClassAliasMap);
+									}
+								}
+							// Annotation-Resource (구현체는 클래스 내에서  여러개 존재 가능. @Qualifier("Resource") 혹은  @Qualifier(name ="Resource") 로 표현)
+							}else if( clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Resource").isPresent() ) {
+								AnnotationExpr annoExpr = clzzField.toAst(FieldDeclaration.class).get().getAnnotationByName("Resource").get();
+								if(  annoExpr.findFirst(LiteralStringValueExpr.class).isPresent() ) {
+									LiteralStringValueExpr annoStrVal = annoExpr.findFirst(LiteralStringValueExpr.class).get();
+									annoVal = annoStrVal.getValue();
+									classType = ParseUtil.findImplClassId(classType, annoVal);
+									callClassAliasMap = new HashMap<String, String>();
+									callClassAliasMap.put("FULL_CLASS"	, classType);
+									callClassAliasMap.put("ALIAS"		, classAlias);
+									if( !callClassAliasList.contains(callClassAliasMap) ) {
+										callClassAliasList.add(callClassAliasMap);
+									}
+								}
+							}else {
+								// 인터페이스를 구현한 클래스목록 추출
+								List<String> implClzzNmList = ParseUtil.getImplClassList(classType, AppAnalyzer.CLASS_ROOT_PATH);
+								if( implClzzNmList != null && !implClzzNmList.isEmpty() ) {
+									for (String implClzzNm: implClzzNmList) {
+										classType = implClzzNm;
+										callClassAliasMap = new HashMap<String, String>();
+										callClassAliasMap.put("FULL_CLASS"	, classType);
+										callClassAliasMap.put("ALIAS"		, classAlias);
+										if( !callClassAliasList.contains(callClassAliasMap) ) {
+											callClassAliasList.add(callClassAliasMap);
+										}								
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			
 		}
 		return callClassAliasList;
 	}

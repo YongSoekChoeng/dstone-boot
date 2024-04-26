@@ -749,9 +749,12 @@ public class ParseUtil {
 			filePath = srcRoot+"/"+ StringUtil.replace(clzzQualifiedName,".", "/")+".java" ;
 			//d("filePath["+filePath+"]");
 			if( FileUtil.isFileExist(filePath)) {
-				CompilationUnit clzzCU = parser.parse(FileUtil.readFile(filePath)).getResult().get(); 
-				if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
-					classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+				ParseResult<CompilationUnit> result = getJavaParser().parse(FileUtil.readFile(filePath));
+				if( result.isSuccessful() && result.getResult().isPresent() ) {
+					CompilationUnit clzzCU = result.getResult().get(); 
+					if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
+						classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+					}
 				}
 			}
 		}catch (Exception e) {

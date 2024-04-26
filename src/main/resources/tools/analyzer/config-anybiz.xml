@@ -23,7 +23,7 @@
     <IS_SAVE_TO_DB>false</IS_SAVE_TO_DB>
     
 	<!-- 분석작업을 진행 할 쓰레드핸들러 종류(1:싱글 쓰레드풀, 2:Fixed 쓰레드풀, 3:Cached 쓰레드풀) -->
-    <WORKER_THREAD_KIND>1</WORKER_THREAD_KIND>
+    <WORKER_THREAD_KIND>2</WORKER_THREAD_KIND>
     
 	<!-- 분석작업을 진행 할 쓰레드 갯수(WORKER_THREAD_KIND가 Fixed 쓰레드풀 일 경우에만 유효) -->
     <WORKER_THREAD_NUM>20</WORKER_THREAD_NUM>
