@@ -83,9 +83,14 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
                 List<AnnotationExpr> methodAnnotationList =  methodDec.getAnnotations();
                 for(AnnotationExpr an : methodAnnotationList) {
                 	if(an.getNameAsString().endsWith("Mapping")) {
+                		/***************************************************
+                		<SingleMemberAnnotation/NormalAnnotation 의 차이>
+                		- @RequestMapping("/sample/admin.do")       ===>> SingleMemberAnnotation
+                		- @RequestMapping(value="/sample/admin.do") ===>> NormalAnnotation
+                		***************************************************/
                 		if( an.isSingleMemberAnnotationExpr() ) {
                 			METHOD_URL = an.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString();
-                		}else if( an.isNormalAnnotationExpr() ) {         
+                		}else if( an.isNormalAnnotationExpr() ) {           			
                 			if (an.asNormalAnnotationExpr().getPairs().get(0).getValue().isStringLiteralExpr()) {
                 				METHOD_URL = an.asNormalAnnotationExpr().getPairs().get(0).getValue().asStringLiteralExpr().asString();
                 			}else if (an.asNormalAnnotationExpr().getPairs().get(0).getValue().isArrayInitializerExpr()) {
