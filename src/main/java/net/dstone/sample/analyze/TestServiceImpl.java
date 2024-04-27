@@ -18,6 +18,7 @@ public class TestServiceImpl extends BaseService implements TestService {
     private TestDao testDao22;
     @Resource(name = "TestDao3")
     private TestDao testDao3;
+    private Test1DaoImpl testDao4;
     /********* DAO 정의부분 끝 *********/
     
 	@Override

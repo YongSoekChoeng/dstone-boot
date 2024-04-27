@@ -34,7 +34,7 @@ public class ClzzVo {
 	/**
 	 * 상위인터페이스ID(인터페이스를 구현한 클래스의 경우에만 존재)
 	 */
-	protected String interfaceId;
+	protected List<String> interfaceIdList;
 	/**
 	 * 상위클래스ID
 	 */
@@ -90,11 +90,11 @@ public class ClzzVo {
 	public void setClassOrInterface(String classOrInterface) {
 		this.classOrInterface = classOrInterface;
 	}
-	public String getInterfaceId() {
-		return interfaceId;
+	public List<String> getInterfaceIdList() {
+		return interfaceIdList;
 	}
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
+	public void setInterfaceIdList(List<String> interfaceIdList) {
+		this.interfaceIdList = interfaceIdList;
 	}
 	public String getParentClassId() {
 		return parentClassId;
@@ -123,8 +123,8 @@ public class ClzzVo {
 	@Override
 	public String toString() {
 		return "ClzzVo [packageId=" + packageId + ", classId=" + classId + ", className=" + className + ", classKind="
-				+ classKind + ", resourceId=" + resourceId + ", classOrInterface=" + classOrInterface + ", interfaceId="
-				+ interfaceId + ", parentClassId=" + parentClassId + ", implClassIdList=" + implClassIdList
+				+ classKind + ", resourceId=" + resourceId + ", classOrInterface=" + classOrInterface + ", interfaceIdList="
+				+ interfaceIdList + ", parentClassId=" + parentClassId + ", implClassIdList=" + implClassIdList
 				+ ", callClassAlias=" + callClassAlias + ", fileName=" + fileName + "]";
 	}
 	

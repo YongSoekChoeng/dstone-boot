@@ -143,7 +143,8 @@ public class AppAnalyzer extends BaseObject{
 	 * WORKER_THREAD_KIND - 분석작업을 진행 할 쓰레드핸들러 종류
 	 */
 	public static int WORKER_THREAD_KIND = WORKER_THREAD_KIND_FIXED;
-
+	
+	public static String DIV = "↕"; 
 
 	private SvcAnalyzer svcAnalyzer = new SvcAnalyzer();
 

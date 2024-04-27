@@ -608,7 +608,7 @@ public class ParseUtil {
 	 * 인터페이스인 클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 구현클래스의 클래스ID을 추출하는 메소드.
 	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
 	 * 구현클래스를 찾지 못하면 인터페이스ID를 반환한다.
-	 * @param interfaceId
+	 * @param interfaceIdList
 	 * @param resourceId
 	 * @return
 	 */
@@ -622,7 +622,7 @@ public class ParseUtil {
 				// 해당인터페이스 구현클래스 목록을 LOOP 돌리면서 인터페이스의 클래스ID 가 구현클래스의 인터페이스ID와 일치하는 구현클래스의 resourceId를 찾아서 비교한다.
 				for(String packageClassId : implClassIdList) {
 					implClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
-					if( interfaceVo.getClassId().equals(implClzzVo.getInterfaceId())) {
+					if( interfaceVo.getClassId().equals(implClzzVo.getInterfaceIdList())) {
 						// resourceId 로 찾고자 할 때
 						if( !StringUtil.isEmpty(resourceId) ) {
 							if( resourceId.equals(implClzzVo.getResourceId())) {
@@ -645,8 +645,8 @@ public class ParseUtil {
 	}
 	
 	/**
-	 * 특정한 패키지 내에서 인터페이스인 클래스ID(interfaceId)로 구현클래스파일목록(List<String>)을 추출하는 메소드.
-	 * @param interfaceId
+	 * 특정한 패키지 내에서 인터페이스인 클래스ID(interfaceIdList)로 구현클래스파일목록(List<String>)을 추출하는 메소드.
+	 * @param interfaceIdList
 	 * @param packageRoot
 	 * @return
 	 */
@@ -916,6 +916,7 @@ public class ParseUtil {
 	public static void writeClassVo(ClzzVo vo, String writeFilePath) {
 		String fileName = "";
 		StringBuffer fileConts = new StringBuffer();
+		StringBuffer interfaceIdConts = new StringBuffer();
 		StringBuffer implClassIdConts = new StringBuffer();
 		StringBuffer callClassAliasConts = new StringBuffer();
 		String div = "|";
@@ -927,13 +928,23 @@ public class ParseUtil {
 			fileConts.append("기능종류" + div + StringUtil.nullCheck(vo.getClassKind(), "")).append("\n");
 			fileConts.append("리소스ID" + div + StringUtil.nullCheck(vo.getResourceId(), "")).append("\n");
 			fileConts.append("클래스or인터페이스" + div + StringUtil.nullCheck(vo.getClassOrInterface(), "")).append("\n");
-			fileConts.append("상위인터페이스ID" + div + StringUtil.nullCheck(vo.getInterfaceId(), "")).append("\n");
+			List<String> interfaceIdList = vo.getInterfaceIdList();
+			if(interfaceIdList != null) {
+				for(String item : interfaceIdList) {
+					if(interfaceIdConts.length() > 0) {
+						interfaceIdConts.append(AppAnalyzer.DIV);
+					}
+					interfaceIdConts.append(item);
+				}
+			}
+			fileConts.append("상위인터페이스ID목록" + div  + interfaceIdConts.toString() ).append("\n");
+			
 			fileConts.append("상위클래스ID" + div + StringUtil.nullCheck(vo.getParentClassId(), "")).append("\n");
 			List<String> implClassIdList = vo.getImplClassIdList();
 			if(implClassIdList != null) {
 				for(String item : implClassIdList) {
 					if(implClassIdConts.length() > 0) {
-						implClassIdConts.append(",");
+						implClassIdConts.append(AppAnalyzer.DIV);
 					}
 					implClassIdConts.append(item);
 				}
@@ -944,7 +955,7 @@ public class ParseUtil {
 			if(callClassAlias != null) {
 				for(Map<String, String> item : callClassAlias) {
 					if(callClassAliasConts.length() > 0) {
-						callClassAliasConts.append(",");
+						callClassAliasConts.append(AppAnalyzer.DIV);
 					}
 					callClassAliasConts.append(item.get("FULL_CLASS")+"-"+item.get("ALIAS"));
 				}
@@ -1013,10 +1024,15 @@ public class ParseUtil {
 							vo.setClassOrInterface(words[1]);
 						}
 					}
-					if(line.startsWith("상위인터페이스ID" + div)) {
+					if(line.startsWith("상위인터페이스ID목록" + div)) {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
-							vo.setInterfaceId(words[1]);
+							List<String> interfaceIdList = new ArrayList<String>();
+							String[] interfaceIdStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
+							for(String interfaceIdStr : interfaceIdStrList) {
+								interfaceIdList.add(interfaceIdStr);
+							}
+							vo.setInterfaceIdList(interfaceIdList);
 						}
 					}
 					if(line.startsWith("상위클래스ID" + div)) {
@@ -1029,7 +1045,7 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<String> implClassIdList = new ArrayList<String>();
-							String[] implClassIdStrList = StringUtil.toStrArray(words[1], ",");
+							String[] implClassIdStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
 							for(String implClassIdStr : implClassIdStrList) {
 								implClassIdList.add(implClassIdStr);
 							}
@@ -1040,7 +1056,7 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<Map<String, String>> callClassAlias = new ArrayList<Map<String, String>>();
-							String[] classAliasStrList = StringUtil.toStrArray(words[1], ",");
+							String[] classAliasStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
 							for(String classAliasStr : classAliasStrList) {
 								String[] classAliasStrPair = StringUtil.toStrArray(classAliasStr, "-");
 								if(classAliasStrPair.length > 1) {
@@ -1089,26 +1105,29 @@ public class ParseUtil {
 			fileConts.append("메서드명" + div + StringUtil.nullCheck(vo.getMethodName(), "")).append("\n");
 			fileConts.append("메서드URL" + div + StringUtil.nullCheck(vo.getMethodUrl(), "")).append("\n");
 			fileConts.append("파일명" + div + StringUtil.nullCheck(vo.getFileName(), "")).append("\n");
+			
 			List<String> callMtdVoList = vo.getCallMtdVoList();
 			if(callMtdVoList != null) {
 				for(String item : callMtdVoList) {
 					if(callMtdVoListConts.length() > 0) {
-						callMtdVoListConts.append(",");
+						callMtdVoListConts.append(AppAnalyzer.DIV);
 					}
 					callMtdVoListConts.append(item);
 				}
 			}
 			fileConts.append("호출메서드" + div + StringUtil.nullCheck(callMtdVoListConts, "")).append("\n");
+			
 			List<String> callTblVoList = vo.getCallTblVoList();
 			if(callTblVoList != null) {
 				for(String item : callTblVoList) {
 					if(callTblVoListConts.length() > 0) {
-						callTblVoListConts.append(",");
+						callTblVoListConts.append(AppAnalyzer.DIV);
 					}
 					callTblVoListConts.append(item);
 				}
 			}
 			fileConts.append("호출테이블" + div + StringUtil.nullCheck(callTblVoListConts, "")).append("\n");
+			
 			fileConts.append("메서드내용" + div + StringUtil.nullCheck(vo.getMethodBody(), "")).append("\n");
 			
 			fileName = StringUtil.replace(StringUtil.replace(vo.getFunctionId(), "<", "["), ">", "]") + ".txt";
@@ -1170,7 +1189,7 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<String> callMtdVoList = new ArrayList<String>();
-							String[] callMtdVoStrList = StringUtil.toStrArray(words[1], ",");
+							String[] callMtdVoStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
 							for(String callMtdVoStr : callMtdVoStrList) {
 								callMtdVoList.add(callMtdVoStr);
 							}
@@ -1181,7 +1200,7 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<String> callTblVoList = new ArrayList<String>();
-							String[] callTblVoStrList = StringUtil.toStrArray(words[1], ",");
+							String[] callTblVoStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
 							for(String callTblVoStr : callTblVoStrList) {
 								callTblVoList.add(callTblVoStr);
 							}
@@ -1227,7 +1246,7 @@ public class ParseUtil {
 			if(callTblList != null) {
 				for(String item : callTblList) {
 					if(tblListConts.length() > 0) {
-						tblListConts.append(",");
+						tblListConts.append(AppAnalyzer.DIV);
 					}
 					tblListConts.append(item);
 				}
@@ -1292,7 +1311,7 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<String> callTblList = new ArrayList<String>();
-							String[] callTblStrList = StringUtil.toStrArray(words[1], ",");
+							String[] callTblStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
 							for(String callTblStr : callTblStrList) {
 								callTblList.add(callTblStr);
 							}
@@ -1336,7 +1355,7 @@ public class ParseUtil {
 			if(linkList != null) {
 				for(String item : linkList) {
 					if(linkConts.length() > 0) {
-						linkConts.append(",");
+						linkConts.append(AppAnalyzer.DIV);
 					}
 					linkConts.append(item);
 				}
@@ -1388,7 +1407,7 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							List<String> linkList = new ArrayList<String>();
-							String[] linkStrList = StringUtil.toStrArray(words[1], ",");
+							String[] linkStrList = StringUtil.toStrArray(words[1], AppAnalyzer.DIV);
 							for(String linkStr : linkStrList) {
 								linkList.add(linkStr);
 							}

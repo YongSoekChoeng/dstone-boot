@@ -51,7 +51,7 @@ public interface ParseClzz {
 	 * @param classFile
 	 * @return
 	 */
-	public String getInterfaceId(String classFile) throws Exception ;
+	public List<String> getInterfaceIdList(String classFile) throws Exception ;
 
 	/**
 	 * 부모클래스ID 추출

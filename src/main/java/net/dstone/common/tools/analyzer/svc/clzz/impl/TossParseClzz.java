@@ -130,8 +130,8 @@ public class TossParseClzz extends TextParseClzz implements ParseClzz {
 	 * @return
 	 */
 	@Override
-	public String getInterfaceId(String classFile) throws Exception{
-		return super.getInterfaceId(classFile);
+	public List<String> getInterfaceIdList(String classFile) throws Exception{
+		return super.getInterfaceIdList(classFile);
 	}
 	/**
 	 * 상위(부모)클래스ID 추출.

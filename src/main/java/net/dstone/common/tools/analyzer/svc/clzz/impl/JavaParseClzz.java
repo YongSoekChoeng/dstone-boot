@@ -162,8 +162,8 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 * @return
 	 */
 	@Override
-	public String getInterfaceId(String classFile) throws Exception{
-		StringBuffer interfaceIdBuff = new StringBuffer();
+	public List<String> getInterfaceIdList(String classFile) throws Exception{
+		List<String> interfaceIdList = new ArrayList<String>();
 		CompilationUnit clzzCU = ParseUtil.getCompilationUnit(classFile);
 		if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent() ) {
 			ClassOrInterfaceDeclaration clzzDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
@@ -173,14 +173,11 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	        		if( !SvcAnalyzer.isValidSvcPackage(inter.resolve().describe()) ) {
 	        			continue;
 	        		}
-					if( interfaceIdBuff.length()>0 ) {
-						interfaceIdBuff.append(",");
-					}
-					interfaceIdBuff.append(inter.resolve().describe());
+	        		interfaceIdList.add(inter.resolve().describe());
 				}
 			}
 		}
-		return interfaceIdBuff.toString();
+		return interfaceIdList;
 	}
 	/**
 	 * 상위(부모)클래스ID 추출.
@@ -232,6 +229,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 */
 	@Override
 	public List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception {
+		
+		boolean checkDetailYn = false;
+		
 		List<Map<String, String>> callClassAliasList = new ArrayList<Map<String, String>>();
 		Map<String, String> callClassAliasMap = new HashMap<String, String>();
 		if( !StringUtil.isEmpty(selfClzzVo.getFileName()) && FileUtil.isFileExist(selfClzzVo.getFileName()) ) {
@@ -261,6 +261,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 							callClassAliasMap.put("FULL_CLASS"	, classType);
 							callClassAliasMap.put("ALIAS"		, classAlias);
 							if( !callClassAliasList.contains(callClassAliasMap) ) {
+								if(checkDetailYn) {
+									debug("\t" + "1. 멤버가 클래스 일 경우 ==>>" + callClassAliasMap);
+								}
 								callClassAliasList.add(callClassAliasMap);
 							}
 						// 멤버가 인터페이스 일 경우	
@@ -276,6 +279,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 									callClassAliasMap.put("FULL_CLASS"	, classType);
 									callClassAliasMap.put("ALIAS"		, classAlias);
 									if( !callClassAliasList.contains(callClassAliasMap) ) {
+										if(checkDetailYn) {
+											debug("\t" + "2-1. 멤버가 인터페이스 일 경우(Autowired) ==>>" + callClassAliasMap);
+										}
 										callClassAliasList.add(callClassAliasMap);
 									}
 								}
@@ -290,6 +296,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 									callClassAliasMap.put("FULL_CLASS"	, classType);
 									callClassAliasMap.put("ALIAS"		, classAlias);
 									if( !callClassAliasList.contains(callClassAliasMap) ) {
+										if(checkDetailYn) {
+											debug("\t" + "2-2. 멤버가 인터페이스 일 경우(Qualifier) ==>>" + callClassAliasMap);
+										}
 										callClassAliasList.add(callClassAliasMap);
 									}
 								}
@@ -304,6 +313,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 									callClassAliasMap.put("FULL_CLASS"	, classType);
 									callClassAliasMap.put("ALIAS"		, classAlias);
 									if( !callClassAliasList.contains(callClassAliasMap) ) {
+										if(checkDetailYn) {
+											debug("\t" + "2-3. 멤버가 인터페이스 일 경우(Resource) ==>>" + callClassAliasMap);
+										}
 										callClassAliasList.add(callClassAliasMap);
 									}
 								}
@@ -317,6 +329,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 										callClassAliasMap.put("FULL_CLASS"	, classType);
 										callClassAliasMap.put("ALIAS"		, classAlias);
 										if( !callClassAliasList.contains(callClassAliasMap) ) {
+											if(checkDetailYn) {
+												debug("\t" + "3. 인터페이스를 구현한 클래스목록 일 경우 ==>>" + callClassAliasMap);
+											}
 											callClassAliasList.add(callClassAliasMap);
 										}								
 									}

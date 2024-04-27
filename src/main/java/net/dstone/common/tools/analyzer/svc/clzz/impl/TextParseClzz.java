@@ -144,7 +144,8 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 	 * @param classFile
 	 * @return
 	 */
-	public String getInterfaceId(String classFile) throws Exception{
+	public List<String> getInterfaceIdList(String classFile) throws Exception{
+		List<String> interfaceIdList = new ArrayList<String>();
 		String interfaceId = "";
 		String interfaceClass = "";
 		String[] lines = FileUtil.readFileByLines(classFile);
@@ -173,18 +174,24 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 			}
 		}
 		if(!StringUtil.isEmpty(interfaceClass)) {
-			if(interfaceClass.indexOf(".")>-1) {
-				interfaceId = interfaceClass;
-			}else {
-				for(String importLine : importList) {
-					if(importLine.endsWith("." + interfaceClass)) {
-						interfaceId = importLine;
-						break;
+			String[] interArr = StringUtil.toStrArray(interfaceClass.trim(), ",");
+			for(String inter : interArr) {
+				interfaceClass = inter.trim();
+				if(interfaceClass.indexOf(".")>-1) {
+					interfaceId = interfaceClass;
+					interfaceIdList.add(interfaceId);
+				}else {
+					for(String importLine : importList) {
+						if(importLine.endsWith("." + interfaceClass)) {
+							interfaceId = importLine;
+							interfaceIdList.add(interfaceId);
+							break;
+						}
 					}
 				}
 			}
 		}
-		return interfaceId;
+		return interfaceIdList;
 	}
 	/**
 	 * 상위(부모)클래스ID 추출.
@@ -252,7 +259,7 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 			ClzzVo otherClzzVo = null;
 			for(String packageClassId : analyzedClassFileList) {
 				otherClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");		
-				if( selfClzzVo.getClassId().equals(otherClzzVo.getInterfaceId()) ) {
+				if( selfClzzVo.getClassId().equals(otherClzzVo.getInterfaceIdList()) ) {
 					implClassIdList.add(otherClzzVo.getClassId());
 				}
 			}
