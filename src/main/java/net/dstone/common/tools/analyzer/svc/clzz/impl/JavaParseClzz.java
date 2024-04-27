@@ -149,7 +149,6 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 					classOrInterface = "C";
 				}
 			}
-
 		} catch (Exception e) {
 			throw e;
 		}
