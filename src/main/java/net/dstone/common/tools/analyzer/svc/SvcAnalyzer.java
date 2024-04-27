@@ -960,7 +960,7 @@ public class SvcAnalyzer extends BaseObject{
 										mtdVo = new MtdVo();
 
 										/*** 기능ID ***/
-										functionId = ClassFactory.getClassId(classFile) + "." + methodInfo.get("METHOD_ID");
+										functionId = methodInfo.get("FUNCTION_ID");
 										mtdVo.setFunctionId(functionId);
 
 										/*** 메소드ID ***/
@@ -973,7 +973,7 @@ public class SvcAnalyzer extends BaseObject{
 										mtdVo.setMethodUrl(methodInfo.get("METHOD_URL"));
 
 										/*** 파일명 ***/
-										mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + functionId + ".txt");
+										mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + StringUtil.replace(StringUtil.replace(functionId, "<", "["), ">", "]") + ".txt");
 
 										/*** 메소드내용 ***/
 										mtdVo.setMethodBody(methodInfo.get("METHOD_BODY"));

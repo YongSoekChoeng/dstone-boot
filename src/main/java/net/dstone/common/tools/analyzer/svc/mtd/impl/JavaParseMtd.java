@@ -65,6 +65,10 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             for(MethodDeclaration methodDec : methodDeclarationList) {
             	Map<String, String> item = new HashMap<String, String>();
             	
+            	// FUNCTION_ID
+                String FUNCTION_ID = methodDec.resolve().getQualifiedSignature();
+            	item.put("FUNCTION_ID", FUNCTION_ID);
+            	
             	// METHOD_ID
                 String METHOD_ID = methodDec.getNameAsString();
             	item.put("METHOD_ID", METHOD_ID);
