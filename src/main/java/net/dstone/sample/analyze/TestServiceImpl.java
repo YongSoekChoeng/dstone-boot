@@ -12,12 +12,16 @@ public class TestServiceImpl extends BaseService implements TestService {
     /********* DAO 정의부분 시작 *********/
     @Autowired
     private TestDao testDao;
+    
     @Qualifier("TestDao21")
     private TestDao testDao21;
+    
     @Qualifier(value ="TestDao22")
     private TestDao testDao22;
-    @Resource(name = "TestDao3")
+    
+    @Resource(name = "TestDao21")
     private TestDao testDao3;
+    
     private Test1DaoImpl testDao4;
     /********* DAO 정의부분 끝 *********/
     

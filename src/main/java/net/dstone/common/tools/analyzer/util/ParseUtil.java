@@ -645,7 +645,7 @@ public class ParseUtil {
 	}
 	
 	/**
-	 * 특정한 패키지 내에서 인터페이스인 클래스ID(interfaceIdList)로 구현클래스파일목록(List<String>)을 추출하는 메소드.
+	 * 특정한 패키지 내에서 인터페이스클래스명(interfaceId)으로 구현클래스목록(List<String>)을 추출하는 메소드.
 	 * @param interfaceIdList
 	 * @param packageRoot
 	 * @return
@@ -670,7 +670,7 @@ public class ParseUtil {
 	
 	
 	/**
-	 * 구현클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 인터페이스ID을 추출하는 메소드.
+	 * 구현클래스로 인터페이스목록을 추출하는 메소드.
 	 * 인터페이스를 찾지 못하면 구현클래스ID를 반환한다.
 	 * @param classId
 	 * @return

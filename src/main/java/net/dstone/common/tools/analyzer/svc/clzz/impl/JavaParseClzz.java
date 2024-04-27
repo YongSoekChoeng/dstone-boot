@@ -208,8 +208,12 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 * @param analyzedClassFileList
 	 * @return
 	 */
-	public List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception{
-		return super.getImplClassIdList(selfClzzVo, otherClassFileList);
+	public List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] analyzedClassFileList) throws Exception{
+		List<String> implClassIdList = new ArrayList<String>();
+		if( "I".equals(selfClzzVo.getClassOrInterface()) ) {
+			implClassIdList = ParseUtil.getImplClassList(selfClzzVo.getClassId(), AppAnalyzer.INCLUDE_PACKAGE_ROOT);
+		}
+		return implClassIdList;
 	}
 	
 	/**

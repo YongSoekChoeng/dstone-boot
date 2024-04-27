@@ -259,8 +259,11 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 			ClzzVo otherClzzVo = null;
 			for(String packageClassId : analyzedClassFileList) {
 				otherClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");		
-				if( selfClzzVo.getClassId().equals(otherClzzVo.getInterfaceIdList()) ) {
-					implClassIdList.add(otherClzzVo.getClassId());
+				for(String interfaceId : otherClzzVo.getInterfaceIdList()) {
+					if( selfClzzVo.getClassId().equals(interfaceId) ) {
+						implClassIdList.add(otherClzzVo.getClassId());
+						break;
+					}
 				}
 			}
 		}
