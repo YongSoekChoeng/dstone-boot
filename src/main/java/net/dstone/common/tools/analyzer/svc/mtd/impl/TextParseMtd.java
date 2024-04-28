@@ -18,7 +18,7 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 
 	/**
 	 * 파일로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
-	 * LIST[ MAP<메서드ID(METHOD_ID), 메서드명(METHOD_NAME), 메서드URL(METHOD_URL), 메서드바디(METHOD_BODY)> ]
+	 * LIST[ MAP<클래스ID(CLASS_ID), 메서드ID(METHOD_ID), 메서드명(METHOD_NAME), 메서드URL(METHOD_URL), 메서드바디(METHOD_BODY)> ]
 	 * @param classFile
 	 * @return
 	 */
@@ -44,7 +44,7 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 		
 		// 클래스VO 정보 획득
-		String packageClassId = functionId.substring(0, functionId.lastIndexOf("."));
+		String packageClassId = mtdVo.getClassId();
 
 		packageClassId = ParseUtil.findImplClassId(packageClassId, null);
 		ClzzVo clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");

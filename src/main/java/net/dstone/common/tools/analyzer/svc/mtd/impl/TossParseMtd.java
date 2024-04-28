@@ -67,7 +67,10 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
             List<MethodDeclaration> methodDeclarationList = cu.findAll(MethodDeclaration.class);
             for(MethodDeclaration methodDec : methodDeclarationList) {
             	Map<String, String> item = new HashMap<String, String>();
-            	
+
+            	// CLASS_ID
+                String CLASS_ID = classOrInterfaceDeclaration.resolve().getQualifiedName();
+            	item.put("CLASS_ID", CLASS_ID);
             	// METHOD_ID
                 String METHOD_ID = methodDec.getNameAsString();
             	item.put("METHOD_ID", METHOD_ID);

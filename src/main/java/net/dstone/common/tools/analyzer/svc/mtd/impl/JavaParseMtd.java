@@ -14,9 +14,14 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
+import net.dstone.common.tools.analyzer.vo.ClzzVo;
+import net.dstone.common.tools.analyzer.vo.MtdVo;
+import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class JavaParseMtd extends TextParseMtd implements ParseMtd {
@@ -69,15 +74,21 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
                 String FUNCTION_ID = methodDec.resolve().getQualifiedSignature();
             	item.put("FUNCTION_ID", FUNCTION_ID);
             	
+            	// CLASS_ID
+                String CLASS_ID = classOrInterfaceDeclaration.resolve().getQualifiedName();
+            	item.put("CLASS_ID", CLASS_ID);
+
             	// METHOD_ID
                 String METHOD_ID = methodDec.getNameAsString();
             	item.put("METHOD_ID", METHOD_ID);
+            	
             	// METHOD_NAME
                 String METHOD_NAME = "";
             	if(methodDec.getJavadocComment().isPresent()) {
             		METHOD_NAME = ParseUtil.getFnNameFromComment(methodDec.getJavadocComment().get().asString());
             	}
             	item.put("METHOD_NAME", METHOD_NAME);
+            	
             	// METHOD_URL
                 String METHOD_URL = "";
                 List<AnnotationExpr> methodAnnotationList =  methodDec.getAnnotations();
@@ -141,6 +152,55 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	 */
 	@Override
 	public List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
+		
+		List<String> callsMtdList = new ArrayList<String>();
+		
+		/*** 메소드VO 정보 획득  ***/
+		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
+		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+		
+		/*** 클래스VO 정보 획득  ***/
+		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
+
+		/*** 클래스멤버-알리아스 정보 획득  ***/
+		/* 반환리스트 형태
+		 {
+		    [<FULL_CLASS:aaa.bbb.Clzz1, 		ALIAS:alias1>]
+		  , [<FULL_CLASS:aaa.bbb.Clzz2, 		ALIAS:alias2>]
+		  , [<FULL_CLASS:aaa.bbb.Clzz3, 		ALIAS:alias3>]
+		  , [<FULL_CLASS:aaa.bbb.Clzz4Impl1, 	ALIAS:alias4>]
+		  , [<FULL_CLASS:aaa.bbb.Clzz4Impl2, 	ALIAS:alias4>]
+		 }		
+		*/
+		List<Map<String, String>> callClassAliasList = clzzVo.getCallClassAlias();
+		
+		/*** 메서드 AST 조회  ***/
+		MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, mtdVo.getFunctionId());
+
+		if(mtdDec != null) {
+			
+			/*** 메서드멤버-알리아스 정보 획득  ***/
+			HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> mtdMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
+			List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
+			for (VariableDeclarationExpr var: varList) {
+				String name = var.getVariable (0).getNameAsString(); 
+				ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(AppAnalyzer.WRITE_PATH, var.calculateResolvedType().describe());
+				if( valClzz != null) {
+					if( !valClzz.isInterface() && !valClzz.isAbstract()) {
+						if(!mtdMemberMap.containsKey(name)) {
+							mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+						}
+						ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
+						valClzzList.add(valClzz);
+					}
+				}
+			}
+			/*** 메서드멤버생성 목록조회 ***/
+			
+			/*** 메서드 호출 목록조회 ***/
+			
+		}
+		
 		return super.getCallMtdList(analyzedMethodFile);
 	}
 

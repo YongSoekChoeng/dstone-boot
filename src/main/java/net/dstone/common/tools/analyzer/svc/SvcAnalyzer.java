@@ -963,6 +963,9 @@ public class SvcAnalyzer extends BaseObject{
 										functionId = methodInfo.get("FUNCTION_ID");
 										mtdVo.setFunctionId(functionId);
 
+										/*** 클래스ID ***/
+										mtdVo.setClassId(methodInfo.get("CLASS_ID"));
+
 										/*** 메소드ID ***/
 										mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
 
