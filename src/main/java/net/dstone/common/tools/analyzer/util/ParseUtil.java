@@ -65,13 +65,25 @@ public class ParseUtil {
 		JavaSymbolSolver javaSymbolSolver = null;
     	try {
     		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-    		String jdkHome = AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent();
+    		
+    		// 1. JDK
+    		String jdkHome = "";
+    		if( AppAnalyzer.CONF != null &&  AppAnalyzer.CONF.getNode("APP_JDK_HOME") != null && StringUtil.isEmpty(AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent()) ) {
+    			jdkHome = AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent();
+    		}else {
+    			// [ java.home ]:C:\DEV\JDK\1.8\jre
+    			jdkHome = StringUtil.replace(System.getProperty("java.home"), "\\jre", "");
+    		}
     		if(!StringUtil.isEmpty(jdkHome)) {
     			jdkHome = StringUtil.replace(jdkHome, "\\", "/");
     			combinedTypeSolver.add(new JarTypeSolver(new File( jdkHome + "/jre/lib/rt.jar")));
     		}
     		
-    		String classPathStr = AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent();
+    		// 2. APP CLASS PATH
+    		String classPathStr = "";
+    		if( AppAnalyzer.CONF != null &&  AppAnalyzer.CONF.getNode("APP_CLASSPATH") != null && StringUtil.isEmpty(AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent()) ) {
+    			classPathStr = AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent();
+    		}
     		if(!StringUtil.isEmpty(classPathStr)) {
     			classPathStr = StringUtil.replace(classPathStr, "\t", "");
     			classPathStr = StringUtil.replace(classPathStr, "\n", "");
@@ -80,9 +92,13 @@ public class ParseUtil {
     				combinedTypeSolver.add(new JarTypeSolver(new File(classPath)));
     			}
     		}
+    		
+    		// 3. APP CLASS ROOT
+    		if( AppAnalyzer.CLASS_ROOT_PATH != null ) {
+    			combinedTypeSolver.add(new JavaParserTypeSolver(new File(AppAnalyzer.CLASS_ROOT_PATH)));
+    		}
 
-    		combinedTypeSolver.add(new JavaParserTypeSolver(new File(AppAnalyzer.CLASS_ROOT_PATH)));
-
+    		// 4. Reflection
     		combinedTypeSolver.add(new ReflectionTypeSolver());
     		
     		javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
