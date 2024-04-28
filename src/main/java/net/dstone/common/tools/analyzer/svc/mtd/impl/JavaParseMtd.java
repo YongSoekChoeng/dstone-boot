@@ -163,17 +163,25 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
 
 		/*** 클래스멤버-알리아스 정보 획득  ***/
-		/* 반환리스트 형태
-		 {
-		    [<FULL_CLASS:aaa.bbb.Clzz1, 		ALIAS:alias1>]
-		  , [<FULL_CLASS:aaa.bbb.Clzz2, 		ALIAS:alias2>]
-		  , [<FULL_CLASS:aaa.bbb.Clzz3, 		ALIAS:alias3>]
-		  , [<FULL_CLASS:aaa.bbb.Clzz4Impl1, 	ALIAS:alias4>]
-		  , [<FULL_CLASS:aaa.bbb.Clzz4Impl2, 	ALIAS:alias4>]
-		 }		
-		*/
-		List<Map<String, String>> callClassAliasList = clzzVo.getCallClassAlias();
-		
+		HashMap<String, ArrayList<String>> clzzMemberMap = new HashMap<String, ArrayList<String>>(); 
+		if(clzzVo.getCallClassAlias() != null) {
+			/* CallClassAlias 형태 *********
+			{
+			    [<FULL_CLASS:aaa.bbb.Clzz1, 		ALIAS:alias1>]
+			  , [<FULL_CLASS:aaa.bbb.Clzz2, 		ALIAS:alias2>]
+			  ...
+			}		
+			******************************/			
+			for(Map<String, String> row : clzzVo.getCallClassAlias()) {
+				if( clzzMemberMap.containsKey(row.get("ALIAS")) ) {
+					clzzMemberMap.put(row.get("ALIAS"), new ArrayList<String>());
+				}
+				if( !clzzMemberMap.get(row.get("ALIAS")).contains(row.get("FULL_CLASS")) ) {
+					clzzMemberMap.get(row.get("ALIAS")).add(row.get("FULL_CLASS"));
+				}
+			}
+		}
+
 		/*** 메서드 AST 조회  ***/
 		MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, mtdVo.getFunctionId());
 
