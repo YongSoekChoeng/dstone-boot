@@ -227,7 +227,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 	 *  , [<FULL_CLASS:aaa.bbb.Clzz4Impl2, 	ALIAS:alias4>]
 	 * }
 	 * @param selfClzzVo
-	 * @param analyzedClassFileList
+	 * @param analyzedClassFileList-JavaParseClzz에서는 사용하지 않는 파라메터.
 	 * @return
 	 */
 	@Override

@@ -6,17 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
@@ -35,7 +31,6 @@ import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.DbUtil;
 import net.dstone.common.utils.FileUtil;
-import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.XmlUtil;
@@ -239,12 +234,13 @@ public class ParseUtil {
 	}
 
 	/**
-	 *  파일내용으로부터 메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
-	 *  LIST[ MAP<메서드ID(METHOD_ID), 메서드명(METHOD_NAME), 메서드URL(METHOD_URL), 메서드바디(METHOD_BODY)> ]
+	 *  파일내용으로부터 클래스ID/메소드ID/메소드명/메소드URL/메소드내용 이 담긴 메소드정보목록 추출
+	 *  LIST[ MAP<클래스ID(CLASS_ID), 메서드ID(METHOD_ID), 메서드명(METHOD_NAME), 메서드URL(METHOD_URL), 메서드바디(METHOD_BODY)> ]
 	 * @param fileConts
 	 * @return
 	 */
 	public static List<Map<String, String>> getMtdListFromJava(String fileConts){
+		
 		List<Map<String, String>> mList = new ArrayList<Map<String, String>>();
 		
 		boolean isCommentStart = false;
@@ -264,6 +260,7 @@ public class ParseUtil {
 		String startDiv = "{";
 		String endDiv = "}";
 
+		StringBuffer classId = new StringBuffer("");
 		String classMappingUrl = "";
 		String methodMappingUrl = "";
 		
@@ -276,8 +273,21 @@ public class ParseUtil {
 			for(int i=0; i<lines.length; i++) {
 				line = lines[i];
 				if(line.trim().startsWith("//")) {continue;}
+				
+				/*** A.클래스ID 수집 시작 ***/
+				if(line.indexOf("package ") > -1) {
+					String strForClassId = StringUtil.replace(line, "package ", "");
+					strForClassId = StringUtil.replace(strForClassId, ";", "").trim();
+					classId.append(strForClassId);
+				}
+				if(line.indexOf("class ") > -1) {
+					String[] div = {" ", "{"};
+					String strForClassId = StringUtil.nextWord(line, "class ", div).trim();
+					classId.append(strForClassId);
+				}
+				/*** A.클래스ID 수집 끝 ***/
 
-				/*** A.레벨조정 시작 ***/
+				/*** B.레벨조정 시작 ***/
 				// 구분자 레벨 UP
 				if(line.indexOf(startDiv) > -1) {
 					level = level + StringUtil.countString(line, startDiv);
@@ -287,9 +297,9 @@ public class ParseUtil {
 					level = level - StringUtil.countString(line, endDiv);
 				}
 				//System.out.println("level["+level+"] line["+line+"]");
-				/*** A.레벨조정 끝 ***/
+				/*** B.레벨조정 끝 ***/
 				
-				/*** B.주석관련 수집 시작 ***/
+				/*** C.주석관련 수집 시작 ***/
 				if(level == (tgtLevel-1)){ // tgtLevel 바로위의 레벨에 있는 내용을 수집.
 					if(line.startsWith("/*")) {
 						isCommentStart = true;
@@ -305,9 +315,9 @@ public class ParseUtil {
 						isCommentEnd = true;
 					}
 				}
-				/*** B.주석관련 수집 끝 ***/
+				/*** C.주석관련 수집 끝 ***/
 
-				/*** C.맵핑URL 수집 시작 ***/
+				/*** D.맵핑URL 수집 시작 ***/
 				if( line.indexOf("@")>-1 && line.indexOf("Mapping")>-1 ) {
 					if(level == -1) {
 						String signLine = line;					
@@ -343,9 +353,9 @@ public class ParseUtil {
 					}
 				}
 
-				/*** C.맵핑URL 수집 끝 ***/
+				/*** D.맵핑URL 수집 끝 ***/
 				
-				/*** D.시그니쳐 수집 시작 ***/
+				/*** E.시그니쳐 수집 시작 ***/
 				// 메서드ID 는 startDiv과 동일한 라인에 존재할 수도 있고 다음라인에 존재할 수도 있기 때문에 level로 검색할 수 없음.
 				if(line.indexOf("(")>-1 && (line.startsWith("public ") || line.startsWith("protected ") || line.startsWith("private "))) {
 					isSignitureStart = true;
@@ -365,9 +375,9 @@ public class ParseUtil {
 				if(isSignitureStart && line.indexOf(")") > -1) {
 					isSignitureEnd = true;
 				}
-				/*** D.시그니쳐 수집 끝 ***/
+				/*** E.시그니쳐 수집 끝 ***/
 
-				/*** E.바디 수집 시작 ***/
+				/*** F.바디 수집 시작 ***/
 				if(level == tgtLevel){ // tgtLevel 의 레벨에 있는 내용을 수집.
 					if(line.indexOf(startDiv) > -1) {
 						isBodyStart = true;
@@ -387,13 +397,15 @@ public class ParseUtil {
 						isBodyEnd = true;
 					}
 				}
-				/*** E.바디 수집 끝 ***/
+				/*** F.바디 수집 끝 ***/
 				
 				if( (isSignitureEnd && signiture.length() > 0) && (isBodyEnd && body.length() > 0) ) {
 
 					Map<String, String> item = new HashMap<String, String>();
 					mList.add(item);
 
+					/*** 클래스ID 세팅 ***/
+					item.put("CLASS_ID", classId.toString());
 					/*** 메서드ID 세팅 ***/
 					item.put("METHOD_ID", signiture.toString());
 					signiture = new StringBuffer();
@@ -779,6 +791,31 @@ public class ParseUtil {
 		return classDec;
 	}
 	
+	
+	/**
+	 * 메서드기능ID(xx.xxx.TestBean.testMethed(java.lang.String))으로 MethodDeclaration 찾아서 반환.
+	 * @param srcRoot
+	 * @param methodQualifiedSignature
+	 * @return
+	 */
+	public static MethodDeclaration getMethodDec(String srcRoot, String methodQualifiedSignature) { 
+		MethodDeclaration mtdDec = null;
+		String clzzQualifiedName = "";
+		clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
+		clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
+		
+		ClassOrInterfaceDeclaration classDec =  ParseUtil.getClassDec(srcRoot, clzzQualifiedName); 
+		if( classDec != null ) {
+			for (MethodDeclaration mDec : classDec.getMethods()) {
+				if( mDec.resolve().getQualifiedSignature().equals(methodQualifiedSignature) ) {
+					mtdDec = mDec;
+					break;
+				}
+			}
+		}
+		return mtdDec;
+	}
+	
 	/**
 	 * 수동 테이블목록파일을 생성한다. 기존에 존재하는 테이블목록은 유지한다.
 	 * @param DBID
@@ -1117,6 +1154,7 @@ public class ParseUtil {
 		try {
 			
 			fileConts.append("기능ID" + div + StringUtil.nullCheck(vo.getFunctionId(), "")).append("\n");
+			fileConts.append("클래스ID" + div + StringUtil.nullCheck(vo.getClassId(), "")).append("\n");
 			fileConts.append("메서드ID" + div + StringUtil.nullCheck(vo.getMethodId(), "")).append("\n");
 			fileConts.append("메서드명" + div + StringUtil.nullCheck(vo.getMethodName(), "")).append("\n");
 			fileConts.append("메서드URL" + div + StringUtil.nullCheck(vo.getMethodUrl(), "")).append("\n");
@@ -1175,6 +1213,12 @@ public class ParseUtil {
 						String[] words = StringUtil.toStrArray(line, div);
 						if(words.length > 1) {
 							vo.setFunctionId(words[1]);
+						}
+					}
+					if(line.startsWith("클래스ID" + div)) {
+						String[] words = StringUtil.toStrArray(line, div);
+						if(words.length > 1) {
+							vo.setClassId(words[1]);
 						}
 					}
 					if(line.startsWith("메서드ID" + div)) {
