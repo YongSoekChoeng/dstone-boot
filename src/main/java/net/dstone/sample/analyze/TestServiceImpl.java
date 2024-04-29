@@ -17,7 +17,7 @@ public class TestServiceImpl extends BaseService implements TestService {
     private TestDao testDao21;
     
     @Qualifier(value ="TestDao22")
-    private TestDao testDao22;
+    private TestDao testDao22; 
     
     @Resource(name = "TestDao21")
     private TestDao testDao3;
@@ -34,10 +34,15 @@ public class TestServiceImpl extends BaseService implements TestService {
 		((Test1DaoImpl)testDao21).testMyDao1(name);
 		testDao22.doTestDao01(name);
 		((Test2DaoImpl)testDao22).testMyDao2(name);
+		testDao3.doTestDao01(name);
 
-		testBiz2.testBiz1ForAutowired(name);
+		testBiz2.testBiz1ForAutowired(name); 
 		
 		testBaseService(name);
+	}
+
+	public void doTestService02(TestBiz1 testBiz1) {
+		testBiz1.testHello("하하");
 	}
 
 	@Override

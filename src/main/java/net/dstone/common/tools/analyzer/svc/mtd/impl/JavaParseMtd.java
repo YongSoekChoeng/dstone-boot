@@ -165,6 +165,26 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 
+		/*** 클래스VO 정보 획득  ***/
+		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
+		List<Map<String, String>> callClassAliasList = clzzVo.getCallClassAlias();
+
+		/*** 클래스멤버 목록조회 ***/
+		HashMap<String, ArrayList<String>> clzzMemberMap = new HashMap<String, ArrayList<String>>(); 
+		if( callClassAliasList != null ) {
+			for(Map<String, String> classAliasMap : callClassAliasList) {
+				Iterator<String> classIter = classAliasMap.keySet().iterator();
+				while(classIter.hasNext()) {
+					String classIterKey = classIter.next();
+					String aliasVal = classAliasMap.get(classIterKey);
+					if( !clzzMemberMap.containsKey(aliasVal) ) {
+						clzzMemberMap.put(aliasVal, new ArrayList<String>());
+					}
+					clzzMemberMap.get(aliasVal).add(classIterKey);
+				}
+			}
+		}
+		
 		/*** 메소드AST 정보 획득  ***/
 		MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, mtdVo.getFunctionId());
 
@@ -221,6 +241,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 								break;
 							}
 						}
+						
 					}
 				}
 			}

@@ -144,8 +144,6 @@ public class ParseUtil {
 					if( cu != null ) {
 						compilationUnitMap.put(fileName, cu);
 					}
-				}else {
-					throw new Exception("존재하지 않은 파일입니다. fileName["+fileName+"]");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
