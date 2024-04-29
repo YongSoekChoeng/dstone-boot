@@ -44,10 +44,7 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
 		
 		// 클래스VO 정보 획득
-		String packageClassId = mtdVo.getClassId();
-
-		packageClassId = ParseUtil.findImplClassId(packageClassId, null);
-		ClzzVo clzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
+		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
 
 		// 클래스 호출알리아스 정보
 		List<Map<String, String>> callClassAliasList = clzzVo.getCallClassAlias();
@@ -72,28 +69,50 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 						// callPackageClassId 가 인터페이스 일 경우 구현클래스를 찾아서 대체하여 callMtd 에 삽입
 						classOrInterfaceVo = ParseUtil.readClassVo(callPackageClassId, AppAnalyzer.WRITE_PATH + "/class");
 						if("I".equals(classOrInterfaceVo.getClassOrInterface())) {
-							callPackageClassId = ParseUtil.findImplClassId(classOrInterfaceVo.getClassId(), classOrInterfaceVo.getResourceId());
+							List<String> implList = ParseUtil.findImplClassId(classOrInterfaceVo.getClassId(), classOrInterfaceVo.getResourceId());
+							for(String impl : implList) {
+								callPackageClassId = impl;
+								callAlias = callClassAlias.get("ALIAS");
+								// 클래스 호출알리아스+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
+								keyword =  callAlias+ "." ;
+								if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
+									callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
+								}
+								// 클래스 호출알리아스Getter+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
+								keyword =  ParseUtil.getGetterNmFromField(callAlias)+ "." ;
+								if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
+									callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
+								}
+								if( !StringUtil.isEmpty(callMtd) ) {
+									if(!callsMtdList.contains(callMtd)) {
+										callsMtdList.add(callMtd);
+									}
+									break;
+								}
+							}
+						}else {
+							callAlias = callClassAlias.get("ALIAS");
+							// 클래스 호출알리아스+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
+							keyword =  callAlias+ "." ;
+							if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
+								callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
+							}
+							// 클래스 호출알리아스Getter+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
+							keyword =  ParseUtil.getGetterNmFromField(callAlias)+ "." ;
+							if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
+								callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
+							}
+							if( !StringUtil.isEmpty(callMtd) ) {
+								if(!callsMtdList.contains(callMtd)) {
+									callsMtdList.add(callMtd);
+								}
+								break;
+							}
 						}
-						callAlias = callClassAlias.get("ALIAS");
-						// 클래스 호출알리아스+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
-						keyword =  callAlias+ "." ;
-						if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
-							callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
-							break;
-						}
-						// 클래스 호출알리아스Getter+'.' 이후에 시작되는 메소드명 추출.(스페이스 이후에 키워드로 시작되거나 스페이스없이 키워드로 시작되는 라인이 있으면 검색)
-						keyword =  ParseUtil.getGetterNmFromField(callAlias)+ "." ;
-						if( line.indexOf(" " + keyword)>-1 || line.startsWith(keyword) ) {					
-							callMtd = callPackageClassId + "." + StringUtil.nextWord(line, keyword, div);
-							break;
-						}
+
 					}
 				}
-				if( !StringUtil.isEmpty(callMtd) ) {
-					if(!callsMtdList.contains(callMtd)) {
-						callsMtdList.add(callMtd);
-					}
-				}
+
 			}
 		}
 		return callsMtdList;

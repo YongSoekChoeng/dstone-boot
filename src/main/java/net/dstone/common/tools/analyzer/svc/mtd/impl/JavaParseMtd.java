@@ -1,20 +1,24 @@
 package net.dstone.common.tools.analyzer.svc.mtd.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.resolution.MethodUsage;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
@@ -153,63 +157,75 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	@Override
 	public List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
 		
-		List<String> callsMtdList = new ArrayList<String>();
+		debug("JavaParseMtd.getCallMtdList :"+analyzedMethodFile );
+		
+		ArrayList<String> mtdCallList = new ArrayList<String>(); 
 		
 		/*** 메소드VO 정보 획득  ***/
 		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-		
-		/*** 클래스VO 정보 획득  ***/
-		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
 
-		/*** 클래스멤버-알리아스 정보 획득  ***/
-		HashMap<String, ArrayList<String>> clzzMemberMap = new HashMap<String, ArrayList<String>>(); 
-		if(clzzVo.getCallClassAlias() != null) {
-			/* CallClassAlias 형태 *********
-			{
-			    [<FULL_CLASS:aaa.bbb.Clzz1, 		ALIAS:alias1>]
-			  , [<FULL_CLASS:aaa.bbb.Clzz2, 		ALIAS:alias2>]
-			  ...
-			}		
-			******************************/			
-			for(Map<String, String> row : clzzVo.getCallClassAlias()) {
-				if( clzzMemberMap.containsKey(row.get("ALIAS")) ) {
-					clzzMemberMap.put(row.get("ALIAS"), new ArrayList<String>());
-				}
-				if( !clzzMemberMap.get(row.get("ALIAS")).contains(row.get("FULL_CLASS")) ) {
-					clzzMemberMap.get(row.get("ALIAS")).add(row.get("FULL_CLASS"));
-				}
-			}
-		}
-
-		/*** 메서드 AST 조회  ***/
+		/*** 메소드AST 정보 획득  ***/
 		MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, mtdVo.getFunctionId());
 
+		debug( " \t" + "mtdDec=============================>>>" + ( mtdDec==null?"null":mtdDec.resolve().getQualifiedSignature() ) );
+		
 		if(mtdDec != null) {
-			
-			/*** 메서드멤버-알리아스 정보 획득  ***/
-			HashMap<String, ArrayList<ClassOrInterfaceDeclaration>> mtdMemberMap = new HashMap<String, ArrayList<ClassOrInterfaceDeclaration>>(); 
-			List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
-			for (VariableDeclarationExpr var: varList) {
-				String name = var.getVariable (0).getNameAsString(); 
-				ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(AppAnalyzer.WRITE_PATH, var.calculateResolvedType().describe());
+
+			/*** 메서드내의 호출메서드 목록조회 ***/
+			List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
+			for (MethodCallExpr meCall : meCallList) {
+				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
+				ClassOrInterfaceDeclaration valClzz = null; 
+				Expression callerExp = null;
+
+				// 호출메서드의 부모(클래스/인터페이스)객체 조회
+				String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
+				String clzzQualifiedName = "";
+				String methodSignature = "";
+				
+				clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
+				clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
+				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
+				
+				debug(" \t" + "호출메서드:" + methodQualifiedSignature );
+				
+				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
 				if( valClzz != null) {
-					if( !valClzz.isInterface() && !valClzz.isAbstract()) {
-						if(!mtdMemberMap.containsKey(name)) {
-							mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
+
+					String callMethodQualifiedSignature = "";
+					
+					/*** 호출메서드의 부모(클래스/인터페이스)객체가 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음) ***/
+					if( !valClzz.isInterface()) {
+						/*** Class-Type. 메서드호출 목록조회 ***/
+						List<MethodDeclaration> methodList = valClzz.getMethods();
+						for (MethodDeclaration mDec : methodList) {
+							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
+							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
+								if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+									debug("\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+									mtdCallList.add(callMethodQualifiedSignature); 
+									break;
+								}
+							}
 						}
-						ArrayList<ClassOrInterfaceDeclaration> valClzzList = mtdMemberMap.get(name);
-						valClzzList.add(valClzz);
+						
+					/*** 호출메서드의 부모(클래스/인터페이스)객체가 인터페이스 일 경우 ***/
+					}else {
+						List<String> implClassList = ParseUtil.getImplClassList(clzzQualifiedName, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
+						for (String implClass : implClassList) {
+							callMethodQualifiedSignature = implClass + "." + methodSignature;
+							if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+								debug("\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
+								mtdCallList.add(callMethodQualifiedSignature); 
+								break;
+							}
+						}
 					}
 				}
 			}
-			/*** 메서드멤버생성 목록조회 ***/
-			
-			/*** 메서드 호출 목록조회 ***/
-			
 		}
-		
-		return super.getCallMtdList(analyzedMethodFile);
+		return mtdCallList;
 	}
 
 	/**

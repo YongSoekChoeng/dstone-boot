@@ -33,6 +33,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
@@ -44,15 +45,54 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
     	System.out.println("================ START ================");
     	
-    	testAnalysis();
+    	//testAnalysis();
     	
-    	//test();
+    	test();
 
     	System.out.println("================ END ================");
     }
     
     private static void d(Object o) {
     	System.out.println(o);
+    }
+    
+    private static void init() {
+    	
+    	try {
+        	/* +++++++++++++++++++++++++++++++++++++++++++++ Application Setting Start +++++++++++++++++++++++++++++++++++++++++++++ */
+        	String					configPath								= "";
+        	String 					rootPath 								= "";	/* 프로젝트 루트 디렉토리 */
+        	String 					classRootPath 							= "";	/* 클래스 루트 디렉토리 */
+        	String 					webRootPath 							= "";	/* 웹 루트 디렉토리 */
+        	String 					queryRootPath 							= "";	/* 쿼리 루트 디렉토리 */
+        	String[] 				excludePackagePattern 					= null; /* 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.) */
+        	java.util.List<String>	includePackageRoot 						= new java.util.ArrayList<String>();	/* 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.) */
+
+        	// 프레임웍
+
+        	configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config.xml";
+        	rootPath 														= "D:/AppHome/framework/dstone-boot/src/main";
+        	classRootPath 													= rootPath + "/" + "java";
+        	webRootPath 													= rootPath + "/" + "webapp";
+        	excludePackagePattern 											= new String[] {".vo.", ".vo", "VO", "Vo", ".model."};
+        	includePackageRoot												.add("net.dstone.sample.analyze");
+        	queryRootPath 													= "D:/AppHome/framework/dstone-boot/src/main/resources/sqlmap";
+        	
+        	// 1.분석모듈 인스턴스 생성
+        	net.dstone.common.tools.analyzer.AppAnalyzer appAnalyzer = net.dstone.common.tools.analyzer.AppAnalyzer.getInstance(
+        		configPath	
+        		, rootPath
+        		, classRootPath
+        		, webRootPath
+        		, includePackageRoot.toArray(new String[includePackageRoot.size()])
+        		, excludePackagePattern
+        		, queryRootPath
+        	);
+        	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
     }
     
 	private static CombinedTypeSolver setClassPath(CombinedTypeSolver combinedTypeSolver) {
@@ -219,6 +259,8 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 		ScanResult scanResult = null;
 		
 		try {
+
+			init();
 			
 			scanResult = new ClassGraph().enableAllInfo().acceptPackages( StringUtil.replace( StringUtil.replace(path, srcRoot+"/", ""), "/", ".") ).scan();
 
@@ -238,14 +280,14 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				
 				for (ResolvedFieldDeclaration clzzField: clzzFieldList) {
 					String name = clzzField.getName();
-					ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec(parser, srcRoot, clzzField.getType().describe());
+					ClassOrInterfaceDeclaration clzzFieldClzz = ParseUtil.getClassDec(srcRoot, clzzField.getType().describe());
 					if( clzzFieldClzz != null) {
 						if(!clzzMemberMap.containsKey(name)) {
 							clzzMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>()); 
 						}
 						ArrayList<ClassOrInterfaceDeclaration> valClzzList = clzzMemberMap.get(name);
 						valClzzList.add(clzzFieldClzz);
-						d("\t" + "클래스멤버:" + name + ", 클래스멤버타입:" + clzzFieldClzz.resolve().getQualifiedName() + ", aa:" + clzzField.toAst(FieldDeclaration.class) );
+//						d("\t" + "클래스멤버:" + name + ", 클래스멤버타입:" + clzzFieldClzz.resolve().getQualifiedName() + ", aa:" + clzzField.toAst(FieldDeclaration.class) );
 						
 					}
 				}
@@ -261,7 +303,10 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 					List<VariableDeclarationExpr> varList = mtdDec.findAll(VariableDeclarationExpr.class);
 					for (VariableDeclarationExpr var: varList) {
 						String name = var.getVariable (0).getNameAsString(); 
-						ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec (parser, srcRoot, var.calculateResolvedType().describe());
+						if( !net.dstone.common.tools.analyzer.svc.SvcAnalyzer.isValidSvcPackage(var.calculateResolvedType().describe()) ) {
+							continue;
+						}
+						ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec (srcRoot, var.calculateResolvedType().describe());
 						if( valClzz != null) {
 							if( !valClzz.isInterface() && !valClzz.isAbstract()) {
 								if(!mtdMemberMap.containsKey(name)) {
@@ -281,7 +326,10 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 						if( assign.findFirst(ObjectCreationExpr.class).isPresent()) {
 							objCre = assign.findFirst(ObjectCreationExpr.class).get();
 							String name = assign.getTarget().toString();
-							ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(parser, srcRoot, objCre.getType().resolve().describe());
+							if( !net.dstone.common.tools.analyzer.svc.SvcAnalyzer.isValidSvcPackage(objCre.calculateResolvedType().describe()) ) {
+								continue;
+							}
+							ClassOrInterfaceDeclaration valClzz = ParseUtil.getClassDec(srcRoot, objCre.getType().resolve().describe());
 							if( valClzz != null) {
 								if(!mtdMemberMap.containsKey(name)) {
 									mtdMemberMap.put(name, new ArrayList<ClassOrInterfaceDeclaration>());
@@ -309,8 +357,12 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 						clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
 						methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 						
+						if( !net.dstone.common.tools.analyzer.svc.SvcAnalyzer.isValidSvcPackage(clzzQualifiedName) ) {
+							continue;
+						}
+						
 //						d("\t\t" + "메서드호출(가공전): " + methodQualifiedSignature );
-						valClzz = ParseUtil.getClassDec (parser, srcRoot, clzzQualifiedName);
+						valClzz = ParseUtil.getClassDec (srcRoot, clzzQualifiedName);
 						if( valClzz != null) {
 
 							// 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음)
@@ -320,7 +372,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 								for (MethodDeclaration mDec : methodList) {
 									if(mDec.resolve().getQualifiedSignature().endsWith("." + methodSignature) ) { 
 										if( !mtdCallList.contains(mDec.resolve().getQualifiedSignature())) {
-//											d("\t\t" + "Class-Type 메서드호출:"+ mDec.resolve().getQualifiedSignature() );
+											d("\t\t" + "Class-Type 메서드호출:"+ mDec.resolve().getQualifiedSignature() );
 											mtdCallList.add(mDec.resolve().getQualifiedSignature()); 
 											break;
 										}
@@ -341,7 +393,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 												MethodUsage mur = mu.next();
 												if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
 													if(!mtdCallList.contains(mur.getQualifiedSignature())) {
-//														d("\t\t" + "Interface-Type 메서드멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
+														d("\t\t" + "Interface-Type 메서드멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
 														mtdCallList.add(mur.getQualifiedSignature());
 														break;
 													}
@@ -359,7 +411,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 												MethodUsage mur = mu.next();
 												if( mur.getQualifiedSignature().endsWith("."+methodSignature)) {
 													if(!mtdCallList.contains(mur.getQualifiedSignature())) {
-//														d("\t\t" + "Interface-Type 클래스멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
+														d("\t\t" + "Interface-Type 클래스멤버.메서드호출 :"+mur.getQualifiedSignature() ); 
 														mtdCallList.add(mur.getQualifiedSignature());
 														break;
 													}
@@ -385,21 +437,64 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 	
 	private static void test() {
 		
-    	String param = "TestDao2";
-    	
-		List<String> implClassList = new ArrayList<String>();
-		ScanResult scanResult = null;
 		try {
-			scanResult = new ClassGraph().enableAllInfo().acceptPackages("net.dstone.sample.analyze").scan();
+			init();
 			
-//d( "param["+param+"] ==>>" + scanResult.getAnnotationsOnClass("net.dstone.sample.analyze.TestServiceImpl") );			
-			for (ClassInfo ci : scanResult.getAnnotationsOnClass("net.dstone.sample.analyze.TestServiceImpl") ) {
-				d(ci.getAnnotationInfo().getAsStringsWithSimpleNames() );
-		    }
+			d( "AppAnalyzer.CLASS_ROOT_PATH:" + AppAnalyzer.CLASS_ROOT_PATH );
+			
+			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, "net.dstone.sample.analyze.TestServiceImpl.doTestService01(java.lang.String)");
+			
+
+			/*** 메서드 호출 목록조회 ***/
+			List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
+			for (MethodCallExpr meCall : meCallList) {
+				//d(  "meCall["+meCall+"]"  );
+				
+				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
+				ClassOrInterfaceDeclaration valClzz = null; 
+				Expression callerExp = null;
+				
+				String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
+				String clzzQualifiedName = "";
+				String methodSignature = "";
+				
+				clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
+				clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
+				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
+				
+				d(  "clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
+				
+				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
+				
+				if( valClzz.isInterface() ) {
+					d( "\t" +  "인터페이스 clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
+					
+					List<String> implList = ParseUtil.getImplClassList(clzzQualifiedName, "", "net.dstone.sample.analyze" );
+					for( String impl : implList ) {
+						d( "\t" +  "인터페이스구현 impl["+impl+"]" +  " methodSignature["+methodSignature+"]"  );
+					}
+					
+					
+					/*
+					List<String> implList = ParseUtil.findImplClassId(clzzQualifiedName, "TestDao22" );
+					for( String impl : implList ) {
+						d( "\t" +  "인터페이스구현 impl["+impl+"]" +  " methodSignature["+methodSignature+"]"  );
+					}
+					*/
+					
+				}else {
+					d( "\t" +  "클래스 clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
+				}
+				
+			}
+
+
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if(scanResult!=null) {scanResult.close();}
+			
 		}
 	}
 }

@@ -1028,7 +1028,6 @@ public class SvcAnalyzer extends BaseObject{
 			TaskItem taskItem = new TaskItem(){
 				@Override
 				public TaskItem doTheTask(){
-					
 					/************************ 작업세팅 시작 ************************/
 					String[] analyzedMethodFileList = (String[])this.getObj("analyzedMethodFileList");
 					MtdVo mtdVo = null;

@@ -16,7 +16,7 @@ public class Test2DaoImpl extends BaseDao implements TestDao{
 		d(id);
 	}
 
-	public void testMyDao(String id) {
+	public void testMyDao2(String id) {
 		d(id);
 	}
 

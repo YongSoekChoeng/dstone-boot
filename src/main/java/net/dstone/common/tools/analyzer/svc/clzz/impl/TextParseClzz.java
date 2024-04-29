@@ -322,12 +322,16 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 						if ( fileConts.indexOf(alias + ".")>-1) {
 							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
 							callClassAlias = new HashMap<String, String>();
+
 							// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
-							callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
-							callClassAlias.put("ALIAS",alias);
-							if( !callClassAliasList.contains(callClassAlias) ) {
-								//getLogger().sysout("CASE-1 packageClassId[" + packageClassId + "] alias =============>>>[" + alias + "]");
-								callClassAliasList.add(callClassAlias);
+							List<String> implClzzNmList = ParseUtil.getImplClassList(packageClassId, resourceId, AppAnalyzer.CLASS_ROOT_PATH);
+							if(implClzzNmList != null && implClzzNmList.size() > 0) {
+								String classType = implClzzNmList.get(0);
+								callClassAlias.put("FULL_CLASS"	, classType);
+								callClassAlias.put("ALIAS"		, alias);
+								if( !callClassAliasList.contains(callClassAlias) ) {
+									callClassAliasList.add(callClassAlias);
+								}
 							}
 						}
 					}
@@ -352,11 +356,14 @@ public class TextParseClzz extends BaseObject implements ParseClzz {
 							resourceId = ParseUtil.getValueFromAnnotationLine(beforeLine);
 							callClassAlias = new HashMap<String, String>();
 							// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
-							callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(packageClassId, resourceId));
-							callClassAlias.put("ALIAS",alias);
-							if( !callClassAliasList.contains(callClassAlias) ) {
-								//getLogger().sysout("CASE-2 packageClassId[" + packageClassId + "] alias =============>>>[" + alias + "]");
-								callClassAliasList.add(callClassAlias);
+							List<String> implClzzNmList = ParseUtil.getImplClassList(packageClassId, resourceId, AppAnalyzer.CLASS_ROOT_PATH);
+							if(implClzzNmList != null && implClzzNmList.size() > 0) {
+								String classType = implClzzNmList.get(0);
+								callClassAlias.put("FULL_CLASS"	, classType);
+								callClassAlias.put("ALIAS"		, alias);
+								if( !callClassAliasList.contains(callClassAlias) ) {
+									callClassAliasList.add(callClassAlias);
+								}
 							}
 						}
 					}

@@ -168,7 +168,7 @@ public class AppAnalyzer extends BaseObject{
 			if( !FileUtil.isFileExist(configPath) ) {
 				throw new Exception("설정파일(configPath)["+configPath+"]이 존재하지 않습니다.");
 			}
-			CONF = XmlUtil.getInstance(XmlUtil.XML_SOURCE_KIND_PATH, configPath);
+			CONF = XmlUtil.getNonSingletonInstance(XmlUtil.XML_SOURCE_KIND_PATH, configPath);
 
 			rootPath = StringUtil.replace(rootPath, "\\", "/");
 			if(rootPath.endsWith("/")) {rootPath = rootPath.substring(0, rootPath.lastIndexOf("/"));}

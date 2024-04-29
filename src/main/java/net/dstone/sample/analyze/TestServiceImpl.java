@@ -21,22 +21,29 @@ public class TestServiceImpl extends BaseService implements TestService {
     
     @Resource(name = "TestDao21")
     private TestDao testDao3;
-    
-    private Test1DaoImpl testDao4;
+
+    @Autowired
+    private TestBiz2 testBiz2;
     /********* DAO 정의부분 끝 *********/
     
 	@Override
 	public void doTestService01(String name) {
 		testDao.doTestDao01(name);
+		
+		testDao21.doTestDao01(name);
+		((Test1DaoImpl)testDao21).testMyDao1(name);
+		testDao22.doTestDao01(name);
+		((Test2DaoImpl)testDao22).testMyDao2(name);
+
+		testBiz2.testBiz1ForAutowired(name);
+		
+		testBaseService(name);
 	}
 
 	@Override
 	public void testBaseService(String id) {
-		testDao21.doTestDao01(id);
+		testDao21.doTestDao01(id); 
 	}
 
-	public void testMyService(String id) {
-		d(id);
-	}
 
 }

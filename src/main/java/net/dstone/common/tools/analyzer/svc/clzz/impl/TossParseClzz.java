@@ -241,13 +241,15 @@ public class TossParseClzz extends TextParseClzz implements ParseClzz {
 	                			continue;
 	                		}
     						callClassAlias = new HashMap<String, String>();
-    						//LogUtil.sysout( "type["+type+"]" + " resourceId["+resourceId+"]" + " findImplClassId["+ParseUtil.findImplClassId(type, resourceId)+"]" + " alias["+alias+"]" );
-    						// packageClassId 가 인터페이스 일 경우 구현클래스ID를 구한다.
-    						callClassAlias.put("FULL_CLASS", ParseUtil.findImplClassId(type, resourceId));
-    						callClassAlias.put("ALIAS", alias);
-    						if( !callClassAliasList.contains(callClassAlias) ) {
-    							callClassAliasList.add(callClassAlias);
-    						}
+							List<String> implClzzNmList = ParseUtil.getImplClassList(type, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
+							if(implClzzNmList != null && implClzzNmList.size() > 0) {
+								String classType = implClzzNmList.get(0);
+								callClassAlias.put("FULL_CLASS"	, classType);
+								callClassAlias.put("ALIAS"		, alias);
+								if( !callClassAliasList.contains(callClassAlias) ) {
+									callClassAliasList.add(callClassAlias);
+								}
+							}
 	                	}
 	                }
 	            }

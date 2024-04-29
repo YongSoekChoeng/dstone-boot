@@ -13,6 +13,8 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
@@ -31,39 +33,28 @@ import net.dstone.common.tools.analyzer.vo.UiVo;
 import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.DbUtil;
 import net.dstone.common.utils.FileUtil;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.SqlUtil;
 import net.dstone.common.utils.StringUtil;
 import net.dstone.common.utils.XmlUtil;
 
 public class ParseUtil {
 
+	static LogUtil logger = new LogUtil();
+	
 	static List<String> MANNUAL_TABLE_LIST = new ArrayList<String>();
 	static List<Map<String, String>> MANNUAL_TABLE_MAP_LIST = new ArrayList<Map<String, String>>();
 	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
 	
-	static JavaParser javaParser = null;
-	public static JavaParser getJavaParser(){
-		if( javaParser != null ) {
-			return javaParser;
-		}else {
-	    	try {
-	    		javaParser = new JavaParser();
-	    		javaParser.getParserConfiguration().setSymbolResolver(getJavaSymbolSolver());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-    	return javaParser;
-    }
-	
 	public static JavaSymbolSolver getJavaSymbolSolver(){
 		JavaSymbolSolver javaSymbolSolver = null;
+		boolean showClassPathYn = false;
     	try {
     		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
     		
     		// 1. JDK
     		String jdkHome = "";
-    		if( AppAnalyzer.CONF != null &&  AppAnalyzer.CONF.getNode("APP_JDK_HOME") != null && StringUtil.isEmpty(AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent()) ) {
+    		if( AppAnalyzer.CONF != null &&  AppAnalyzer.CONF.getNode("APP_JDK_HOME") != null && !StringUtil.isEmpty(AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent()) ) {
     			jdkHome = AppAnalyzer.CONF.getNode("APP_JDK_HOME").getTextContent();
     		}else {
     			// [ java.home ]:C:\DEV\JDK\1.8\jre
@@ -72,29 +63,42 @@ public class ParseUtil {
     		if(!StringUtil.isEmpty(jdkHome)) {
     			jdkHome = StringUtil.replace(jdkHome, "\\", "/");
     			combinedTypeSolver.add(new JarTypeSolver(new File( jdkHome + "/jre/lib/rt.jar")));
+    			if(showClassPathYn) {
+    				logger.debug("combinedTypeSolver.addJarTypeSolver("+ jdkHome + "/jre/lib/rt.jar" +")");
+    			}
     		}
     		
     		// 2. APP CLASS PATH
     		String classPathStr = "";
-    		if( AppAnalyzer.CONF != null &&  AppAnalyzer.CONF.getNode("APP_CLASSPATH") != null && StringUtil.isEmpty(AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent()) ) {
+    		if( AppAnalyzer.CONF != null &&  AppAnalyzer.CONF.getNode("APP_CLASSPATH") != null && !StringUtil.isEmpty(AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent()) ) {
     			classPathStr = AppAnalyzer.CONF.getNode("APP_CLASSPATH").getTextContent();
     		}
     		if(!StringUtil.isEmpty(classPathStr)) {
-    			classPathStr = StringUtil.replace(classPathStr, "\t", "");
     			classPathStr = StringUtil.replace(classPathStr, "\n", "");
+    			classPathStr = StringUtil.replace(classPathStr, "\t", "");
+    			classPathStr = StringUtil.replace(classPathStr, " ", "");
     			String[] classPathArr = StringUtil.toStrArray(classPathStr, ";");
     			for(String classPath : classPathArr) {
     				combinedTypeSolver.add(new JarTypeSolver(new File(classPath)));
+    				if(showClassPathYn) {
+    					logger.debug("combinedTypeSolver.addJarTypeSolver("+ classPath +")");
+    				}
     			}
     		}
     		
     		// 3. APP CLASS ROOT
     		if( AppAnalyzer.CLASS_ROOT_PATH != null ) {
     			combinedTypeSolver.add(new JavaParserTypeSolver(new File(AppAnalyzer.CLASS_ROOT_PATH)));
+    			if(showClassPathYn) {
+    				logger.debug("combinedTypeSolver.addJavaParserTypeSolver("+ AppAnalyzer.CLASS_ROOT_PATH +")");
+    			}
     		}
 
     		// 4. Reflection
     		combinedTypeSolver.add(new ReflectionTypeSolver());
+    		if(showClassPathYn) {
+    			logger.debug("combinedTypeSolver.addReflectionTypeSolver()");
+    		}
     		
     		javaSymbolSolver = new JavaSymbolSolver(combinedTypeSolver);
 		} catch (Exception e) {
@@ -102,6 +106,26 @@ public class ParseUtil {
 		}
 		return javaSymbolSolver;
 	}
+
+	static private HashMap<Long, JavaParser> javaParserMap = new HashMap<Long, JavaParser>();
+	
+	public static JavaParser getJavaParser() throws Exception{
+		JavaParser parser = null;
+    	try {
+    		Long threadId = Thread.currentThread().getId();
+    		if( !javaParserMap.containsKey(threadId) ) {
+	    		parser = new JavaParser();
+	    		parser.getParserConfiguration().setSymbolResolver(getJavaSymbolSolver());
+	    		javaParserMap.put(threadId, parser);
+    		}else {
+    			parser = javaParserMap.get(threadId);
+    		}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+    	return parser;
+    }
 	
 	static HashMap<String, CompilationUnit> compilationUnitMap = new HashMap<String, CompilationUnit>();
 	public static CompilationUnit getCompilationUnit(String fileName){
@@ -111,8 +135,7 @@ public class ParseUtil {
 		}else {
 			try {
 				if( FileUtil.isFileExist(fileName) ) {
-					javaParser = getJavaParser();
-					ParseResult<CompilationUnit> result = javaParser.parse(new File(fileName));
+					ParseResult<CompilationUnit> result = getJavaParser().parse(new File(fileName));
 					if( result.isSuccessful() ) {
 						cu = result.getResult().get();
 					}else {
@@ -635,12 +658,12 @@ public class ParseUtil {
 	/**
 	 * 인터페이스인 클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 구현클래스의 클래스ID을 추출하는 메소드.
 	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
-	 * 구현클래스를 찾지 못하면 인터페이스ID를 반환한다.
 	 * @param interfaceIdList
 	 * @param resourceId
 	 * @return
 	 */
-	public static String findImplClassId(String interfaceId, String resourceId) {
+	public static List<String> findImplClassId(String interfaceId, String resourceId) {
+		List<String> implClassList = new ArrayList<String>();
 		String implClassId = "";
 		ClzzVo interfaceVo = ParseUtil.readClassVo(interfaceId, AppAnalyzer.WRITE_PATH + "/class");
 		ClzzVo implClzzVo = null;
@@ -650,7 +673,8 @@ public class ParseUtil {
 				// 해당인터페이스 구현클래스 목록을 LOOP 돌리면서 인터페이스의 클래스ID 가 구현클래스의 인터페이스ID와 일치하는 구현클래스의 resourceId를 찾아서 비교한다.
 				for(String packageClassId : implClassIdList) {
 					implClzzVo = ParseUtil.readClassVo(packageClassId, AppAnalyzer.WRITE_PATH + "/class");
-					if( interfaceVo.getClassId().equals(implClzzVo.getInterfaceIdList())) {
+					implClassId = "";
+					for(String inter : implClzzVo.getInterfaceIdList()) {
 						// resourceId 로 찾고자 할 때
 						if( !StringUtil.isEmpty(resourceId) ) {
 							if( resourceId.equals(implClzzVo.getResourceId())) {
@@ -663,29 +687,61 @@ public class ParseUtil {
 							break;
 						}
 					}
+					if( !StringUtil.isEmpty(implClassId) ) {
+						implClassList.add(implClassId);
+					}
 				}
 			}
 		}
-		if(StringUtil.isEmpty(implClassId)) {
-			implClassId = interfaceId;
-		}
-		return implClassId;
+		return implClassList;
 	}
 	
 	/**
 	 * 특정한 패키지 내에서 인터페이스클래스명(interfaceId)으로 구현클래스목록(List<String>)을 추출하는 메소드.
-	 * @param interfaceIdList
+	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
+	 * @param interfaceId
+	 * @param resourceId
 	 * @param packageRoot
 	 * @return
 	 */
-	public static List<String> getImplClassList(String interfaceId, String... packageRoot) {
+	public static List<String> getImplClassList(String interfaceId, String resourceId, String... packageRoot) {
 		List<String> implClassList = new ArrayList<String>();
 		ScanResult scanResult = null;
 		try {
 			scanResult = new ClassGraph().enableAllInfo().acceptPackages(packageRoot).scan();
+
 			for (ClassInfo ci : scanResult.getClassesImplementing(interfaceId)) {
-				if(!implClassList.contains(ci.getName())) {
-					implClassList.add(ci.getName());
+				if( !StringUtil.isEmpty(resourceId) ) {
+					boolean isExactResourceYn = false;
+					
+					ClassOrInterfaceDeclaration valClzz = null; 
+					valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, ci.getName());
+					for( AnnotationExpr anExpr :  valClzz.findAll(com.github.javaparser.ast.expr.AnnotationExpr.class) ) {
+						if( 
+							"Controller".equals(anExpr.getNameAsString()) 
+							||  "RestController".equals(anExpr.getNameAsString())  
+							||  "Service".equals(anExpr.getNameAsString())  
+							||  "Repository".equals(anExpr.getNameAsString()) 
+							||  "Component".equals(anExpr.getNameAsString()) 
+						) {
+							for( StringLiteralExpr strExpr :  anExpr.findAll(com.github.javaparser.ast.expr.StringLiteralExpr.class) ) {
+								if(resourceId.equals(strExpr.getValue())) {
+									isExactResourceYn = true;
+									break;
+								}
+							}
+						}
+						if(isExactResourceYn) {
+							break;
+						}
+					}
+					if( isExactResourceYn && !implClassList.contains(ci.getName())) {
+						implClassList.add(ci.getName());
+					}
+				}else {
+					if(!implClassList.contains(ci.getName())) {
+						implClassList.add(ci.getName());
+					}
 				}
 		    }
 		} catch (Exception e) {
@@ -759,38 +815,30 @@ public class ParseUtil {
 	 * @param clzzQualifiedName
 	 * @return
 	 */
-	public static ClassOrInterfaceDeclaration getClassDec(String srcRoot, String clzzQualifiedName) { 
-		return getClassDec(getJavaParser(), srcRoot, clzzQualifiedName);
-	}
-	
-	/**
-	 * 클래스명(xx.xxx.TestBean)으로 ClassOrInterfaceDeclaration 찾아서 반환.
-	 * @param parser
-	 * @param srcRoot
-	 * @param clzzQualifiedName
-	 * @return
-	 */
-	public static ClassOrInterfaceDeclaration getClassDec(JavaParser parser, String srcRoot, String clzzQualifiedName) { 
+	public static ClassOrInterfaceDeclaration getClassDec(String srcRoot, String clzzQualifiedName) throws Exception { 
+		//logger.debug("srcRoot["+srcRoot+"]" + " clzzQualifiedName["+clzzQualifiedName+"]");	
 		ClassOrInterfaceDeclaration classDec = null; 
 		String filePath = "";
 		try {
 			filePath = srcRoot+"/"+ StringUtil.replace(clzzQualifiedName,".", "/")+".java" ;
-			//d("filePath["+filePath+"]");
 			if( FileUtil.isFileExist(filePath)) {
-				ParseResult<CompilationUnit> result = getJavaParser().parse(FileUtil.readFile(filePath));
+				ParseResult<CompilationUnit> result = getJavaParser().parse(new File(filePath));
 				if( result.isSuccessful() && result.getResult().isPresent() ) {
 					CompilationUnit clzzCU = result.getResult().get(); 
 					if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
 						classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
 					}
 				}
+			}else {
+				logger.info("filePath["+filePath+"]은 존재하지 않는 파일 입니다.");
 			}
+	
 		}catch (Exception e) {
 			e.printStackTrace();
+			throw e;
 		}
 		return classDec;
 	}
-	
 	
 	/**
 	 * 메서드기능ID(xx.xxx.TestBean.testMethed(java.lang.String))으로 MethodDeclaration 찾아서 반환.
@@ -798,7 +846,7 @@ public class ParseUtil {
 	 * @param methodQualifiedSignature
 	 * @return
 	 */
-	public static MethodDeclaration getMethodDec(String srcRoot, String methodQualifiedSignature) { 
+	public static MethodDeclaration getMethodDec(String srcRoot, String methodQualifiedSignature) throws Exception { 
 		MethodDeclaration mtdDec = null;
 		String clzzQualifiedName = "";
 		clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
