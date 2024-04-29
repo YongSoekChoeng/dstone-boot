@@ -12,4 +12,9 @@ public abstract class BaseService {
     protected TestDao baseTestDao;
     
     public abstract void testBaseService(String id); 
+    
+
+    protected void parentHellow(String name) {
+    	System.out.println(name);
+    }
 }

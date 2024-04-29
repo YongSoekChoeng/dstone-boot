@@ -188,8 +188,6 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 		/*** 메소드AST 정보 획득  ***/
 		MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, mtdVo.getFunctionId());
 
-		debug( " \t" + "mtdDec=============================>>>" + ( mtdDec==null?"null":mtdDec.resolve().getQualifiedSignature() ) );
-		
 		if(mtdDec != null) {
 
 			/*** 메서드내의 호출메서드 목록조회 ***/

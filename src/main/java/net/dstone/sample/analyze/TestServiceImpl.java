@@ -39,6 +39,7 @@ public class TestServiceImpl extends BaseService implements TestService {
 		testBiz2.testBiz1ForAutowired(name); 
 		
 		testBaseService(name);
+		parentHellow(name);
 	}
 
 	public void doTestService02(TestBiz1 testBiz1) {

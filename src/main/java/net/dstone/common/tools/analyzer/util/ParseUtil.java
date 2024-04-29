@@ -827,8 +827,6 @@ public class ParseUtil {
 						classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
 					}
 				}
-			}else {
-				logger.info("filePath["+filePath+"]은 존재하지 않는 파일 입니다.");
 			}
 	
 		}catch (Exception e) {
