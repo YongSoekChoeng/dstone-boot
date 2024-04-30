@@ -11,16 +11,16 @@ public class TestServiceImpl extends BaseService implements TestService {
 
     /********* DAO 정의부분 시작 *********/
     @Autowired
-    private TestDao testDao;
+    private TestDao1 test1Dao;
     
-    @Qualifier("TestDao21")
-    private TestDao testDao21;
+    @Qualifier("TestDao1")
+    private TestDao1 TestDao1;
     
-    @Qualifier(value ="TestDao22")
-    private TestDao testDao22; 
+    @Qualifier(value ="TestDao2")
+    private TestDao2 testDao2; 
     
-    @Resource(name = "TestDao21")
-    private TestDao testDao3;
+    @Resource(name = "TestDao2")
+    private TestDao2 test2Dao;
 
     @Autowired
     private TestBiz2 testBiz2;
@@ -28,13 +28,13 @@ public class TestServiceImpl extends BaseService implements TestService {
     
 	@Override
 	public void doTestService01(String name) {
-		testDao.doTestDao01(name);
+		test1Dao.doTestDao01(name);
 		
-		testDao21.doTestDao01(name);
-		((Test1DaoImpl)testDao21).testMyDao1(name);
-		testDao22.doTestDao01(name);
-		((Test2DaoImpl)testDao22).testMyDao2(name);
-		testDao3.doTestDao01(name);
+		TestDao1.doTestDao01(name);
+		((Test1DaoImpl)TestDao1).testMyDao1(name);
+		testDao2.doTestDao02(name);
+		((Test2DaoImpl)testDao2).testMyDao2(name);
+		test2Dao.doTestDao02(name);
 
 		testBiz2.testBiz1ForAutowired(name); 
 		
@@ -48,7 +48,9 @@ public class TestServiceImpl extends BaseService implements TestService {
 
 	@Override
 	public void testBaseService(String id) {
-		testDao21.doTestDao01(id); 
+		//testDao1.doTestDao01(id); 
+		getTestDao1().doTestDao01(id);
+		getTestDao2().doTestDao02(id);
 	}
 
 

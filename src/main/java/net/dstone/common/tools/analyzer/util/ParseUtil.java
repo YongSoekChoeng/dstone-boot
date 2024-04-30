@@ -844,20 +844,43 @@ public class ParseUtil {
 	 */
 	public static MethodDeclaration getMethodDec(String srcRoot, String methodQualifiedSignature) throws Exception { 
 		MethodDeclaration mtdDec = null;
-		String clzzQualifiedName = "";
-		clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
-		clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
-		
-		ClassOrInterfaceDeclaration classDec =  ParseUtil.getClassDec(srcRoot, clzzQualifiedName); 
-		if( classDec != null ) {
-			for (MethodDeclaration mDec : classDec.getMethods()) {
-				if( mDec.resolve().getQualifiedSignature().equals(methodQualifiedSignature) ) {
-					mtdDec = mDec;
-					break;
+		try {
+			String clzzQualifiedName = "";
+			clzzQualifiedName = methodQualifiedSignature.substring(0, methodQualifiedSignature.indexOf("("));
+			clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
+			
+			ClassOrInterfaceDeclaration classDec =  ParseUtil.getClassDec(srcRoot, clzzQualifiedName); 
+			if( classDec != null ) {
+				for (MethodDeclaration mDec : classDec.getMethods()) {
+					if( mDec.resolve().getQualifiedSignature().equals(methodQualifiedSignature) ) {
+						mtdDec = mDec;
+						break;
+					}
 				}
 			}
+		} catch (Exception e) {
+			logger.info("net.dstone.common.tools.analyzer.util.ParseUtil.getMethodDec("+srcRoot+", "+methodQualifiedSignature+") 수행중 예외발생.");
+			e.printStackTrace();
+			throw e;
 		}
+
 		return mtdDec;
+	}
+	
+	public static String convFunctionIdToFileName(String functionId) {
+		String functionIdToFileName = functionId;
+		functionIdToFileName = StringUtil.replace(functionIdToFileName, ">", "]");
+		functionIdToFileName = StringUtil.replace(functionIdToFileName, "<", "[");
+		functionIdToFileName = StringUtil.replace(functionIdToFileName, "?", "#");
+		return functionIdToFileName;
+	}
+	
+	public static String convFunctionIdFromFileName(String fileName) {
+		String functionIdFromFileName = fileName;
+		functionIdFromFileName = StringUtil.replace(functionIdFromFileName, "]", ">");
+		functionIdFromFileName = StringUtil.replace(functionIdFromFileName, "[", "<");
+		functionIdFromFileName = StringUtil.replace(functionIdFromFileName, "#", "?");
+		return functionIdFromFileName;
 	}
 	
 	/**
@@ -1228,7 +1251,7 @@ public class ParseUtil {
 			
 			fileConts.append("메서드내용" + div + StringUtil.nullCheck(vo.getMethodBody(), "")).append("\n");
 			
-			fileName = StringUtil.replace(StringUtil.replace(vo.getFunctionId(), "<", "["), ">", "]") + ".txt";
+			fileName = ParseUtil.convFunctionIdToFileName(vo.getFunctionId()) + ".txt";
 			FileUtil.writeFile(writeFilePath, fileName, fileConts.toString()); 
 			
 		} catch (Exception e) {
@@ -1248,7 +1271,8 @@ public class ParseUtil {
 		String fileName = "";
 		String div = "|";
 		try {
-			fileName = readFilePath + "/" + StringUtil.replace(StringUtil.replace(functionId, "<", "["), ">", "]") + ".txt";
+
+			fileName = readFilePath + "/" + ParseUtil.convFunctionIdToFileName(functionId) + ".txt";
 			if(FileUtil.isFileExist(fileName)) {
 				String[] lines = FileUtil.readFileByLines(fileName);
 				for(String line : lines) {
@@ -1318,6 +1342,8 @@ public class ParseUtil {
 						vo.setMethodBody(methodBody);
 					}
 				}
+			}else {
+				logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.readMethodVo("+functionId+", "+readFilePath+") ::: fileName["+fileName+"]이 존재하지 않음.");
 			}
 
 		} catch (Exception e) {

@@ -8,13 +8,24 @@ public abstract class BaseService {
     	System.out.println(msg);
     }
 
-    @Qualifier("baseTestDao")
-    protected TestDao baseTestDao;
+    @Qualifier("TestDao1")
+    protected TestDao1 testDao1;
+
+    @Qualifier("TestDao2")
+    protected TestDao2 testDao2;
     
     public abstract void testBaseService(String id); 
     
-
     protected void parentHellow(String name) {
     	System.out.println(name);
     }
+    
+    protected TestDao1 getTestDao1() {
+    	return testDao1;
+    }
+
+    protected TestDao2 getTestDao2() {
+    	return testDao2;
+    }
+    
 }

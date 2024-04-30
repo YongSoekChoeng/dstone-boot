@@ -2,8 +2,8 @@ package net.dstone.sample.analyze;
 
 import org.springframework.stereotype.Repository;
 
-@Repository("TestDao21") 
-public class Test1DaoImpl extends BaseDao implements TestDao{
+@Repository("TestDao1") 
+public class Test1DaoImpl extends BaseDao implements TestDao1{
 
 	@Override
 	public void doTestDao01(String name) {

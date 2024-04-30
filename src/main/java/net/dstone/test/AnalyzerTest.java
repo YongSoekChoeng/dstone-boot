@@ -34,6 +34,7 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
+import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
@@ -440,15 +441,15 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 		try {
 			init();
 			
-			d( "AppAnalyzer.CLASS_ROOT_PATH:" + AppAnalyzer.CLASS_ROOT_PATH );
+			//d( "AppAnalyzer.CLASS_ROOT_PATH:" + AppAnalyzer.CLASS_ROOT_PATH );
 			
-			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, "net.dstone.sample.analyze.TestServiceImpl.doTestService01(java.lang.String)");
+			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, "net.dstone.sample.analyze.TestServiceImpl.testBaseService(java.lang.String)");
 			
 
 			/*** 메서드 호출 목록조회 ***/
 			List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
 			for (MethodCallExpr meCall : meCallList) {
-				//d(  "meCall["+meCall+"]"  );
+				d(  "meCall["+meCall+"]"  );
 				
 				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
 				ClassOrInterfaceDeclaration valClzz = null; 
@@ -463,33 +464,44 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 				
 				d(  "clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
-				
+
 				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
 				
-				if( valClzz.isInterface() ) {
-					d( "\t" +  "인터페이스 clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
+				if(valClzz != null) {
+
+					String callMethodQualifiedSignature = "";
 					
-					List<String> implList = ParseUtil.getImplClassList(clzzQualifiedName, "", "net.dstone.sample.analyze" );
-					for( String impl : implList ) {
-						d( "\t" +  "인터페이스구현 impl["+impl+"]" +  " methodSignature["+methodSignature+"]"  );
+					/*** 호출메서드의 부모(클래스/인터페이스)객체가 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음) ***/
+					if( !valClzz.isInterface()) {
+						/*** Class-Type. 메서드호출 목록조회 ***/
+						List<MethodDeclaration> methodList = valClzz.getMethods();
+						for (MethodDeclaration mDec : methodList) {
+							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
+							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+								continue;
+							}
+							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
+								d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+							}
+						}
+						
+					/*** 호출메서드의 부모(클래스/인터페이스)객체가 인터페이스 일 경우 ***/
+					}else {
+						List<String> implClassList = ParseUtil.getImplClassList(clzzQualifiedName, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
+						for (String implClass : implClassList) {
+							callMethodQualifiedSignature = implClass + "." + methodSignature;
+							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+								continue;
+							}
+							d("\t\t\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
+						}
+						
 					}
-					
-					
-					/*
-					List<String> implList = ParseUtil.findImplClassId(clzzQualifiedName, "TestDao22" );
-					for( String impl : implList ) {
-						d( "\t" +  "인터페이스구현 impl["+impl+"]" +  " methodSignature["+methodSignature+"]"  );
-					}
-					*/
-					
-				}else {
-					d( "\t" +  "클래스 clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
 				}
 				
+				
+				
 			}
-
-
-			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

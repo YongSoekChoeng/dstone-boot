@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -21,6 +23,8 @@ import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
+import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
+
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -35,7 +39,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	 * LIST[ MAP<메서드ID(METHOD_ID), 메서드명(METHOD_NAME), 메서드URL(METHOD_URL), 메서드바디(METHOD_BODY)> ]
 	 * @param classFile
 	 * @return
-	 */
+	 */ 
 	@Override
 	public List<Map<String, String>> getMtdInfoList(String classFile) throws Exception {
 		
@@ -131,6 +135,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             	item.put("METHOD_URL", METHOD_URL);
             	// METHOD_BODY
             	String METHOD_BODY = "";
+            	/*
             	if( methodDec.getBody() != null && methodDec.getBody().isPresent() ) {
             		METHOD_BODY = StringUtil.trimTextForParse(methodDec.getBody().get().toString());
             	}
@@ -139,6 +144,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
         		for(String line : lines) {
         			METHOD_BODY = METHOD_BODY + line.trim() + "\n";
         		}
+        		*/
             	item.put("METHOD_BODY", METHOD_BODY);
             	
             	mList.add(item);
@@ -149,7 +155,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	}
 
 	/**
-	 * 호출메소드 목록 추출
+	 * 메소드내의 호출메소드 목록 추출
 	 * @param clzzVo
 	 * @param analyzedMethodFile
 	 * @return
@@ -157,7 +163,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	@Override
 	public List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
 		
-		debug("JavaParseMtd.getCallMtdList :"+analyzedMethodFile );
+		debug("내부호출 분석대상:"+analyzedMethodFile );
 		
 		ArrayList<String> mtdCallList = new ArrayList<String>(); 
 		
@@ -196,7 +202,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
 				ClassOrInterfaceDeclaration valClzz = null; 
 				Expression callerExp = null;
-
+				
 				// 호출메서드의 부모(클래스/인터페이스)객체 조회
 				String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
 				String clzzQualifiedName = "";
@@ -206,7 +212,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 				clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
 				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 				
-				debug(" \t" + "호출메서드:" + methodQualifiedSignature );
+				debug("\t\t" + "호출메서드:" + methodQualifiedSignature );
 				
 				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
 				if( valClzz != null) {
@@ -219,9 +225,12 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 						List<MethodDeclaration> methodList = valClzz.getMethods();
 						for (MethodDeclaration mDec : methodList) {
 							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
+							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+								continue;
+							}
 							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
 								if( !mtdCallList.contains(callMethodQualifiedSignature)) {
-									debug("\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+									debug("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
 									mtdCallList.add(callMethodQualifiedSignature); 
 									break;
 								}
@@ -233,8 +242,11 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 						List<String> implClassList = ParseUtil.getImplClassList(clzzQualifiedName, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
 						for (String implClass : implClassList) {
 							callMethodQualifiedSignature = implClass + "." + methodSignature;
+							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+								continue;
+							}
 							if( !mtdCallList.contains(callMethodQualifiedSignature)) {
-								debug("\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
+								debug("\t\t\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
 								mtdCallList.add(callMethodQualifiedSignature); 
 								break;
 							}

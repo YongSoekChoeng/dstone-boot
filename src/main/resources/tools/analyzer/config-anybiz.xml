@@ -5,7 +5,7 @@
     <DBID>DBID_2</DBID>
     
 	<!-- 중간산출물 저장디렉토리 -->
-    <WRITE_PATH>D:/Temp/anlaysis/</WRITE_PATH>
+    <WRITE_PATH>D:/Temp/anlaysis-anybiz/</WRITE_PATH>
     
 	<!-- 저장파일명(디렉토리 -WRITE_PATH) -->
     <SAVE_FILE_NAME>AppMetrix.ouput</SAVE_FILE_NAME>
@@ -26,7 +26,7 @@
     <WORKER_THREAD_KIND>2</WORKER_THREAD_KIND>
     
 	<!-- 분석작업을 진행 할 쓰레드 갯수(WORKER_THREAD_KIND가 Fixed 쓰레드풀 일 경우에만 유효) -->
-    <WORKER_THREAD_NUM>20</WORKER_THREAD_NUM>
+    <WORKER_THREAD_NUM>10</WORKER_THREAD_NUM>
     
 	<!-- 분석대상어플리케이션 JDK홈 -->
     <APP_JDK_HOME>C:/DEV/JDK/1.8</APP_JDK_HOME>
