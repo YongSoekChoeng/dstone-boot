@@ -13,6 +13,12 @@ public abstract class BaseService {
 
     @Qualifier("TestDao2")
     protected TestDao2 testDao2;
+
+    @Qualifier("TestBiz1")
+    protected TestBiz1 testBiz1;
+
+    @Qualifier("TestBiz2")
+    protected TestBiz2 testBiz2;
     
     public abstract void testBaseService(String id); 
     
@@ -26,6 +32,14 @@ public abstract class BaseService {
 
     protected TestDao2 getTestDao2() {
     	return testDao2;
+    }
+
+    protected TestBiz1 getTestBiz1() {
+    	return testBiz1;
+    }
+
+    protected TestBiz2 getTestBiz2() {
+    	return testBiz2;
     }
     
 }

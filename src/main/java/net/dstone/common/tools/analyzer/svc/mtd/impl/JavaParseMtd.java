@@ -212,28 +212,19 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 				clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
 				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 				
-				debug("\t\t" + "호출메서드:" + methodQualifiedSignature );
-				
 				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
+				//debug("\t\t" + "호출메서드:" + methodQualifiedSignature + ", 호출메서드의 클래스:" + clzzQualifiedName + ", 호출메서드의 클래스AST:" + (valClzz==null?"null":valClzz.getNameAsString()) );
+				
 				if( valClzz != null) {
-
 					String callMethodQualifiedSignature = "";
 					
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음) ***/
 					if( !valClzz.isInterface()) {
-						/*** Class-Type. 메서드호출 목록조회 ***/
-						List<MethodDeclaration> methodList = valClzz.getMethods();
-						for (MethodDeclaration mDec : methodList) {
-							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
-							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
-								continue;
-							}
-							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
-								if( !mtdCallList.contains(callMethodQualifiedSignature)) {
-									debug("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
-									mtdCallList.add(callMethodQualifiedSignature); 
-									break;
-								}
+						callMethodQualifiedSignature = valClzz.getFullyQualifiedName().get() + "." + methodSignature;
+						if( SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+							if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+								debug("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+								mtdCallList.add(callMethodQualifiedSignature); 
 							}
 						}
 						

@@ -828,7 +828,9 @@ public class ParseUtil {
 					}
 				}
 			}
-	
+			if(classDec == null) {
+				//logger.debug("ParseUtil.getClassDec(srcRoot["+srcRoot+"]," + " clzzQualifiedName["+clzzQualifiedName+"])로 클래스정보를 찾을 수 없음.");
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw e;

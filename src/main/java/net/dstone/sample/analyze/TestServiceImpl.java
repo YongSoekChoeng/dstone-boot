@@ -48,9 +48,15 @@ public class TestServiceImpl extends BaseService implements TestService {
 
 	@Override
 	public void testBaseService(String id) {
-		//testDao1.doTestDao01(id); 
-		getTestDao1().doTestDao01(id);
+		StringBuffer buff = new StringBuffer();
+		buff.append(getTestDao1().doTestDao01(id));
+		/*
+		testDao1.doTestDao01(id); 
+		buff.append(getTestDao1().doTestDao01(id));
 		getTestDao2().doTestDao02(id);
+		getTestBiz1().testBaseBiz01(id);
+		buff.append(getTestBiz1().testBaseBiz01(id));
+		*/
 	}
 
 

@@ -70,7 +70,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
         	java.util.List<String>	includePackageRoot 						= new java.util.ArrayList<String>();	/* 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.) */
 
         	// 프레임웍
-
+        	/*
         	configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config.xml";
         	rootPath 														= "D:/AppHome/framework/dstone-boot/src/main";
         	classRootPath 													= rootPath + "/" + "java";
@@ -78,7 +78,18 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
         	excludePackagePattern 											= new String[] {".vo.", ".vo", "VO", "Vo", ".model."};
         	includePackageRoot												.add("net.dstone.sample.analyze");
         	queryRootPath 													= "D:/AppHome/framework/dstone-boot/src/main/resources/sqlmap";
-        	
+        	*/
+
+        	//토스ERP
+
+        	configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config-anybiz.xml";
+        	rootPath 														= "D:/AppHome/anybiz_prd";
+        	classRootPath 													= rootPath + "/WEB-INF/classes";
+        	webRootPath 													= rootPath + "/WEB-INF/views";
+        	excludePackagePattern 											= new String[] {".vo.", ".vo", "VO", "Vo", ".model."};
+        	includePackageRoot												.add("kr.co.gnx");
+        	queryRootPath 													= rootPath + "/WEB-INF/classes/sqlmap/mapper";
+
         	// 1.분석모듈 인스턴스 생성
         	net.dstone.common.tools.analyzer.AppAnalyzer appAnalyzer = net.dstone.common.tools.analyzer.AppAnalyzer.getInstance(
         		configPath	
@@ -443,7 +454,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 			
 			//d( "AppAnalyzer.CLASS_ROOT_PATH:" + AppAnalyzer.CLASS_ROOT_PATH );
 			
-			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, "net.dstone.sample.analyze.TestServiceImpl.testBaseService(java.lang.String)");
+			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, "kr.co.gnx.board.board.BoardService.deleteBoard(java.util.ArrayList<kr.co.gnx.board.board.BoardVO>)");
 			
 
 			/*** 메서드 호출 목록조회 ***/
@@ -463,33 +474,40 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				clzzQualifiedName = clzzQualifiedName.substring(0, clzzQualifiedName.lastIndexOf(".")); 
 				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 				
-				d(  "clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]"  );
-
 				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
-				
-				if(valClzz != null) {
 
+				//d( "\t\t" +  "clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]" + "valClzz:" + (valClzz==null?"null":valClzz.getFullyQualifiedName().get()) );
+
+				if(valClzz != null) {
+					
 					String callMethodQualifiedSignature = "";
 					
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음) ***/
 					if( !valClzz.isInterface()) {
-						/*** Class-Type. 메서드호출 목록조회 ***/
-						List<MethodDeclaration> methodList = valClzz.getMethods();
-						for (MethodDeclaration mDec : methodList) {
-							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
-							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
-								continue;
-							}
-							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
-								d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
-							}
+						callMethodQualifiedSignature = valClzz.getFullyQualifiedName().get() + "." + methodSignature;
+						//d( "\t\t" +  "Class-Type callMethodQualifiedSignature:" + callMethodQualifiedSignature + ", SvcAnalyzer.isValidSvcPackage():" + SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) );
+						if( SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+							d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
 						}
+
+//						/*** Class-Type. 메서드호출 목록조회 ***/
+//						List<MethodDeclaration> methodList = valClzz.getMethods();
+//						for (MethodDeclaration mDec : methodList) {
+//							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
+//							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+//								continue;
+//							}
+//							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
+//								d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+//							}
+//						}
 						
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 인터페이스 일 경우 ***/
 					}else {
 						List<String> implClassList = ParseUtil.getImplClassList(clzzQualifiedName, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
 						for (String implClass : implClassList) {
 							callMethodQualifiedSignature = implClass + "." + methodSignature;
+							//d( "\t\t" +  "Interface-Type  callMethodQualifiedSignature:" + callMethodQualifiedSignature + ", SvcAnalyzer.isValidSvcPackage():" + SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) );
 							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
 								continue;
 							}

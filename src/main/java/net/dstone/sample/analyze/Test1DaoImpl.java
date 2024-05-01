@@ -6,9 +6,8 @@ import org.springframework.stereotype.Repository;
 public class Test1DaoImpl extends BaseDao implements TestDao1{
 
 	@Override
-	public void doTestDao01(String name) {
-		// TODO Auto-generated method stub
-
+	public String doTestDao01(String name) {
+		return "";
 	}
 
 	@Override

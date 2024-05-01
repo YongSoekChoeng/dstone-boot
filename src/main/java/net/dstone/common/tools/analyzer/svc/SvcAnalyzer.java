@@ -79,8 +79,12 @@ public class SvcAnalyzer extends BaseObject{
 		return isValid;
 	}
 
-	public static boolean isValidSvcPackage(String packageId) {
+	public static boolean isValidSvcPackage(String packageIdParam) {
 		boolean isValid = false;
+		String packageId = packageIdParam;
+		if( packageId.indexOf("(") > -1 ) {
+			packageId = packageId.substring(0, packageId.indexOf("("));
+		}
 		for(String packageRoot : AppAnalyzer.INCLUDE_PACKAGE_ROOT) {
 			if( packageId.startsWith(packageRoot) ) {
 				isValid = true;

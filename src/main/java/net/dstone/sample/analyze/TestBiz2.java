@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component("TestBiz2") 
-public class TestBiz2 {
+public class TestBiz2 extends BaseBiz {
 	
 	@Autowired
 	private TestBiz1 testBiz1ForAutowired;
