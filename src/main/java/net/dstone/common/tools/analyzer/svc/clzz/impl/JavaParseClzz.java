@@ -327,8 +327,8 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 										}
 									}
 								}
+							// 그외 나머지일 경우(Annotation이 아니고 생성자를 직접 사용할 경우)
 							}else {
-								// 인터페이스를 구현한 클래스목록 추출
 								List<String> implClzzNmList = ParseUtil.getImplClassList(classType, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
 								if( implClzzNmList != null && !implClzzNmList.isEmpty() ) {
 									for (String implClzzNm: implClzzNmList) {

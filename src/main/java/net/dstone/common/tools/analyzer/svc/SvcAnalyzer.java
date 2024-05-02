@@ -562,7 +562,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -578,6 +579,7 @@ public class SvcAnalyzer extends BaseObject{
 					ClzzVo clzzVo = null;
 					String classFile= "";
 					try {
+						this.initMonitoringCount(classFileList.length);
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
 							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
@@ -613,7 +615,8 @@ public class SvcAnalyzer extends BaseObject{
 								
 								// 파일저장			
 								ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
-
+								
+								this.addMonitoringDoneCount();
 							}
 						}
 					} catch (Exception e) {
@@ -647,7 +650,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** A-2.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -664,6 +668,7 @@ public class SvcAnalyzer extends BaseObject{
 					String classFile= "";
 					String[] analyzedClassFileList = null;
 					try {
+						this.initMonitoringCount(classFileList.length);
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
@@ -686,6 +691,7 @@ public class SvcAnalyzer extends BaseObject{
 								}
 
 							}
+							this.addMonitoringDoneCount();
 						}
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
@@ -718,7 +724,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** A-3.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -735,6 +742,7 @@ public class SvcAnalyzer extends BaseObject{
 					String classFile= "";
 					String[] analyzedClassFileList = null;
 					try {
+						this.initMonitoringCount(classFileList.length);
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
@@ -753,6 +761,7 @@ public class SvcAnalyzer extends BaseObject{
 								// 파일저장	
 								ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 							}
+							this.addMonitoringDoneCount();
 						}
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
@@ -785,7 +794,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divQueryFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divQueryFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divQueryFileList.size(); n++) {
 			List<String> divQueryFileListItem = divQueryFileList.get(n);
@@ -801,6 +811,7 @@ public class SvcAnalyzer extends BaseObject{
 					List<Map<String, String>> queryInfoList = null;
 					String queryFile= "";
 					try {
+						this.initMonitoringCount(queryFileList.length);
 						for(int i=0; i<queryFileList.length; i++) {
 							queryFile = queryFileList[i];
 							if( SvcAnalyzer.isValidQueryFile(queryFile) ) {
@@ -839,8 +850,8 @@ public class SvcAnalyzer extends BaseObject{
 										ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
 									}
 								}
-								
 							}
+							this.addMonitoringDoneCount();
 						}	
 					
 					} catch (Exception e) {
@@ -877,7 +888,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** B-2.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divQueryFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divQueryFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divQueryFileList.size(); n++) {
 			List<String> divQueryFileListItem = divQueryFileList.get(n);
@@ -893,6 +905,7 @@ public class SvcAnalyzer extends BaseObject{
 					String key = "";
 					String analyzedQueryFile= "";
 					try {
+						this.initMonitoringCount(queryFileList.length);
 						for(int i=0; i<queryFileList.length; i++) {
 							analyzedQueryFile = queryFileList[i];
 							key = FileUtil.getFileName(analyzedQueryFile, false);
@@ -903,6 +916,7 @@ public class SvcAnalyzer extends BaseObject{
 							
 							// 파일저장	
 							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+							this.addMonitoringDoneCount();
 						}
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
@@ -937,7 +951,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -954,6 +969,7 @@ public class SvcAnalyzer extends BaseObject{
 					String classFile= "";
 					String functionId = "";
 					try {
+						this.initMonitoringCount(classFileList.length);
 						for(int i=0; i<classFileList.length; i++) {
 							classFile = classFileList[i];
 							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
@@ -991,6 +1007,7 @@ public class SvcAnalyzer extends BaseObject{
 								}
 								
 							}
+							this.addMonitoringDoneCount();
 						}
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. classFile["+classFile+"]");
@@ -1023,7 +1040,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -1040,6 +1058,7 @@ public class SvcAnalyzer extends BaseObject{
 					
 					try {
 						if(analyzedMethodFileList != null) {
+							this.initMonitoringCount(analyzedMethodFileList.length);
 							for(int i=0; i<analyzedMethodFileList.length; i++) {
 								analyzedMethodFile = analyzedMethodFileList[i];
 								String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
@@ -1055,6 +1074,7 @@ public class SvcAnalyzer extends BaseObject{
 								
 								// 파일저장	
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+								this.addMonitoringDoneCount();
 							}
 						}
 
@@ -1088,7 +1108,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -1105,6 +1126,7 @@ public class SvcAnalyzer extends BaseObject{
 					String analyzedMethodFile = "";
 					try {
 						if(analyzedMethodFileList != null) {
+							this.initMonitoringCount(analyzedMethodFileList.length);
 							for(int i=0; i<analyzedMethodFileList.length; i++) {
 								analyzedMethodFile = analyzedMethodFileList[i];
 								String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
@@ -1120,6 +1142,8 @@ public class SvcAnalyzer extends BaseObject{
 								
 								// 파일저장	
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+								
+								this.addMonitoringDoneCount();
 							}
 						}
 
@@ -1154,7 +1178,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** D-1.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -1169,6 +1194,7 @@ public class SvcAnalyzer extends BaseObject{
 					UiVo uiVo = null;
 					String uiFile= "";
 					try {
+						this.initMonitoringCount(uiFileList.length);
 						for(int i=0; i<uiFileList.length; i++) {
 							uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
 							if( SvcAnalyzer.isValidUiFile(uiFile) ) {
@@ -1189,6 +1215,7 @@ public class SvcAnalyzer extends BaseObject{
 								ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
 								
 							}
+							this.addMonitoringDoneCount();
 						}
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
@@ -1220,7 +1247,8 @@ public class SvcAnalyzer extends BaseObject{
 		getLogger().info("/*** D-2.UI파일로부터 링크 추출");
 
 		if(paramFileList == null || paramFileList.length == 0) {return;}
-		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), AppAnalyzer.WORKER_THREAD_NUM);
+		int partitionNum = Math.max((paramFileList.length/AppAnalyzer.WORKER_THREAD_NUM), 1);
+		List<List<String>> divClassFileList = PartitionUtil.ofSize(Arrays.asList(paramFileList), partitionNum);
 		ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
 		for(int n=0; n<divClassFileList.size(); n++) {
 			List<String> divClassFileListItem = divClassFileList.get(n);
@@ -1235,6 +1263,7 @@ public class SvcAnalyzer extends BaseObject{
 					UiVo uiVo = null;
 					String uiFile= "";
 					try {
+						this.initMonitoringCount(uiFileList.length);
 						for(int i=0; i<uiFileList.length; i++) {
 							uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
 							if( SvcAnalyzer.isValidUiFile(uiFile) ) {
@@ -1249,6 +1278,7 @@ public class SvcAnalyzer extends BaseObject{
 								ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
 								
 							}
+							this.addMonitoringDoneCount();
 						}
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
