@@ -129,7 +129,7 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 	}
 	
 	/**
-	 * 작업진행건수증
+	 * 작업진행건수증가
 	 */
 	public void addMonitoringDoneCount() {
 		doneCount++;
@@ -138,7 +138,7 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 			BigDecimal rate = new BigDecimal(doneCount);
 			rate = rate.divide(new BigDecimal(totalCount), 2, BigDecimal.ROUND_HALF_UP);
 			rate = rate.multiply(new BigDecimal(100));
-			buff.append("\n");
+			buff.append("\n\n");
 			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
 			buff.append("총진행대상건수["+totalCount+"] 진행완료건수["+doneCount+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
 			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
@@ -146,6 +146,23 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 		}
 	}
 
+	/**
+	 * 작업진행과정 종료
+	 */
+	public void endMonitoringCount() {
+		if( totalCount > 0 && doneCount > 0 ) {
+			StringBuffer buff = new StringBuffer();
+			BigDecimal rate = new BigDecimal(doneCount);
+			rate = rate.divide(new BigDecimal(totalCount), 2, BigDecimal.ROUND_HALF_UP);
+			rate = rate.multiply(new BigDecimal(100));
+			buff.append("\n\n");
+			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 최종진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+			buff.append("총진행대상건수["+totalCount+"] 진행완료건수["+doneCount+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
+			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 최종진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+			debug(buff);
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "TaskItem [strId=" + strId + ", prop=" + prop + "]";

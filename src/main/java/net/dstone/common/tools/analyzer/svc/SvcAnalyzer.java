@@ -619,6 +619,7 @@ public class SvcAnalyzer extends BaseObject{
 								this.addMonitoringDoneCount();
 							}
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. classFile["+classFile+"]");
 						e.printStackTrace();
@@ -693,6 +694,7 @@ public class SvcAnalyzer extends BaseObject{
 							}
 							this.addMonitoringDoneCount();
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
 						e.printStackTrace();
@@ -763,6 +765,7 @@ public class SvcAnalyzer extends BaseObject{
 							}
 							this.addMonitoringDoneCount();
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
 						e.printStackTrace();
@@ -853,7 +856,7 @@ public class SvcAnalyzer extends BaseObject{
 							}
 							this.addMonitoringDoneCount();
 						}	
-					
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. queryFile["+queryFile+"]");
 						e.printStackTrace();
@@ -918,6 +921,7 @@ public class SvcAnalyzer extends BaseObject{
 							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
 							this.addMonitoringDoneCount();
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
 						e.printStackTrace();
@@ -1009,6 +1013,7 @@ public class SvcAnalyzer extends BaseObject{
 							}
 							this.addMonitoringDoneCount();
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. classFile["+classFile+"]");
 						e.printStackTrace();
@@ -1076,6 +1081,7 @@ public class SvcAnalyzer extends BaseObject{
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
 								this.addMonitoringDoneCount();
 							}
+							this.endMonitoringCount();
 						}
 
 					} catch (Exception e) {
@@ -1145,6 +1151,7 @@ public class SvcAnalyzer extends BaseObject{
 								
 								this.addMonitoringDoneCount();
 							}
+							this.endMonitoringCount();
 						}
 
 					} catch (Exception e) {
@@ -1217,6 +1224,7 @@ public class SvcAnalyzer extends BaseObject{
 							}
 							this.addMonitoringDoneCount();
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
 						e.printStackTrace();
@@ -1280,6 +1288,7 @@ public class SvcAnalyzer extends BaseObject{
 							}
 							this.addMonitoringDoneCount();
 						}
+						this.endMonitoringCount();
 					} catch (Exception e) {
 						LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
 						e.printStackTrace();

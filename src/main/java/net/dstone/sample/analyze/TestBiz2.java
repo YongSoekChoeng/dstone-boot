@@ -20,4 +20,14 @@ public class TestBiz2 extends BaseBiz {
 	public void testBiz1ForQualifier(String name) {
 		testBiz1ForQualifier.testHello(name);
 	}
+
+	public void testTestBiz2(String name) {
+		System.out.println("Hello " + name + " ~!!");
+	}
+
+	@Override
+	protected String testAbsBaseBiz(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

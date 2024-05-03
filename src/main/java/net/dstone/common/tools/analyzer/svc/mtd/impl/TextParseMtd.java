@@ -69,7 +69,7 @@ public class TextParseMtd extends BaseObject implements ParseMtd {
 						// callPackageClassId 가 인터페이스 일 경우 구현클래스를 찾아서 대체하여 callMtd 에 삽입
 						classOrInterfaceVo = ParseUtil.readClassVo(callPackageClassId, AppAnalyzer.WRITE_PATH + "/class");
 						if("I".equals(classOrInterfaceVo.getClassOrInterface())) {
-							List<String> implList = ParseUtil.findImplClassId(classOrInterfaceVo.getClassId(), classOrInterfaceVo.getResourceId());
+							List<String> implList = ParseUtil.findImplClassList(classOrInterfaceVo.getClassId(), classOrInterfaceVo.getResourceId());
 							for(String impl : implList) {
 								callPackageClassId = impl;
 								callAlias = callClassAlias.get("ALIAS");

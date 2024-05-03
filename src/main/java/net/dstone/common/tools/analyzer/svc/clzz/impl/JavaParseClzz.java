@@ -295,7 +295,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 									LiteralStringValueExpr annoStrVal = annoExpr.findFirst(LiteralStringValueExpr.class).get();
 									annoVal = annoStrVal.getValue();
 									callClassAliasMap = new HashMap<String, String>();
-									for(String cType : ParseUtil.findImplClassId(classType, annoVal)) {
+									for(String cType : ParseUtil.findImplClassList(classType, annoVal)) {
 										classType = cType;
 										callClassAliasMap.put("FULL_CLASS"	, classType);
 										callClassAliasMap.put("ALIAS"		, classAlias);
@@ -315,7 +315,7 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 									LiteralStringValueExpr annoStrVal = annoExpr.findFirst(LiteralStringValueExpr.class).get();
 									annoVal = annoStrVal.getValue();
 									callClassAliasMap = new HashMap<String, String>();
-									for(String cType : ParseUtil.findImplClassId(classType, annoVal)) {
+									for(String cType : ParseUtil.findImplClassList(classType, annoVal)) {
 										classType = cType;
 										callClassAliasMap.put("FULL_CLASS"	, classType);
 										callClassAliasMap.put("ALIAS"		, classAlias);

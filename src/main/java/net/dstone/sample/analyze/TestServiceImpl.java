@@ -11,35 +11,65 @@ public class TestServiceImpl extends BaseService implements TestService {
 
     /********* DAO 정의부분 시작 *********/
     @Autowired
-    private TestDao1 test1Dao;
+    private TestDao1 myTestDao1;
     
-    @Qualifier("TestDao1")
-    private TestDao1 TestDao1;
-    
-    @Qualifier(value ="TestDao2")
-    private TestDao2 testDao2; 
-    
-    @Resource(name = "TestDao2")
-    private TestDao2 test2Dao;
-
-    @Autowired
-    private TestBiz2 testBiz2;
+//    @Qualifier("TestDao1")
+//    private TestDao1 TestDao1;
+//    
+//    @Qualifier(value ="TestDao2")
+//    private TestDao2 testDao2; 
+//    
+//    @Resource(name = "TestDao2")
+//    private TestDao2 test2Dao;
+//
+//    @Autowired
+//    private TestBiz2 testBiz2;
     /********* DAO 정의부분 끝 *********/
     
 	@Override
 	public void doTestService01(String name) {
-		test1Dao.doTestDao01(name);
 		
-		TestDao1.doTestDao01(name);
-		((Test1DaoImpl)TestDao1).testMyDao1(name);
-		testDao2.doTestDao02(name);
-		((Test2DaoImpl)testDao2).testMyDao2(name);
-		test2Dao.doTestDao02(name);
+/*
 
-		testBiz2.testBiz1ForAutowired(name); 
+net.dstone.sample.analyze.Test1DaoImpl.doTestDao01(java.lang.String)↕
+net.dstone.sample.analyze.Test2DaoImpl.doTestDao02(java.lang.String)↕
+net.dstone.sample.analyze.BaseService.getTestDao2()↕
+net.dstone.sample.analyze.Test1DaoImpl.testMyDao1(java.lang.String)↕
+net.dstone.sample.analyze.TestBiz1.testTestBiz1(java.lang.String)↕
+net.dstone.sample.analyze.TestBiz2.testTestBiz2(java.lang.String)↕
+net.dstone.sample.analyze.TestBiz1.testAbsBaseBiz(java.lang.String)↕
+net.dstone.sample.analyze.TestBiz2.testAbsBaseBiz(java.lang.String)
+
+*/
 		
-		testBaseService(name);
-		parentHellow(name);
+		
+//		net.dstone.sample.analyze.BaseBiz.testAbsBaseBiz(java.lang.String)
+		
+		// 부모 변수로 메소드 호출
+		testDao1.doTestDao01(name); // 부모 변수 직접사용
+		getTestDao2().doTestDao02(name); // 부모 변수 getter 로 사용
+
+		// 자신의 변수로 메소드 호출
+		((Test1DaoImpl)myTestDao1).testMyDao1(name);
+		
+		// 메소드로컬변수로 메소드 호출
+		BaseBiz baseBiz = null;
+		if(true) {
+			baseBiz = new TestBiz1();
+			((TestBiz1)baseBiz).testTestBiz1(name);
+		}else {
+			baseBiz = new TestBiz2();
+			((TestBiz2)baseBiz).testTestBiz2(name);
+		}
+		baseBiz.testAbsBaseBiz(name);
+		
+
+//		testDao2.doTestDao02(name);
+//
+//		testBiz2.testBiz1ForAutowired(name); 
+//		 
+//		testBaseService(name);
+//		parentHellow(name);
 	}
 
 	public void doTestService02(TestBiz1 testBiz1) {

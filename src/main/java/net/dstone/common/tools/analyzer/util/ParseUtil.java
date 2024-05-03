@@ -47,6 +47,7 @@ public class ParseUtil {
 	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
 	
 	public static JavaSymbolSolver getJavaSymbolSolver(){
+		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getJavaSymbolSolver() has been called !!!");
 		JavaSymbolSolver javaSymbolSolver = null;
 		boolean showClassPathYn = false;
     	try {
@@ -110,6 +111,7 @@ public class ParseUtil {
 	static private HashMap<Long, JavaParser> javaParserMap = new HashMap<Long, JavaParser>();
 	
 	public static JavaParser getJavaParser() throws Exception{
+		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getJavaParser() has been called !!!");
 		JavaParser parser = null;
     	try {
     		Long threadId = Thread.currentThread().getId();
@@ -654,13 +656,13 @@ public class ParseUtil {
 	}
 	
 	/**
-	 * 인터페이스인 클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 구현클래스의 클래스ID을 추출하는 메소드.
+	 * 인터페이스인 클래스ID로 분석클래스파일목록(analyzedClassFileList)에서 구현클래스들의 클래스ID목록을 추출하는 메소드.
 	 * resourceId 가 일치하는 구현클래스를 우선적으로 찾는다.
-	 * @param interfaceIdList
+	 * @param interfaceId
 	 * @param resourceId
 	 * @return
 	 */
-	public static List<String> findImplClassId(String interfaceId, String resourceId) {
+	public static List<String> findImplClassList(String interfaceId, String resourceId) {
 		List<String> implClassList = new ArrayList<String>();
 		String implClassId = "";
 		ClzzVo interfaceVo = ParseUtil.readClassVo(interfaceId, AppAnalyzer.WRITE_PATH + "/class");
@@ -814,7 +816,7 @@ public class ParseUtil {
 	 * @return
 	 */
 	public static ClassOrInterfaceDeclaration getClassDec(String srcRoot, String clzzQualifiedName) throws Exception { 
-		//logger.debug("srcRoot["+srcRoot+"]" + " clzzQualifiedName["+clzzQualifiedName+"]");	
+		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getClassDec("+srcRoot+", "+clzzQualifiedName+") has been called !!!");
 		ClassOrInterfaceDeclaration classDec = null; 
 		String filePath = "";
 		try {
@@ -845,6 +847,7 @@ public class ParseUtil {
 	 * @return
 	 */
 	public static MethodDeclaration getMethodDec(String srcRoot, String methodQualifiedSignature) throws Exception { 
+		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getMethodDec("+srcRoot+", "+methodQualifiedSignature+") has been called !!!");
 		MethodDeclaration mtdDec = null;
 		try {
 			String clzzQualifiedName = "";

@@ -1,8 +1,10 @@
 package net.dstone.sample.analyze;
 
-public class BaseBiz {
-	protected String testBaseBiz01(String id) {
+public abstract class BaseBiz {
+	protected String testBaseBiz(String id) {
 		System.out.println(id);
 		return id;
 	}
+	
+	protected abstract String testAbsBaseBiz(String id);
 }

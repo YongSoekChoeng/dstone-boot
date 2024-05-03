@@ -135,17 +135,15 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             	item.put("METHOD_URL", METHOD_URL);
             	// METHOD_BODY
             	String METHOD_BODY = "";
-            	/*
             	if( methodDec.getBody() != null && methodDec.getBody().isPresent() ) {
             		METHOD_BODY = StringUtil.trimTextForParse(methodDec.getBody().get().toString());
             	}
         		String[] lines = StringUtil.toStrArray(METHOD_BODY, "\n");
-        		METHOD_BODY = "";
+        		StringBuffer METHOD_BODY_BUFF = new StringBuffer();
         		for(String line : lines) {
-        			METHOD_BODY = METHOD_BODY + line.trim() + "\n";
+        			METHOD_BODY_BUFF.append(" ").append(line.trim()).append("\n");
         		}
-        		*/
-            	item.put("METHOD_BODY", METHOD_BODY);
+            	item.put("METHOD_BODY", METHOD_BODY_BUFF.toString());
             	
             	mList.add(item);
             }
@@ -163,7 +161,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	@Override
 	public List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
 		
-		debug("내부호출 분석대상:"+analyzedMethodFile );
+		//debug("내부호출 분석대상:"+analyzedMethodFile );
 		
 		ArrayList<String> mtdCallList = new ArrayList<String>(); 
 		
@@ -201,7 +199,6 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 			for (MethodCallExpr meCall : meCallList) {
 				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
 				ClassOrInterfaceDeclaration valClzz = null; 
-				Expression callerExp = null;
 				
 				// 호출메서드의 부모(클래스/인터페이스)객체 조회
 				String methodQualifiedSignature = mtdResolved.getQualifiedSignature(); 
@@ -220,14 +217,46 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 					
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음) ***/
 					if( !valClzz.isInterface()) {
-						callMethodQualifiedSignature = valClzz.getFullyQualifiedName().get() + "." + methodSignature;
-						if( SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
-							if( !mtdCallList.contains(callMethodQualifiedSignature)) {
-								debug("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
-								mtdCallList.add(callMethodQualifiedSignature); 
+
+						/*** 메서드가 일반메서드 일 경우 ***/
+						if( !mtdResolved.isAbstract() ) {
+							callMethodQualifiedSignature = valClzz.getFullyQualifiedName().get() + "." + methodSignature;
+							if( SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+								if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+									//debug("\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+									mtdCallList.add(callMethodQualifiedSignature); 
+								}
+							}
+						/*** 메서드가 추상메서드 일 경우 ***/
+						}else {
+							/*************************************************************************
+							 * 메서드 내에서 해당 추상메서드클래스의  (자식클래스)객체생성을 확인하여 확인된 자식클래스의 메서드를 추가.
+							 * 예)
+							 * AbstractClass abstractClass = null;
+							 * if(param==1){
+							 * 		abstractClass = new ChildClass1();
+							 * }else{
+							 * 		abstractClass = new ChildClass1();
+							 * }
+							 * abstractClass.abstractMethod();
+							*************************************************************************/
+							List<ObjectCreationExpr> ocList = mtdDec.findAll(ObjectCreationExpr.class);
+							for (ObjectCreationExpr oc : ocList) {
+								ClassOrInterfaceDeclaration ocClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, oc.calculateResolvedType().describe());
+								if(ocClzz.getExtendedTypes().size() > 0) {
+									if( valClzz.resolve().getQualifiedName().equals(ocClzz.getExtendedTypes(0).resolve().describe()) ) {
+										callMethodQualifiedSignature = ocClzz.resolve().getQualifiedName() + "." + methodSignature;
+										if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+											continue;
+										}
+										if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+											//debug("\t\t" + "Class-Type 추상메서드호출:"+ callMethodQualifiedSignature );
+											mtdCallList.add(callMethodQualifiedSignature); 
+										}
+									}
+								}
 							}
 						}
-						
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 인터페이스 일 경우 ***/
 					}else {
 						List<String> implClassList = ParseUtil.getImplClassList(clzzQualifiedName, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
@@ -237,12 +266,10 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 								continue;
 							}
 							if( !mtdCallList.contains(callMethodQualifiedSignature)) {
-								debug("\t\t\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
+								//debug("\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
 								mtdCallList.add(callMethodQualifiedSignature); 
-								break;
 							}
 						}
-						
 					}
 				}
 			}

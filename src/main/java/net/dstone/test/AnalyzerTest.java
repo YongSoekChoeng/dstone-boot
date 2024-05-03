@@ -11,12 +11,9 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.LiteralStringValueExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
@@ -31,13 +28,14 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.utils.FileUtil;
 import net.dstone.common.utils.StringUtil;
+import net.dstone.sample.analyze.BaseBiz;
+import net.dstone.sample.analyze.TestBiz1;
 
 public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
@@ -83,7 +81,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
             	queryRootPath 													= "D:/AppHome/framework/dstone-boot/src/main/resources/sqlmap";
 
         	//토스ERP
-        	} else if(mode.equals(MODE_FRAMEWORK)) {
+        	} else if(mode.equals(MODE_ANYBIZ)) {
 	        	configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config-anybiz.xml";
 	        	rootPath 														= "D:/AppHome/anybiz_prd";
 	        	classRootPath 													= rootPath + "/WEB-INF/classes";
@@ -454,15 +452,20 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 		try {
 			init(MODE_FRAMEWORK);
 			
-			//d( "AppAnalyzer.CLASS_ROOT_PATH:" + AppAnalyzer.CLASS_ROOT_PATH );
+			d( "AppAnalyzer.CLASS_ROOT_PATH:" + AppAnalyzer.CLASS_ROOT_PATH );
+
+			ArrayList<String> mtdCallList = new ArrayList<String>(); 
 			
-			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, "kr.co.gnx.board.board.BoardService.deleteBoard(java.util.ArrayList<kr.co.gnx.board.board.BoardVO>)");
+			String method = "net.dstone.sample.analyze.TestServiceImpl.doTestService01(java.lang.String)";
+			
+			d( "method["+method+"]"  );
+			MethodDeclaration mtdDec = ParseUtil.getMethodDec(AppAnalyzer.CLASS_ROOT_PATH, method);
 			
 
 			/*** 메서드 호출 목록조회 ***/
 			List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
 			for (MethodCallExpr meCall : meCallList) {
-				d(  "meCall["+meCall+"]"  );
+				d( "\t\t" +   "meCall["+meCall+"]"  );
 				
 				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
 				ClassOrInterfaceDeclaration valClzz = null; 
@@ -481,45 +484,65 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 				//d( "\t\t" +  "clzzQualifiedName["+clzzQualifiedName+"]" +  " methodSignature["+methodSignature+"]" + "valClzz:" + (valClzz==null?"null":valClzz.getFullyQualifiedName().get()) );
 
 				if(valClzz != null) {
-					
 					String callMethodQualifiedSignature = "";
 					
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 클래스 일 경우 (MethodCallExpr 자체적으로 구현 클래스.메서드 등 찾을 수 있음) ***/
 					if( !valClzz.isInterface()) {
-						callMethodQualifiedSignature = valClzz.getFullyQualifiedName().get() + "." + methodSignature;
-						//d( "\t\t" +  "Class-Type callMethodQualifiedSignature:" + callMethodQualifiedSignature + ", SvcAnalyzer.isValidSvcPackage():" + SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) );
-						if( SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
-							d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+						
+						/*** 메서드가 일반메서드 일 경우 ***/
+						if( !mtdResolved.isAbstract() ) {
+							callMethodQualifiedSignature = valClzz.getFullyQualifiedName().get() + "." + methodSignature;
+							if( SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
+								if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+									d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
+									mtdCallList.add(callMethodQualifiedSignature); 
+								}
+							}
+						/*** 메서드가 추상메서드 일 경우 ***/
+						}else {
+							/*************************************************************************
+							 * 메서드 내에서 해당 추상메서드클래스의  (자식클래스)객체생성을 확인하여 확인된 자식클래스의 메서드를 추가.
+							 * 예)
+							 * AbstractClass abstractClass = null;
+							 * if(param==1){
+							 * 		abstractClass = new ChildClass1();
+							 * }else{
+							 * 		abstractClass = new ChildClass1();
+							 * }
+							 * abstractClass.abstractMethod();
+							*************************************************************************/
+							List<ObjectCreationExpr> ocList = mtdDec.findAll(ObjectCreationExpr.class);
+							for (ObjectCreationExpr oc : ocList) {
+								ClassOrInterfaceDeclaration ocClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, oc.calculateResolvedType().describe());
+								if(ocClzz.getExtendedTypes().size() > 0) {
+									if( valClzz.resolve().getQualifiedName().equals(ocClzz.getExtendedTypes(0).resolve().describe()) ) {
+										callMethodQualifiedSignature = ocClzz.resolve().getQualifiedName() + "." + methodSignature;
+										if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+											d("\t\t\t\t" + "Class-Type 추상메서드호출:"+ callMethodQualifiedSignature );
+											mtdCallList.add(callMethodQualifiedSignature); 
+										}
+									}
+								}
+							}
 						}
-
-//						/*** Class-Type. 메서드호출 목록조회 ***/
-//						List<MethodDeclaration> methodList = valClzz.getMethods();
-//						for (MethodDeclaration mDec : methodList) {
-//							callMethodQualifiedSignature = mDec.resolve().getQualifiedSignature();
-//							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
-//								continue;
-//							}
-//							if(callMethodQualifiedSignature.endsWith("." + methodSignature) ) { 
-//								d("\t\t\t\t" + "Class-Type 메서드호출:"+ callMethodQualifiedSignature );
-//							}
-//						}
 						
 					/*** 호출메서드의 부모(클래스/인터페이스)객체가 인터페이스 일 경우 ***/
 					}else {
 						List<String> implClassList = ParseUtil.getImplClassList(clzzQualifiedName, "", AppAnalyzer.INCLUDE_PACKAGE_ROOT);
 						for (String implClass : implClassList) {
 							callMethodQualifiedSignature = implClass + "." + methodSignature;
-							//d( "\t\t" +  "Interface-Type  callMethodQualifiedSignature:" + callMethodQualifiedSignature + ", SvcAnalyzer.isValidSvcPackage():" + SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) );
 							if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
 								continue;
 							}
-							d("\t\t\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
+							if( !mtdCallList.contains(callMethodQualifiedSignature)) {
+								d("\t\t\t\t" + "Interface-Type 메서드호출:"+ callMethodQualifiedSignature );
+								mtdCallList.add(callMethodQualifiedSignature); 
+								break;
+							}
 						}
 						
 					}
 				}
-				
-				
 				
 			}
 			
