@@ -236,7 +236,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 							 * if(param==1){
 							 * 		abstractClass = new ChildClass1();
 							 * }else{
-							 * 		abstractClass = new ChildClass1();
+							 * 		abstractClass = new ChildClass2();
 							 * }
 							 * abstractClass.abstractMethod();
 							*************************************************************************/

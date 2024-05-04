@@ -13,13 +13,15 @@ import net.dstone.common.task.TaskHandler;
 import net.dstone.common.task.TaskItem;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
-import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
 import net.dstone.common.tools.analyzer.svc.clzz.impl.JavaParseClzz;
-import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.TextParseClzz;
+import net.dstone.common.tools.analyzer.svc.clzz.impl.TossParseClzz;
 import net.dstone.common.tools.analyzer.svc.mtd.impl.JavaParseMtd;
-import net.dstone.common.tools.analyzer.svc.query.ParseQuery;
+import net.dstone.common.tools.analyzer.svc.mtd.impl.TextParseMtd;
+import net.dstone.common.tools.analyzer.svc.mtd.impl.TossParseMtd;
+import net.dstone.common.tools.analyzer.svc.query.impl.MybatisParseQuery;
 import net.dstone.common.tools.analyzer.svc.query.impl.TossParseQuery;
-import net.dstone.common.tools.analyzer.svc.ui.ParseUi;
+import net.dstone.common.tools.analyzer.svc.ui.impl.JspParseUi;
 import net.dstone.common.tools.analyzer.svc.ui.impl.TossParseUi;
 import net.dstone.common.tools.analyzer.util.DbGen;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
@@ -133,11 +135,9 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class ClassFactory {
 		
-		static ParseClzz getClzz() {
-			//return new TextParseClzz(); 
-			return new JavaParseClzz(); 
-			//return new TossParseClzz(); 
-		}
+		static TextParseClzz textParseClzz = new TextParseClzz();
+		static JavaParseClzz javaParseClzz = new JavaParseClzz();
+		static TossParseClzz tossParseClzz = new TossParseClzz();
 		
 		/**
 		 * 패키지ID 추출
@@ -145,7 +145,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getPackageId(String classFile) throws Exception {
-			return getClzz().getPackageId(classFile);
+			return javaParseClzz.getPackageId(classFile);
 		}
 		/**
 		 * 클래스ID 추출
@@ -153,7 +153,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getClassId(String classFile) throws Exception {
-			return getClzz().getClassId(classFile);
+			return javaParseClzz.getClassId(classFile);
 		}
 		/**
 		 * 클래스명 추출
@@ -161,7 +161,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getClassName(String classFile) throws Exception {
-			return getClzz().getClassName(classFile);
+			return javaParseClzz.getClassName(classFile);
 		}
 		/**
 		 * 기능종류(UI:화면/JS:자바스크립트/CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지) 추출
@@ -169,7 +169,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static ClzzKind getClassKind(String classFile) throws Exception {
-			return getClzz().getClassKind(classFile);
+			return javaParseClzz.getClassKind(classFile);
 		}
 		/**
 		 * 리소스ID 추출
@@ -177,7 +177,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getResourceId(String classFile) throws Exception {
-			return getClzz().getResourceId(classFile);
+			return javaParseClzz.getResourceId(classFile);
 		}
 		
 		/**
@@ -186,7 +186,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getClassOrInterface(String classFile) throws Exception {
-			return getClzz().getClassOrInterface(classFile);
+			return javaParseClzz.getClassOrInterface(classFile);
 		}
 
 		/**
@@ -195,7 +195,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getInterfaceIdList(String classFile) throws Exception {
-			return getClzz().getInterfaceIdList(classFile);
+			return javaParseClzz.getInterfaceIdList(classFile);
 		}
 		/**
 		 * 상위클래스ID 추출
@@ -203,7 +203,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getParentClassId(String classFile) throws Exception {
-			return getClzz().getParentClassId(classFile);
+			return javaParseClzz.getParentClassId(classFile);
 		}
 		/**
 		 * 인터페이스구현하위클래스ID목록(인터페이스인 경우에만 존재)
@@ -212,7 +212,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getImplClassIdList(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception {
-			return getClzz().getImplClassIdList(selfClzzVo, otherClassFileList);
+			return javaParseClzz.getImplClassIdList(selfClzzVo, otherClassFileList);
 		}
 		/**
 		 * 호출알리아스 추출. 리스트<맵>을 반환. 맵항목- Full클래스,알리아스 .(예: FULL_CLASS:aaa.bbb.Clzz2, ALIAS:clzz2)
@@ -221,7 +221,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getCallClassAlias(ClzzVo selfClzzVo, String[] otherClassFileList) throws Exception {
-			return getClzz().getCallClassAlias(selfClzzVo, otherClassFileList);
+			return javaParseClzz.getCallClassAlias(selfClzzVo, otherClassFileList);
 		}
 	}
 	
@@ -231,11 +231,9 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class MethodFactory {
 
-		static ParseMtd getMethod() {
-			//return new TextParseMtd(); 
-			return new JavaParseMtd();
-			//return new TossParseMtd(); 
-		}
+		static TextParseMtd textParseMtd = new TextParseMtd();
+		static JavaParseMtd javaParseMtd = new JavaParseMtd();
+		static TossParseMtd tossParseMtd = new TossParseMtd();
 		
 		/**
 		 * 메서드ID/메서드명/메서드URL/메서드내용 추출
@@ -243,7 +241,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getMtdInfoList(String classFile) throws Exception {
-			return getMethod().getMtdInfoList(classFile);
+			return javaParseMtd.getMtdInfoList(classFile);
 		}
 		
 		/**
@@ -252,7 +250,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
-			return getMethod().getCallMtdList(analyzedMethodFile);
+			return javaParseMtd.getCallMtdList(analyzedMethodFile);
 		}
 
 		/**
@@ -261,7 +259,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String methodFile) throws Exception {
-			return getMethod().getCallTblList(methodFile);
+			return tossParseMtd.getCallTblList(methodFile);
 		}
 
 	}
@@ -272,10 +270,8 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class QueryFactory {
 
-		static ParseQuery getQuery() {
-			//return new MybatisParseQuery(); 
-			return new TossParseQuery(); 
-		}
+		static MybatisParseQuery mybatisParseQuery = new MybatisParseQuery();
+		static TossParseQuery tossParseQuery = new TossParseQuery();
 		
 		/**
 		 * 파일로부터 쿼리KEY(아이디)를 추출. 쿼리KEY는 파일명으로 사용됨.
@@ -283,7 +279,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static public String getQueryKey(Map<String, String> queryInfo) throws Exception {
-			return getQuery().getQueryKey(queryInfo);
+			return tossParseQuery.getQueryKey(queryInfo);
 		}
 		
 		/**
@@ -296,7 +292,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getQueryInfoList(String queryFile) throws Exception {
-			return getQuery().getQueryInfoList(queryFile);
+			return tossParseQuery.getQueryInfoList(queryFile);
 		}
 
 		/**
@@ -305,7 +301,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String queryInfoFile, List<String> allTblList) throws Exception {
-			return getQuery().getTblInfoList(queryInfoFile, allTblList);
+			return tossParseQuery.getTblInfoList(queryInfoFile, allTblList);
 		}
 		
 	}
@@ -316,18 +312,16 @@ public class SvcAnalyzer extends BaseObject{
 	 */
 	private static class UiFactory {
 
-		static ParseUi getUi() {
-			//return new JspParseUi(); 
-			return new TossParseUi(); 
-		}
-		
+		static JspParseUi jspParseUi = new JspParseUi();
+		static TossParseUi tossParseUi = new TossParseUi();
+
 		/**
 		 * UI파일로부터 UI아이디 추출
 		 * @param uiFile
 		 * @return
 		 */
 		static String getUiId(String uiFile) throws Exception{
-			return getUi().getUiId(uiFile);
+			return tossParseUi.getUiId(uiFile);
 		}
 		/**
 		 * UI파일로부터 UI명 추출
@@ -335,7 +329,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getUiName(String uiFile) throws Exception{
-			return getUi().getUiName(uiFile);
+			return tossParseUi.getUiName(uiFile);
 		}
 		/**
 		 * UI파일로부터 링크목록 추출
@@ -345,7 +339,7 @@ public class SvcAnalyzer extends BaseObject{
 		static List<String> getUiLinkList(String uiFile) throws Exception {
 			List<String> composeLinkList = new ArrayList<String>();
 			
-			composeLinkList = getUi().getUiLinkList(uiFile);
+			composeLinkList = tossParseUi.getUiLinkList(uiFile);
 
 			return composeLinkList.stream().distinct().collect(Collectors.toList());
 		}
