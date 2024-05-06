@@ -30,63 +30,104 @@ public class DbGen {
 		public static StringBuffer DROP = new StringBuffer();
 		
 		static {
+
+			/* <시스템-TB_SYS> */
+			MYSQL_CREATE.append("CREATE TABLE TB_APP ( ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
+			MYSQL_CREATE.append("  SYS_NM VARCHAR(200) COMMENT '시스템명', ").append("\n");
+			MYSQL_CREATE.append("  WRITE_PATH VARCHAR(500) COMMENT '분석결과생성경로', ").append("\n");
+			MYSQL_CREATE.append("  SAVE_FILE_NAME VARCHAR(500) COMMENT '분석결과저장파일명', ").append("\n");
+			MYSQL_CREATE.append("  DBID VARCHAR(10) COMMENT 'DBID', ").append("\n");
+			MYSQL_CREATE.append("  IS_TABLE_LIST_FROM_DB VARCHAR(10) COMMENT '테이블목록을DB로부터읽어올지여부', ").append("\n");
+			MYSQL_CREATE.append("  TABLE_NAME_LIKE_STR VARCHAR(500) COMMENT '테이블명을DB로부터읽어올때적용할프리픽스', ").append("\n");
+			MYSQL_CREATE.append("  TABLE_LIST_FILE_NAME VARCHAR(500) COMMENT '테이블목록정보파일명', ").append("\n");
+			MYSQL_CREATE.append("  IS_SAVE_TO_DB VARCHAR(10) COMMENT '작업결과를DB에저장할지여부', ").append("\n");
+			MYSQL_CREATE.append("  APP_JDK_HOME VARCHAR(200) COMMENT '분석대상어플리케이션JDK홈', ").append("\n");
+			MYSQL_CREATE.append("  APP_CLASSPATH VARCHAR(200) COMMENT '분석대상어플리케이션클래스패스', ").append("\n");
+			MYSQL_CREATE.append("  WORKER_THREAD_KIND VARCHAR(2) COMMENT '분석작업을진행할쓰레드핸들러종류', ").append("\n");
+			MYSQL_CREATE.append("  WORKER_THREAD_NUM VARCHAR(10) COMMENT '분석작업을진행할쓰레드갯수', ").append("\n");
+			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID) ").append("\n");
+			MYSQL_CREATE.append(") COMMENT '시스템'; ").append("\n");
 			
 			/* <클래스-TB_CLZZ> */
 			MYSQL_CREATE.append("CREATE TABLE TB_CLZZ ( ").append("\n");
-			MYSQL_CREATE.append("  CLZZ_ID VARCHAR(100) NOT NULL COMMENT '클래스ID', ").append("\n");
-			MYSQL_CREATE.append("  PKG_ID VARCHAR(100) COMMENT '패키지ID', ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
+			MYSQL_CREATE.append("  CLZZ_ID VARCHAR(200) NOT NULL COMMENT '클래스ID', ").append("\n");
+			MYSQL_CREATE.append("  PKG_ID VARCHAR(200) COMMENT '패키지', ").append("\n");
 			MYSQL_CREATE.append("  CLZZ_NM VARCHAR(200) COMMENT '클래스명', ").append("\n");
-			MYSQL_CREATE.append("  CLZZ_KIND VARCHAR(2) COMMENT '클래스종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
+			MYSQL_CREATE.append("  CLZZ_KIND VARCHAR(2) COMMENT '기능종류(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
+			MYSQL_CREATE.append("  RESOURCE_ID VARCHAR(100) COMMENT '리소스ID', ").append("\n");
+			MYSQL_CREATE.append("  CLZZ_INTF VARCHAR(1) COMMENT '클래스or인터페이스', ").append("\n");
+			MYSQL_CREATE.append("  INTF_ID_LIST VARCHAR(4000) COMMENT '상위인터페이스ID목록', ").append("\n");
+			MYSQL_CREATE.append("  PARENT_CLZZ_ID VARCHAR(200) COMMENT '상위클래스ID', ").append("\n");
+			MYSQL_CREATE.append("  INTF_IMPL_CLZZ_ID_LIST VARCHAR(4000) COMMENT '인터페이스구현하위클래스ID목록', ").append("\n");
+			MYSQL_CREATE.append("  MEMBER_ALIAS_LIST VARCHAR(8000) COMMENT '호출알리아스', ").append("\n");			
+			MYSQL_CREATE.append("  FILE_NAME VARCHAR(1000) COMMENT '파일명', ").append("\n");			
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (CLZZ_ID) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, CLZZ_ID) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '클래스'; ").append("\n");
+			
 			/* <기능메서드-TB_FUNC> */
 			MYSQL_CREATE.append("CREATE TABLE TB_FUNC ( ").append("\n");
-			MYSQL_CREATE.append("  FUNC_ID VARCHAR(200) NOT NULL COMMENT '기능ID', ").append("\n");
-			MYSQL_CREATE.append("  MTD_ID VARCHAR(100) COMMENT '메서드ID', ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
+			MYSQL_CREATE.append("  FUNC_ID VARCHAR(500) NOT NULL COMMENT '기능ID', ").append("\n");
+			MYSQL_CREATE.append("  CLZZ_ID VARCHAR(200) NOT NULL COMMENT '클래스ID', ").append("\n");
+			MYSQL_CREATE.append("  MTD_ID VARCHAR(200) COMMENT '메서드ID', ").append("\n");
 			MYSQL_CREATE.append("  MTD_NM VARCHAR(200) COMMENT '메서드명', ").append("\n");
-			MYSQL_CREATE.append("  CLZZ_ID VARCHAR(100) NOT NULL COMMENT '클래스ID', ").append("\n");
-			MYSQL_CREATE.append("  MTD_URL VARCHAR(200) COMMENT '메서드URL', ").append("\n");
+			MYSQL_CREATE.append("  MTD_URL VARCHAR(200) COMMENT '메서드URL', ").append("\n");	
+			MYSQL_CREATE.append("  FILE_NAME VARCHAR(1000) COMMENT '파일명', ").append("\n");			
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (FUNC_ID) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, FUNC_ID) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '기능메서드'; ").append("\n");
+			
 			/* <테이블-TB_TBL> */
 			MYSQL_CREATE.append("CREATE TABLE TB_TBL ( ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
 			MYSQL_CREATE.append("  TBL_ID VARCHAR(100) NOT NULL COMMENT '테이블ID', ").append("\n");
 			MYSQL_CREATE.append("  TBL_OWNER VARCHAR(100) COMMENT '테이블오너', ").append("\n");
 			MYSQL_CREATE.append("  TBL_NM VARCHAR(200) COMMENT '테이블명', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (TBL_ID) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, TBL_ID) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '테이블'; ").append("\n");
+			
 			/* <기능간맵핑-TB_FUNC_FUNC_MAPPING> */
 			MYSQL_CREATE.append("CREATE TABLE TB_FUNC_FUNC_MAPPING ( ").append("\n");
-			MYSQL_CREATE.append("  FUNC_ID VARCHAR(200) NOT NULL COMMENT '기능ID', ").append("\n");
-			MYSQL_CREATE.append("  CALL_FUNC_ID VARCHAR(200) NOT NULL COMMENT '호출기능ID', ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
+			MYSQL_CREATE.append("  FUNC_ID VARCHAR(500) NOT NULL COMMENT '기능ID', ").append("\n");
+			MYSQL_CREATE.append("  CALL_FUNC_ID VARCHAR(500) NOT NULL COMMENT '호출기능ID', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (FUNC_ID, CALL_FUNC_ID) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, FUNC_ID, CALL_FUNC_ID) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '기능간맵핑'; ").append("\n");
+			
 			/* <테이블맵핑-TB_FUNC_TBL_MAPPING> */
 			MYSQL_CREATE.append("CREATE TABLE TB_FUNC_TBL_MAPPING ( ").append("\n");
-			MYSQL_CREATE.append("  FUNC_ID VARCHAR(200) NOT NULL COMMENT '기능ID', ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
+			MYSQL_CREATE.append("  FUNC_ID VARCHAR(500) NOT NULL COMMENT '기능ID', ").append("\n");
 			MYSQL_CREATE.append("  TBL_ID VARCHAR(100) NOT NULL COMMENT '테이블ID', ").append("\n");
 			MYSQL_CREATE.append("  JOB_KIND VARCHAR(10) COMMENT '작업종류', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (FUNC_ID, TBL_ID, JOB_KIND) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, FUNC_ID, TBL_ID, JOB_KIND) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '테이블맵핑'; ").append("\n");
+			
 			/* <화면-TB_UI> */
 			MYSQL_CREATE.append("CREATE TABLE TB_UI ( ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
 			MYSQL_CREATE.append("  UI_ID VARCHAR(100) NOT NULL COMMENT '화면ID', ").append("\n");
 			MYSQL_CREATE.append("  UI_NM VARCHAR(200) COMMENT '화면명', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (UI_ID) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, UI_ID) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '화면'; ").append("\n");
+			
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			MYSQL_CREATE.append("CREATE TABLE TB_UI_FUNC_MAPPING ( ").append("\n");
+			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
 			MYSQL_CREATE.append("  UI_ID VARCHAR(100) NOT NULL COMMENT '화면ID', ").append("\n");
 			MYSQL_CREATE.append("  MTD_URL VARCHAR(200) NOT NULL COMMENT '메서드URL', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
-			MYSQL_CREATE.append("  PRIMARY KEY (UI_ID, MTD_URL) ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, UI_ID, MTD_URL) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '화면기능맵핑'; ").append("\n");
+			
 			/* <종합메트릭스-TB_METRIX> */
 			MYSQL_CREATE.append("CREATE TABLE TB_METRIX ( ").append("\n");
 			MYSQL_CREATE.append("  UI_ID VARCHAR(100) COMMENT '화면ID', ").append("\n");
