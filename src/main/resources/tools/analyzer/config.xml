@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
  
+	<!-- 시스템 아이디. -->
+    <SYS_ID>framework</SYS_ID>
+    
 	<!-- DB를 특정하는 아이디. DBID_1(오라클), DBID_2(MYSQL) -->
     <DBID>DBID_2</DBID>
     

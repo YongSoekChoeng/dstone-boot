@@ -1505,11 +1505,7 @@ public class SvcAnalyzer extends BaseObject{
 		List<DataSet> dsList = new ArrayList<DataSet>();
 		callStackList.add(functionId);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-		String classId = "";
-		if( functionId.indexOf(".")>-1 ) {
-			classId = functionId.substring(0, functionId.lastIndexOf("."));
-		}
-		ClzzVo clzzVo = ParseUtil.readClassVo(classId, AppAnalyzer.WRITE_PATH + "/class");
+		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
 		
 		/********************************* 메소드별 사용할 항목 시작 *********************************/
 		if(callStackList.size() == 1) {
@@ -1653,10 +1649,13 @@ public class SvcAnalyzer extends BaseObject{
 	}
 	
 	private void deleteFromDb(String DBID) throws Exception {
-		DbGen.deleteAll(DBID);
+		String sysId = AppAnalyzer.CONF.getNode("SYS_ID").getTextContent();
+		DbGen.deleteAll(DBID, sysId);
 	}
 
 	private void insertToDb(String DBID) throws Exception {
+
+		String sysId = AppAnalyzer.CONF.getNode("SYS_ID").getTextContent();
 		String[] fileList = null;
 		String subPath = "";
 		
@@ -1666,7 +1665,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/class";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				DbGen.insertTB_CLZZ(DBID, fileList);
+				DbGen.insertTB_CLZZ(DBID, sysId, fileList);
 			}
 
 			// 기능메서드
@@ -1674,19 +1673,19 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				DbGen.insertTB_FUNC(DBID, fileList);
+				DbGen.insertTB_FUNC(DBID, sysId, fileList);
 			}
 
 			// 테이블
 			getLogger().info("/*** G-2-3.테이블 데이터적재 시작 ***/");
-			DbGen.insertTB_TBL(DBID);
+			DbGen.insertTB_TBL(DBID, sysId);
 			
 			// 기능간맵핑
 			getLogger().info("/*** G-2-4.기능간맵핑 데이터적재 시작 ***/");
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, fileList);
+				DbGen.insertTB_FUNC_FUNC_MAPPING(DBID, sysId, fileList);
 			}
 
 			// 테이블맵핑
@@ -1694,7 +1693,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/method";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				DbGen.insertTB_FUNC_TBL_MAPPING(DBID, fileList);
+				DbGen.insertTB_FUNC_TBL_MAPPING(DBID, sysId, fileList);
 			}
 
 			// 화면
@@ -1702,7 +1701,7 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/ui";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				DbGen.insertTB_UI(DBID, fileList);
+				DbGen.insertTB_UI(DBID, sysId, fileList);
 			}
 
 			// 화면기능맵핑
@@ -1710,11 +1709,12 @@ public class SvcAnalyzer extends BaseObject{
 			subPath = AppAnalyzer.WRITE_PATH + "/ui";
 			fileList = FileUtil.readFileList(subPath, false);
 			if(fileList != null) {
-				DbGen.insertTB_UI_FUNC_MAPPING(DBID, fileList);
+				DbGen.insertTB_UI_FUNC_MAPPING(DBID, sysId, fileList);
 			}
+
 			// 종합메트릭스
 			getLogger().info("/*** G-2-8.종합메트릭스 데이터적재 시작 ***/");
-			DbGen.insertTB_METRIX(DBID);
+			DbGen.insertTB_METRIX(DBID, sysId);
 
 		} catch (Exception e) {
 			e.printStackTrace();
