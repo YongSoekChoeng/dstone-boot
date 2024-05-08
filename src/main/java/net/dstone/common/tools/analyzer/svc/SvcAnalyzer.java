@@ -975,8 +975,13 @@ public class SvcAnalyzer extends BaseObject{
 								methodInfoList = MethodFactory.getMtdInfoList(classFile);
 								if( methodInfoList != null ) {
 									for(Map<String, String> methodInfo : methodInfoList) {
-										mtdVo = new MtdVo();
 
+										if( !SvcAnalyzer.isValidSvcPackage(methodInfo.get("CLASS_ID")) ) {
+											continue;
+										}
+
+										mtdVo = new MtdVo();
+										
 										/*** 기능ID ***/
 										functionId = methodInfo.get("FUNCTION_ID");
 										mtdVo.setFunctionId(functionId);
