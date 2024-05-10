@@ -9,12 +9,16 @@ import java.util.Map;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
@@ -45,6 +49,12 @@ public class ParseUtil {
 	static List<String> MANNUAL_TABLE_LIST = new ArrayList<String>();
 	static List<Map<String, String>> MANNUAL_TABLE_MAP_LIST = new ArrayList<Map<String, String>>();
 	static Map<String, Map<String, String>> MANNUAL_TABLE_LIST_MAP = new HashMap<String, Map<String, String>>();
+	
+	static Map<String, ClassOrInterfaceDeclaration> PARSE_CLASS_DECL_MAP = new HashMap<String, ClassOrInterfaceDeclaration>();
+	static Map<ClassOrInterfaceDeclaration, ResolvedReferenceTypeDeclaration> RE_PARSE_CLASS_DECL_MAP = new HashMap<ClassOrInterfaceDeclaration, ResolvedReferenceTypeDeclaration>();
+	 
+	static Map<String, MethodDeclaration> PARSE_METHOD_DECL_MAP = new HashMap<String, MethodDeclaration>();
+	static Map<Object, ResolvedMethodDeclaration> RE_PARSE_METHOD_DECL_MAP = new HashMap<Object, ResolvedMethodDeclaration>();
 	
 	public static JavaSymbolSolver getJavaSymbolSolver(){
 		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getJavaSymbolSolver() has been called !!!");
@@ -117,7 +127,12 @@ public class ParseUtil {
     		Long threadId = Thread.currentThread().getId();
     		if( !javaParserMap.containsKey(threadId) ) {
 	    		parser = new JavaParser();
-	    		parser.getParserConfiguration().setSymbolResolver(getJavaSymbolSolver());
+	    		ParserConfiguration config = parser.getParserConfiguration();
+	    		
+	    		config.setStoreTokens(false);
+	    		config.setLexicalPreservationEnabled(false);
+	    		config.setSymbolResolver(getJavaSymbolSolver());
+	    		
 	    		javaParserMap.put(threadId, parser);
     		}else {
     			parser = javaParserMap.get(threadId);
@@ -816,22 +831,23 @@ public class ParseUtil {
 	 * @return
 	 */
 	public static ClassOrInterfaceDeclaration getClassDec(String srcRoot, String clzzQualifiedName) throws Exception { 
-		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getClassDec("+srcRoot+", "+clzzQualifiedName+") has been called !!!");
 		ClassOrInterfaceDeclaration classDec = null; 
 		String filePath = "";
 		try {
 			filePath = srcRoot+"/"+ StringUtil.replace(clzzQualifiedName,".", "/")+".java" ;
 			if( FileUtil.isFileExist(filePath)) {
-				ParseResult<CompilationUnit> result = getJavaParser().parse(new File(filePath));
-				if( result.isSuccessful() && result.getResult().isPresent() ) {
-					CompilationUnit clzzCU = result.getResult().get(); 
-					if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
-						classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+				
+				if(PARSE_CLASS_DECL_MAP.containsKey(filePath)) {
+					classDec = PARSE_CLASS_DECL_MAP.get(filePath);
+				}else {
+					ParseResult<CompilationUnit> result = getJavaParser().parse(new File(filePath));
+					if( result.isSuccessful() && result.getResult().isPresent() ) {
+						CompilationUnit clzzCU = result.getResult().get(); 
+						if( clzzCU.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) { 
+							classDec = clzzCU.findFirst(ClassOrInterfaceDeclaration.class).get();
+						}
 					}
 				}
-			}
-			if(classDec == null) {
-				//logger.debug("ParseUtil.getClassDec(srcRoot["+srcRoot+"]," + " clzzQualifiedName["+clzzQualifiedName+"])로 클래스정보를 찾을 수 없음.");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -841,13 +857,34 @@ public class ParseUtil {
 	}
 	
 	/**
+	 * ClassOrInterfaceDeclaration으로 ResolvedReferenceTypeDeclaration을 찾아서 반환.
+	 * @param classDec
+	 * @return
+	 */
+	public static ResolvedReferenceTypeDeclaration getReClassDec(ClassOrInterfaceDeclaration classDec) throws Exception { 
+		ResolvedReferenceTypeDeclaration reClassDec = null; 
+		try {
+			if( classDec != null) {
+				if(RE_PARSE_CLASS_DECL_MAP.containsKey(classDec)) {
+					reClassDec = RE_PARSE_CLASS_DECL_MAP.get(classDec);
+				}else {
+					reClassDec = classDec.resolve();
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return reClassDec;
+	}
+	
+	/**
 	 * 메서드기능ID(xx.xxx.TestBean.testMethed(java.lang.String))으로 MethodDeclaration 찾아서 반환.
 	 * @param srcRoot
 	 * @param methodQualifiedSignature
 	 * @return
 	 */
 	public static MethodDeclaration getMethodDec(String srcRoot, String methodQualifiedSignature) throws Exception { 
-		//logger.debug("net.dstone.common.tools.analyzer.util.ParseUtil.getMethodDec("+srcRoot+", "+methodQualifiedSignature+") has been called !!!");
 		MethodDeclaration mtdDec = null;
 		try {
 			String clzzQualifiedName = "";
@@ -857,7 +894,7 @@ public class ParseUtil {
 			ClassOrInterfaceDeclaration classDec =  ParseUtil.getClassDec(srcRoot, clzzQualifiedName); 
 			if( classDec != null ) {
 				for (MethodDeclaration mDec : classDec.getMethods()) {
-					if( mDec.resolve().getQualifiedSignature().equals(methodQualifiedSignature) ) {
+					if( ParseUtil.getReMethodDec(mDec).getQualifiedSignature().equals(methodQualifiedSignature) ) {
 						mtdDec = mDec;
 						break;
 					}
@@ -870,6 +907,33 @@ public class ParseUtil {
 		}
 
 		return mtdDec;
+	}
+	
+	/**
+	 * MethodDeclaration으로 ResolvedMethodDeclaration을 찾아서 반환.
+	 * @param mtdDec
+	 * @return
+	 */
+	public static ResolvedMethodDeclaration getReMethodDec(Object mtdDec) throws Exception { 
+		ResolvedMethodDeclaration reMtdDec = null;
+		try {
+			if( mtdDec != null ) {
+				if( RE_PARSE_METHOD_DECL_MAP.containsKey(mtdDec) ) {
+					reMtdDec = RE_PARSE_METHOD_DECL_MAP.get(mtdDec);
+				}else {
+					if( mtdDec instanceof MethodDeclaration ) {
+						reMtdDec = ((MethodDeclaration)mtdDec).resolve();
+					}else if( mtdDec instanceof MethodCallExpr ) {
+						reMtdDec = ((MethodCallExpr)mtdDec).resolve();
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return reMtdDec;
 	}
 	
 	public static String convFunctionIdToFileName(String functionId) {

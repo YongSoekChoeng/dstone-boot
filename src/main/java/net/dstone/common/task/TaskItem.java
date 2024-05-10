@@ -13,10 +13,18 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 	
 	@Override
 	public TaskItem call() throws Exception {
-		return (TaskItem)this.doTheTask();
+		try {
+			
+			this.doTheTask();
+
+		} catch (Exception e) {
+			throw e;
+		}
+		return (TaskItem)this;
 	}
 	
-	private String strId = "";
+	private String executorServiceId = "";
+	private String taskItemId = "";
 	private HashMap<String, Object> prop = new HashMap<String, Object>();
 
 	/**
@@ -25,7 +33,7 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 	 * Comment :
 	 */
 	public String getId() {
-		return strId;
+		return taskItemId;
 	}
 
 	/**
@@ -34,7 +42,7 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 	 * Comment :
 	 */
 	public void setId(String string) {
-		strId = string;
+		taskItemId = string;
 	}
 	
 	/**
@@ -96,76 +104,18 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 	public HashMap getProp(){
 		return this.prop;
 	}
-	
-	private int totalCount = -1;
-	private int doneCount = -1;
-	private int interval = -1;
 
-	protected static int DEFAULT_INTERVAL = 10;
-	
-	/**
-	 * 작업진행과정을 모니터링하기위한 초기작업
-	 * @param totalCount-총작업진행대상
-	 */
-	public void initMonitoringCount(int totalCount) {
-		this.totalCount = totalCount;
-		this.interval = DEFAULT_INTERVAL;
-		if(this.totalCount > -1) {
-			doneCount = 0;
-		}
+	public String getExecutorServiceId() {
+		return executorServiceId;
 	}
 
-	/**
-	 * 작업진행과정을 모니터링하기위한 초기작업
-	 * @param totalCount-총작업진행대상
-	 * @param interval-보고간격건수
-	 */
-	public void initMonitoringCount(int totalCount, int interval) {
-		this.totalCount = totalCount;
-		this.interval = interval;
-		if(this.totalCount > -1) {
-			doneCount = 0;
-		}
-	}
-	
-	/**
-	 * 작업진행건수증가
-	 */
-	public void addMonitoringDoneCount() {
-		doneCount++;
-		if( totalCount > 0 && doneCount > 0 && doneCount%interval == 0) {
-			StringBuffer buff = new StringBuffer();
-			BigDecimal rate = new BigDecimal(doneCount);
-			rate = rate.divide(new BigDecimal(totalCount), 2, BigDecimal.ROUND_HALF_UP);
-			rate = rate.multiply(new BigDecimal(100));
-			buff.append("\n\n");
-			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-			buff.append("총진행대상건수["+totalCount+"] 진행완료건수["+doneCount+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
-			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-			debug(buff);
-		}
+	public void setExecutorServiceId(String executorServiceId) {
+		this.executorServiceId = executorServiceId;
 	}
 
-	/**
-	 * 작업진행과정 종료
-	 */
-	public void endMonitoringCount() {
-		if( totalCount > 0 && doneCount > 0 ) {
-			StringBuffer buff = new StringBuffer();
-			BigDecimal rate = new BigDecimal(doneCount);
-			rate = rate.divide(new BigDecimal(totalCount), 2, BigDecimal.ROUND_HALF_UP);
-			rate = rate.multiply(new BigDecimal(100));
-			buff.append("\n\n");
-			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 최종진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-			buff.append("총진행대상건수["+totalCount+"] 진행완료건수["+doneCount+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
-			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드ID["+this.getId()+"] 최종진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-			debug(buff);
-		}
-	}
-	
 	@Override
 	public String toString() {
-		return "TaskItem [strId=" + strId + ", prop=" + prop + "]";
+		return "TaskItem [executorServiceId=" + executorServiceId + ", taskItemId=" + taskItemId + ", prop=" + prop + "]";
 	}
-	
+
 }

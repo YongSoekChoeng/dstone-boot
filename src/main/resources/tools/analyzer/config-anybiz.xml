@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><Configuration>
  
 	<!-- 시스템 아이디. -->
     <SYS_ID>anybiz</SYS_ID>
@@ -20,7 +19,7 @@
     <IS_TABLE_LIST_FROM_DB>false</IS_TABLE_LIST_FROM_DB>
     
 	<!-- 테이블명을 DB로부터 읽어올때 적용할 프리픽스(IS_TABLE_LIST_FROM_DB 가 true일 경우에만 유효)-->
-    <TABLE_NAME_LIKE_STR></TABLE_NAME_LIKE_STR>
+    <TABLE_NAME_LIKE_STR/>
        
 	<!-- 작업결과를 DB에 저장할지 여부. true-작업결과를 DB에 저장. false-작업결과를 DB에 저장하지 않음. -->
     <IS_SAVE_TO_DB>true</IS_SAVE_TO_DB>

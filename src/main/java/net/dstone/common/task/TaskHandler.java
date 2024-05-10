@@ -1,5 +1,6 @@
 package net.dstone.common.task;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +16,74 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.dstone.common.core.BaseObject;
+import net.dstone.common.utils.DateUtil;
+import net.dstone.common.utils.StringUtil;
 
 public class TaskHandler extends BaseObject{
 	
+	public class TaskReport{
+
+		int monitoringSec = Integer.parseInt(DateUtil.getToDate("HHmmss"));
+		
+		int tryCount = 0;
+		int successCount = 0;
+		int errorCount = 0;
+		
+		public int getTryCount() {
+			return tryCount;
+		}
+		public void setTryCount(int tryCount) {
+			this.tryCount = tryCount;
+		}
+		public void addTryCount() {
+			this.tryCount++;
+		}
+		public void addTryCount(int tryCount) {
+			this.tryCount = this.tryCount + tryCount;
+		}
+		
+		public int getSuccessCount() {
+			return successCount;
+		}
+		public void setSuccessCount(int successCount) {
+			this.successCount = successCount;
+		}
+		public void addSuccessCount() {
+			this.successCount++;
+		}
+		public void addSuccessCount(int successCount) {
+			this.successCount = this.successCount + successCount;
+		}
+		
+		public int getErrorCount() {
+			return errorCount;
+		}
+		public void setErrorCount(int errorCount) {
+			this.errorCount = errorCount;
+		}
+		public void addErrorCount() {
+			this.errorCount++;
+		}
+		public void addErrorCount(int errorCount) {
+			this.errorCount = this.errorCount + errorCount;
+		}
+
+		public int getMonitoringSec() {
+			return monitoringSec;
+		}
+		public void setMonitoringSec(int monitoringSec) {
+			this.monitoringSec = monitoringSec;
+		}
+		
+		@Override
+		public String toString() {
+			return "TaskReport [monitoringSec=" + monitoringSec + ", tryCount=" + tryCount + ", successCount=" + successCount + ", errorCount=" + errorCount + "]";
+		}
+	}
+	
 	private Map<String, ExecutorService> EXECUTOR_SERVICE_MAP;
+	private Map<String, TaskReport> EXECUTOR_SERVICE_REPORT_MAP;
+	private int EXECUTOR_SERVICE_REPORT_INTERVAL = 10;
 
 	private ThreadFactory threadFactory = new ThreadFactory() {
         public Thread newThread(Runnable r) {
@@ -39,6 +104,7 @@ public class TaskHandler extends BaseObject{
 			ExecutorService executorService = null;
 	        executorService = Executors.newSingleThreadExecutor(threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
 		}else {
 			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
@@ -60,6 +126,7 @@ public class TaskHandler extends BaseObject{
 			}
 			executorService = Executors.newFixedThreadPool(threadNumWhenFixed, threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
 		}else {
 			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
@@ -77,6 +144,7 @@ public class TaskHandler extends BaseObject{
 			ExecutorService executorService = null;
 	        executorService = Executors.newCachedThreadPool(threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
 		}else {
 			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
@@ -99,6 +167,7 @@ public class TaskHandler extends BaseObject{
 			BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(queueCapacity);
 	        executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, java.util.concurrent.TimeUnit.SECONDS, workQueue, threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
 		}else {
 			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
@@ -110,12 +179,18 @@ public class TaskHandler extends BaseObject{
 		executorService = EXECUTOR_SERVICE_MAP.get(executorServiceId);
 		return executorService;
 	}
+	public TaskReport getExecutorServiceTaskReport(String executorServiceId){
+		TaskReport taskReport = null;
+		taskReport = EXECUTOR_SERVICE_REPORT_MAP.get(executorServiceId);
+		return taskReport;
+	}
 	
 	public void removeExecutorService(String executorServiceId){
 		if(EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
 			ExecutorService executorService = this.getExecutorService(executorServiceId);
 			this.close(executorService);
 			EXECUTOR_SERVICE_MAP.remove(executorServiceId);
+			EXECUTOR_SERVICE_REPORT_MAP.remove(executorServiceId);
 		}
 	}
 	
@@ -135,8 +210,8 @@ public class TaskHandler extends BaseObject{
 
 	protected void init(){
 		EXECUTOR_SERVICE_MAP = new HashMap<String, ExecutorService>();
+		EXECUTOR_SERVICE_REPORT_MAP = new HashMap<String, TaskReport>();
 	}
-
 
 	/**
 	 * @param executorServiceId
@@ -150,10 +225,14 @@ public class TaskHandler extends BaseObject{
 		try {
 			net.dstone.common.utils.DateUtil.stopWatchStart("TaskHandler["+executorServiceId+"].doTheTask");
 			executorService = this.getExecutorService(executorServiceId);
+			
+			item.setExecutorServiceId(executorServiceId);
+
 			future = executorService.submit(item);
 			if(future != null){
 				item = future.get();
 			}
+
 		} catch (Exception e) {
 			getLogger().info( this.getClass().getName() + ".doTheTask() 작없중 예외발생. ID[" + item.getId() + "] 상세내용:" + e.toString());
 			throw e;
@@ -174,21 +253,29 @@ public class TaskHandler extends BaseObject{
 		ExecutorService executorService = null;
 		ArrayList<TaskItem> returnVal = new ArrayList<TaskItem>();
 		List<Future<TaskItem>> futureList = new ArrayList<Future<TaskItem>>();
+		
 		String msg = "TaskHandler["+executorServiceId+"].doTheTasks(TaskItem갯수:"+itemList.size()+")";
 		
 		try {
 			net.dstone.common.utils.DateUtil.stopWatchStart(msg);
-			int startThreadCount = Thread.activeCount();
 			executorService = getExecutorService(executorServiceId);
+			for(TaskItem item : itemList) {
+				item.setExecutorServiceId(executorServiceId);
+			}
+			
 			futureList = executorService.invokeAll(itemList);
+			
 			if(futureList != null){
 				Future<TaskItem> future = null;
 				for(int i=0; i<futureList.size(); i++ ){
 					future = futureList.get(i);
+					TaskItem item = future.get();
 				    try {
-				    	returnVal.add(future.get());
+				    	returnVal.add(item);
 				    } catch (Exception e) {
 				    	returnVal.add(null);
+				    } finally {
+
 				    }
 				}
 			}
@@ -219,6 +306,52 @@ public class TaskHandler extends BaseObject{
 			getLogger().debug( this.getClass().getName() + ".close() 작없중 예외발생. 상세내용:" + e.toString());
 		}
 
+	}
+	
+	/**
+	 * 작업진행모니터링
+	 */
+	public void doMonitoring(String executorServiceId) {
+		TaskReport taskReport = this.getExecutorServiceTaskReport(executorServiceId);
+		if( taskReport != null ) {
+			boolean isTimeToReport = false;
+			
+			if( taskReport.getTryCount() > 0) {
+				if( taskReport.getTryCount() == (taskReport.getSuccessCount() + taskReport.getErrorCount()) ) {
+					isTimeToReport = true;
+				}else {
+					String beforeSec = StringUtil.filler(String.valueOf(taskReport.getMonitoringSec()), 6, "0");
+					int hour = Integer.parseInt(beforeSec.substring(0, 2));
+					int min = Integer.parseInt(beforeSec.substring(2, 4));
+					int sec = Integer.parseInt(beforeSec.substring(4));
+					
+					java.util.Calendar beforeCal = java.util.Calendar.getInstance();
+					beforeCal.set(java.util.Calendar.HOUR_OF_DAY, hour);
+					beforeCal.set(java.util.Calendar.MINUTE, min);
+					beforeCal.set(java.util.Calendar.SECOND, sec);
+					
+					beforeCal.add(java.util.Calendar.SECOND, EXECUTOR_SERVICE_REPORT_INTERVAL);
+					
+					java.util.Calendar currentCal = java.util.Calendar.getInstance();				
+					if( beforeCal.compareTo(currentCal) <= 0 ) {
+						isTimeToReport = true;
+						taskReport.setMonitoringSec(Integer.parseInt(DateUtil.getToDate("HHmmss")));
+					}
+				}
+			}
+			
+			if(isTimeToReport) {
+				StringBuffer buff = new StringBuffer();
+				BigDecimal rate = new BigDecimal(taskReport.getSuccessCount());
+				rate = rate.divide(new BigDecimal(taskReport.getTryCount()), 2, BigDecimal.ROUND_HALF_UP);
+				rate = rate.multiply(new BigDecimal(100));
+				buff.append("\n\n");
+				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+				buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
+				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+				debug(buff);
+			}
+		}
 	}
 	
 }

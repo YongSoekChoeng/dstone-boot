@@ -179,8 +179,7 @@ public class DateUtil {
 		int month;
 		int date;
 		if (baseDate == null || baseDate.length() != 8) {
-			throw new Exception("날짜입력형식(yyyyMMdd)이 맞지 않습니다. 실제입력값[" + baseDate
-					+ "]");
+			throw new Exception("날짜입력형식(yyyyMMdd)이 맞지 않습니다. 실제입력값[" + baseDate + "]");
 		}
 		try {
 			year = Integer.parseInt(baseDate.substring(0, 4));

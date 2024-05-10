@@ -79,11 +79,11 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             	Map<String, String> item = new HashMap<String, String>();
             	
             	// FUNCTION_ID
-                String FUNCTION_ID = methodDec.resolve().getQualifiedSignature();
+                String FUNCTION_ID = ParseUtil.getReMethodDec(methodDec).getQualifiedSignature();
             	item.put("FUNCTION_ID", FUNCTION_ID);
             	
             	// CLASS_ID
-                String CLASS_ID = classOrInterfaceDeclaration.resolve().getQualifiedName();
+                String CLASS_ID = ParseUtil.getReClassDec(classOrInterfaceDeclaration).getQualifiedName();
             	item.put("CLASS_ID", CLASS_ID);
 
             	// METHOD_ID
@@ -197,7 +197,8 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 			/*** 메서드내의 호출메서드 목록조회 ***/
 			List<MethodCallExpr> meCallList = mtdDec.findAll(MethodCallExpr.class);
 			for (MethodCallExpr meCall : meCallList) {
-				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
+				
+				ResolvedMethodDeclaration mtdResolved = ParseUtil.getReMethodDec(meCall); 
 				ClassOrInterfaceDeclaration valClzz = null; 
 				
 				// 호출메서드의 부모(클래스/인터페이스)객체 조회
@@ -245,7 +246,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 								ClassOrInterfaceDeclaration ocClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, oc.calculateResolvedType().describe());
 								if(ocClzz.getExtendedTypes().size() > 0) {
 									if( valClzz.resolve().getQualifiedName().equals(ocClzz.getExtendedTypes(0).resolve().describe()) ) {
-										callMethodQualifiedSignature = ocClzz.resolve().getQualifiedName() + "." + methodSignature;
+										callMethodQualifiedSignature = ParseUtil.getReClassDec(ocClzz).getQualifiedName() + "." + methodSignature;
 										if( !SvcAnalyzer.isValidSvcPackage(callMethodQualifiedSignature) ) {
 											continue;
 										}

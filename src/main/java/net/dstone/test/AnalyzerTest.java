@@ -467,6 +467,8 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 			for (MethodCallExpr meCall : meCallList) {
 				d( "\t\t" +   "meCall["+meCall+"]"  );
 				
+d( "aa===>>>" + meCall.findFirst(ClassOrInterfaceDeclaration.class));
+				
 				ResolvedMethodDeclaration mtdResolved = meCall.resolve(); 
 				ClassOrInterfaceDeclaration valClzz = null; 
 				Expression callerExp = null;
