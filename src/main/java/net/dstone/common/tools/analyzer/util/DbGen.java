@@ -349,6 +349,8 @@ public class DbGen {
 			DROP.append("DROP TABLE TB_UI; ").append("\n");
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			DROP.append("DROP TABLE TB_UI_FUNC_MAPPING; ").append("\n");
+			/* <종합메트릭스-TB_METRIX> */
+			DROP.append("DROP TABLE TB_METRIX; ").append("\n");
 
 		}
 	}
