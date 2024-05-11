@@ -201,7 +201,7 @@ public class AppAnalyzer extends BaseObject{
 			AppAnalyzer.WORKER_THREAD_KIND = Integer.valueOf(CONF.getNode("WORKER_THREAD_KIND").getTextContent());
 			AppAnalyzer.WORKER_THREAD_NUM = Integer.valueOf(CONF.getNode("WORKER_THREAD_NUM").getTextContent());
 			AppAnalyzer.SAVE_FILE_NAME = CONF.getNode("SAVE_FILE_NAME").getTextContent();
-			AppAnalyzer.TABLE_LIST_FILE_NAME = CONF.getNode("SAVE_FILE_NAME").getTextContent();
+			AppAnalyzer.TABLE_LIST_FILE_NAME = CONF.getNode("TABLE_LIST_FILE_NAME").getTextContent();
 		}
 		return analizer;
 	}

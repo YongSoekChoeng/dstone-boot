@@ -211,7 +211,10 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 				methodSignature = StringUtil.replace(methodQualifiedSignature, clzzQualifiedName+".", "");
 				
 				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
-				//debug("\t\t" + "호출메서드:" + methodQualifiedSignature + ", 호출메서드의 클래스:" + clzzQualifiedName + ", 호출메서드의 클래스AST:" + (valClzz==null?"null":valClzz.getNameAsString()) );
+				
+				if( functionId.equals("kr.co.gnx.contract.contract.ContractService.deleteContract(kr.co.gnx.contract.contract.ContractVO)") ) {
+					debug("\t\t" + "호출메서드:" + methodQualifiedSignature );
+				}
 				
 				if( valClzz != null) {
 					String callMethodQualifiedSignature = "";

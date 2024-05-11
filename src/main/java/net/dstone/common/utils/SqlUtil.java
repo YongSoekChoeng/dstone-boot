@@ -66,9 +66,7 @@ public class SqlUtil extends BaseObject {
 				String sql = paramSql; 
 				sql = SqlUtil.removeCommentsFromSql(sql);
 				sql = StringUtil.trimTextForParse(sql);
-				sql = StringUtil.replace(sql, "\r\n", " ");
-				sql = StringUtil.replace(sql, "\n", " ");
-				sql = sql.toUpperCase().trim();
+				sql = SqlUtil.getReadyForTableSearch(sql);
 				
 				/*** INSERT/UPDATE/DELETE 일 경우 테이블갯수, 테이블명위치 가 고정되어 있으므로 NEXT WORD 를 발췌해서 테이블명 추출. ***/
 				// INSERT
@@ -141,8 +139,7 @@ public class SqlUtil extends BaseObject {
 			if(!StringUtil.isEmpty(paramSql)) {
 				sql = paramSql; 
 				sql = StringUtil.trimTextForParse(sql);
-				sql = StringUtil.replace(sql, "\n", " ");
-				sql = sql.toUpperCase().trim();
+				sql = SqlUtil.getReadyForTableSearch(sql);
 				if(sql.startsWith("INSERT")) {
 					keyword = " INTO ";
 					if(sql.indexOf(keyword)>-1) {
@@ -178,6 +175,23 @@ public class SqlUtil extends BaseObject {
 			throw e;
 		}
 		return tableNameList;
+	}
+	
+	private static String getReadyForTableSearch(String paramSql) {
+		String sql = "";
+		if(!StringUtil.isEmpty(paramSql)) {
+			sql = paramSql; 
+			sql = StringUtil.replace(sql, "\r\n", " ");
+			sql = StringUtil.replace(sql, "\n", " ");
+			sql = StringUtil.replace(sql, "\t", " ");
+			sql = StringUtil.replace(sql, "(", "( ");
+			sql = StringUtil.replace(sql, ")", " )");
+			sql = StringUtil.replace(sql, ".", ". ");
+			sql = StringUtil.replace(sql, "   ", " ");
+			sql = StringUtil.replace(sql, "  ", " ");
+			sql = sql.toUpperCase().trim();
+		}
+		return sql;
 	}
 	
 	/**
@@ -407,13 +421,7 @@ public class SqlUtil extends BaseObject {
 
 			String sql = "";
 			if( !StringUtil.isEmpty(paramSql) && allTblList != null && allTblList.size()>0 ) {
-				sql = paramSql.toUpperCase(); 
-				sql = StringUtil.replace(sql, "\r\n", " ");
-				sql = StringUtil.replace(sql, "\n", " ");
-				sql = StringUtil.replace(sql, "\t", " ");
-				sql = StringUtil.replace(sql, "   ", " ");
-				sql = StringUtil.replace(sql, "  ", " ");
-				sql = sql.toUpperCase().trim();
+				sql = SqlUtil.getReadyForTableSearch(paramSql);
 				for(String tbl : allTblList) {
 					tbl = tbl.toUpperCase();
 					if( sql.indexOf(tbl + " ")>-1 ||  sql.indexOf(tbl + "(")>-1 ) {

@@ -282,18 +282,6 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private String getNameSpaceByGetterMethodName(String getterMethodName) throws Exception {
-		String nameSpace = "";
-		if( getterMethodName.endsWith("()") ) {
-			getterMethodName = net.dstone.common.utils.StringUtil.replace(getterMethodName, "()", "");
-		}
-		if(METHOD_NAME_VALUE_MAP.containsKey(getterMethodName)) {
-			nameSpace = METHOD_NAME_VALUE_MAP.get(getterMethodName);
-		}
-		return nameSpace;
-	}
-
 	private String getGetterMethodNameByNameSpace(String nameSpace) throws Exception {
 		String getterMethodName = "";
 		if( nameSpace.endsWith("_") ) {
