@@ -168,6 +168,7 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 		/*** 메소드VO 정보 획득  ***/
 		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
+debug("내부호출 분석대상:"+analyzedMethodFile + ", functionId:" + functionId );
 
 		/*** 클래스VO 정보 획득  ***/
 		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
