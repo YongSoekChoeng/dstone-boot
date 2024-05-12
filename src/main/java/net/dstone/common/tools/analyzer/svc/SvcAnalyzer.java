@@ -1121,7 +1121,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeMtdCallMtd(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 
-		String debugStr = "kr.co.gnx.contract.contract.ContractService.deleteContract";
+		String debugStr = "";
 		
 		String executorServiceId = "analyzeMtdCallMtd-Task";
 		
