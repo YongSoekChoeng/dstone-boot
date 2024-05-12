@@ -580,53 +580,57 @@ public class SvcAnalyzer extends BaseObject{
 					
 					ClzzVo clzzVo = null;
 					String classFile= "";
-					try {
-						
+					
+					if(classFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
-						
 						for(int i=0; i<classFileList.length; i++) {
-							classFile = classFileList[i];
-							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
-								
-								clzzVo = new ClzzVo();
-								
-								/*** 패키지ID ***/
-								clzzVo.setPackageId(ClassFactory.getPackageId(classFile));
-								
-								/*** 클래스ID ***/
-								clzzVo.setClassId(ClassFactory.getClassId(classFile));
-								
-								/*** 클래스명 ***/
-								clzzVo.setClassName(ClassFactory.getClassName(classFile));
-								
-								/*** 기능종류 ***/
-								clzzVo.setClassKind(ClassFactory.getClassKind(classFile));
+							try {
 
-								/*** 리소스ID ***/
-								clzzVo.setResourceId(ClassFactory.getResourceId(classFile));
+								classFile = classFileList[i];
+								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
+									
+									clzzVo = new ClzzVo();
+									
+									/*** 패키지ID ***/
+									clzzVo.setPackageId(ClassFactory.getPackageId(classFile));
+									
+									/*** 클래스ID ***/
+									clzzVo.setClassId(ClassFactory.getClassId(classFile));
+									
+									/*** 클래스명 ***/
+									clzzVo.setClassName(ClassFactory.getClassName(classFile));
+									
+									/*** 기능종류 ***/
+									clzzVo.setClassKind(ClassFactory.getClassKind(classFile));
 
-								/*** 클래스or인터페이스 ***/
-								clzzVo.setClassOrInterface(ClassFactory.getClassOrInterface(classFile));
+									/*** 리소스ID ***/
+									clzzVo.setResourceId(ClassFactory.getResourceId(classFile));
 
-								/*** 상위인터페이스ID ***/
-								clzzVo.setInterfaceIdList(ClassFactory.getInterfaceIdList(classFile));
+									/*** 클래스or인터페이스 ***/
+									clzzVo.setClassOrInterface(ClassFactory.getClassOrInterface(classFile));
 
-								/*** 상위클래스ID ***/
-								clzzVo.setParentClassId(ClassFactory.getParentClassId(classFile));
-								
-								/*** 파일명 ***/
-								clzzVo.setFileName(classFile);
-								
-								// 파일저장			
-								ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
-								
+									/*** 상위인터페이스ID ***/
+									clzzVo.setInterfaceIdList(ClassFactory.getInterfaceIdList(classFile));
+
+									/*** 상위클래스ID ***/
+									clzzVo.setParentClassId(ClassFactory.getParentClassId(classFile));
+									
+									/*** 파일명 ***/
+									clzzVo.setFileName(classFile);
+									
+									// 파일저장			
+									ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
+									
+								}
 								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. classFile["+classFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. classFile["+classFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -678,38 +682,43 @@ public class SvcAnalyzer extends BaseObject{
 					String pkgClassId = "";
 					String classFile= "";
 					String[] analyzedClassFileList = null;
-					try {
-
+					
+					
+					if(classFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
 						
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
-							classFile = classFileList[i];
-							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
-								String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
-								pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
-								if(pkgClassId.startsWith("/")) {
-									pkgClassId = pkgClassId.substring(1);
-								}
-								pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
-								clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
-								
-								if( "I".equals(clzzVo.getClassOrInterface()) ) {
+							try {
+								classFile = classFileList[i];
+								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
+									String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
+									pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
+									if(pkgClassId.startsWith("/")) {
+										pkgClassId = pkgClassId.substring(1);
+									}
+									pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
+									clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
 									
-									/*** 인터페이스구현하위클래스ID목록 ***/
-									clzzVo.setImplClassIdList(ClassFactory.getImplClassIdList(clzzVo, analyzedClassFileList));
-									
-									// 파일저장	
-									ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
-								}
+									if( "I".equals(clzzVo.getClassOrInterface()) ) {
+										
+										/*** 인터페이스구현하위클래스ID목록 ***/
+										clzzVo.setImplClassIdList(ClassFactory.getImplClassIdList(clzzVo, analyzedClassFileList));
+										
+										// 파일저장	
+										ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
+									}
 
+								}
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
 							}
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -762,34 +771,37 @@ public class SvcAnalyzer extends BaseObject{
 					String pkgClassId = "";
 					String classFile= "";
 					String[] analyzedClassFileList = null;
-					try {
-
+					
+					if(classFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
-						
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
-							classFile = classFileList[i];
-							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
-								String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
-								pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
-								if(pkgClassId.startsWith("/")) {
-									pkgClassId = pkgClassId.substring(1);
+							try {
+								classFile = classFileList[i];
+								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
+									String fileNoExt = classFile.substring(0, classFile.lastIndexOf("."));
+									pkgClassId = StringUtil.replace(fileNoExt, AppAnalyzer.CLASS_ROOT_PATH, "");
+									if(pkgClassId.startsWith("/")) {
+										pkgClassId = pkgClassId.substring(1);
+									}
+									pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
+									clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
+									
+									/*** 호출알리아스 ***/
+									clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(clzzVo, analyzedClassFileList));
+									
+									// 파일저장	
+									ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 								}
-								pkgClassId = StringUtil.replace(pkgClassId, "/", ".");
-								clzzVo = ParseUtil.readClassVo(pkgClassId, AppAnalyzer.WRITE_PATH + "/class");
-								
-								/*** 호출알리아스 ***/
-								clzzVo.setCallClassAlias(ClassFactory.getCallClassAlias(clzzVo, analyzedClassFileList));
-								
-								// 파일저장	
-								ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
 							}
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -841,56 +853,59 @@ public class SvcAnalyzer extends BaseObject{
 					QueryVo queryVo = null;
 					List<Map<String, String>> queryInfoList = null;
 					String queryFile= "";
-					try {
-
+					
+					if(queryFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(queryFileList.length);
-						
 						for(int i=0; i<queryFileList.length; i++) {
-							queryFile = queryFileList[i];
-							if( SvcAnalyzer.isValidQueryFile(queryFile) ) {
+							try {
+								queryFile = queryFileList[i];
+								if( SvcAnalyzer.isValidQueryFile(queryFile) ) {
 
-								/*** 파일로부터 쿼리정보목록 추출. ***
-								 * SQL_NAMESPACE - 네임스페이스
-								 * SQL_ID - SQL아이디
-								 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
-								 * SQL_BODY - SQL구문
-								****************************/
-								queryInfoList = QueryFactory.getQueryInfoList(queryFile);
+									/*** 파일로부터 쿼리정보목록 추출. ***
+									 * SQL_NAMESPACE - 네임스페이스
+									 * SQL_ID - SQL아이디
+									 * SQL_KIND - SQL종류(SELECT/INSERT/UPDATE/DELETE)
+									 * SQL_BODY - SQL구문
+									****************************/
+									queryInfoList = QueryFactory.getQueryInfoList(queryFile);
+												
+									if( queryInfoList != null ) {
+										for(Map<String, String> queryInfo : queryInfoList) {
+											queryVo = new QueryVo();
+
+											/*** KEY ***/
+											queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
 											
-								if( queryInfoList != null ) {
-									for(Map<String, String> queryInfo : queryInfoList) {
-										queryVo = new QueryVo();
+											/*** 네임스페이스 ***/
+											queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
 
-										/*** KEY ***/
-										queryVo.setKey(QueryFactory.getQueryKey(queryInfo));
-										
-										/*** 네임스페이스 ***/
-										queryVo.setNamespace(queryInfo.get("SQL_NAMESPACE"));
+											/*** 쿼리ID ***/
+											queryVo.setQueryId(queryInfo.get("SQL_ID"));
+											
+											/*** 쿼리종류 ***/
+											queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
 
-										/*** 쿼리ID ***/
-										queryVo.setQueryId(queryInfo.get("SQL_ID"));
-										
-										/*** 쿼리종류 ***/
-										queryVo.setQueryKind(queryInfo.get("SQL_KIND"));
+											/*** 파일명 ***/
+											queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
 
-										/*** 파일명 ***/
-										queryVo.setFileName(AppAnalyzer.WRITE_PATH + "/query/" + queryVo.getKey() + ".txt");
+											/*** 쿼리내용 ***/
+											queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
 
-										/*** 쿼리내용 ***/
-										queryVo.setQueryBody(queryInfo.get("SQL_BODY"));
-
-										// 파일저장			
-										ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+											// 파일저장			
+											ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+										}
 									}
 								}
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. queryFile["+queryFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
 							}
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
-						}	
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. queryFile["+queryFile+"]");
-						e.printStackTrace();
-					}					
+						}
+					}
 					/************************ 작업세팅 종료 ************************/
 
 					return this;
@@ -944,29 +959,30 @@ public class SvcAnalyzer extends BaseObject{
 					QueryVo queryVo = null;
 					String key = "";
 					String analyzedQueryFile= "";
-					try {
-						
+					
+					if(queryFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(queryFileList.length);
-						
 						for(int i=0; i<queryFileList.length; i++) {
-							analyzedQueryFile = queryFileList[i];
-							key = FileUtil.getFileName(analyzedQueryFile, false);
-							queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
-							
-							/*** 테이블ID정보목록 ***/
-							queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile, allTblList));
-							
-							// 파일저장	
-							ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
-							
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
+							try {
+								analyzedQueryFile = queryFileList[i];
+								key = FileUtil.getFileName(analyzedQueryFile, false);
+								queryVo = ParseUtil.readQueryVo(key, AppAnalyzer.WRITE_PATH + "/query");
+								
+								/*** 테이블ID정보목록 ***/
+								queryVo.setCallTblList(QueryFactory.getCallTblList(analyzedQueryFile, allTblList));
+								
+								// 파일저장	
+								ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
+							}
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
-						e.printStackTrace();
 					}
-			
 					/************************ 작업세팅 종료 ************************/
 			
 					return this;
@@ -1020,56 +1036,64 @@ public class SvcAnalyzer extends BaseObject{
 					List<Map<String, String>> methodInfoList = null;
 					String classFile= "";
 					String functionId = "";
-					try {
-						
+					
+					if(classFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
-
 						for(int i=0; i<classFileList.length; i++) {
-							classFile = classFileList[i];
-							if( SvcAnalyzer.isValidSvcFile(classFile) ) {
-								// 메소드ID/메소드명/메소드URL/메소드내용 추출
-								methodInfoList = MethodFactory.getMtdInfoList(classFile);
-								if( methodInfoList != null ) {
-									for(Map<String, String> methodInfo : methodInfoList) {
-										mtdVo = new MtdVo();
-										if( !SvcAnalyzer.isValidSvcPackage(methodInfo.get("CLASS_ID")) ) {
-											continue;
+							try {
+								classFile = classFileList[i];
+								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
+									// 메소드ID/메소드명/메소드URL/메소드내용 추출
+									methodInfoList = MethodFactory.getMtdInfoList(classFile);
+									if( methodInfoList != null ) {
+										for(Map<String, String> methodInfo : methodInfoList) {
+											mtdVo = new MtdVo();
+											if( !SvcAnalyzer.isValidSvcPackage(methodInfo.get("CLASS_ID")) ) {
+												continue;
+											}
+
+											try {
+												/*** 기능ID ***/
+												functionId = methodInfo.get("FUNCTION_ID");
+												mtdVo.setFunctionId(functionId);
+
+												/*** 클래스ID ***/
+												mtdVo.setClassId(methodInfo.get("CLASS_ID"));
+
+												/*** 메소드ID ***/
+												mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
+
+												/*** 메소드명 ***/
+												mtdVo.setMethodName(methodInfo.get("METHOD_NAME"));
+
+												/*** 메소드URL ***/
+												mtdVo.setMethodUrl(methodInfo.get("METHOD_URL"));
+
+												/*** 파일명 ***/
+												mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + StringUtil.replace(StringUtil.replace(functionId, "<", "["), ">", "]") + ".txt");
+
+												/*** 메소드내용 ***/
+												mtdVo.setMethodBody(methodInfo.get("METHOD_BODY"));
+
+												// 파일저장			
+												ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
+											} catch (Exception e) {
+												LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. functionId["+functionId+"]");
+												e.printStackTrace();
+											}
 										}
-
-										/*** 기능ID ***/
-										functionId = methodInfo.get("FUNCTION_ID");
-										mtdVo.setFunctionId(functionId);
-
-										/*** 클래스ID ***/
-										mtdVo.setClassId(methodInfo.get("CLASS_ID"));
-
-										/*** 메소드ID ***/
-										mtdVo.setMethodId(methodInfo.get("METHOD_ID"));
-
-										/*** 메소드명 ***/
-										mtdVo.setMethodName(methodInfo.get("METHOD_NAME"));
-
-										/*** 메소드URL ***/
-										mtdVo.setMethodUrl(methodInfo.get("METHOD_URL"));
-
-										/*** 파일명 ***/
-										mtdVo.setFileName(AppAnalyzer.WRITE_PATH + "/method/" + StringUtil.replace(StringUtil.replace(functionId, "<", "["), ">", "]") + ".txt");
-
-										/*** 메소드내용 ***/
-										mtdVo.setMethodBody(methodInfo.get("METHOD_BODY"));
-
-										// 파일저장			
-										ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
 									}
+									
 								}
-								
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. classFile["+classFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
 							}
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. classFile["+classFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -1123,13 +1147,13 @@ public class SvcAnalyzer extends BaseObject{
 					String functionId = "";
 					String analyzedMethodFile = "";
 					
-					try {
-						if(analyzedMethodFileList != null) {
-							
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(analyzedMethodFileList.length);
-							
-							for(int i=0; i<analyzedMethodFileList.length; i++) {
-								
+					if(analyzedMethodFileList != null) {
+						
+						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(analyzedMethodFileList.length);
+
+						for(int i=0; i<analyzedMethodFileList.length; i++) {
+							try {
+
 								analyzedMethodFile = analyzedMethodFileList[i];
 
 								String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
@@ -1138,7 +1162,6 @@ public class SvcAnalyzer extends BaseObject{
 									functionId = functionId.substring(1);
 								}
 								functionId = StringUtil.replace(functionId, "/", ".");
-
 								if( !StringUtil.isEmpty(debugStr) && analyzedMethodFile.indexOf(debugStr) > -1 ) {
 									debug("분석대상:"+analyzedMethodFile + ", functionId:" + functionId );
 								}
@@ -1154,15 +1177,16 @@ public class SvcAnalyzer extends BaseObject{
 								
 								// 파일저장	
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
-
+								
 								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
-
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -1213,12 +1237,12 @@ public class SvcAnalyzer extends BaseObject{
 					MtdVo mtdVo = null;
 					String functionId = "";
 					String analyzedMethodFile = "";
-					try {
-						if(analyzedMethodFileList != null) {
-							
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(analyzedMethodFileList.length);
-							
-							for(int i=0; i<analyzedMethodFileList.length; i++) {
+					
+					
+					if(analyzedMethodFileList != null) {
+						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(analyzedMethodFileList.length);
+						for(int i=0; i<analyzedMethodFileList.length; i++) {
+							try {
 								analyzedMethodFile = analyzedMethodFileList[i];
 								String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
 								functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
@@ -1235,13 +1259,14 @@ public class SvcAnalyzer extends BaseObject{
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
 								
 								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
-
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -1292,36 +1317,39 @@ public class SvcAnalyzer extends BaseObject{
 					String[] uiFileList = (String[])this.getObj("uiFileList");
 					UiVo uiVo = null;
 					String uiFile= "";
-					try {
-
+					
+					if(uiFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(uiFileList.length);
-						
 						for(int i=0; i<uiFileList.length; i++) {
-							uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
-							if( SvcAnalyzer.isValidUiFile(uiFile) ) {
-								
-								// UI아이디/UI명/인크루드파일/링크 추출
-								uiVo = new UiVo();
-								
-								/*** UI아이디 ***/
-								uiVo.setUiId(UiFactory.getUiId(uiFile));
-								
-								/*** UI명 ***/
-								uiVo.setUiName(UiFactory.getUiName(uiFile));
+							try {
+								uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
+								if( SvcAnalyzer.isValidUiFile(uiFile) ) {
+									
+									// UI아이디/UI명/인크루드파일/링크 추출
+									uiVo = new UiVo();
+									
+									/*** UI아이디 ***/
+									uiVo.setUiId(UiFactory.getUiId(uiFile));
+									
+									/*** UI명 ***/
+									uiVo.setUiName(UiFactory.getUiName(uiFile));
 
-								/*** 파일명 ***/
-								uiVo.setFileName(uiFile);
-								
-								// 파일저장			
-								ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
-								
+									/*** 파일명 ***/
+									uiVo.setFileName(uiFile);
+									
+									// 파일저장			
+									ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
+									
+								}
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
 							}
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 
@@ -1371,30 +1399,33 @@ public class SvcAnalyzer extends BaseObject{
 					String[] uiFileList = (String[])this.getObj("uiFileList");
 					UiVo uiVo = null;
 					String uiFile= "";
-					try {
-
+					
+					if(uiFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(uiFileList.length);
-						
 						for(int i=0; i<uiFileList.length; i++) {
-							uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
-							if( SvcAnalyzer.isValidUiFile(uiFile) ) {
-								
-								// UI Vo
-								uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
-								
-								/*** 링크 ***/
-								uiVo.setLinkList(UiFactory.getUiLinkList(uiFile));
+							try {
+								uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
+								if( SvcAnalyzer.isValidUiFile(uiFile) ) {
+									
+									// UI Vo
+									uiVo = ParseUtil.readUiVo(UiFactory.getUiId(uiFile), AppAnalyzer.WRITE_PATH + "/ui");
+									
+									/*** 링크 ***/
+									uiVo.setLinkList(UiFactory.getUiLinkList(uiFile));
 
-								// 파일저장			
-								ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
-								
+									// 파일저장			
+									ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
+									
+								}
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+							} catch (Exception e) {
+								LogUtil.sysout(this.getClass().getName() + ".analyzeUiLink()수행중 예외발생. uiFile["+uiFile+"]");
+								e.printStackTrace();
+								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+							} finally {
+								taskHandler.doMonitoring(executorServiceId);
 							}
-							taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
-							taskHandler.doMonitoring(executorServiceId);
 						}
-					} catch (Exception e) {
-						LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
-						e.printStackTrace();
 					}
 					/************************ 작업세팅 종료 ************************/
 

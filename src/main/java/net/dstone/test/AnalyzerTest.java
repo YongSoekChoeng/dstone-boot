@@ -456,7 +456,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
 			ArrayList<String> mtdCallList = new ArrayList<String>(); 
 			
-			String method = "kr.co.gnx.contract.contract.ContractService.deleteContract(kr.co.gnx.contract.contract.ContractVO)";
+			String method = "kr.co.gnx.contract.contract.ContractController.exceptAdditionalContract(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, kr.co.gnx.contract.contract.ContractVO)";
 
 			
 			d( "method["+method+"]"  );
