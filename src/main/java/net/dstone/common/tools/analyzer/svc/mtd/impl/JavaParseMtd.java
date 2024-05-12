@@ -161,14 +161,18 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 	@Override
 	public List<String> getCallMtdList(String analyzedMethodFile) throws Exception {
 		
-		//debug("내부호출 분석대상:"+analyzedMethodFile );
+		String debugStr = "kr.co.gnx.contract.contract.ContractService.deleteContract";
 		
 		ArrayList<String> mtdCallList = new ArrayList<String>(); 
 		
 		/*** 메소드VO 정보 획득  ***/
 		String functionId = FileUtil.getFileName(analyzedMethodFile, false);
 		MtdVo mtdVo = ParseUtil.readMethodVo(functionId, AppAnalyzer.WRITE_PATH + "/method");
-debug("내부호출 분석대상:"+analyzedMethodFile + ", functionId:" + functionId );
+		
+		if( !StringUtil.isEmpty(debugStr) && analyzedMethodFile.indexOf(debugStr) > -1 ) {
+			debug("내부호출 분석대상:"+analyzedMethodFile + ", functionId:" + functionId );
+		}
+
 
 		/*** 클래스VO 정보 획득  ***/
 		ClzzVo clzzVo = ParseUtil.readClassVo(mtdVo.getClassId(), AppAnalyzer.WRITE_PATH + "/class");
@@ -213,7 +217,7 @@ debug("내부호출 분석대상:"+analyzedMethodFile + ", functionId:" + functi
 				
 				valClzz = ParseUtil.getClassDec(AppAnalyzer.CLASS_ROOT_PATH, clzzQualifiedName);
 				
-				if( functionId.equals("kr.co.gnx.contract.contract.ContractService.deleteContract(kr.co.gnx.contract.contract.ContractVO)") ) {
+				if( !StringUtil.isEmpty(debugStr) && analyzedMethodFile.indexOf(debugStr) > -1 ) {
 					debug("\t\t" + "호출메서드:" + methodQualifiedSignature );
 				}
 				

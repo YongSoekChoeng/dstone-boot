@@ -1097,6 +1097,8 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeMtdCallMtd(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-2.메소드분석파일리스트 에 메소드내 타 호출메소드 목록 추가");
 
+		String debugStr = "kr.co.gnx.contract.contract.ContractService.deleteContract";
+		
 		String executorServiceId = "analyzeMtdCallMtd-Task";
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
@@ -1129,12 +1131,17 @@ public class SvcAnalyzer extends BaseObject{
 							for(int i=0; i<analyzedMethodFileList.length; i++) {
 								
 								analyzedMethodFile = analyzedMethodFileList[i];
+
 								String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
 								functionId = StringUtil.replace(fileNoExt, AppAnalyzer.WRITE_PATH + "/method", "");
 								if(functionId.startsWith("/")) {
 									functionId = functionId.substring(1);
 								}
 								functionId = StringUtil.replace(functionId, "/", ".");
+
+								if( !StringUtil.isEmpty(debugStr) && analyzedMethodFile.indexOf(debugStr) > -1 ) {
+									debug("분석대상:"+analyzedMethodFile + ", functionId:" + functionId );
+								}
 
 								if( !SvcAnalyzer.isValidSvcPackage(functionId) ) {
 									continue;
