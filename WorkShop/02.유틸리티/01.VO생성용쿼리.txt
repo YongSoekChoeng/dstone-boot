@@ -1,5 +1,22 @@
         SELECT                                                            
-            *
+            A.SYS_ID /* 시스템ID */
+            , A.SYS_NM /* 시스템명 */
+            , A.CONF_FILE_PATH /* 설정파일경로 */
+            , A.APP_ROOT_PATH /* 어플리케이션루트 */
+            , A.APP_SRC_PATH /* 어플리케이션서버소스루트 */
+            , A.APP_WEB_PATH /* 어플리케이션웹소스루트 */
+            , A.WRITE_PATH /* 분석결과생성경로 */
+            , A.SAVE_FILE_NAME /* 분석결과저장파일명 */
+            , A.DBID /* DBID */
+            , A.IS_TABLE_LIST_FROM_DB /* 테이블목록을DB로부터읽어올지여부 */
+            , A.TABLE_NAME_LIKE_STR /* 테이블명을DB로부터읽어올때적용할프리픽스 */
+            , A.TABLE_LIST_FILE_NAME /* 테이블목록정보파일명 */
+            , A.IS_SAVE_TO_DB /* 작업결과를DB에저장할지여부 */
+            , A.APP_JDK_HOME /* 분석대상어플리케이션JDK홈 */
+            , A.APP_CLASSPATH /* 분석대상어플리케이션클래스패스 */
+            , A.WORKER_THREAD_KIND /* 분석작업을진행할쓰레드핸들러종류 */
+            , A.WORKER_THREAD_NUM /* 분석작업을진행할쓰레드갯수 */
+            , A.WORKER_ID /* 입력자ID */
         FROM                                               
-            SAMPLE_MEMBER
+            TB_SYS A
         WHERE 1=1 

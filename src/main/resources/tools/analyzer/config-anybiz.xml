@@ -3,26 +3,44 @@
 	<!-- 시스템 아이디. -->
     <SYS_ID>anybiz</SYS_ID>
     
-	<!-- DB를 특정하는 아이디. DBID_1(오라클), DBID_2(MYSQL) -->
-    <DBID>DBID_2</DBID>
+	<!-- 시스템 명. -->
+    <SYS_NM>anybiz</SYS_NM>
+    
+	<!-- 어플리케이션루트 -->
+    <APP_ROOT_PATH>D:/AppHome/anybiz_prd</APP_ROOT_PATH>
+    
+	<!-- 어플리케이션서버소스경로(분석대상 어플리케이션 java소스 루트 경로. 어플리케이션루트이하의 경로만 기술.) -->
+    <APP_SRC_PATH>/WEB-INF/classes</APP_SRC_PATH>
+    
+	<!-- 어플리케이션웹소스경로(분석대상 어플리케이션 웹 루트 루트 경로. 어플리케이션루트이하의 경로만 기술.) -->
+    <APP_WEB_PATH>/WEB-INF/views</APP_WEB_PATH>
+    
+	<!-- 어플리케이션쿼리소스루트(분석대상 어플리케이션 쿼리 루트 경로. 전체 경로 기술.) -->
+    <APP_SQL_PATH>D:/AppHome/anybiz_prd/WEB-INF/classes/sqlmap/mapper</APP_SQL_PATH>
     
 	<!-- 중간산출물 저장디렉토리 -->
-    <WRITE_PATH>D:/Temp/anlaysis-anybiz/</WRITE_PATH>
+    <WRITE_PATH>D:/Temp/anlaysis-anybiz</WRITE_PATH>
     
 	<!-- 저장파일명(디렉토리 -WRITE_PATH) -->
     <SAVE_FILE_NAME>AppMetrix.ouput</SAVE_FILE_NAME>
         
-	<!-- 테이블목록정보파일명(디렉토리 -WRITE_PATH) -->
-    <TABLE_LIST_FILE_NAME>TableList.txt</TABLE_LIST_FILE_NAME>
+	<!-- 작업결과를 DB에 저장할지 여부. true-작업결과를 DB에 저장. false-작업결과를 DB에 저장하지 않음. -->
+    <IS_SAVE_TO_DB>true</IS_SAVE_TO_DB>
+    
+	<!-- DB를 특정하는 아이디. DBID_1(오라클), DBID_2(MYSQL) -->
+    <DBID>DBID_2</DBID>
     
 	<!-- 테이블목록을 DB로부터 읽어올지 여부. true-테이블명을 DB로부터 읽어옴. false-테이블명을 전체테이블목록파일(TABLE_LIST_FILE_NAME)에서 읽어오거나 쿼리 로부터 읽어옴.-->
     <IS_TABLE_LIST_FROM_DB>false</IS_TABLE_LIST_FROM_DB>
     
 	<!-- 테이블명을 DB로부터 읽어올때 적용할 프리픽스(IS_TABLE_LIST_FROM_DB 가 true일 경우에만 유효)-->
-    <TABLE_NAME_LIKE_STR/>
+    <TABLE_NAME_LIKE_STR></TABLE_NAME_LIKE_STR>
        
-	<!-- 작업결과를 DB에 저장할지 여부. true-작업결과를 DB에 저장. false-작업결과를 DB에 저장하지 않음. -->
-    <IS_SAVE_TO_DB>true</IS_SAVE_TO_DB>
+	<!-- 테이블목록정보파일명(디렉토리 -WRITE_PATH) -->
+    <TABLE_LIST_FILE_NAME>TableList.txt</TABLE_LIST_FILE_NAME>
+    
+	<!-- 분석대상어플리케이션 JDK홈 -->
+    <APP_JDK_HOME>C:/DEV/JDK/1.8</APP_JDK_HOME>
     
 	<!-- 분석작업을 진행 할 쓰레드핸들러 종류(1:싱글 쓰레드풀, 2:Fixed 쓰레드풀, 3:Cached 쓰레드풀) -->
     <WORKER_THREAD_KIND>2</WORKER_THREAD_KIND>
@@ -30,8 +48,11 @@
 	<!-- 분석작업을 진행 할 쓰레드 갯수(WORKER_THREAD_KIND가 Fixed 쓰레드풀 일 경우에만 유효) -->
     <WORKER_THREAD_NUM>8</WORKER_THREAD_NUM>
     
-	<!-- 분석대상어플리케이션 JDK홈 -->
-    <APP_JDK_HOME>C:/DEV/JDK/1.8</APP_JDK_HOME>
+	<!-- 분석패키지루트 목록(콤마 구분자) -->
+    <INCLUDE_PACKAGE_ROOT>kr.co.gnx</INCLUDE_PACKAGE_ROOT>
+    
+	<!-- 분석제외패키지패턴 목록(콤마 구분자) -->
+    <EXCLUDE_PACKAGE_PATTERN>".vo.", ".vo", "VO", "Vo", ".model.", "kr.co.gnx.base.Base"</EXCLUDE_PACKAGE_PATTERN>
     
 	<!-- 분석대상어플리케이션 클래스패스 -->
     <APP_CLASSPATH>

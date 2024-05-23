@@ -8,26 +8,30 @@
 	/* ==============================================================================================
 	<모듈명>
 	=============================================================================================== */	
-	String 		MODULE_NAME 							= "sample";
+	String 		MODULE_NAME 							= "analyzer";
 	/* ==============================================================================================
 	<DBID>프레임웍에 설정된 DB 아이디(사용자홈/SYSTEMINFO.properties 에 등록된 타겟 DBID)
 	=============================================================================================== */	
-	net.dstone.common.tools.BizGenerator.DBID 			= "DBID_0";
+	net.dstone.common.tools.BizGenerator.DBID 			= "DBID_2";
 	/* ==============================================================================================
 	<SqlSessionTemplate>DBID와 맵핑되는 /WebContent/WEB-INF/classes/conf/spring/sql-config.xml에 등록된 SqlSessionTemplate 의 ID
 	=============================================================================================== */	
-	net.dstone.common.tools.BizGenerator.SQL_CLIENT_ID = "sqlSessionDb1";
+	net.dstone.common.tools.BizGenerator.SQL_CLIENT_ID = "sqlSessionAnalyzer";
 	
 	/* ==============================================================================================
 	일괄로 소스를 생성할 테이블ID, 테이블명
 	=============================================================================================== */	
 	java.util.Properties tables = new java.util.Properties();
 	
-	tables.setProperty("SAMPLE_MEMBER", "샘플맴버");	
-	tables.setProperty("SAMPLE_GROUP", "샘플그룹");
-	tables.setProperty("SAMPLE_ROLE", "샘플ROLE");	
-	tables.setProperty("SAMPLE_GROUP_ROLE", "샘플그룹별ROLE");	
-	tables.setProperty("SAMPLE_ROLE_PROG", "샘플ROLE별프로그램");	
+	tables.setProperty("TB_SYS", "시스템");	
+	tables.setProperty("TB_CLZZ", "클래스");
+	tables.setProperty("TB_FUNC", "기능메서드");	
+	tables.setProperty("TB_TBL", "테이블");	
+	tables.setProperty("TB_FUNC_FUNC_MAPPING", "기능간맵핑");	
+	tables.setProperty("TB_FUNC_TBL_MAPPING", "테이블맵핑");	
+	tables.setProperty("TB_UI", "화면");	
+	tables.setProperty("TB_UI_FUNC_MAPPING", "화면기능맵핑");	
+	tables.setProperty("TB_METRIX", "종합메트릭스");	
 
 	/* ==============================================================================================
 	<모듈패키지>

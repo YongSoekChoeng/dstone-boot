@@ -15,7 +15,7 @@ public class CustomUserDao extends net.dstone.common.biz.BaseDao {
 	 * @exception Exception
 	 */
     public Map<String, Object> selectUser(Map<String, String> vo) throws Exception {
-    	return sqlSessionDb1.selectOne("net.dstone.common.security.CustomUserDao.selectUser", vo);
+    	return sqlSessionCommon.selectOne("net.dstone.common.security.CustomUserDao.selectUser", vo);
     }
 
 	/**
@@ -25,7 +25,7 @@ public class CustomUserDao extends net.dstone.common.biz.BaseDao {
 	 * @exception Exception
 	 */
     public void updateUserLoginTime(Map<String, String> vo) throws Exception {
-    	sqlSessionDb1.update("net.dstone.common.security.CustomUserDao.updateUserLoginTime", vo);
+    	sqlSessionCommon.update("net.dstone.common.security.CustomUserDao.updateUserLoginTime", vo);
     }
 
 	/**
@@ -35,7 +35,7 @@ public class CustomUserDao extends net.dstone.common.biz.BaseDao {
 	 * @exception Exception
 	 */
     public List<String> selectListAuthority(Map<String, String> vo) throws Exception {
-    	return sqlSessionDb1.selectList("net.dstone.common.security.CustomUserDao.selectListAuthority", vo);
+    	return sqlSessionCommon.selectList("net.dstone.common.security.CustomUserDao.selectListAuthority", vo);
     }
 
 	/**
@@ -45,7 +45,7 @@ public class CustomUserDao extends net.dstone.common.biz.BaseDao {
 	 * @exception Exception
 	 */
     public List<Map<String, Object>> selectListUrlAndRole(Map<String, String> vo) throws Exception {
-    	return sqlSessionDb1.selectList("net.dstone.common.security.CustomUserDao.selectListUrlAndRole", vo);
+    	return sqlSessionCommon.selectList("net.dstone.common.security.CustomUserDao.selectListUrlAndRole", vo);
     }
 
 	/**
@@ -55,7 +55,7 @@ public class CustomUserDao extends net.dstone.common.biz.BaseDao {
 	 * @exception Exception
 	 */
     public List<Map<String, Object>> selectListUrlByRole(Map<String, String> vo) throws Exception {
-    	return sqlSessionDb1.selectList("net.dstone.common.security.CustomUserDao.selectListUrlByRole", vo);
+    	return sqlSessionCommon.selectList("net.dstone.common.security.CustomUserDao.selectListUrlByRole", vo);
     }
 
 }

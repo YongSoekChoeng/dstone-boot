@@ -36,6 +36,11 @@ public class DbGen {
 			MYSQL_CREATE.append("CREATE TABLE TB_SYS ( ").append("\n");
 			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
 			MYSQL_CREATE.append("  SYS_NM VARCHAR(200) COMMENT '시스템명', ").append("\n");
+			MYSQL_CREATE.append("  CONF_FILE_PATH VARCHAR(500) NOT NULL COMMENT '설정파일경로', ").append("\n");
+			MYSQL_CREATE.append("  APP_ROOT_PATH VARCHAR(500) NOT NULL COMMENT '어플리케이션루트', ").append("\n");
+			MYSQL_CREATE.append("  APP_SRC_PATH VARCHAR(4000) NOT NULL COMMENT '어플리케이션서버소스루트', ").append("\n");
+			MYSQL_CREATE.append("  APP_WEB_PATH VARCHAR(4000) NOT NULL COMMENT '어플리케이션웹소스루트', ").append("\n");
+			MYSQL_CREATE.append("  APP_SQL_PATH VARCHAR(4000) NOT NULL COMMENT '어플리케이션쿼리소스루트', ").append("\n");
 			MYSQL_CREATE.append("  WRITE_PATH VARCHAR(500) COMMENT '분석결과생성경로', ").append("\n");
 			MYSQL_CREATE.append("  SAVE_FILE_NAME VARCHAR(500) COMMENT '분석결과저장파일명', ").append("\n");
 			MYSQL_CREATE.append("  DBID VARCHAR(10) COMMENT 'DBID', ").append("\n");
@@ -44,7 +49,7 @@ public class DbGen {
 			MYSQL_CREATE.append("  TABLE_LIST_FILE_NAME VARCHAR(500) COMMENT '테이블목록정보파일명', ").append("\n");
 			MYSQL_CREATE.append("  IS_SAVE_TO_DB VARCHAR(10) COMMENT '작업결과를DB에저장할지여부', ").append("\n");
 			MYSQL_CREATE.append("  APP_JDK_HOME VARCHAR(200) COMMENT '분석대상어플리케이션JDK홈', ").append("\n");
-			MYSQL_CREATE.append("  APP_CLASSPATH VARCHAR(200) COMMENT '분석대상어플리케이션클래스패스', ").append("\n");
+			MYSQL_CREATE.append("  APP_CLASSPATH TEXT COMMENT '분석대상어플리케이션클래스패스', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_THREAD_KIND VARCHAR(2) COMMENT '분석작업을진행할쓰레드핸들러종류', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_THREAD_NUM VARCHAR(10) COMMENT '분석작업을진행할쓰레드갯수', ").append("\n");
 			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
@@ -149,6 +154,11 @@ public class DbGen {
 			ORACLE_CREATE.append("CREATE TABLE TB_SYS ( ").append("\n");
 			ORACLE_CREATE.append("  SYS_ID VARCHAR2(20) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  SYS_NM VARCHAR2(200), ").append("\n");
+			ORACLE_CREATE.append("  CONF_FILE_PATH VARCHAR2(500) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  APP_ROOT_PATH VARCHAR2(500) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  APP_SRC_PATH VARCHAR2(4000) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  APP_WEB_PATH VARCHAR2(4000) NOT NULL, ").append("\n");
+			ORACLE_CREATE.append("  APP_SQL_PATH VARCHAR2(4000) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  WRITE_PATH VARCHAR2(500), ").append("\n");
 			ORACLE_CREATE.append("  SAVE_FILE_NAME VARCHAR2(500), ").append("\n");
 			ORACLE_CREATE.append("  DBID VARCHAR2(10), ").append("\n");
@@ -157,7 +167,7 @@ public class DbGen {
 			ORACLE_CREATE.append("  TABLE_LIST_FILE_NAME VARCHAR2(500), ").append("\n");
 			ORACLE_CREATE.append("  IS_SAVE_TO_DB VARCHAR2(10), ").append("\n");
 			ORACLE_CREATE.append("  APP_JDK_HOME VARCHAR2(200), ").append("\n");
-			ORACLE_CREATE.append("  APP_CLASSPATH VARCHAR2(200), ").append("\n");
+			ORACLE_CREATE.append("  APP_CLASSPATH CLOB, ").append("\n");
 			ORACLE_CREATE.append("  WORKER_THREAD_KIND VARCHAR2(2), ").append("\n");
 			ORACLE_CREATE.append("  WORKER_THREAD_NUM VARCHAR2(10), ").append("\n");
 			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL, ").append("\n");
@@ -166,6 +176,11 @@ public class DbGen {
 			ORACLE_CREATE.append("COMMENT ON TABLE TB_SYS IS '시스템' ; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.SYS_ID IS '시스템ID'; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.SYS_NM IS '시스템명'; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.CONF_FILE_PATH IS '설정파일경로' ; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.APP_ROOT_PATH IS '어플리케이션루트' ; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.APP_SRC_PATH IS '어플리케이션서버소스루트' ; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.APP_WEB_PATH IS '어플리케이션웹소스루트' ; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.APP_SQL_PATH IS '어플리케이션쿼리소스루트' ; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.WRITE_PATH IS '분석결과생성경로'; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.SAVE_FILE_NAME IS '분석결과저장파일명'; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_SYS.DBID IS 'DBID'; ").append("\n");

@@ -157,6 +157,7 @@ public class ConfigSecurity {
 			/*** 동적자원중 권한체크가 필요없는 자원들 ***/	
 			, "/defaultLink.do*"
 			, "/test/**"
+			, "/analyzer/**"
 			, MAIN_PAGE
 			, LOGIN_PAGE
 			, LOGIN_GO_ACTION

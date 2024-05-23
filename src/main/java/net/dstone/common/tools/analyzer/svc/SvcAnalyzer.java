@@ -259,7 +259,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String methodFile) throws Exception {
-			return tossParseMtd.getCallTblList(methodFile);
+			return javaParseMtd.getCallTblList(methodFile);
 		}
 
 	}
@@ -279,7 +279,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static public String getQueryKey(Map<String, String> queryInfo) throws Exception {
-			return tossParseQuery.getQueryKey(queryInfo);
+			return mybatisParseQuery.getQueryKey(queryInfo);
 		}
 		
 		/**
@@ -292,7 +292,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<Map<String, String>> getQueryInfoList(String queryFile) throws Exception {
-			return tossParseQuery.getQueryInfoList(queryFile);
+			return mybatisParseQuery.getQueryInfoList(queryFile);
 		}
 
 		/**
@@ -301,7 +301,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String queryInfoFile, List<String> allTblList) throws Exception {
-			return tossParseQuery.getTblInfoList(queryInfoFile, allTblList);
+			return mybatisParseQuery.getTblInfoList(queryInfoFile, allTblList);
 		}
 		
 	}
@@ -321,7 +321,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getUiId(String uiFile) throws Exception{
-			return tossParseUi.getUiId(uiFile);
+			return jspParseUi.getUiId(uiFile);
 		}
 		/**
 		 * UI파일로부터 UI명 추출
@@ -329,7 +329,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getUiName(String uiFile) throws Exception{
-			return tossParseUi.getUiName(uiFile);
+			return jspParseUi.getUiName(uiFile);
 		}
 		/**
 		 * UI파일로부터 링크목록 추출
@@ -339,7 +339,7 @@ public class SvcAnalyzer extends BaseObject{
 		static List<String> getUiLinkList(String uiFile) throws Exception {
 			List<String> composeLinkList = new ArrayList<String>();
 			
-			composeLinkList = tossParseUi.getUiLinkList(uiFile);
+			composeLinkList = jspParseUi.getUiLinkList(uiFile);
 
 			return composeLinkList.stream().distinct().collect(Collectors.toList());
 		}
@@ -555,7 +555,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeClass(String[] paramFileList)throws Exception {
 		getLogger().info("/*** A-1.클래스파일리스트 에서 패키지ID/클래스ID/클래스명/기능종류 등이 담긴 클래스분석파일리스트 추출");
 
-		String executorServiceId = "analyzeClass-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_11_ANALYZE_ID_CLASS;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -638,7 +638,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("classFileList", classFileList);
-			taskItem.setId("analyzeClass-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
@@ -657,7 +657,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeClassImpl(String[] paramFileList) throws Exception {
 		getLogger().info("/*** A-2.클래스파일리스트 에서 인터페이스구현하위클래스ID목록을 추출하여 클래스분석파일리스트에 추가");
 		
-		String executorServiceId = "analyzeClassImpl-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_12_ANALYZE_ID_CLASS_IMPL;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -726,7 +726,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("classFileList", classFileList);
-			taskItem.setId("analyzeClassImpl-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -746,7 +746,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeClassAlias(String[] paramFileList) throws Exception {
 		getLogger().info("/*** A-3.클래스파일리스트 에서 호출알리아스를 추출하여 클래스분석파일리스트에 추가");
 		
-		String executorServiceId = "analyzeClassAlias-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_13_ANALYZE_ID_CLASS_ALIAS;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -809,7 +809,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("classFileList", classFileList);
-			taskItem.setId("analyzeClassAlias-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -829,7 +829,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeQuery(String[] paramFileList) throws Exception {
 		getLogger().info("/*** B-1.쿼리파일리스트 에서 KEY/네임스페이스/쿼리ID/쿼리종류/쿼리내용 등이 담긴 쿼리분석파일리스트 추출");
 		
-		String executorServiceId = "analyzeQuery-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_21_ANALYZE_ID_QUERY;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -912,7 +912,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("queryFileList", queryFileList);
-			taskItem.setId("analyzeQuery-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -935,7 +935,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeQueryCallTbl(String[] paramFileList, List<String> allTblList) throws Exception {
 		getLogger().info("/*** B-2.쿼리분석파일리스트 에 호출테이블ID정보목록 추가");
 		
-		String executorServiceId = "analyzeQueryCallTbl-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_22_ANALYZE_ID_QUERY_CALLTBL;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -989,7 +989,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("queryFileList", queryFileList);
-			taskItem.setId("analyzeQueryCallTbl-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -1010,7 +1010,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeMtd(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-1.클래스파일리스트 에서 기능ID/메소드ID/메소드명/메소드URL/메소드내용 등이 담긴 메소드분석파일리스트 추출");
 		
-		String executorServiceId = "analyzeMtd-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_31_ANALYZE_ID_MTD;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 
@@ -1101,7 +1101,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("classFileList", classFileList);
-			taskItem.setId("analyzeMtd-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -1123,7 +1123,7 @@ public class SvcAnalyzer extends BaseObject{
 
 		String debugStr = "";
 		
-		String executorServiceId = "analyzeMtdCallMtd-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_32_ANALYZE_ID_MTD_CALLMTD;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -1194,7 +1194,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("analyzedMethodFileList", analyzedMethodFileList);
-			taskItem.setId("analyzeMtdCallMtd-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -1213,7 +1213,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeMtdCallTbl(String[] paramFileList) throws Exception {
 		getLogger().info("/*** C-3.메소드분석파일리스트 에 메소드내 호출테이블 목록 추가");
 
-		String executorServiceId = "analyzeMtdCallTbl-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_33_ANALYZE_ID_MTD_CALLTBL;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -1274,7 +1274,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("analyzedMethodFileList", analyzedMethodFileList);
-			taskItem.setId("analyzeMtdCallTbl-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -1294,7 +1294,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeUi(String[] paramFileList) throws Exception {
 		getLogger().info("/*** D-1.UI파일로부터 UI아이디/UI명 등이 담긴 UI분석파일목록 추출");
 
-		String executorServiceId = "analyzeUi-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_41_ANALYZE_ID_UI;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -1357,7 +1357,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("uiFileList", uiFileList);
-			taskItem.setId("analyzeUi-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		
@@ -1376,7 +1376,7 @@ public class SvcAnalyzer extends BaseObject{
 	private void analyzeUiLink(String[] paramFileList) throws Exception {
 		getLogger().info("/*** D-2.UI파일로부터 링크 추출");
 
-		String executorServiceId = "analyzeUiLink-Task";
+		String executorServiceId = AppAnalyzer.JOB_KIND_42_ANALYZE_ID_UI_LINK;
 		
 		if(paramFileList == null || paramFileList.length == 0) {return;}
 		List<List<String>> divFileList = null;
@@ -1433,7 +1433,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			};
 			taskItem.setObj("uiFileList", uiFileList);
-			taskItem.setId("analyzeUiLink-" + n);
+			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
 		

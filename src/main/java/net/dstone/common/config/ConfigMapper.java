@@ -19,18 +19,51 @@ public class ConfigMapper {
 	private static final LogUtil logger = new LogUtil(ConfigMapper.class);
 
 	@Bean
-	public SqlSessionFactory sqlSessionFactoryEdb(@Qualifier("dataSourceDb1") DataSource dataSourceDb1) throws Exception {
+	public SqlSessionFactory sqlSessionFactoryCommon(@Qualifier("dataSourceCommon") DataSource dataSourceCommon) throws Exception {
 		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-		bean.setDataSource(dataSourceDb1);
+		bean.setDataSource(dataSourceCommon);
 		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
-		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/**/*Dao.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/common/**/*Dao.xml"));
 		return bean.getObject();
 	}
 	
 	@Bean
-	public SqlSessionTemplate sqlSessionDb1(SqlSessionFactory sqlSessionFactoryDb1) {
-		return new SqlSessionTemplate(sqlSessionFactoryDb1);
+	@Qualifier("sqlSessionCommon") 
+	public SqlSessionTemplate sqlSessionCommon(SqlSessionFactory sqlSessionFactoryCommon) {
+		return new SqlSessionTemplate(sqlSessionFactoryCommon);
+	}
+
+	@Bean
+	public SqlSessionFactory sqlSessionFactorySample(@Qualifier("dataSourceSample") DataSource dataSourceSample) throws Exception {
+		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
+		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+		bean.setDataSource(dataSourceSample);
+		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
+		return bean.getObject();
+	}
+	
+	@Bean
+	@Qualifier("sqlSessionSample") 
+	public SqlSessionTemplate sqlSessionSample(SqlSessionFactory sqlSessionFactorySample) {
+		return new SqlSessionTemplate(sqlSessionFactorySample);
+	}
+
+	@Bean
+	public SqlSessionFactory sqlSessionFactoryAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) throws Exception {
+		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
+		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+		bean.setDataSource(dataSourceAnalyzer);
+		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/analyzer/**/*Dao.xml"));
+		return bean.getObject();
+	}
+	
+	@Bean
+	@Qualifier("sqlSessionFactoryAnalyzer") 
+	public SqlSessionTemplate sqlSessionAnalyzer(SqlSessionFactory sqlSessionFactoryAnalyzer) {
+		return new SqlSessionTemplate(sqlSessionFactoryAnalyzer);
 	}
 
 }

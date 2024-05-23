@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public abstract class BaseDao {
 
     @Autowired 
-    @Qualifier("sqlSessionDb1") 
-    private SqlSessionTemplate sqlSessionDb1;
+    @Qualifier("sqlSessionSample") 
+    private SqlSessionTemplate sqlSessionSample;
 
-	public SqlSessionTemplate getSqlSessionDb1() {
-		return sqlSessionDb1;
+	public SqlSessionTemplate getSqlSessionSample() {
+		return sqlSessionSample;
 	}
 
-	public void setSqlSessionDb1(SqlSessionTemplate sqlSessionDb1) {
-		this.sqlSessionDb1 = sqlSessionDb1;
+	public void setSqlSessionSample(SqlSessionTemplate sqlSessionSample) {
+		this.sqlSessionSample = sqlSessionSample;
 	} 
     
     protected void d(Object msg) {

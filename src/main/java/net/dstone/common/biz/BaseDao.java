@@ -9,7 +9,15 @@ import org.springframework.stereotype.Repository;
 public class BaseDao extends net.dstone.common.core.BaseObject {
 
     @Autowired 
-    @Qualifier("sqlSessionDb1") 
-    protected SqlSessionTemplate sqlSessionDb1; 
+    @Qualifier("sqlSessionCommon") 
+    protected SqlSessionTemplate sqlSessionCommon; 
+
+    @Autowired 
+    @Qualifier("sqlSessionSample") 
+    protected SqlSessionTemplate sqlSessionSample; 
+
+    @Autowired 
+    @Qualifier("sqlSessionAnalyzer") 
+    protected SqlSessionTemplate sqlSessionAnalyzer; 
 
 }

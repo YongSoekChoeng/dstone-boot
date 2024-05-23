@@ -34,18 +34,18 @@ public class ConfigTransaction {
 	
 
 	/********************************************************************************
-	1. DB1 관련 설정
+	1. Common 관련 설정
 	********************************************************************************/
 	@Bean
-	@Qualifier("txManagerDb1")
-	public DataSourceTransactionManager txManagerDb1(@Qualifier("dataSourceDb1") DataSource dataSourceDb1) {
-		DataSourceTransactionManager txManagerDb1 = new DataSourceTransactionManager(dataSourceDb1);
-		return txManagerDb1;
+	@Qualifier("txManagerCommon")
+	public DataSourceTransactionManager txManagerCommon(@Qualifier("dataSourceCommon") DataSource dataSourceCommon) {
+		DataSourceTransactionManager txManagerCommon = new DataSourceTransactionManager(dataSourceCommon);
+		return txManagerCommon;
 	}
 
 	@Bean
-	@Qualifier("txAdviceDb1")
-	public TransactionInterceptor txAdviceDb1(DataSourceTransactionManager txManagerDb1) {
+	@Qualifier("txAdviceCommon")
+	public TransactionInterceptor txAdviceCommon(DataSourceTransactionManager txManagerCommon) {
 	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
 		Properties txAttributes = new Properties();
 		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
@@ -68,15 +68,107 @@ public class ConfigTransaction {
 		txAttributes.setProperty("delete*", writeTransactionAttributesDefinition);
 		
 		transactionInterceptor.setTransactionAttributes(txAttributes);
-		transactionInterceptor.setTransactionManager(txManagerDb1);
+		transactionInterceptor.setTransactionManager(txManagerCommon);
 	    return transactionInterceptor;
 	}
 
 	@Bean
-	public Advisor txAdvisorDb1(@Qualifier("txManagerDb1") DataSourceTransactionManager txManagerDb1) {
+	public Advisor txAdvisorCommon(@Qualifier("txManagerCommon") DataSourceTransactionManager txManagerCommon) {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
-		return new DefaultPointcutAdvisor(pointcut, txAdviceDb1(txManagerDb1));
+		return new DefaultPointcutAdvisor(pointcut, txAdviceCommon(txManagerCommon));
+	}
+
+	/********************************************************************************
+	2. Sample 관련 설정
+	********************************************************************************/
+	@Bean
+	@Qualifier("txManagerSample")
+	public DataSourceTransactionManager txManagerSample(@Qualifier("dataSourceSample") DataSource dataSourceSample) {
+		DataSourceTransactionManager txManagerSample = new DataSourceTransactionManager(dataSourceSample);
+		return txManagerSample;
+	}
+
+	@Bean
+	@Qualifier("txAdviceSample")
+	public TransactionInterceptor txAdviceSample(DataSourceTransactionManager txManagerSample) {
+	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+		Properties txAttributes = new Properties();
+		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
+		/** If need to add additionall exception, add here **/
+		rollbackRules.add(new RollbackRuleAttribute(Exception.class));
+		// read-only
+		DefaultTransactionAttribute readOnlyAttribute = new DefaultTransactionAttribute( TransactionDefinition.PROPAGATION_SUPPORTS);
+		readOnlyAttribute.setReadOnly(true);
+		readOnlyAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String readOnlyTransactionAttributesDefinition = readOnlyAttribute.toString();
+		txAttributes.setProperty("get*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("select*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("list*", readOnlyTransactionAttributesDefinition);
+		// write rollback-rule
+		RuleBasedTransactionAttribute writeAttribute = new RuleBasedTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED, rollbackRules);
+		writeAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String writeTransactionAttributesDefinition = writeAttribute.toString();
+		txAttributes.setProperty("insert*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("update*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("delete*", writeTransactionAttributesDefinition);
+		
+		transactionInterceptor.setTransactionAttributes(txAttributes);
+		transactionInterceptor.setTransactionManager(txManagerSample);
+	    return transactionInterceptor;
+	}
+
+	@Bean
+	public Advisor txAdvisorSample(@Qualifier("txManagerSample") DataSourceTransactionManager txManagerSample) {
+		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
+		return new DefaultPointcutAdvisor(pointcut, txAdviceSample(txManagerSample));
+	}
+
+	/********************************************************************************
+	3. Analyzer 관련 설정
+	********************************************************************************/
+	@Bean
+	@Qualifier("txManagerAnalyzer")
+	public DataSourceTransactionManager txManagerAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) {
+		DataSourceTransactionManager txManagerAnalyzer = new DataSourceTransactionManager(dataSourceAnalyzer);
+		return txManagerAnalyzer;
+	}
+
+	@Bean
+	@Qualifier("txAdviceAnalyzer")
+	public TransactionInterceptor txAdviceAnalyzer(DataSourceTransactionManager txManagerAnalyzer) {
+	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+		Properties txAttributes = new Properties();
+		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
+		/** If need to add additionall exception, add here **/
+		rollbackRules.add(new RollbackRuleAttribute(Exception.class));
+		// read-only
+		DefaultTransactionAttribute readOnlyAttribute = new DefaultTransactionAttribute( TransactionDefinition.PROPAGATION_SUPPORTS);
+		readOnlyAttribute.setReadOnly(true);
+		readOnlyAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String readOnlyTransactionAttributesDefinition = readOnlyAttribute.toString();
+		txAttributes.setProperty("get*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("select*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("list*", readOnlyTransactionAttributesDefinition);
+		// write rollback-rule
+		RuleBasedTransactionAttribute writeAttribute = new RuleBasedTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED, rollbackRules);
+		writeAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String writeTransactionAttributesDefinition = writeAttribute.toString();
+		txAttributes.setProperty("insert*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("update*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("delete*", writeTransactionAttributesDefinition);
+		
+		transactionInterceptor.setTransactionAttributes(txAttributes);
+		transactionInterceptor.setTransactionManager(txManagerAnalyzer);
+	    return transactionInterceptor;
+	}
+
+	@Bean
+	public Advisor txAdvisorAnalyzer(@Qualifier("txManagerAnalyzer") DataSourceTransactionManager txManagerAnalyzer) {
+		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
+		return new DefaultPointcutAdvisor(pointcut, txAdviceAnalyzer(txManagerAnalyzer));
 	}
 
 }

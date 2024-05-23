@@ -63,43 +63,17 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     	try {
         	/* +++++++++++++++++++++++++++++++++++++++++++++ Application Setting Start +++++++++++++++++++++++++++++++++++++++++++++ */
         	String					configPath								= "";
-        	String 					rootPath 								= "";	/* 프로젝트 루트 디렉토리 */
-        	String 					classRootPath 							= "";	/* 클래스 루트 디렉토리 */
-        	String 					webRootPath 							= "";	/* 웹 루트 디렉토리 */
-        	String 					queryRootPath 							= "";	/* 쿼리 루트 디렉토리 */
-        	String[] 				excludePackagePattern 					= null; /* 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.) */
-        	java.util.List<String>	includePackageRoot 						= new java.util.ArrayList<String>();	/* 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.) */
 
         	// 프레임웍
         	if(mode.equals(MODE_FRAMEWORK)) {
             	configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config.xml";
-            	rootPath 														= "D:/AppHome/framework/dstone-boot/src/main";
-            	classRootPath 													= rootPath + "/" + "java";
-            	webRootPath 													= rootPath + "/" + "webapp";
-            	excludePackagePattern 											= new String[] {".vo.", ".vo", "VO", "Vo", ".model."};
-            	includePackageRoot												.add("net.dstone.sample.analyze");
-            	queryRootPath 													= "D:/AppHome/framework/dstone-boot/src/main/resources/sqlmap";
 
         	//토스ERP
         	} else if(mode.equals(MODE_ANYBIZ)) {
         		configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config-anybiz.xml";
-        		rootPath 														= "D:/AppHome/anybiz_prd";
-        		classRootPath 													= rootPath + "/WEB-INF/classes";
-        		webRootPath 													= rootPath + "/WEB-INF/views";
-        		excludePackagePattern 											= new String[] {".vo.", ".vo", "VO", "Vo", ".model.", "kr.co.gnx.base.Base" };
-        		includePackageRoot												.add("kr.co.gnx");
-        		queryRootPath 													= rootPath + "/WEB-INF/classes/sqlmap/mapper";
         	}
         	// 1.분석모듈 인스턴스 생성
-        	net.dstone.common.tools.analyzer.AppAnalyzer appAnalyzer = net.dstone.common.tools.analyzer.AppAnalyzer.getInstance(
-        		configPath	
-        		, rootPath
-        		, classRootPath
-        		, webRootPath
-        		, includePackageRoot.toArray(new String[includePackageRoot.size()])
-        		, excludePackagePattern
-        		, queryRootPath
-        	);
+        	net.dstone.common.tools.analyzer.AppAnalyzer appAnalyzer = net.dstone.common.tools.analyzer.AppAnalyzer.getInstance(configPath);
         	
 		} catch (Exception e) {
 			e.printStackTrace();

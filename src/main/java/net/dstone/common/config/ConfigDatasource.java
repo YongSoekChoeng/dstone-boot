@@ -20,9 +20,31 @@ public class ConfigDatasource {
 	private static final LogUtil logger = new LogUtil(ConfigDatasource.class);
 
     @Bean
-	@Qualifier("dataSourceDb1")
-    @ConfigurationProperties("spring.datasource.db1.hikari")
+	@Qualifier("dataSourceCommon")
+    @ConfigurationProperties("spring.datasource.common.hikari")
+    public DataSource dataSourceCommon() {
+    	if( "Y".equals(ConfigProperty.getProperty("use-jndi-lookup")) ) {
+    		return (new JndiDataSourceLookup()).getDataSource(ConfigProperty.getProperty("jndi-lookup-name"));
+    	}else {
+    		return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    	}
+    }
+
+    @Bean
+	@Qualifier("dataSourceSample")
+    @ConfigurationProperties("spring.datasource.sample.hikari")
     public DataSource dataSource1() {
+    	if( "Y".equals(ConfigProperty.getProperty("use-jndi-lookup")) ) {
+    		return (new JndiDataSourceLookup()).getDataSource(ConfigProperty.getProperty("jndi-lookup-name"));
+    	}else {
+    		return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    	}
+    }
+
+    @Bean
+	@Qualifier("dataSourceAnalyzer")
+    @ConfigurationProperties("spring.datasource.analyzer.hikari")
+    public DataSource dataSourceAnalyzer() {
     	if( "Y".equals(ConfigProperty.getProperty("use-jndi-lookup")) ) {
     		return (new JndiDataSourceLookup()).getDataSource(ConfigProperty.getProperty("jndi-lookup-name"));
     	}else {

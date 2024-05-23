@@ -30,7 +30,18 @@ spring:
     main:
         allow-bean-definition-overriding: true
     datasource: 
-        db1:
+        common:
+            hikari: 
+                driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+                jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
+                username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
+                password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
+                maximum-pool-size: 50
+                use-jndi-lookup: N
+                jndi-lookup-name: java:comp/env/sampleDB
+            networks: 
+                - backend                
+        sample:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
@@ -41,7 +52,7 @@ spring:
                 jndi-lookup-name: java:comp/env/sampleDB
             networks: 
                 - backend
-        db2: 
+        sample-oracle: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
                 jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:1521:xe
@@ -50,6 +61,17 @@ spring:
                 maximum-pool-size: 50
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/xe
+            networks: 
+                - backend
+        analyzer:
+            hikari: 
+                driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+                jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/analize
+                username: ENC(WzvyXP093fpScL2no/Iwn2/ojAMywlZuCQNIUH5RjAA=)
+                password: ENC(WzvyXP093fpScL2no/Iwn2/ojAMywlZuCQNIUH5RjAA=)
+                maximum-pool-size: 50
+                use-jndi-lookup: N
+                jndi-lookup-name: java:comp/env/analize
             networks: 
                 - backend
     rabbitmq: 

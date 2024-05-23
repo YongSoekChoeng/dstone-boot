@@ -949,38 +949,39 @@ public class BizGenerator extends BaseObject {
 				xmlMethd1.append("    </select>                                                                       ").append("\n");
 				xmlMethd1.append("                                                                                   ").append("\n");
 
-				/* 2. 상세 조회 */
-				xmlMethd2.append("    <!--  " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 상세 조회 -->                                                        ").append("\n");
-				xmlMethd2.append("    <select id=\"select" + tableName + "\" parameterType=\"" + PACKAGE_NAME + ".vo." + voName + "\" resultType=\"" + PACKAGE_NAME + ".vo." + voName + "\">       ").append("\n");
-				xmlMethd2.append("        SELECT                                                                        ").append("\n");
-				if (cols != null) {
-					for (int i = 0; i < cols.length; i++) {
-						if (i == 0) {
-							xmlMethd2.append("            ");
-						} else if (i % 5 == 0) {
-							xmlMethd2.append("\n").append("            ");
-						}
-						col = cols[i];
-						xmlMethd2.append(col.COLUMN_NAME);
-						if (i < (cols.length - 1)) {
-							xmlMethd2.append(", ");
-						}
-					}
-					xmlMethd2.append("\n");
-				}
-				xmlMethd2.append("        FROM                                                                          ").append("\n");
-				xmlMethd2.append("            " + TABLE_NAME + "                                                                       ").append("\n");
-				xmlMethd2.append("        WHERE 1=1                                                                     ").append("\n");
-				if (keys != null) {
-					for (int i = 0; i < keys.length; i++) {
-						key = keys[i];
-						xmlMethd2.append("            AND " + key.COLUMN_NAME + " = #{" + key.COLUMN_NAME + "}").append("\n");
-					}
-				}
-				xmlMethd2.append("    </select>                                                                       ").append("\n");
-				xmlMethd2.append("                                                                                   ").append("\n");
 			}
 
+			/* 2. 상세 조회 */
+			xmlMethd2.append("    <!--  " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 상세 조회 -->                                                        ").append("\n");
+			xmlMethd2.append("    <select id=\"select" + tableName + "\" parameterType=\"" + PACKAGE_NAME + ".vo." + voName + "\" resultType=\"" + PACKAGE_NAME + ".vo." + voName + "\">       ").append("\n");
+			xmlMethd2.append("        SELECT                                                                        ").append("\n");
+			if (cols != null) {
+				for (int i = 0; i < cols.length; i++) {
+					if (i == 0) {
+						xmlMethd2.append("            ");
+					} else if (i % 5 == 0) {
+						xmlMethd2.append("\n").append("            ");
+					}
+					col = cols[i];
+					xmlMethd2.append(col.COLUMN_NAME);
+					if (i < (cols.length - 1)) {
+						xmlMethd2.append(", ");
+					}
+				}
+				xmlMethd2.append("\n");
+			}
+			xmlMethd2.append("        FROM                                                                          ").append("\n");
+			xmlMethd2.append("            " + TABLE_NAME + "                                                                       ").append("\n");
+			xmlMethd2.append("        WHERE 1=1                                                                     ").append("\n");
+			if (keys != null) {
+				for (int i = 0; i < keys.length; i++) {
+					key = keys[i];
+					xmlMethd2.append("            AND " + key.COLUMN_NAME + " = #{" + key.COLUMN_NAME + "}").append("\n");
+				}
+			}
+			xmlMethd2.append("    </select>                                                                       ").append("\n");
+			xmlMethd2.append("                                                                                   ").append("\n");
+			
 			/* 3. NEW키값 조회 */
 			xmlMethd3.append("    <!--  " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] NEW키값 조회 -->                                                        ").append("\n");
 			xmlMethd3.append("    <select id=\"select" + tableName + "NewKey\" parameterType=\"" + PACKAGE_NAME + ".vo." + voName + "\" resultType=\"" + PACKAGE_NAME + ".vo." + voName + "\">       ").append("\n");
@@ -1402,14 +1403,13 @@ public class BizGenerator extends BaseObject {
 				daoConts.append("    public List<" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + "> list" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
 				daoConts.append("        return (List<" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + ">) "+SQL_CLIENT_ID+".selectList(\"" + nameSpace + ".list" + tableName + "\", " + sVoName + "); ").append("\n");
 				daoConts.append("    } ").append("\n");
-				daoConts.append("    /* ").append("\n");
-				daoConts.append("     * " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 상세 조회 ").append("\n");
-				daoConts.append("     */ ").append("\n");
-				daoConts.append("    public " + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " select" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
-				daoConts.append("        return (" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + ") "+SQL_CLIENT_ID+".selectOne(\"" + nameSpace + ".select" + tableName + "\", " + sVoName + "); ").append("\n");
-				daoConts.append("    } ").append("\n");
 			}
-
+			daoConts.append("    /* ").append("\n");
+			daoConts.append("     * " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] 상세 조회 ").append("\n");
+			daoConts.append("     */ ").append("\n");
+			daoConts.append("    public " + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " select" + tableName + "(" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + " " + sVoName + ") throws Exception { ").append("\n");
+			daoConts.append("        return (" + COMM_CUD_PACKAGE_NAME + ".vo." + voName + ") "+SQL_CLIENT_ID+".selectOne(\"" + nameSpace + ".select" + tableName + "\", " + sVoName + "); ").append("\n");
+			daoConts.append("    } ").append("\n");
 			daoConts.append("    /* ").append("\n");
 			daoConts.append("     * " + TABLE_HAN_NAME + "[" + TABLE_NAME + "] NEW키값 조회 ").append("\n");
 			daoConts.append("     */ ").append("\n");
@@ -2445,15 +2445,15 @@ public class BizGenerator extends BaseObject {
 				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
 				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
 				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\");").append("\n");
 				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
 				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
 				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
 				ctrlConts.append("   		//paramList 			= (" + strVoPackageName + "." + strVoName + "[])bindMultiValues(requestUtil, \"" + strVoPackageName + "." + strVoName + "\");").append("\n");
 				if (pageYn) {
 					ctrlConts.append("   		/*** 페이징파라메터 세팅 시작 ***/").append("\n");
-					ctrlConts.append("   		if(!net.dstone.common.utils.StringUtil.isEmpty(requestUtil.getJsonParameterValue(\"PAGE_NUM\"))){").append("\n");
-					ctrlConts.append("   			paramVo.setPAGE_NUM(Integer.parseInt(requestUtil.getJsonParameterValue(\"PAGE_NUM\")));").append("\n");
+					ctrlConts.append("   		if(!net.dstone.common.utils.StringUtil.isEmpty(requestUtil.getParameter(\"PAGE_NUM\"))){").append("\n");
+					ctrlConts.append("   			paramVo.setPAGE_NUM(Integer.parseInt(requestUtil.getParameter(\"PAGE_NUM\")));").append("\n");
 					ctrlConts.append("   			paramVo.setPAGE_SIZE(net.dstone.common.utils.PageUtil.DEFAULT_PAGE_SIZE);").append("\n");
 					ctrlConts.append("   		}").append("\n");
 					ctrlConts.append("   		/*** 페이징파라메터 세팅 끝 ***/").append("\n");
@@ -2492,7 +2492,7 @@ public class BizGenerator extends BaseObject {
 				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
 				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
 				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
+				ctrlConts.append("   		//ACTION_MODE				= requestUtil.getParameter(\"ACTION_MODE\");").append("\n");
 				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
 				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
 				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
@@ -2524,7 +2524,7 @@ public class BizGenerator extends BaseObject {
 				ctrlConts.append("   		/************************ 컨트롤러 로직 시작 ************************/").append("\n");
 				ctrlConts.append("   		// 1. 파라메터 바인딩").append("\n");
 				ctrlConts.append("   		// 일반 파라메터 받는경우").append("\n");
-				ctrlConts.append("   		//ACTION_MODE			= requestUtil.getJsonParameterValue(\"ACTION_MODE\");").append("\n");
+				ctrlConts.append("   		//ACTION_MODE			= requestUtil.getParameter(\"ACTION_MODE\");").append("\n");
 				ctrlConts.append("   		// 싱글 VALUE 맵핑일 경우").append("\n");
 				ctrlConts.append("   		paramVo 				= (" + strVoPackageName + "." + strVoName + ")bindSingleValue(requestUtil, new " + strVoPackageName + "." + strVoName + "());").append("\n");
 				ctrlConts.append("   		// 멀티 VALUE 맵핑일 경우").append("\n");
@@ -3659,6 +3659,11 @@ public class BizGenerator extends BaseObject {
 					buff.append("                    alert(\"failure ERR_MSG:\" + ERR_MSG); ").append("\n");
 					buff.append("                } ").append("\n");
 					buff.append("            }, ").append("\n");
+					buff.append("			error : function(data, status, e) { ").append("\n");
+					buff.append("				alert(e); ").append("\n");
+					buff.append("			} ").append("\n");
+					buff.append("		}); ").append("\n");
+					buff.append("	} ").append("\n");
 					buff.append("").append("\n");
 					
 					if (pageYn) {

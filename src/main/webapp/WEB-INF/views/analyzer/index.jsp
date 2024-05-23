@@ -16,36 +16,16 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-	<head>
-		<title>Application Analyzer</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/assets/css/main.css" />
-	</head>
+
+	<!-- Head -->
+	<jsp:include page="common/head.jsp"></jsp:include>
+	
 	<body>
 		<div id="page-wrapper">
 
 			<!-- Header -->
-				<div id="header-wrapper">
-					<div class="container">
-						<div class="row">
-							<div class="col-12">
-
-								<header id="header">
-									<h1><a href="index.html" id="logo">Application Analyzer</a></h1>
-									<nav id="nav">
-										<a href="index.html" class="current-page-item">Introduction</a>
-										<a href="twocolumn1.html">Configuration</a>
-										<a href="twocolumn2.html">Analyzation</a>
-										<a href="onecolumn.html">Report</a
-									</nav>
-								</header>
-
-							</div>
-						</div>
-					</div>
-				</div>
-
+			<jsp:include page="common/header.jsp"></jsp:include>
+			
 			<!-- Banner -->
 				<div id="banner-wrapper">
 					<div class="container">
@@ -186,91 +166,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 				</div>
 
 			<!-- Footer -->
-				<div id="footer-wrapper">
-					<div class="container">
-						<div class="row">
-							<div class="col-8 col-12-medium">
-
-								<section>
-									<h2>How about a truckload of links?</h2>
-									<div>
-										<div class="row">
-											<div class="col-3 col-6-medium col-12-small">
-												<ul class="link-list">
-													<li><a href="#">Sed neque nisi consequat</a></li>
-													<li><a href="#">Dapibus sed mattis blandit</a></li>
-													<li><a href="#">Quis accumsan lorem</a></li>
-													<li><a href="#">Suspendisse varius ipsum</a></li>
-													<li><a href="#">Eget et amet consequat</a></li>
-												</ul>
-											</div>
-											<div class="col-3 col-6-medium col-12-small">
-												<ul class="link-list">
-													<li><a href="#">Quis accumsan lorem</a></li>
-													<li><a href="#">Sed neque nisi consequat</a></li>
-													<li><a href="#">Eget et amet consequat</a></li>
-													<li><a href="#">Dapibus sed mattis blandit</a></li>
-													<li><a href="#">Vitae magna sed dolore</a></li>
-												</ul>
-											</div>
-											<div class="col-3 col-6-medium col-12-small">
-												<ul class="link-list">
-													<li><a href="#">Sed neque nisi consequat</a></li>
-													<li><a href="#">Dapibus sed mattis blandit</a></li>
-													<li><a href="#">Quis accumsan lorem</a></li>
-													<li><a href="#">Suspendisse varius ipsum</a></li>
-													<li><a href="#">Eget et amet consequat</a></li>
-												</ul>
-											</div>
-											<div class="col-3 col-6-medium col-12-small">
-												<ul class="link-list">
-													<li><a href="#">Quis accumsan lorem</a></li>
-													<li><a href="#">Sed neque nisi consequat</a></li>
-													<li><a href="#">Eget et amet consequat</a></li>
-													<li><a href="#">Dapibus sed mattis blandit</a></li>
-													<li><a href="#">Vitae magna sed dolore</a></li>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</section>
-
-							</div>
-							<div class="col-4 col-12-medium">
-
-								<section>
-									<h2>Something of interest</h2>
-									<p>Duis neque nisi, dapibus sed mattis quis, rutrum accumsan sed.
-									Suspendisse eu varius nibh. Suspendisse vitae magna eget odio amet
-									mollis justo facilisis quis. Sed sagittis mauris amet tellus gravida
-									lorem ipsum dolor sit blandit.</p>
-									<footer class="controls">
-										<a href="#" class="button">Oh, please continue ....</a>
-									</footer>
-								</section>
-
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-12">
-
-								<div id="copyright">
-									&copy; Untitled. All rights reserved. | Design: <a href="http://html5up.net">HTML5 UP</a>
-								</div>
-
-							</div>
-						</div>
-					</div>
-				</div>
+			<jsp:include page="common/footer.jsp"></jsp:include>
 
 		</div>
-
-		<!-- Scripts -->
-			<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/jquery.min.js"></script>
-			<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/browser.min.js"></script>
-			<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/breakpoints.min.js"></script>
-			<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/util.js"></script>
-			<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/main.js"></script>
 
 	</body>
 </html>

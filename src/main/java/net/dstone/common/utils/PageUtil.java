@@ -72,9 +72,9 @@ public class PageUtil {
 	 */
 	public int intPostPgEndtNum = 1;
 
-	String IMG_PRE = "/images/blat2.gif";
+	String IMG_PRE = "/images/btn_prev.png";
 
-	String IMG_NEXT = "/images/blat5.gif";
+	String IMG_NEXT = "/images/btn_next.png";
 
 	private void debug(Object o) {
 		net.dstone.common.utils.LogUtil.sysout(o);

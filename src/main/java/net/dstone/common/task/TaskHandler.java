@@ -28,6 +28,7 @@ public class TaskHandler extends BaseObject{
 		int tryCount = 0;
 		int successCount = 0;
 		int errorCount = 0;
+		BigDecimal rate = BigDecimal.ZERO;
 		
 		public int getTryCount() {
 			return tryCount;
@@ -74,10 +75,17 @@ public class TaskHandler extends BaseObject{
 		public void setMonitoringSec(int monitoringSec) {
 			this.monitoringSec = monitoringSec;
 		}
-		
+
+		public BigDecimal getRate() {
+			return rate;
+		}
+		public void setRate(BigDecimal rate) {
+			this.rate = rate;
+		}
 		@Override
 		public String toString() {
-			return "TaskReport [monitoringSec=" + monitoringSec + ", tryCount=" + tryCount + ", successCount=" + successCount + ", errorCount=" + errorCount + "]";
+			return "TaskReport [monitoringSec=" + monitoringSec + ", tryCount=" + tryCount + ", successCount="
+					+ successCount + ", errorCount=" + errorCount + ", rate=" + rate + "]";
 		}
 	}
 	
@@ -311,7 +319,7 @@ public class TaskHandler extends BaseObject{
 	/**
 	 * 작업진행모니터링
 	 */
-	public void doMonitoring(String executorServiceId) {
+	public TaskReport doMonitoring(String executorServiceId) {
 		TaskReport taskReport = this.getExecutorServiceTaskReport(executorServiceId);
 		if( taskReport != null ) {
 			boolean isTimeToReport = false;
@@ -345,6 +353,8 @@ public class TaskHandler extends BaseObject{
 				BigDecimal rate = new BigDecimal(taskReport.getSuccessCount());
 				rate = rate.divide(new BigDecimal(taskReport.getTryCount()), 2, BigDecimal.ROUND_HALF_UP);
 				rate = rate.multiply(new BigDecimal(100));
+				taskReport.setRate(rate);
+				
 				buff.append("\n\n");
 				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
 				buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
@@ -352,6 +362,15 @@ public class TaskHandler extends BaseObject{
 				debug(buff);
 			}
 		}
+		return taskReport;
+	}
+	
+	public TaskReport getTaskReport(String executorServiceId){
+		return EXECUTOR_SERVICE_REPORT_MAP.get(executorServiceId);
+	}
+	
+	public Map<String, TaskReport> getTaskReportAll(){
+		return EXECUTOR_SERVICE_REPORT_MAP;
 	}
 	
 }

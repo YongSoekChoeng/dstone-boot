@@ -14,10 +14,14 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.utils.RequestUtil;
+import net.dstone.common.utils.StringUtil;
 
 @Controller
 public class BaseController extends net.dstone.common.core.BaseObject {
 
+	public static String RETURN_SUCCESS = "0";
+	public static String RETURN_FAIL 	= "1"; 
+	
 	protected String nullCheck(Object o) {
 		return net.dstone.common.utils.StringUtil.nullCheck(o, "");
 	}
@@ -45,10 +49,15 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 					isArray = bean.getClass().getDeclaredField(fieldName).getType().isArray();
 					if(isArray){
 						fieldValue = request.getParameterValues(fieldName);
+						if( fieldValue != null ) {
+							BeanUtils.setProperty(bean, fieldName, fieldValue);
+						}
 					}else{
 						fieldValue = request.getParameter(fieldName);
+						if(!StringUtil.isEmpty(fieldValue)) {
+							BeanUtils.setProperty(bean, fieldName, fieldValue);
+						}
 					}
-					BeanUtils.setProperty(bean, fieldName, fieldValue);
 				}
 			}
 		}catch(Exception e){
