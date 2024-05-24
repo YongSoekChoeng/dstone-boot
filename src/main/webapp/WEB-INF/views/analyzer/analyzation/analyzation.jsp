@@ -124,11 +124,11 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									</p>
 								</section>
 
-								<section>
-									<h2>Application Analysis Option Setting</h2>
+								<!--폼 시작--> 
+								<form name="FORM_ANALYSIS" id="FORM_ANALYSIS" method="post" >
 									
-									<!--폼 시작--> 
-									<form name="FORM_ANALYSIS" id="FORM_ANALYSIS" method="post" >
+								<section>
+									<h2>Application To Be Analyzed</h2>
 									
 									<ul class="small-image-list">
 										<li>
@@ -139,16 +139,68 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 											</p>
 										</li>
 									</ul>
-									
-
-									</form> 
-							        <!--폼 끝--> 									
+								</section>
 								
+								
+								<section>
+									<h2>Analysis Job Kind</h2>
+									
+									<table width="100%" border="1">
+										<thead>
+											<tr>
+												<th width="20%">선택</th>
+												<th width="25%">작업명</th>
+												<th width="55%">진행</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>어플리케이션 아이디</td>
+												<td><input type="text" name="SYS_ID" size="30" value="" /></td>
+												<td>어플리케이션 을 특정하는 UNIQUE 아이디</td>
+											</tr>
+											<tr>
+												<td>어플리케이션 명</td>
+												<td><input type="text" name="SYS_NM" size="30" value="" /></td>
+												<td>어플리케이션 이름</td>
+											</tr>
+											<tr>
+												<td>설정파일경로</td>
+												<td><input type="text" name="CONF_FILE_PATH" size="30" value="" /></td>
+												<td>어플리케이션 분석(Analyze)관련 설정파일 경로</td>
+											</tr>
+											<tr>
+												<td>어플리케이션루트</td>
+												<td><input type="text" name="APP_ROOT_PATH" size="30" value="" /></td>
+												<td>분석대상 어플리케이션 루트 경로</td>
+											</tr>
+											<tr>
+												<td>어플리케이션서버소스경로</td>
+												<td><input type="text" name="APP_SRC_PATH" size="30" value=""  /></td>
+												<td>분석대상 어플리케이션 java소스 루트 경로. 어플리케이션루트이하의 경로만 기술.</td>
+											</tr>
+											<tr>
+												<td>어플리케이션웹소스경로</td>
+												<td><input type="text" name="APP_WEB_PATH" size="30" value=""  /></td>
+												<td>분석대상 어플리케이션 웹 루트 경로. 어플리케이션루트이하의 경로만 기술.</td>
+											</tr>
+											<tr>
+												<td>어플리케이션쿼리소스루트</td>
+												<td><input type="text" name="APP_SQL_PATH" size="30" value=""  /></td>
+												<td>분석대상 어플리케이션 쿼리 루트 경로. 전체 경로 기술.</td>
+											</tr>
+										</tbody>
+									</table>
+
 									<h2 align="right">
 										<button type="button" id="btnSave"  class="mini_button" >저장</button>
+										<button type="button" id="btnDelete"  class="mini_button" >삭제</button>
 									</h2>
 								</section>
 
+								</form> 
+							    <!--폼 끝--> 									
+								
 							</div>
 						</div>
 					</div>

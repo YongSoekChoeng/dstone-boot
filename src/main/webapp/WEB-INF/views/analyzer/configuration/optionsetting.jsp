@@ -322,7 +322,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 										<li>
 											<h4>3. 분석제외 패키지 패턴</h4>
 											<p>
-												분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.
+												분석제외대상 패키지 패턴. 해당 패키지 패턴이 들어가는 패키지는 분석제외한다.
 												<br>
 												<font color="blue">분석제외 패키지 패턴과 분석대상 패키지가 겹칠 경우 분석제외 패키지 패턴이 우선한다.</font>
 												<br>
