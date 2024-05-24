@@ -45,8 +45,8 @@ spring:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
-                username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
-                password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
+                username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
+                password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 50
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/sampleDB
@@ -66,12 +66,12 @@ spring:
         analyzer:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/analize
-                username: ENC(WzvyXP093fpScL2no/Iwn2/ojAMywlZuCQNIUH5RjAA=)
-                password: ENC(WzvyXP093fpScL2no/Iwn2/ojAMywlZuCQNIUH5RjAA=)
+                jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/analyze
+                username: ENC(K+GQPfWalk76eHHGEFZQn2o7JLjM8naluWSaxg7M1YQ=)
+                password: ENC(K+GQPfWalk76eHHGEFZQn2o7JLjM8naluWSaxg7M1YQ=)
                 maximum-pool-size: 50
                 use-jndi-lookup: N
-                jndi-lookup-name: java:comp/env/analize
+                jndi-lookup-name: java:comp/env/analyze
             networks: 
                 - backend
     rabbitmq: 

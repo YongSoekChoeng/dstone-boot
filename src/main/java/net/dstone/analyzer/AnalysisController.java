@@ -61,16 +61,14 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
 
    		// 3. 분석작업종류별 작업실행.
    		if( paramVo != null && analyzeJobKindArr != null && analyzeJobKindArr.length > 0 ) {
-   			ArrayList<TaskItem> taskItemList = new ArrayList<TaskItem>();
    			for(int i=0; i<analyzeJobKindArr.length; i++) {
    				analyzeJobKind = analyzeJobKindArr[i];
    				AnalysisItem analysisItem = new AnalysisItem();
    				analysisItem.setId(executorServiceId + "-" + String.valueOf(i));
    				analysisItem.setAnalyzeJobKind(Integer.valueOf(analyzeJobKind));
    				analysisItem.setConfigFilePath(paramVo.getCONF_FILE_PATH());
-   				taskItemList.add(analysisItem);
+   				TaskHandler.getInstance().addSingleExecutorService(executorServiceId).doTheTask(executorServiceId, analysisItem);
    			}
-   			TaskHandler.getInstance().addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
    		}
    		
    		boolean result 			= true;

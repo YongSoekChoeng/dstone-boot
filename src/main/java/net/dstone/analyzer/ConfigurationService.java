@@ -107,8 +107,9 @@ public class ConfigurationService extends BaseService {
             	paramVo.setWORKER_ID("SYSTEM");
             }
             
-            if(StringUtil.isEmpty(paramVo.getAPP_CLASSPATH())) {
-            	paramVo.setAPP_CLASSPATH(paramVo.getAPP_CLASSPATH().trim());
+            if(!StringUtil.isEmpty(paramVo.getAPP_CLASSPATH())) {
+            	paramVo.setAPP_CLASSPATH(StringUtil.replace(paramVo.getAPP_CLASSPATH(), "\t", ""));
+            	paramVo.setAPP_CLASSPATH(StringUtil.replace(paramVo.getAPP_CLASSPATH(), " ", ""));
             }
             
             if( analyzerCudDao.selectTbSys(paramVo) == null) {

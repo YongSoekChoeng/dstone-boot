@@ -18,7 +18,7 @@ public class ConfigMapper {
 	@SuppressWarnings("unused")
 	private static final LogUtil logger = new LogUtil(ConfigMapper.class);
 
-	@Bean
+	@Bean(name = "sqlSessionFactoryCommon")
 	public SqlSessionFactory sqlSessionFactoryCommon(@Qualifier("dataSourceCommon") DataSource dataSourceCommon) throws Exception {
 		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
@@ -27,14 +27,13 @@ public class ConfigMapper {
 		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/common/**/*Dao.xml"));
 		return bean.getObject();
 	}
-	
-	@Bean
-	@Qualifier("sqlSessionCommon") 
-	public SqlSessionTemplate sqlSessionCommon(SqlSessionFactory sqlSessionFactoryCommon) {
+
+	@Bean(name = "sqlSessionCommon")
+	public SqlSessionTemplate sqlSessionCommon(@Qualifier("sqlSessionFactoryCommon") SqlSessionFactory sqlSessionFactoryCommon) {
 		return new SqlSessionTemplate(sqlSessionFactoryCommon);
 	}
 
-	@Bean
+	@Bean(name = "sqlSessionFactorySample")
 	public SqlSessionFactory sqlSessionFactorySample(@Qualifier("dataSourceSample") DataSource dataSourceSample) throws Exception {
 		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
@@ -44,13 +43,12 @@ public class ConfigMapper {
 		return bean.getObject();
 	}
 	
-	@Bean
-	@Qualifier("sqlSessionSample") 
-	public SqlSessionTemplate sqlSessionSample(SqlSessionFactory sqlSessionFactorySample) {
+	@Bean(name = "sqlSessionSample")
+	public SqlSessionTemplate sqlSessionSample(@Qualifier("sqlSessionFactorySample") SqlSessionFactory sqlSessionFactorySample) {
 		return new SqlSessionTemplate(sqlSessionFactorySample);
 	}
 
-	@Bean
+	@Bean(name = "sqlSessionFactoryAnalyzer")
 	public SqlSessionFactory sqlSessionFactoryAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) throws Exception {
 		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
@@ -60,9 +58,8 @@ public class ConfigMapper {
 		return bean.getObject();
 	}
 	
-	@Bean
-	@Qualifier("sqlSessionFactoryAnalyzer") 
-	public SqlSessionTemplate sqlSessionAnalyzer(SqlSessionFactory sqlSessionFactoryAnalyzer) {
+	@Bean(name = "sqlSessionAnalyzer")
+	public SqlSessionTemplate sqlSessionAnalyzer(@Qualifier("sqlSessionFactoryAnalyzer") SqlSessionFactory sqlSessionFactoryAnalyzer) {
 		return new SqlSessionTemplate(sqlSessionFactoryAnalyzer);
 	}
 

@@ -36,15 +36,13 @@ public class ConfigTransaction {
 	/********************************************************************************
 	1. Common 관련 설정
 	********************************************************************************/
-	@Bean
-	@Qualifier("txManagerCommon")
+	@Bean(name = "txManagerCommon")
 	public DataSourceTransactionManager txManagerCommon(@Qualifier("dataSourceCommon") DataSource dataSourceCommon) {
 		DataSourceTransactionManager txManagerCommon = new DataSourceTransactionManager(dataSourceCommon);
 		return txManagerCommon;
 	}
 
-	@Bean
-	@Qualifier("txAdviceCommon")
+	@Bean(name = "txAdviceCommon")
 	public TransactionInterceptor txAdviceCommon(DataSourceTransactionManager txManagerCommon) {
 	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
 		Properties txAttributes = new Properties();
@@ -72,7 +70,7 @@ public class ConfigTransaction {
 	    return transactionInterceptor;
 	}
 
-	@Bean
+	@Bean(name = "txAdvisorCommon")
 	public Advisor txAdvisorCommon(@Qualifier("txManagerCommon") DataSourceTransactionManager txManagerCommon) {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
@@ -82,15 +80,13 @@ public class ConfigTransaction {
 	/********************************************************************************
 	2. Sample 관련 설정
 	********************************************************************************/
-	@Bean
-	@Qualifier("txManagerSample")
+	@Bean(name = "txManagerSample")
 	public DataSourceTransactionManager txManagerSample(@Qualifier("dataSourceSample") DataSource dataSourceSample) {
 		DataSourceTransactionManager txManagerSample = new DataSourceTransactionManager(dataSourceSample);
 		return txManagerSample;
 	}
 
-	@Bean
-	@Qualifier("txAdviceSample")
+	@Bean(name = "txAdviceSample")
 	public TransactionInterceptor txAdviceSample(DataSourceTransactionManager txManagerSample) {
 	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
 		Properties txAttributes = new Properties();
@@ -118,7 +114,7 @@ public class ConfigTransaction {
 	    return transactionInterceptor;
 	}
 
-	@Bean
+	@Bean(name = "txAdvisorSample")
 	public Advisor txAdvisorSample(@Qualifier("txManagerSample") DataSourceTransactionManager txManagerSample) {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
@@ -128,15 +124,13 @@ public class ConfigTransaction {
 	/********************************************************************************
 	3. Analyzer 관련 설정
 	********************************************************************************/
-	@Bean
-	@Qualifier("txManagerAnalyzer")
+	@Bean(name = "txManagerAnalyzer")
 	public DataSourceTransactionManager txManagerAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) {
 		DataSourceTransactionManager txManagerAnalyzer = new DataSourceTransactionManager(dataSourceAnalyzer);
 		return txManagerAnalyzer;
 	}
 
-	@Bean
-	@Qualifier("txAdviceAnalyzer")
+	@Bean(name = "txAdviceAnalyzer")
 	public TransactionInterceptor txAdviceAnalyzer(DataSourceTransactionManager txManagerAnalyzer) {
 	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
 		Properties txAttributes = new Properties();
@@ -164,7 +158,7 @@ public class ConfigTransaction {
 	    return transactionInterceptor;
 	}
 
-	@Bean
+	@Bean(name = "txAdvisorAnalyzer")
 	public Advisor txAdvisorAnalyzer(@Qualifier("txManagerAnalyzer") DataSourceTransactionManager txManagerAnalyzer) {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
