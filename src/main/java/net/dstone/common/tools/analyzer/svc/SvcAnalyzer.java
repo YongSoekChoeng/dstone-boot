@@ -641,13 +641,17 @@ public class SvcAnalyzer extends BaseObject{
 			taskItem.setId(executorServiceId + "-" + n);
 			taskItemList.add(taskItem);
 		}
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	
 	/**
@@ -730,13 +734,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	
 	/**
@@ -813,13 +820,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 
 	/**
@@ -916,13 +926,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 		
 		
 	}
@@ -993,13 +1006,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	
 
@@ -1105,13 +1121,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	
 	/**
@@ -1198,13 +1217,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	/**
 	 * 메소드내 호출테이블 목록 추출
@@ -1278,13 +1300,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	
 	/**
@@ -1361,13 +1386,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 	/**
 	 * UI파일리스트 에서 링크정보를 추출하여 UI분석파일리스트 에 추가
@@ -1437,13 +1465,16 @@ public class SvcAnalyzer extends BaseObject{
 			taskItemList.add(taskItem);
 		}
 		
-		if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
-			this.taskHandler.addSingleExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
-			this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM).doTheTasks(executorServiceId, taskItemList);
-		}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
-			this.taskHandler.addCachedExecutorService(executorServiceId).doTheTasks(executorServiceId, taskItemList);
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_SINGLE) {
+				this.taskHandler.addSingleExecutorService(executorServiceId);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_FIXED) {
+				this.taskHandler.addFixedExecutorService(executorServiceId, AppAnalyzer.WORKER_THREAD_NUM);
+			}else if(AppAnalyzer.WORKER_THREAD_KIND == AppAnalyzer.WORKER_THREAD_KIND_CACHED) {
+				this.taskHandler.addCachedExecutorService(executorServiceId);
+			}
 		}
+		this.taskHandler.doTheSyncTasks(executorServiceId, taskItemList);
 	}
 
 	public void saveToFile() throws Exception{

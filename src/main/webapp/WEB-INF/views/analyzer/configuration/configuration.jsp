@@ -43,7 +43,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                    if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
 	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
 	                    }else{ 
-	                        console.log('success ===>>> data:' + (JSON.stringify(data))); 
+	                        //console.log('success ===>>> data:' + (JSON.stringify(data))); 
 	                        var tbody = $("#out_tbody"); 
 	                        tbody.empty(); 
 	                        var returnList = data.returnObj.returnObj; 

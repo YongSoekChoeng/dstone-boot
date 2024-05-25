@@ -260,7 +260,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
    			xmlUtil 			= XmlUtil.getNonSingletonInstance(XmlUtil.XML_SOURCE_KIND_PATH, returnObj.getCONF_FILE_PATH());
    			
    			// 분석패키지루트 목록(분석대상 패키지 루트. 해당 패키지이하의 모듈만 분석한다.)
-			if(!StringUtil.isEmpty(xmlUtil.getNode("INCLUDE_PACKAGE_ROOT").getTextContent())) {
+			if(!StringUtil.isEmpty(xmlUtil.getNode("INCLUDE_PACKAGE_ROOT").getTextContent()) && !xmlUtil.getNode("INCLUDE_PACKAGE_ROOT").getTextContent().trim().equals("") ) {
 				ArrayList<String> includePackageRootList = new ArrayList<String>();
 				String includePackageRootListStr = xmlUtil.getNode("INCLUDE_PACKAGE_ROOT").getTextContent();
 				String[] includePackageRootListArr = StringUtil.toStrArray(includePackageRootListStr, ",", true);
@@ -271,7 +271,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
 			}
 
    			// 분석제외패키지패턴 목록(분석제외대상 패키지 패턴. 해당 패키지명이 속하는 패키지는 분석제외한다.)
-			if(!StringUtil.isEmpty(xmlUtil.getNode("EXCLUDE_PACKAGE_PATTERN").getTextContent())) {
+			if(!StringUtil.isEmpty(xmlUtil.getNode("EXCLUDE_PACKAGE_PATTERN").getTextContent()) && !xmlUtil.getNode("EXCLUDE_PACKAGE_PATTERN").getTextContent().trim().equals("") ) {
 				ArrayList<String> excludePackagePatternList = new ArrayList<String>();
 				String excludePackagePatternListStr = xmlUtil.getNode("EXCLUDE_PACKAGE_PATTERN").getTextContent();
 				String[] excludePackagePatternListArr = StringUtil.toStrArray(excludePackagePatternListStr, ",", true);

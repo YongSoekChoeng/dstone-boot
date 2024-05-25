@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -14,6 +15,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.glassfish.jersey.internal.jsr166.SubmittableFlowPublisher;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.DateUtil;
@@ -182,10 +185,16 @@ public class TaskHandler extends BaseObject{
 		return this;
 	}
 	
-	public ExecutorService getExecutorService(String executorServiceId){
+	private ExecutorService getExecutorService(String executorServiceId){
 		ExecutorService executorService = null;
 		executorService = EXECUTOR_SERVICE_MAP.get(executorServiceId);
 		return executorService;
+	}
+	
+	public boolean isExecutorServiceExists(String executorServiceId) {
+		boolean isExists = false;
+		isExists = EXECUTOR_SERVICE_MAP.containsKey(executorServiceId);
+		return isExists;
 	}
 	public TaskReport getExecutorServiceTaskReport(String executorServiceId){
 		TaskReport taskReport = null;
@@ -227,28 +236,53 @@ public class TaskHandler extends BaseObject{
 	 * @return
 	 * @throws Exception
 	 */
-	public TaskItem doTheTask(String executorServiceId, TaskItem item) throws Exception{
+	public TaskItem doTheSyncTask(String executorServiceId, TaskItem item) throws Exception{
 		ExecutorService executorService = null;
 		Future<TaskItem> future = null;
 		try {
-			net.dstone.common.utils.DateUtil.stopWatchStart("TaskHandler["+executorServiceId+"].doTheTask");
+			net.dstone.common.utils.DateUtil.stopWatchStart("TaskHandler["+executorServiceId+"].doTheSyncTask");
 			executorService = this.getExecutorService(executorServiceId);
 			
 			item.setExecutorServiceId(executorServiceId);
 
-			future = executorService.submit(item);
+			future = executorService.submit((Callable<TaskItem>)item);
+			
 			if(future != null){
 				item = future.get();
 			}
 
 		} catch (Exception e) {
-			getLogger().info( this.getClass().getName() + ".doTheTask() 작없중 예외발생. ID[" + item.getId() + "] 상세내용:" + e.toString());
+			getLogger().info( this.getClass().getName() + ".doTheSyncTask() 작없중 예외발생. ID[" + item.getId() + "] 상세내용:" + e.toString());
 			throw e;
 		} finally {
-			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheTask");
+			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheSyncTask");
 			//this.close(executorService);
 		}
 		return item;
+	}
+	
+	/**
+	 * @param executorServiceId
+	 * @param item
+	 * @throws Exception
+	 */
+	public void doTheAsyncTask(String executorServiceId, TaskItem item) throws Exception{
+		ExecutorService executorService = null;
+		try {
+			net.dstone.common.utils.DateUtil.stopWatchStart("TaskHandler["+executorServiceId+"].doTheAyncTask");
+			executorService = this.getExecutorService(executorServiceId);
+			
+			item.setExecutorServiceId(executorServiceId);
+
+			executorService.execute((Runnable)item);
+
+		} catch (Exception e) {
+			getLogger().info( this.getClass().getName() + ".doTheAyncTask() 작없중 예외발생. ID[" + item.getId() + "] 상세내용:" + e.toString());
+			throw e;
+		} finally {
+			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheAyncTask");
+			//this.close(executorService);
+		}
 	}
 
 	/**
@@ -257,12 +291,12 @@ public class TaskHandler extends BaseObject{
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<TaskItem> doTheTasks(String executorServiceId, ArrayList<TaskItem> itemList) throws Exception{
+	public ArrayList<TaskItem> doTheSyncTasks(String executorServiceId, ArrayList<TaskItem> itemList) throws Exception{
 		ExecutorService executorService = null;
 		ArrayList<TaskItem> returnVal = new ArrayList<TaskItem>();
 		List<Future<TaskItem>> futureList = new ArrayList<Future<TaskItem>>();
 		
-		String msg = "TaskHandler["+executorServiceId+"].doTheTasks(TaskItem갯수:"+itemList.size()+")";
+		String msg = "TaskHandler["+executorServiceId+"].doTheSyncTasks(TaskItem갯수:"+itemList.size()+")";
 		
 		try {
 			net.dstone.common.utils.DateUtil.stopWatchStart(msg);
@@ -289,13 +323,40 @@ public class TaskHandler extends BaseObject{
 			}
 			//getLogger().info("Active 쓰레드갯수[doTheTasks시작시점:"+startThreadCount+"개 ==>> doTheTasks종료시점:"+Thread.activeCount()+"개]");
 		} catch (Exception e) {
-			getLogger().info( this.getClass().getName() + ".doTheTasks() 작없중 예외발생. 상세내용:" + e.toString());
+			getLogger().info( this.getClass().getName() + ".doTheSyncTasks() 작없중 예외발생. 상세내용:" + e.toString());
 			throw e;
 		} finally {
 			net.dstone.common.utils.DateUtil.stopWatchEnd(msg);
 			//this.close(executorService);
 		}
 		return returnVal;
+	}
+	
+	/**
+	 * @param executorServiceId
+	 * @param itemList
+	 * @throws Exception
+	 */
+	public void doTheAsyncTasks(String executorServiceId, ArrayList<TaskItem> itemList) throws Exception{
+		ExecutorService executorService = null;
+		
+		String msg = "TaskHandler["+executorServiceId+"].doTheAsyncTasks(TaskItem갯수:"+itemList.size()+")";
+		
+		try {
+			net.dstone.common.utils.DateUtil.stopWatchStart(msg);
+			executorService = getExecutorService(executorServiceId);
+			for(TaskItem item : itemList) {
+				item.setExecutorServiceId(executorServiceId);
+				executorService.execute(item);
+			}
+			//getLogger().info("Active 쓰레드갯수[doTheTasks시작시점:"+startThreadCount+"개 ==>> doTheTasks종료시점:"+Thread.activeCount()+"개]");
+		} catch (Exception e) {
+			getLogger().info( this.getClass().getName() + ".doTheAsyncTasks() 작없중 예외발생. 상세내용:" + e.toString());
+			throw e;
+		} finally {
+			net.dstone.common.utils.DateUtil.stopWatchEnd(msg);
+			//this.close(executorService);
+		}
 	}
 	
 	private void close(ExecutorService executorService){

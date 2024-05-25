@@ -24,7 +24,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	<script type="text/javascript"> 
 	
 		$(document).ready(function(){
-			
+			$("#btnAnalyze").on("click", btnAnalyzeOnclick);
 		});
 		
 	    function goAppSelectList(){ 
@@ -42,7 +42,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                    if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
 	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
 	                    }else{ 
-	                        console.log('success ===>>> data:' + (JSON.stringify(data))); 
+	                        //console.log('success ===>>> data:' + (JSON.stringify(data))); 
 	                        var appSel = $("#SYS_ID"); 
 	                        appSel.empty(); 
 	                        var returnList = data.returnObj.returnObj; 
@@ -100,8 +100,78 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                alert(e); 
 	            } 
 	        }); 
-	    } 
+	    }
+	    
+	    function btnAnalyzeOnclick(){
+	    	if(isValid()){
+	    		goAnalyze();
+	    	}
+	    }
+	    
+	    function isValid(){
+	    	var isValid = true;
+	    	var formObj = document.FORM_ANALYSIS; 
+	    	
+	    	return isValid;
+	    }
 
+		function goAnalyze(){
+	        $.ajax({ 
+	            type:"POST", 
+	            url:"/analyzer/analysis/doAnalyzing.do", 
+	            data:encodeURIComponent(JSON.stringify($(document.FORM_ANALYSIS).serializeObject())), 
+	            dataType:"json", 
+	            success:function(data, status, request){ 
+	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
+	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
+	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
+	                if( 'Y' == SUCCESS_YN ){ 
+	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
+	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	}
+	                	doMonitoring();
+	                }else{ 
+	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
+	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                }
+	                $("#btnAnalyze").attr("disabled",true); 
+	            }, 
+	            error : function(data, status, e) { 
+	                console.log('system error ===>>> data:' + (JSON.stringify(data))); 
+	                alert("system error"); 
+	            } 
+	        });
+		}
+		
+		function doMonitoring(){
+			console.log('doMonitoring ===>>> line 148' ); 
+	        $.ajax({ 
+	            type:"POST", 
+	            url:"/analyzer/analysis/doMonitoring.do", 
+	            data:encodeURIComponent(JSON.stringify($(document.FORM_ANALYSIS).serializeObject())), 
+	            dataType:"json", 
+	            success:function(data, status, request){ 
+	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
+	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
+	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
+	                if( 'Y' == SUCCESS_YN ){ 
+	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
+	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	}
+	                }else{ 
+	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
+	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                }
+	                console.log('success ===>>> data:' + (JSON.stringify(data))); 
+	            }, 
+	            error : function(data, status, e) { 
+	                console.log('system error ===>>> data:' + (JSON.stringify(data))); 
+	                alert("system error"); 
+	            } 
+	        });			
+		}
 
 	</script> 
 
@@ -148,53 +218,26 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									<table width="100%" border="1">
 										<thead>
 											<tr>
-												<th width="20%">선택</th>
-												<th width="25%">작업명</th>
-												<th width="55%">진행</th>
+												<th width="10%">선택</th>
+												<th width="20%">작업</th>
+												<th width="70%">진행</th>
 											</tr>
 										</thead>
 										<tbody>
 											<tr>
-												<td>어플리케이션 아이디</td>
-												<td><input type="text" name="SYS_ID" size="30" value="" /></td>
-												<td>어플리케이션 을 특정하는 UNIQUE 아이디</td>
-											</tr>
-											<tr>
-												<td>어플리케이션 명</td>
-												<td><input type="text" name="SYS_NM" size="30" value="" /></td>
-												<td>어플리케이션 이름</td>
-											</tr>
-											<tr>
-												<td>설정파일경로</td>
-												<td><input type="text" name="CONF_FILE_PATH" size="30" value="" /></td>
-												<td>어플리케이션 분석(Analyze)관련 설정파일 경로</td>
-											</tr>
-											<tr>
-												<td>어플리케이션루트</td>
-												<td><input type="text" name="APP_ROOT_PATH" size="30" value="" /></td>
-												<td>분석대상 어플리케이션 루트 경로</td>
-											</tr>
-											<tr>
-												<td>어플리케이션서버소스경로</td>
-												<td><input type="text" name="APP_SRC_PATH" size="30" value=""  /></td>
-												<td>분석대상 어플리케이션 java소스 루트 경로. 어플리케이션루트이하의 경로만 기술.</td>
-											</tr>
-											<tr>
-												<td>어플리케이션웹소스경로</td>
-												<td><input type="text" name="APP_WEB_PATH" size="30" value=""  /></td>
-												<td>분석대상 어플리케이션 웹 루트 경로. 어플리케이션루트이하의 경로만 기술.</td>
-											</tr>
-											<tr>
-												<td>어플리케이션쿼리소스루트</td>
-												<td><input type="text" name="APP_SQL_PATH" size="30" value=""  /></td>
-												<td>분석대상 어플리케이션 쿼리 루트 경로. 전체 경로 기술.</td>
+												<td>
+													<input type="checkbox" name="ANALYZE_JOB_KIND" value="<%=net.dstone.common.tools.analyzer.AppAnalyzer.JOB_KIND_31_ANALYZE_MTD%>" checked />
+												</td>
+												<td>메소드내 타 호출메소드 목록 추출</td>
+												<td>
+													<img src="<%=requestUtil.getStrContextPath()%>/analyzer/images/pic2.jpg" id="<%=net.dstone.common.tools.analyzer.AppAnalyzer.JOB_KIND_31_ANALYZE_MTD%>_IMG" alt="" style="vertical-align:middle; height: 15px; width: 10%;" />
+												</td>
 											</tr>
 										</tbody>
 									</table>
 
 									<h2 align="right">
-										<button type="button" id="btnSave"  class="mini_button" >저장</button>
-										<button type="button" id="btnDelete"  class="mini_button" >삭제</button>
+										<button type="button" id="btnAnalyze"  class="mini_button" >분석</button>
 									</h2>
 								</section>
 

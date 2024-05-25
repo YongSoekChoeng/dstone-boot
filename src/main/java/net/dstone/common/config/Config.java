@@ -2,7 +2,9 @@ package net.dstone.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+@EnableAsync
 @Configuration
 @Import({
 	ConfigAspect.class,

@@ -11,7 +11,7 @@ public class AnalysisItem extends TaskItem {
 	public TaskItem doTheTask() {
 		try {
 			net.dstone.common.tools.analyzer.AppAnalyzer appAnalyzer = net.dstone.common.tools.analyzer.AppAnalyzer.getInstance(this.configFilePath);
-			appAnalyzer.analyzeApp(Integer.valueOf(analyzeJobKind), false);
+			appAnalyzer.analyzeApp(Integer.valueOf(analyzeJobKind), true);
 		} catch (Exception e) {
             String errDetailMsg = this.getClass().getName() + ".doTheTask 수행중 예외발생. 상세사항:" + e.toString(); 
             getLogger().error(errDetailMsg); 

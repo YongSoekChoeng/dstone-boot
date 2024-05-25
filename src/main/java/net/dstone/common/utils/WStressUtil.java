@@ -130,7 +130,7 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 				}
 				taskList.add(taskItem);
 			}
-			net.dstone.common.task.TaskHandler.getInstance().addFixedExecutorService("WStressUtil", config.getConcurrentUserNum()).doTheTasks("WStressUtil", taskList);
+			net.dstone.common.task.TaskHandler.getInstance().addFixedExecutorService("WStressUtil", config.getConcurrentUserNum()).doTheSyncTasks("WStressUtil", taskList);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

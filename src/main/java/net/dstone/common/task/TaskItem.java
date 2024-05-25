@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
+import org.springframework.security.access.intercept.RunAsManager;
+
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.StringUtil;
 
-public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
+public abstract class TaskItem extends BaseObject implements Callable<TaskItem>, Runnable{
 
 	public abstract TaskItem doTheTask();
 	
@@ -22,7 +24,18 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>{
 		}
 		return (TaskItem)this;
 	}
-	
+
+	@Override
+	public void run() {
+		try {
+			
+			this.doTheTask();
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
 	private String executorServiceId = "";
 	private String taskItemId = "";
 	private HashMap<String, Object> prop = new HashMap<String, Object>();

@@ -401,7 +401,7 @@ public class QueueHandler extends BaseObject {
 							}
 							workList.add(taskItem);
 						}
-						workList = taskHandler.doTheTasks(makeExecutorServiceId(), workList);
+						workList = taskHandler.doTheSyncTasks(makeExecutorServiceId(), workList);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

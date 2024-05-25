@@ -103,10 +103,10 @@ mark {
 }
 
 input {
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	-ms-appearance: none;
-	appearance: none;
+/* 	-moz-appearance: none; */
+/* 	-webkit-appearance: none; */
+/* 	-ms-appearance: none; */
+/* 	appearance: none; */
 	
 	padding: 1px 2px 1px 2px;
 	text-transform: none;
@@ -123,10 +123,10 @@ input::-moz-focus-inner {
 }
 
 textarea {
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	-ms-appearance: none;
-	appearance: none;
+/* 	-moz-appearance: none; */
+/* 	-webkit-appearance: none; */
+/* 	-ms-appearance: none; */
+/* 	appearance: none; */
 	
 	padding: 1px 1px 1px 1px;
 	text-transform: none;
@@ -138,13 +138,23 @@ textarea {
 }
 
 select {
- 	-moz-appearance: normal;
-	-webkit-appearance: normal;
- 	-ms-appearance: normal;
- 	appearance: normal;
+/* 	-moz-appearance: none; */
+/* 	-webkit-appearance: none; */
+/* 	-ms-appearance: none; */
+/* 	appearance: none; */
  	
 	padding: 1px 2px 1px 2px;
 	color: #4e4d43;
+	font-size: 12pt; 
+	letter-spacing: -1px;
+	border: solid 1px #006e8b; 	
+}
+
+input[type='checkbox'] {
+ 	
+    width: 15px;
+    height: 15px;
+    color: #4e4d43;
 	font-size: 12pt; 
 	letter-spacing: -1px;
 	border: solid 1px #006e8b; 	
@@ -1614,6 +1624,12 @@ select {
 			background-image: linear-gradient(top, #1b9fbe, #118eb1);
 			background-color: #118eb1;
 			box-shadow: inset 0px 0px 0px 1px #3ecceb;
+		}
+		
+		.mini_button:disabled {
+			background-image: none;
+			background-color: #c0c0c0;
+			box-shadow: inset 0px 0px 0px 0px #c0c0c0;
 		}
 
 /* Header */
