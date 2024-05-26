@@ -67,8 +67,8 @@ spring:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/analyze
-                username: ENC(K+GQPfWalk76eHHGEFZQn2o7JLjM8naluWSaxg7M1YQ=)
-                password: ENC(K+GQPfWalk76eHHGEFZQn2o7JLjM8naluWSaxg7M1YQ=)
+                username: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
+                password: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
                 maximum-pool-size: 50
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/analyze

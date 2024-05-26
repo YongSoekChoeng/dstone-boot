@@ -52,7 +52,7 @@
     <INCLUDE_PACKAGE_ROOT>kr.co.gnx</INCLUDE_PACKAGE_ROOT>
     
 	<!-- 분석제외패키지패턴 목록(콤마 구분자) -->
-    <EXCLUDE_PACKAGE_PATTERN>".vo.", ".vo", "VO", "Vo", ".model.", "kr.co.gnx.base.Base"</EXCLUDE_PACKAGE_PATTERN>
+    <EXCLUDE_PACKAGE_PATTERN>.vo.,.vo,VO,Vo,.model.,kr.co.gnx.base.Base</EXCLUDE_PACKAGE_PATTERN>
     
 	<!-- 분석대상어플리케이션 클래스패스 -->
     <APP_CLASSPATH>D:/AppHome/anybiz_prd/WEB-INF/lib/activation-1.1.1.jar;

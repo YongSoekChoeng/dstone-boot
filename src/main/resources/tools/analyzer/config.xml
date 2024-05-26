@@ -52,7 +52,7 @@
     <INCLUDE_PACKAGE_ROOT>net.dstone.sample.analyze</INCLUDE_PACKAGE_ROOT>
     
 	<!-- 분석제외패키지패턴 목록(콤마 구분자) -->
-    <EXCLUDE_PACKAGE_PATTERN>".vo.",".vo","VO","Vo",".model."</EXCLUDE_PACKAGE_PATTERN>
+    <EXCLUDE_PACKAGE_PATTERN>.vo.,.vo,VO,Vo,.model.</EXCLUDE_PACKAGE_PATTERN>
     
 	<!-- 분석대상어플리케이션 클래스패스 -->
     <APP_CLASSPATH>D:/REPO/MAVEN/org/springframework/boot/spring-boot-starter-web/2.7.0/spring-boot-starter-web-2.7.0.jar;

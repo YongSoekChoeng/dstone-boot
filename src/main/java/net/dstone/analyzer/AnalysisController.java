@@ -1,5 +1,6 @@
 package net.dstone.analyzer; 
  
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import net.dstone.analyzer.taskitem.AnalysisItem;
 import net.dstone.common.task.TaskHandler;
 import net.dstone.common.task.TaskHandler.TaskReport;
+import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.utils.RequestUtil;
 @Controller
 @RequestMapping(value = "/analyzer/analysis/*")
@@ -99,12 +101,12 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    		RequestUtil 						requestUtil;
    		//파라메터로 사용할 VO
    		String[]							analyzeJobKindArr; 
-   		HashMap<String, TaskReport>			taskReportMap;
+   		ArrayList<HashMap<String, String>>	taskReportList;
    		/************************ 변수 선언 끝 **************************/
    		
    		/************************ 변수 정의 시작 ************************/
    		requestUtil 			= new RequestUtil(request, response);
-   		taskReportMap			= new HashMap<String, TaskReport>();
+   		taskReportList			= new ArrayList<HashMap<String, String>>();
    		/************************ 변수 정의 끝 ************************/
    		
    		/************************ 컨트롤러 로직 시작 ************************/
@@ -114,13 +116,20 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    		// 2. 분석작업종류별 모니터링실행.
    		if(analyzeJobKindArr != null) {
    			for(String analyzeJobKind : analyzeJobKindArr) {
-   				taskReportMap.put(analyzeJobKind, TaskHandler.getInstance().getTaskReport(analyzeJobKind));
+				String analyzeJobKindId = AppAnalyzer.JOB_KIND_MAP.get(Integer.valueOf(analyzeJobKind));
+				HashMap<String, String> taskReportMap = new HashMap<String, String>();
+				TaskReport taskReport = TaskHandler.getInstance().getTaskReport(analyzeJobKindId);
+				if( taskReport != null && taskReport.getRate() != null ) {
+					taskReportMap.put("taskId", analyzeJobKindId);
+					taskReportMap.put("taskRate", taskReport.getRate().toPlainString());
+					taskReportList.add(taskReportMap);
+				}
    			}
    		}
 
    		// 3. 결과처리
    		mav.addObject("RETURN_CD", net.dstone.common.biz.BaseController.RETURN_SUCCESS );
-   		mav.addObject("returnObj", taskReportMap);
+   		mav.addObject("returnObj", taskReportList);
    		/************************ 컨트롤러 로직 끝 ************************/
    		return mav;
     }
