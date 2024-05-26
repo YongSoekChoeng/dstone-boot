@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.dstone.analyzer.taskitem.AnalysisItem;
+import net.dstone.common.queue.QueueItem;
 import net.dstone.common.task.TaskHandler;
 import net.dstone.common.task.TaskHandler.TaskReport;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
@@ -57,20 +58,33 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    	   		paramVo.setSYS_ID(sysId);
    	   		paramVo = configurationService.getSys(paramVo);
    			if(paramVo != null) {
-   				TaskHandler taskHandler = TaskHandler.getInstance();
-   	   			String executorServiceId = "doAnalyzing";
-   	   			if( !taskHandler.isExecutorServiceExists(executorServiceId) ) {
-   	   				taskHandler.addSingleExecutorService(executorServiceId);
-   	   			}
-   	   			
-   	   			for(int i=0; i<analyzeJobKindArr.length; i++) {
-   	   				String analyzeJobKind = analyzeJobKindArr[i];
-   	   				AnalysisItem analysisItem = new AnalysisItem();
-   	   				analysisItem.setId(executorServiceId + "-" + String.valueOf(i));
-   	   				analysisItem.setAnalyzeJobKind(Integer.valueOf(analyzeJobKind));
-   	   				analysisItem.setConfigFilePath(paramVo.getCONF_FILE_PATH());
-   	   				taskHandler.doTheAsyncTask(executorServiceId, analysisItem);
-   	   			}
+   				net.dstone.common.queue.QueueHandler.QUEUE_CHECK_INTERVAL = 5*1000; 
+   				net.dstone.common.queue.QueueHandler.QUEUE_ITEM_SIZE_BY_ONE = 1;
+   				
+   				for(int i=0; i<analyzeJobKindArr.length; i++) {
+   					String analyzeJobKind = analyzeJobKindArr[i];
+   					String executorServiceId = "doAnalyzing";
+   					String id = executorServiceId + "-" + String.valueOf(i);
+   	   				String confFilePath = paramVo.getCONF_FILE_PATH();
+   	   				net.dstone.common.queue.QueueHandler.getInstance().addQueue(new QueueItem() {
+   						@Override
+   						public void doTheJob() {
+   							TaskHandler taskHandler = TaskHandler.getInstance();
+   							try {
+   								if( !taskHandler.isExecutorServiceExists(executorServiceId) ) {
+   									taskHandler.addSingleExecutorService(executorServiceId);
+   								}
+   	   							AnalysisItem analysisItem = new AnalysisItem();
+   	   							analysisItem.setId(id);
+	   	    	   				analysisItem.setAnalyzeJobKind(Integer.valueOf(analyzeJobKind));
+	   	    	   				analysisItem.setConfigFilePath(confFilePath);
+	   	    	   				taskHandler.doTheSyncTask(executorServiceId, analysisItem);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+   						}
+   					});
+   				}
    			}
    		}
    		

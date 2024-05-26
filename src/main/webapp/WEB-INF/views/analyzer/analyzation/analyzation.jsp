@@ -122,8 +122,12 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 		
 		function startMonitoring(){
-			doMonitoring();
-			timeOutObj = setTimeout(startMonitoring, 1 * 1000);
+			var shouldBeStop = doMonitoring();
+			if(shouldBeStop){
+				stopMonitoring();
+			}else{
+				timeOutObj = setTimeout(startMonitoring, 1 * 1000);
+			}
 		}
 
 		function stopMonitoring(){
@@ -133,6 +137,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 
 		function doMonitoring(){
+			var isStarted = false;
+			var isCompleted = false;
+			var shouldBeStop = false;
 	        $.ajax({ 
 	            type:"POST", 
 	            url:"/analyzer/analysis/doMonitoring.do", 
@@ -152,31 +159,44 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	var returnList = data.returnObj;
 	                	
 	                	if(returnList){
+	                		isCompleted = true;
 		                	for(var i = 0; i<returnList.length; i++){
 		                		var returnRow = returnList[i];
 		                		console.log('returnRow ===>>>' + returnRow + ", returnRow.length:" + returnRow.length ); 
 		                		var taskId = returnRow["taskId"];
 		                		var taskRate = returnRow["taskRate"];
-		                		console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate ); 
+		                		console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
+		                		
 		                		if( taskId && taskRate ){
+		                			isStarted = true;
+		                			if( parseInt(taskRate) < 100 ){
+		                				isCompleted = false;
+		                			}
 			                		console.log('line 162 taskId ===>>>' + taskId + ", taskRate:" + taskRate ); 
 			                		var imgObj = $("#ANALYZE_" + taskId + "_IMG");
 			                		imgObj.css({'width' : taskRate + '%' });
 		                		}
 		                	}
 	                	}
-	                	//var jobKind = $("input[name=ANALYZE_JOB_KIND]");
+
 	                	
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
 	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                    shouldBeStop = true;
 	                }
 	            }, 
 	            error : function(data, status, e) { 
 	                console.log('system error ===>>> data:' + (JSON.stringify(data))); 
 	                alert("system error"); 
+                    shouldBeStop = true;
 	            } 
-	        });			
+	        });	
+	        if( isStarted && isCompleted ){
+	        	shouldBeStop = true;
+	        }
+console.log("line 198 =============>>>" + "isStarted["+isStarted+"]"  + ", isCompleted["+isCompleted+"]"  + ", shouldBeStop["+shouldBeStop+"]"); 	        
+	        return shouldBeStop;
 		}
 
 	</script> 
