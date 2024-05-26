@@ -122,8 +122,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 		
 		function startMonitoring(){
-			var shouldBeStop = doMonitoring();
-			if(shouldBeStop){
+			var isCompleted = doMonitoring();
+			if(isCompleted){
 				stopMonitoring();
 			}else{
 				timeOutObj = setTimeout(startMonitoring, 1 * 1000);
@@ -137,9 +137,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 
 		function doMonitoring(){
-			var isStarted = false;
 			var isCompleted = false;
-			var shouldBeStop = false;
+			var isStarted = false;
+			var isAllDone = false;
 	        $.ajax({ 
 	            type:"POST", 
 	            url:"/analyzer/analysis/doMonitoring.do", 
@@ -155,48 +155,45 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
 	                		return;
 	                	}
-	                	console.log('success ===>>> data:' + (JSON.stringify(data))); 
+	                	//console.log('success ===>>> data:' + (JSON.stringify(data))); 
 	                	var returnList = data.returnObj;
 	                	
 	                	if(returnList){
-	                		isCompleted = true;
+	                		isAllDone = true;
 		                	for(var i = 0; i<returnList.length; i++){
 		                		var returnRow = returnList[i];
-		                		console.log('returnRow ===>>>' + returnRow + ", returnRow.length:" + returnRow.length ); 
 		                		var taskId = returnRow["taskId"];
 		                		var taskRate = returnRow["taskRate"];
-		                		console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
+		                		//console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
 		                		
 		                		if( taskId && taskRate ){
 		                			isStarted = true;
 		                			if( parseInt(taskRate) < 100 ){
-		                				isCompleted = false;
+		                				isAllDone = false;
 		                			}
-			                		console.log('line 162 taskId ===>>>' + taskId + ", taskRate:" + taskRate ); 
+			                		console.log('line 171  ===>>>taskId:' + taskId + ", taskRate:" + taskRate ); 
 			                		var imgObj = $("#ANALYZE_" + taskId + "_IMG");
 			                		imgObj.css({'width' : taskRate + '%' });
+		                		}else{
+		                			isAllDone = false;
 		                		}
 		                	}
+console.log("line 162 ===>>>" + " isStarted" + isStarted + ", isAllDone" + isAllDone + ", isCompleted:" + isCompleted ); 
 	                	}
-
-	                	
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
 	                    alert("failure ERR_MSG:" + ERR_MSG); 
-	                    shouldBeStop = true;
 	                }
 	            }, 
 	            error : function(data, status, e) { 
 	                console.log('system error ===>>> data:' + (JSON.stringify(data))); 
 	                alert("system error"); 
-                    shouldBeStop = true;
 	            } 
 	        });	
-	        if( isStarted && isCompleted ){
-	        	shouldBeStop = true;
+	        if( isStarted && isAllDone ){
+	        	isCompleted = true;
 	        }
-console.log("line 198 =============>>>" + "isStarted["+isStarted+"]"  + ", isCompleted["+isCompleted+"]"  + ", shouldBeStop["+shouldBeStop+"]"); 	        
-	        return shouldBeStop;
+	        return isCompleted;
 		}
 
 	</script> 

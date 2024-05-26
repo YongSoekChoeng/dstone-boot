@@ -255,6 +255,7 @@ public class TaskHandler extends BaseObject{
 			getLogger().info( this.getClass().getName() + ".doTheSyncTask() 작없중 예외발생. ID[" + item.getId() + "] 상세내용:" + e.toString());
 			throw e;
 		} finally {
+			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheSyncTask");
 			//this.close(executorService);
 		}
@@ -280,6 +281,7 @@ public class TaskHandler extends BaseObject{
 			getLogger().info( this.getClass().getName() + ".doTheAyncTask() 작없중 예외발생. ID[" + item.getId() + "] 상세내용:" + e.toString());
 			throw e;
 		} finally {
+			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheAyncTask");
 			//this.close(executorService);
 		}
@@ -326,6 +328,7 @@ public class TaskHandler extends BaseObject{
 			getLogger().info( this.getClass().getName() + ".doTheSyncTasks() 작없중 예외발생. 상세내용:" + e.toString());
 			throw e;
 		} finally {
+			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd(msg);
 			//this.close(executorService);
 		}
@@ -354,6 +357,7 @@ public class TaskHandler extends BaseObject{
 			getLogger().info( this.getClass().getName() + ".doTheAsyncTasks() 작없중 예외발생. 상세내용:" + e.toString());
 			throw e;
 		} finally {
+			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd(msg);
 			//this.close(executorService);
 		}
