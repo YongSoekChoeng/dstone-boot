@@ -159,26 +159,27 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	var returnList = data.returnObj;
 	                	
 	                	if(returnList){
-	                		isAllDone = true;
+	                		if( returnList.length > 0 ){
+	                			isAllDone = true;
+	                		}
 		                	for(var i = 0; i<returnList.length; i++){
 		                		var returnRow = returnList[i];
 		                		var taskId = returnRow["taskId"];
 		                		var taskRate = returnRow["taskRate"];
 		                		//console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
-		                		
 		                		if( taskId && taskRate ){
-		                			isStarted = true;
 		                			if( parseInt(taskRate) < 100 ){
 		                				isAllDone = false;
 		                			}
 			                		console.log('line 171  ===>>>taskId:' + taskId + ", taskRate:" + taskRate ); 
 			                		var imgObj = $("#ANALYZE_" + taskId + "_IMG");
 			                		imgObj.css({'width' : taskRate + '%' });
-		                		}else{
-		                			isAllDone = false;
 		                		}
 		                	}
-console.log("line 162 ===>>>" + " isStarted" + isStarted + ", isAllDone" + isAllDone + ", isCompleted:" + isCompleted ); 
+		        	        if( isAllDone ){
+		        	        	isCompleted = true;
+		        	        }
+console.log("line 179 ===>>>" + " isAllDone"+"[" + isAllDone + "]" + " isCompleted[" + isCompleted + "]"); 
 	                	}
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -190,9 +191,7 @@ console.log("line 162 ===>>>" + " isStarted" + isStarted + ", isAllDone" + isAll
 	                alert("system error"); 
 	            } 
 	        });	
-	        if( isStarted && isAllDone ){
-	        	isCompleted = true;
-	        }
+
 	        return isCompleted;
 		}
 

@@ -58,15 +58,17 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    	   		paramVo.setSYS_ID(sysId);
    	   		paramVo = configurationService.getSys(paramVo);
    			if(paramVo != null) {
-   				net.dstone.common.queue.QueueHandler.QUEUE_CHECK_INTERVAL = 5*1000; 
-   				net.dstone.common.queue.QueueHandler.QUEUE_ITEM_SIZE_BY_ONE = 1;
+   				
+   				String queueHandlerId = "doAnalyzingQueue";
+   				int queueCheckInterval = 5*1000; 
+   				int queueItemSizeByOne = 1;
    				
    				for(int i=0; i<analyzeJobKindArr.length; i++) {
    					String analyzeJobKind = analyzeJobKindArr[i];
    					String executorServiceId = "doAnalyzing";
-   					String id = executorServiceId + "-" + String.valueOf(i);
+   					String executorServiceItemId = executorServiceId + "-" + String.valueOf(i);
    	   				String confFilePath = paramVo.getCONF_FILE_PATH();
-   	   				net.dstone.common.queue.QueueHandler.getInstance().addQueue(new QueueItem() {
+   	   				net.dstone.common.queue.QueueHandler.getInstance(queueHandlerId, queueCheckInterval, queueItemSizeByOne).addQueue(new QueueItem() {
    						@Override
    						public void doTheJob() {
    							TaskHandler taskHandler = TaskHandler.getInstance();
@@ -75,7 +77,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    									taskHandler.addSingleExecutorService(executorServiceId);
    								}
    	   							AnalysisItem analysisItem = new AnalysisItem();
-   	   							analysisItem.setId(id);
+   	   							analysisItem.setId(executorServiceItemId);
 	   	    	   				analysisItem.setAnalyzeJobKind(Integer.valueOf(analyzeJobKind));
 	   	    	   				analysisItem.setConfigFilePath(confFilePath);
 	   	    	   				taskHandler.doTheSyncTask(executorServiceId, analysisItem);
@@ -136,6 +138,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
 				if( taskReport != null && taskReport.getRate() != null ) {
 					taskReportMap.put("taskId", analyzeJobKindId);
 					taskReportMap.put("taskRate", taskReport.getRate().toPlainString());
+debug("analyzeJobKindId:" + analyzeJobKindId + ", taskReportMap:" + taskReportMap);					
 					taskReportList.add(taskReportMap);
 				}
    			}

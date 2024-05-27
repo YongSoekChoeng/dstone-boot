@@ -38,12 +38,15 @@ public class TaskHandler extends BaseObject{
 		}
 		public void setTryCount(int tryCount) {
 			this.tryCount = tryCount;
+			this.calcurateRate();
 		}
 		public void addTryCount() {
 			this.tryCount++;
+			this.calcurateRate();
 		}
 		public void addTryCount(int tryCount) {
 			this.tryCount = this.tryCount + tryCount;
+			this.calcurateRate();
 		}
 		
 		public int getSuccessCount() {
@@ -51,12 +54,15 @@ public class TaskHandler extends BaseObject{
 		}
 		public void setSuccessCount(int successCount) {
 			this.successCount = successCount;
+			this.calcurateRate();
 		}
 		public void addSuccessCount() {
 			this.successCount++;
+			this.calcurateRate();
 		}
 		public void addSuccessCount(int successCount) {
 			this.successCount = this.successCount + successCount;
+			this.calcurateRate();
 		}
 		
 		public int getErrorCount() {
@@ -64,12 +70,15 @@ public class TaskHandler extends BaseObject{
 		}
 		public void setErrorCount(int errorCount) {
 			this.errorCount = errorCount;
+			this.calcurateRate();
 		}
 		public void addErrorCount() {
 			this.errorCount++;
+			this.calcurateRate();
 		}
 		public void addErrorCount(int errorCount) {
 			this.errorCount = this.errorCount + errorCount;
+			this.calcurateRate();
 		}
 
 		public int getMonitoringSec() {
@@ -85,6 +94,20 @@ public class TaskHandler extends BaseObject{
 		public void setRate(BigDecimal rate) {
 			this.rate = rate;
 		}
+		
+		private void calcurateRate() {
+			try {
+				if( this.getTryCount() > 0 && this.getSuccessCount() > 0) {
+					BigDecimal bRate = new BigDecimal(this.getSuccessCount());
+					bRate = bRate.divide(new BigDecimal(this.getTryCount()), 2, BigDecimal.ROUND_HALF_UP);
+					bRate = bRate.multiply(new BigDecimal(100));
+					this.rate = bRate;
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
 		@Override
 		public String toString() {
 			return "TaskReport [monitoringSec=" + monitoringSec + ", tryCount=" + tryCount + ", successCount="
@@ -382,7 +405,7 @@ public class TaskHandler extends BaseObject{
 	}
 	
 	/**
-	 * 작업진행모니터링
+	 * 작업진행모니터링(EXECUTOR_SERVICE_REPORT_INTERVAL 만큼 주기를 두고 모니터링한다.)
 	 */
 	public TaskReport doMonitoring(String executorServiceId) {
 		TaskReport taskReport = this.getExecutorServiceTaskReport(executorServiceId);
@@ -415,17 +438,30 @@ public class TaskHandler extends BaseObject{
 			
 			if(isTimeToReport) {
 				StringBuffer buff = new StringBuffer();
-				BigDecimal rate = new BigDecimal(taskReport.getSuccessCount());
-				rate = rate.divide(new BigDecimal(taskReport.getTryCount()), 2, BigDecimal.ROUND_HALF_UP);
-				rate = rate.multiply(new BigDecimal(100));
-				taskReport.setRate(rate);
 				
 				buff.append("\n\n");
 				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-				buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ rate.intValue() +"%]").append("\n");
+				buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ taskReport.getRate().intValue() +"%]").append("\n");
 				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
 				debug(buff);
 			}
+		}
+		return taskReport;
+	}
+	
+	/**
+	 * 작업진행모니터링(주기에 상관없이 현재 처리진행을 모니터링한다.)
+	 */
+	public TaskReport doMonitoringNow(String executorServiceId) {
+		TaskReport taskReport = this.getExecutorServiceTaskReport(executorServiceId);
+		if( taskReport != null ) {
+			StringBuffer buff = new StringBuffer();
+
+			buff.append("\n\n");
+			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+			buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ taskReport.getRate().intValue() +"%]").append("\n");
+			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+			debug(buff);
 		}
 		return taskReport;
 	}

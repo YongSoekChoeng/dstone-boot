@@ -1,5 +1,7 @@
 package net.dstone.common.queue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 public class QueueHandler {
@@ -8,21 +10,40 @@ public class QueueHandler {
 	/**
 	 * 큐를 감시할 시간간격.(60초)
 	 */
-	public static int QUEUE_CHECK_INTERVAL = 60*1000; 
+	protected int QUEUE_CHECK_INTERVAL = 60*1000; 
 	/**
 	 * 한번에 처리할 큐아이템 갯수. -1 이면 큐의 모든 아이템을 처리한다.
 	 */
-	public static int QUEUE_ITEM_SIZE_BY_ONE = 100;    
+	protected int QUEUE_ITEM_SIZE_BY_ONE = 100;    
 	/****************************  설정 끝   ****************************/
 	
-	protected static QueueHandler queueHandler = null;
+	protected static Map<String, QueueHandler> QUEUE_HANDLER_MAP = new HashMap<String, QueueHandler>();
 	
 	protected Queue queue = null;
 	protected QueueThread queueThread = null;
 	
-	public static QueueHandler getInstance(){
-		if(queueHandler == null){
+	public static QueueHandler getInstance(String queueHandlerId){
+		QueueHandler queueHandler = null;
+		if( !QUEUE_HANDLER_MAP.containsKey(queueHandlerId) ) {
 			queueHandler = new QueueHandler();
+			QUEUE_HANDLER_MAP.put(queueHandlerId, queueHandler);
+		}else {
+			queueHandler = QUEUE_HANDLER_MAP.get(queueHandlerId);
+		}
+		return queueHandler;
+	}
+
+	public static QueueHandler getInstance(String queueHandlerId, int queueCheckInterval, int queueItemSizeByOne){
+		QueueHandler queueHandler = null;
+		if( !QUEUE_HANDLER_MAP.containsKey(queueHandlerId) ) {
+			queueHandler = new QueueHandler();
+			queueHandler.QUEUE_CHECK_INTERVAL = queueCheckInterval;
+			queueHandler.QUEUE_ITEM_SIZE_BY_ONE = queueItemSizeByOne;
+			QUEUE_HANDLER_MAP.put(queueHandlerId, queueHandler);
+		}else {
+			queueHandler = QUEUE_HANDLER_MAP.get(queueHandlerId);
+			queueHandler.QUEUE_CHECK_INTERVAL = queueCheckInterval;
+			queueHandler.QUEUE_ITEM_SIZE_BY_ONE = queueItemSizeByOne;
 		}
 		return queueHandler;
 	}
