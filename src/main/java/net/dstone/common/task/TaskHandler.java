@@ -40,11 +40,11 @@ public class TaskHandler extends BaseObject{
 			this.tryCount = tryCount;
 			this.calcurateRate();
 		}
-		public void addTryCount() {
+		public synchronized void addTryCount() {
 			this.tryCount++;
 			this.calcurateRate();
 		}
-		public void addTryCount(int tryCount) {
+		public synchronized void addTryCount(int tryCount) {
 			this.tryCount = this.tryCount + tryCount;
 			this.calcurateRate();
 		}
@@ -56,11 +56,11 @@ public class TaskHandler extends BaseObject{
 			this.successCount = successCount;
 			this.calcurateRate();
 		}
-		public void addSuccessCount() {
+		public synchronized void addSuccessCount() {
 			this.successCount++;
 			this.calcurateRate();
 		}
-		public void addSuccessCount(int successCount) {
+		public synchronized void addSuccessCount(int successCount) {
 			this.successCount = this.successCount + successCount;
 			this.calcurateRate();
 		}
@@ -72,11 +72,11 @@ public class TaskHandler extends BaseObject{
 			this.errorCount = errorCount;
 			this.calcurateRate();
 		}
-		public void addErrorCount() {
+		public synchronized void addErrorCount() {
 			this.errorCount++;
 			this.calcurateRate();
 		}
-		public void addErrorCount(int errorCount) {
+		public synchronized void addErrorCount(int errorCount) {
 			this.errorCount = this.errorCount + errorCount;
 			this.calcurateRate();
 		}
@@ -99,6 +99,7 @@ public class TaskHandler extends BaseObject{
 			try {
 				if( this.getTryCount() > 0 && this.getSuccessCount() > 0) {
 					BigDecimal bRate = new BigDecimal(this.getSuccessCount());
+					bRate = bRate.add(new BigDecimal(this.getErrorCount()));
 					bRate = bRate.divide(new BigDecimal(this.getTryCount()), 2, BigDecimal.ROUND_HALF_UP);
 					bRate = bRate.multiply(new BigDecimal(100));
 					this.rate = bRate;

@@ -72,10 +72,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                            lineStr = lineStr + "<option value='"+returnList[i].SYS_ID+"' >" + returnList[i].SYS_NM + "</option>"; 
 	                            appSel.append(lineStr); 
 	                        } 
-	                        
-	                        if( returnList.length > 0 ){
-	                        	//startMonitoring();
-	                        }
 	                    } 
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -122,23 +118,20 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 		
 		function startMonitoring(){
-			var isCompleted = doMonitoring();
-			if(isCompleted){
-				stopMonitoring();
-			}else{
-				timeOutObj = setTimeout(startMonitoring, 1 * 1000);
-			}
+			doMonitoring();
+			timeOutObj = setTimeout(startMonitoring, 1 * 1000);
 		}
 
 		function stopMonitoring(){
 			if(timeOutObj){
 				clearTimeout(timeOutObj);
 			}
+			console.log("stopMonitoring ===>>> line 137" );
+			$("#btnAnalyze").attr("disabled", false); 
 		}
 
 		function doMonitoring(){
 			var isCompleted = false;
-			var isStarted = false;
 			var isAllDone = false;
 	        $.ajax({ 
 	            type:"POST", 
@@ -166,20 +159,20 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		                		var returnRow = returnList[i];
 		                		var taskId = returnRow["taskId"];
 		                		var taskRate = returnRow["taskRate"];
-		                		//console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
+		                		console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
 		                		if( taskId && taskRate ){
 		                			if( parseInt(taskRate) < 100 ){
 		                				isAllDone = false;
 		                			}
-			                		console.log('line 171  ===>>>taskId:' + taskId + ", taskRate:" + taskRate ); 
 			                		var imgObj = $("#ANALYZE_" + taskId + "_IMG");
 			                		imgObj.css({'width' : taskRate + '%' });
 		                		}
 		                	}
 		        	        if( isAllDone ){
 		        	        	isCompleted = true;
+		        	        	stopMonitoring();
 		        	        }
-console.log("line 179 ===>>>" + " isAllDone"+"[" + isAllDone + "]" + " isCompleted[" + isCompleted + "]"); 
+							//console.log("line 179 ===>>>" + " isAllDone"+"[" + isAllDone + "]" + " isCompleted[" + isCompleted + "]"); 
 	                	}
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -191,7 +184,6 @@ console.log("line 179 ===>>>" + " isAllDone"+"[" + isAllDone + "]" + " isComplet
 	                alert("system error"); 
 	            } 
 	        });	
-
 	        return isCompleted;
 		}
 

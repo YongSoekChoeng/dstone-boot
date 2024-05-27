@@ -2,6 +2,7 @@ package net.dstone.analyzer;
  
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,6 +59,12 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    	   		paramVo.setSYS_ID(sysId);
    	   		paramVo = configurationService.getSys(paramVo);
    			if(paramVo != null) {
+   				
+   				Iterator<Integer> keys = AppAnalyzer.JOB_KIND_MAP.keySet().iterator();
+   				while( keys.hasNext() ) {
+   					String executorServiceId = AppAnalyzer.JOB_KIND_MAP.get(keys.next());
+   					TaskHandler.getInstance().removeExecutorService(executorServiceId);
+   				}
    				
    				String queueHandlerId = "doAnalyzingQueue";
    				int queueCheckInterval = 5*1000; 
@@ -138,7 +145,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
 				if( taskReport != null && taskReport.getRate() != null ) {
 					taskReportMap.put("taskId", analyzeJobKindId);
 					taskReportMap.put("taskRate", taskReport.getRate().toPlainString());
-debug("analyzeJobKindId:" + analyzeJobKindId + ", taskReportMap:" + taskReportMap);					
+debug("analyzeJobKindId:" + analyzeJobKindId + ", taskReport:" + taskReport);					
 					taskReportList.add(taskReportMap);
 				}
    			}

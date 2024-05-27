@@ -584,8 +584,8 @@ public class SvcAnalyzer extends BaseObject{
 					if(classFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
 						for(int i=0; i<classFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
-
 								classFile = classFileList[i];
 								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
 									
@@ -622,12 +622,16 @@ public class SvcAnalyzer extends BaseObject{
 									ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 									
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeClass()수행중 예외발생. classFile["+classFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -693,6 +697,7 @@ public class SvcAnalyzer extends BaseObject{
 						
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								classFile = classFileList[i];
 								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
@@ -714,12 +719,16 @@ public class SvcAnalyzer extends BaseObject{
 									}
 
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -783,6 +792,7 @@ public class SvcAnalyzer extends BaseObject{
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
 						analyzedClassFileList = FileUtil.readFileList(AppAnalyzer.WRITE_PATH + "/class", false);
 						for(int i=0; i<classFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								classFile = classFileList[i];
 								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
@@ -800,12 +810,16 @@ public class SvcAnalyzer extends BaseObject{
 									// 파일저장	
 									ParseUtil.writeClassVo(clzzVo, AppAnalyzer.WRITE_PATH + "/class");
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeClassAlias()수행중 예외발생. classFile["+classFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -867,6 +881,7 @@ public class SvcAnalyzer extends BaseObject{
 					if(queryFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(queryFileList.length);
 						for(int i=0; i<queryFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								queryFile = queryFileList[i];
 								if( SvcAnalyzer.isValidQueryFile(queryFile) ) {
@@ -906,12 +921,16 @@ public class SvcAnalyzer extends BaseObject{
 										}
 									}
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeQuery()수행중 예외발생. queryFile["+queryFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -976,6 +995,7 @@ public class SvcAnalyzer extends BaseObject{
 					if(queryFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(queryFileList.length);
 						for(int i=0; i<queryFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								analyzedQueryFile = queryFileList[i];
 								key = FileUtil.getFileName(analyzedQueryFile, false);
@@ -986,12 +1006,16 @@ public class SvcAnalyzer extends BaseObject{
 								
 								// 파일저장	
 								ParseUtil.writeQueryVo(queryVo, AppAnalyzer.WRITE_PATH + "/query");
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeQueryCallTbl()수행중 예외발생. analyzedQueryFile["+analyzedQueryFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -1056,6 +1080,7 @@ public class SvcAnalyzer extends BaseObject{
 					if(classFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(classFileList.length);
 						for(int i=0; i<classFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								classFile = classFileList[i];
 								if( SvcAnalyzer.isValidSvcFile(classFile) ) {
@@ -1101,12 +1126,16 @@ public class SvcAnalyzer extends BaseObject{
 									}
 									
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeMtd()수행중 예외발생. classFile["+classFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -1171,6 +1200,7 @@ public class SvcAnalyzer extends BaseObject{
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(analyzedMethodFileList.length);
 
 						for(int i=0; i<analyzedMethodFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 
 								analyzedMethodFile = analyzedMethodFileList[i];
@@ -1197,12 +1227,16 @@ public class SvcAnalyzer extends BaseObject{
 								// 파일저장	
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
 								
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallMtd()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -1264,6 +1298,7 @@ public class SvcAnalyzer extends BaseObject{
 					if(analyzedMethodFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(analyzedMethodFileList.length);
 						for(int i=0; i<analyzedMethodFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								analyzedMethodFile = analyzedMethodFileList[i];
 								String fileNoExt = analyzedMethodFile.substring(0, analyzedMethodFile.lastIndexOf("."));
@@ -1280,12 +1315,16 @@ public class SvcAnalyzer extends BaseObject{
 								// 파일저장	
 								ParseUtil.writeMethodVo(mtdVo, AppAnalyzer.WRITE_PATH + "/method");
 								
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeMtdCallTbl()수행중 예외발생. analyzedMethodFile["+analyzedMethodFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -1346,6 +1385,7 @@ public class SvcAnalyzer extends BaseObject{
 					if(uiFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(uiFileList.length);
 						for(int i=0; i<uiFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
 								if( SvcAnalyzer.isValidUiFile(uiFile) ) {
@@ -1366,12 +1406,16 @@ public class SvcAnalyzer extends BaseObject{
 									ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
 									
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeUi()수행중 예외발생. uiFile["+uiFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
@@ -1431,6 +1475,7 @@ public class SvcAnalyzer extends BaseObject{
 					if(uiFileList != null) {
 						taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(uiFileList.length);
 						for(int i=0; i<uiFileList.length; i++) {
+							boolean isSucceded = true;
 							try {
 								uiFile = StringUtil.replace(uiFileList[i], "\\", "/");
 								if( SvcAnalyzer.isValidUiFile(uiFile) ) {
@@ -1445,12 +1490,16 @@ public class SvcAnalyzer extends BaseObject{
 									ParseUtil.writeUiVo(uiVo, AppAnalyzer.WRITE_PATH + "/ui");
 									
 								}
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
 							} catch (Exception e) {
 								LogUtil.sysout(this.getClass().getName() + ".analyzeUiLink()수행중 예외발생. uiFile["+uiFile+"]");
 								e.printStackTrace();
-								taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								isSucceded = false;
 							} finally {
+								if(isSucceded) {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+								}else {
+									taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+								}
 								taskHandler.doMonitoring(executorServiceId);
 							}
 						}
