@@ -1560,7 +1560,6 @@ public class ParseUtil {
 				}
 			}
 			uiConts.append("링크" + div + StringUtil.nullCheck(linkConts, "")).append("\n");
-
 			FileUtil.writeFile(writeFilePath, fileName, uiConts.toString()); 
 		} catch (Exception e) {
 			System.out.println("fileName["+fileName+"] 수행중 예외발생.");	

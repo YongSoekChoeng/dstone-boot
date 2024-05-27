@@ -22,7 +22,10 @@ public class JspParseUi implements ParseUi {
 		
 		String fileName = FileUtil.getFileName(uiFile, false);
 		String subPath = FileUtil.getFilePath(uiFile);
-		subPath = StringUtil.replace(subPath, AppAnalyzer.WEB_ROOT_PATH, "");
+		String removeStr = AppAnalyzer.WEB_ROOT_PATH;
+		removeStr = StringUtil.replace(removeStr, "//", "/");
+		
+		subPath = StringUtil.replace(subPath, removeStr, "");
 		if(subPath.startsWith("/")) {
 			subPath = subPath.substring(subPath.indexOf("/")+1);
 		}
