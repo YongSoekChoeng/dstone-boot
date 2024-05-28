@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -235,6 +236,33 @@ public class TaskHandler extends BaseObject{
 		}
 	}
 	
+	public void checkExecutorServiceAll(){
+		Iterator<String> keys = EXECUTOR_SERVICE_MAP.keySet().iterator();
+		StringBuffer buff = new StringBuffer();
+
+		buff.append("\n\n");
+		buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀체크 Start  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+		debug(buff);
+		
+		while(keys.hasNext()) {
+			String executorServiceId = keys.next();
+			this.checkExecutorService(executorServiceId);
+		}
+		buff.setLength(0);
+		buff.append("\n");
+		buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀체크 End  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+		buff.append("\n\n");
+		debug(buff);
+		
+	}
+	
+	public void checkExecutorService(String executorServiceId){
+		if(EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
+			this.doMonitoringNow(executorServiceId);
+		}
+	}
+	
+	
 	/******************************************************************/
 	protected static TaskHandler taskHandler = null;
 	
@@ -438,13 +466,7 @@ public class TaskHandler extends BaseObject{
 			}
 			
 			if(isTimeToReport) {
-				StringBuffer buff = new StringBuffer();
-				
-				buff.append("\n\n");
-				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-				buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ taskReport.getRate().intValue() +"%]").append("\n");
-				buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-				debug(buff);
+				this.doMonitoringNow(executorServiceId);
 			}
 		}
 		return taskReport;
@@ -459,9 +481,9 @@ public class TaskHandler extends BaseObject{
 			StringBuffer buff = new StringBuffer();
 
 			buff.append("\n\n");
-			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
-			buff.append("총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ taskReport.getRate().intValue() +"%]").append("\n");
-			buff.append("||@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@||").append("\n");
+			buff.append("||============================================== 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  ==============================================||").append("\n");
+			buff.append("서비스ID["+executorServiceId+"]" + " 총진행대상건수["+taskReport.getTryCount()+"] 진행완료건수["+taskReport.getSuccessCount()+"] 작업진행률["+ taskReport.getRate().intValue() +"%]").append("\n");
+			buff.append("||============================================== 쓰레드풀아이디ID["+executorServiceId+"] 작업진행현황  ==============================================||").append("\n");
 			debug(buff);
 		}
 		return taskReport;

@@ -72,6 +72,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                            lineStr = lineStr + "<option value='"+returnList[i].SYS_ID+"' >" + returnList[i].SYS_NM + "</option>"; 
 	                            appSel.append(lineStr); 
 	                        } 
+	                        startMonitoring();
 	                    } 
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -131,8 +132,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 
 		function doMonitoring(){
-			var isCompleted = false;
-			var isAllDone = false;
+			var isCompleted = "";
 	        $.ajax({ 
 	            type:"POST", 
 	            url:"/analyzer/analysis/doMonitoring.do", 
@@ -150,29 +150,22 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	}
 	                	//console.log('success ===>>> data:' + (JSON.stringify(data))); 
 	                	var returnList = data.returnObj;
-	                	
+	                	isCompleted = data.isCompleted;
 	                	if(returnList){
-	                		if( returnList.length > 0 ){
-	                			isAllDone = true;
-	                		}
 		                	for(var i = 0; i<returnList.length; i++){
 		                		var returnRow = returnList[i];
 		                		var taskId = returnRow["taskId"];
 		                		var taskRate = returnRow["taskRate"];
-		                		console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate );
+		                		console.log('taskId ===>>>' + taskId + ", taskRate:" + taskRate + " isCompleted[" + isCompleted + "]" );
 		                		if( taskId && taskRate ){
-		                			if( parseInt(taskRate) < 100 ){
-		                				isAllDone = false;
-		                			}
 			                		var imgObj = $("#ANALYZE_" + taskId + "_IMG");
 			                		imgObj.css({'width' : taskRate + '%' });
+			                		imgObj.attr({'alt': parseInt(taskRate) + '%' });
 		                		}
 		                	}
-		        	        if( isAllDone ){
-		        	        	isCompleted = true;
-		        	        	stopMonitoring();
-		        	        }
-							//console.log("line 179 ===>>>" + " isAllDone"+"[" + isAllDone + "]" + " isCompleted[" + isCompleted + "]"); 
+	                	}
+	                	if( 'Y' == isCompleted ){ 
+	                		//stopMonitoring();
 	                	}
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -268,7 +261,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 												<td align="center">
 													<input type="checkbox" name="ANALYZE_JOB_KIND" value="<%=net.dstone.common.tools.analyzer.AppAnalyzer.JOB_KIND_13_ANALYZE_CLASS_ALIAS%>"  />
 												</td>
-												<td>1-3. 클클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가</td>
+												<td>1-3. 클래스파일리스트 에서 호출알리아스 추출하여 클래스분석파일리스트에 추가</td>
 											</tr>
 											<tr>
 												<td colspan="2" >
