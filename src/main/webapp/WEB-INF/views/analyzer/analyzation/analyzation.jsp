@@ -213,7 +213,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									
 									<ul class="small-image-list">
 										<li>
-											<h4>1. Application</h4>
 											<p>
 												<select name="SYS_ID" id="SYS_ID" >
 												</select>
@@ -224,7 +223,13 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 								
 								
 								<section>
-									<h2>Analysis Job Kind</h2>
+									<h2>Analysis Steps</h2>
+									
+									<ul class="small-image-list">
+										<li>
+											<h4>1. Step 1 - 기본정보 분석</h4>
+										</li>
+									</ul>
 									
 									<table width="100%" border="1">
 										<thead>
@@ -368,16 +373,16 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 											<tr>
 												<td colspan="3" style="background-color: #d1cfcd;" > </td>
 											</tr>
-											
+
 											<!-- METRIX 추출 -->
 											<tr>
-												<td rowspan="2" >5. METRIX 추출</td>
+												<td rowspan="1" >5. METRIX 추출</td>
 												<td align="center">
 													<input type="checkbox" name="ANALYZE_JOB_KIND" value="<%=net.dstone.common.tools.analyzer.AppAnalyzer.JOB_KIND_51_ANALYZE_SAVE_METRIX%>"  />
 												</td>
 												<td>5-1. 클래스, 쿼리, 메소드, UI분석결과를 통한 METRIX 추출</td>
 											</tr>
-											<tr>
+											<tr style="display: none;" >
 												<td colspan="2" >
 													<img src="<%=requestUtil.getStrContextPath()%>/analyzer/images/pic2.jpg" id="ANALYZE_<%=net.dstone.common.tools.analyzer.AppAnalyzer.JOB_KIND_51_ANALYZE_ID_SAVE_METRIX%>_IMG" alt="" style="vertical-align:middle; height: 15px; width: 0%;" />
 												</td>
