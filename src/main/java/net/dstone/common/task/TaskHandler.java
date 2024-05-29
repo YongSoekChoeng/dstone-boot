@@ -262,6 +262,18 @@ public class TaskHandler extends BaseObject{
 		}
 	}
 	
+	public int getTaskItemCount(){
+		int cnt = 0;
+		if( EXECUTOR_SERVICE_MAP != null) {
+			Iterator<String> keys = EXECUTOR_SERVICE_MAP.keySet().iterator();
+			while(keys.hasNext()) {
+				String executorServiceId = keys.next();
+				cnt =  cnt + ( this.getExecutorServiceTaskReport(executorServiceId).getTryCount() + (this.getExecutorServiceTaskReport(executorServiceId).getSuccessCount()+this.getExecutorServiceTaskReport(executorServiceId).getErrorCount()) );
+			}
+		}
+		return cnt;
+	}
+	
 	
 	/******************************************************************/
 	protected static TaskHandler taskHandler = null;

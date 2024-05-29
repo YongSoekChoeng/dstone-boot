@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.dstone.analyzer.taskitem.AnalysisItem;
+import net.dstone.common.queue.QueueHandler;
 import net.dstone.common.queue.QueueItem;
 import net.dstone.common.task.TaskHandler;
 import net.dstone.common.task.TaskHandler.TaskReport;
@@ -19,6 +20,8 @@ import net.dstone.common.utils.RequestUtil;
 @RequestMapping(value = "/analyzer/analysis/*")
 public class AnalysisController extends net.dstone.common.biz.BaseController { 
 
+	private static String QUEUE_HANDLER_ID = "doAnalyzingQueue";
+	
     /********* SVC 정의부분 시작 *********/
     @Autowired 
     private net.dstone.analyzer.ConfigurationService configurationService; 
@@ -70,7 +73,6 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    				}
 
    				// 2-2. 새 작업 시작
-   				String queueHandlerId = "doAnalyzingQueue";
    				int queueCheckInterval = 5*1000; 
    				int queueItemSizeByOne = 1;
    				
@@ -79,7 +81,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    					String executorServiceId = "doAnalyzing";
    					String executorServiceItemId = executorServiceId + "-" + String.valueOf(i);
    	   				String confFilePath = paramVo.getCONF_FILE_PATH();
-   	   				net.dstone.common.queue.QueueHandler.getInstance(queueHandlerId, queueCheckInterval, queueItemSizeByOne).addQueue(new QueueItem() {
+   	   				QueueHandler.getInstance(QUEUE_HANDLER_ID, queueCheckInterval, queueItemSizeByOne).addQueue(new QueueItem() {
    						@Override
    						public void doTheJob() {
    							TaskHandler taskHandler = TaskHandler.getInstance();
@@ -135,7 +137,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    		/************************ 변수 정의 시작 ************************/
    		requestUtil 			= new RequestUtil(request, response);
    		taskReportList			= new ArrayList<HashMap<String, String>>();
-   		isCompleted				= "";
+   		isCompleted				= "N";
    		/************************ 변수 정의 끝 ************************/
    		
    		/************************ 컨트롤러 로직 시작 ************************/
@@ -143,29 +145,44 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
    		analyzeJobKindArr	 	= requestUtil.getParameterValues("ANALYZE_JOB_KIND");
    		
    		// 2. 분석작업종류별 모니터링실행.
-   		if(analyzeJobKindArr != null) {
-   			int analyzeJobKindNum = analyzeJobKindArr.length;
-   			int analyzeJobKindCompletedNum = 0;
-   			for(int i=0; i<analyzeJobKindArr.length; i++) {
-   				String analyzeJobKind = analyzeJobKindArr[i];
-				String executorServiceId = AppAnalyzer.JOB_KIND_MAP.get(Integer.valueOf(analyzeJobKind));
-				HashMap<String, String> taskReportMap = new HashMap<String, String>();
-				TaskReport taskReport = TaskHandler.getInstance().getTaskReport(executorServiceId);
-				if( taskReport != null && taskReport.getRate() != null ) {
-					taskReportMap.put("taskId", executorServiceId);
-					taskReportMap.put("taskRate", taskReport.getRate().toPlainString());
-					taskReportList.add(taskReportMap);
-					if( taskReport.getRate().intValue() == 100 ) {
-						analyzeJobKindCompletedNum++;
-					}
+		int limitSeconds = 10;
+		for( int i=0; i<limitSeconds; i++) {
+			if( TaskHandler.getInstance().getTaskItemCount() > 0 ) {
+				break;
+			}
+			Thread.sleep(1 * 1000);
+		}
+		
+		int analyzeJobKindNum = 0;
+		int analyzeJobKindCompletedNum = 0;
+		
+		Iterator<Integer> keys = AppAnalyzer.JOB_KIND_MAP.keySet().iterator();
+		while(keys.hasNext()) {
+			Integer key = keys.next();
+			String executorServiceId = AppAnalyzer.JOB_KIND_MAP.get(key);
+			HashMap<String, String> taskReportMap = new HashMap<String, String>();
+			TaskReport taskReport = TaskHandler.getInstance().getTaskReport(executorServiceId);
+			if( taskReport != null && taskReport.getRate() != null ) {
+				taskReportMap.put("taskId", executorServiceId);
+				taskReportMap.put("taskRate", taskReport.getRate().toPlainString());
+				taskReportList.add(taskReportMap);
+				if( taskReport.getRate().intValue() > 0 ) {
+					analyzeJobKindNum++;
 				}
-   			}
-   			if( analyzeJobKindNum == analyzeJobKindCompletedNum) {
-   				isCompleted = "Y";
-   			}
+				if( taskReport.getRate().intValue() == 100 ) {
+					analyzeJobKindCompletedNum++;
+				}
+			}
+		}
+		
+		if( analyzeJobKindNum == analyzeJobKindCompletedNum && QueueHandler.getInstance(QUEUE_HANDLER_ID).getQueueSize() == 0 ) {
+   			isCompleted = "Y";
    		}
-   		TaskHandler.getInstance().checkExecutorServiceAll();
 
+debug("isCompleted["+isCompleted+"]" + " analyzeJobKindNum["+analyzeJobKindNum+"]" + " analyzeJobKindCompletedNum["+analyzeJobKindCompletedNum+"]" + " getQueueSize["+QueueHandler.getInstance(QUEUE_HANDLER_ID).getQueueSize()+"]");
+
+   		TaskHandler.getInstance().checkExecutorServiceAll();
+   		
    		// 3. 결과처리
    		mav.addObject("RETURN_CD", net.dstone.common.biz.BaseController.RETURN_SUCCESS );
    		mav.addObject("isCompleted", isCompleted);

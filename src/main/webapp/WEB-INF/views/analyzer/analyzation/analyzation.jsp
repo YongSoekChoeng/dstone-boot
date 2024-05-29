@@ -71,7 +71,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                            lineStr = ""; 
 	                            lineStr = lineStr + "<option value='"+returnList[i].SYS_ID+"' >" + returnList[i].SYS_NM + "</option>"; 
 	                            appSel.append(lineStr); 
-	                        } 
+	                        }
 	                        startMonitoring();
 	                    } 
 	                }else{ 
@@ -90,6 +90,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    }
 
 		function goAnalyze(){
+			
+			$("#btnAnalyze").attr("disabled", true); 
+			
 	        $.ajax({ 
 	            type:"POST", 
 	            url:"/analyzer/analysis/doAnalyzing.do", 
@@ -109,7 +112,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
 	                    alert("failure ERR_MSG:" + ERR_MSG); 
 	                }
-	                $("#btnAnalyze").attr("disabled",true); 
+	                
 	            }, 
 	            error : function(data, status, e) { 
 	                console.log('system error ===>>> data:' + (JSON.stringify(data))); 
@@ -118,19 +121,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	        });
 		}
 		
-		function startMonitoring(){
-			doMonitoring();
-			timeOutObj = setTimeout(startMonitoring, 1 * 1000);
-		}
-
-		function stopMonitoring(){
-			if(timeOutObj){
-				clearTimeout(timeOutObj);
-			}
-			console.log("stopMonitoring ===>>> line 137" );
-			$("#btnAnalyze").attr("disabled", false); 
-		}
-
 		function doMonitoring(){
 			var isCompleted = "";
 	        $.ajax({ 
@@ -165,7 +155,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		                	}
 	                	}
 	                	if( 'Y' == isCompleted ){ 
-	                		//stopMonitoring();
+	                		stopMonitoring();
 	                	}
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -179,8 +169,20 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	        });	
 	        return isCompleted;
 		}
-		
-		
+
+		function startMonitoring(){
+			console.log("||================== startMonitoring ==================||" );
+			doMonitoring();
+			timeOutObj = setTimeout(startMonitoring, 1 * 1000);
+		}
+
+		function stopMonitoring(){
+			console.log("||================== stopMonitoring ==================||" );
+			if(timeOutObj){
+				clearTimeout(timeOutObj);
+			}
+			$("#btnAnalyze").attr("disabled", false); 
+		}
 
 	</script> 
 
