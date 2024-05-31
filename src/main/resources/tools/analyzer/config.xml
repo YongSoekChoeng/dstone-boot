@@ -31,7 +31,7 @@
     <DBID>DBID_2</DBID>
     
 	<!-- 테이블목록을 DB로부터 읽어올지 여부. true-테이블명을 DB로부터 읽어옴. false-테이블명을 전체테이블목록파일(TABLE_LIST_FILE_NAME)에서 읽어오거나 쿼리 로부터 읽어옴.-->
-    <IS_TABLE_LIST_FROM_DB>true</IS_TABLE_LIST_FROM_DB>
+    <IS_TABLE_LIST_FROM_DB>false</IS_TABLE_LIST_FROM_DB>
     
 	<!-- 테이블명을 DB로부터 읽어올때 적용할 프리픽스(IS_TABLE_LIST_FROM_DB 가 true일 경우에만 유효)-->
     <TABLE_NAME_LIKE_STR/>
@@ -46,7 +46,7 @@
     <WORKER_THREAD_KIND>2</WORKER_THREAD_KIND>
     
 	<!-- 분석작업을 진행 할 쓰레드 갯수(WORKER_THREAD_KIND가 Fixed 쓰레드풀 일 경우에만 유효) -->
-    <WORKER_THREAD_NUM>8</WORKER_THREAD_NUM>
+    <WORKER_THREAD_NUM>6</WORKER_THREAD_NUM>
     
 	<!-- 분석패키지루트 목록(콤마 구분자) -->
     <INCLUDE_PACKAGE_ROOT>net.dstone.sample.analyze</INCLUDE_PACKAGE_ROOT>

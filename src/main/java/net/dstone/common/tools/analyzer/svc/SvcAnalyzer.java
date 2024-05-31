@@ -259,7 +259,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static List<String> getCallTblList(String methodFile) throws Exception {
-			return javaParseMtd.getCallTblList(methodFile);
+			return tossParseMtd.getCallTblList(methodFile);
 		}
 
 	}
@@ -321,7 +321,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getUiId(String uiFile) throws Exception{
-			return jspParseUi.getUiId(uiFile);
+			return tossParseUi.getUiId(uiFile);
 		}
 		/**
 		 * UI파일로부터 UI명 추출
@@ -329,7 +329,7 @@ public class SvcAnalyzer extends BaseObject{
 		 * @return
 		 */
 		static String getUiName(String uiFile) throws Exception{
-			return jspParseUi.getUiName(uiFile);
+			return tossParseUi.getUiName(uiFile);
 		}
 		/**
 		 * UI파일로부터 링크목록 추출
@@ -339,7 +339,7 @@ public class SvcAnalyzer extends BaseObject{
 		static List<String> getUiLinkList(String uiFile) throws Exception {
 			List<String> composeLinkList = new ArrayList<String>();
 			
-			composeLinkList = jspParseUi.getUiLinkList(uiFile);
+			composeLinkList = tossParseUi.getUiLinkList(uiFile);
 
 			return composeLinkList.stream().distinct().collect(Collectors.toList());
 		}
@@ -1528,77 +1528,110 @@ public class SvcAnalyzer extends BaseObject{
 
 	public void saveToFile() throws Exception{
 		getLogger().info("/*** F.분석결과파일저장 ");
+
+		String executorServiceId = AppAnalyzer.JOB_KIND_51_ANALYZE_ID_SAVE_METRIX;
 		
-		StringBuffer conts = new StringBuffer();
-		List<DataSet> dsList = new ArrayList<DataSet>();
-		DataSet ds = new DataSet();
-		DataSet dsRow = null;
+		TaskItem taskItem = new TaskItem(){
+			@Override
+			public TaskItem doTheTask(){
+				boolean isSucceded = true;
+				taskHandler.getExecutorServiceTaskReport(executorServiceId).addTryCount(1);
+				
+				try {
+					/***************** 작업시작 *****************/
 
-		getLogger().info("/*** F-1.기본구조 세팅 시작 ***/");
-		ds = this.makeAnalyzeBasicFileConts();
-		getLogger().info("/*** F-1.기본구조 세팅 끝 ***/");
+					StringBuffer conts = new StringBuffer();
+					List<DataSet> dsList = new ArrayList<DataSet>();
+					DataSet ds = new DataSet();
+					DataSet dsRow = null;
 
-		getLogger().info("/*** F-2.호출구조 세팅 시작 ***/");
-		if( ds.getDataSetRowCount("METRIX") > 0 ) {
-			dsList = ds.getDataSetList("METRIX");
-			List<DataSet> dsCopyList = new ArrayList<DataSet>();
-			for(int i=0; i<dsList.size(); i++) {
-				dsRow = dsList.get(i);
-				String functionId = dsRow.getDatum("BASIC_ID");
-				dsCopyList.addAll(this.makeAnalyzeCallChainFileConts(dsRow, functionId, 1, new ArrayList<String>()));
-			}
-			ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsCopyList);
-		}
-		getLogger().info("/*** F-2.호출구조 세팅 끝 ***/");
+					getLogger().info("/*** F-1.기본구조 세팅 시작 ***/");
+					ds = makeAnalyzeBasicFileConts();
+					getLogger().info("/*** F-1.기본구조 세팅 끝 ***/");
 
-		getLogger().info("/*** F-3.MAX호출레벨 세팅 시작 ***/");
-		int maxCallLevel = 0;
-		if( ds.getDataSetRowCount("METRIX") > 0 ) {
-			for(DataSet row : ds.getDataSetList("METRIX")) {
-				if( Integer.parseInt(row.getDatum("CALL_LEVEL", "0")) > maxCallLevel ) {
-					maxCallLevel = Integer.parseInt(row.getDatum("CALL_LEVEL", "0"));
-				}
-			}
-		}
-		getLogger().info("/*** F-3.MAX호출레벨 세팅 끝 ***/");
-		
-		getLogger().info("/*** F-4.파일생성 시작 ***/");
-		// 컬럼
-		conts.append("UI_ID").append("\t");
-		conts.append("UI_NAME").append("\t");
-		conts.append("BASIC_URL").append("\t");
-		for(int i=1; i<=maxCallLevel; i++) {
-			conts.append("FUNCTION_ID_"+i).append("\t");
-			conts.append("FUNCTION_NAME_"+i).append("\t");
-			conts.append("CLASS_KIND_"+i).append("\t");
-		}
-		conts.append("CALL_TBL").append("\t");
-		conts.append("\n");
-		// 내용
-		if( ds.getDataSetRowCount("METRIX") > 0 ) {
-			for(DataSet row : ds.getDataSetList("METRIX")) {
-				String uiId = row.getDatum("UI_ID", " ");
-				if( !StringUtil.isEmpty(uiId.trim()) ) {
-					uiId = StringUtil.replace(uiId, ".", "/");
-					if(!uiId.startsWith("/")) {
-						uiId = "/" + uiId; 
+					getLogger().info("/*** F-2.호출구조 세팅 시작 ***/");
+					if( ds.getDataSetRowCount("METRIX") > 0 ) {
+						dsList = ds.getDataSetList("METRIX");
+						List<DataSet> dsCopyList = new ArrayList<DataSet>();
+						for(int i=0; i<dsList.size(); i++) {
+							dsRow = dsList.get(i);
+							String functionId = dsRow.getDatum("BASIC_ID");
+							dsCopyList.addAll(makeAnalyzeCallChainFileConts(dsRow, functionId, 1, new ArrayList<String>()));
+						}
+						ds.setDataSetList("METRIX", (ArrayList<DataSet>)dsCopyList);
 					}
-				}
-				conts.append(uiId).append("\t");
-				conts.append(row.getDatum("UI_NAME", " ")).append("\t");
-				conts.append(row.getDatum("BASIC_URL", " ")).append("\t");
-				for(int i=1; i<=maxCallLevel; i++) {
-					conts.append(row.getDatum("FUNCTION_ID_"+i, " ")).append("\t");
-					conts.append(row.getDatum("FUNCTION_NAME_"+i, " ")).append("\t");
-					conts.append(row.getDatum("CLASS_KIND_"+i, " ")).append("\t");
-				}
-				conts.append( this.makeAnalyzeTblInfo(row.getDatum("CALL_TBL", " ")) ).append("\t");
-				conts.append("\n");
-			}
-		}
-		FileUtil.writeFile(AppAnalyzer.WRITE_PATH, AppAnalyzer.SAVE_FILE_NAME, conts.toString());
-		getLogger().info("/*** F-4.파일생성 끝 ***/");
+					getLogger().info("/*** F-2.호출구조 세팅 끝 ***/");
 
+					getLogger().info("/*** F-3.MAX호출레벨 세팅 시작 ***/");
+					int maxCallLevel = 0;
+					if( ds.getDataSetRowCount("METRIX") > 0 ) {
+						for(DataSet row : ds.getDataSetList("METRIX")) {
+							if( Integer.parseInt(row.getDatum("CALL_LEVEL", "0")) > maxCallLevel ) {
+								maxCallLevel = Integer.parseInt(row.getDatum("CALL_LEVEL", "0"));
+							}
+						}
+					}
+					getLogger().info("/*** F-3.MAX호출레벨 세팅 끝 ***/");
+					
+					getLogger().info("/*** F-4.파일생성 시작 ***/");
+					// 컬럼
+					conts.append("UI_ID").append("\t");
+					conts.append("UI_NAME").append("\t");
+					conts.append("BASIC_URL").append("\t");
+					for(int i=1; i<=maxCallLevel; i++) {
+						conts.append("FUNCTION_ID_"+i).append("\t");
+						conts.append("FUNCTION_NAME_"+i).append("\t");
+						conts.append("CLASS_KIND_"+i).append("\t");
+					}
+					conts.append("CALL_TBL").append("\t");
+					conts.append("\n");
+					// 내용
+					if( ds.getDataSetRowCount("METRIX") > 0 ) {
+						for(DataSet row : ds.getDataSetList("METRIX")) {
+							String uiId = row.getDatum("UI_ID", " ");
+							if( !StringUtil.isEmpty(uiId.trim()) ) {
+								uiId = StringUtil.replace(uiId, ".", "/");
+								if(!uiId.startsWith("/")) {
+									uiId = "/" + uiId; 
+								}
+							}
+							conts.append(uiId).append("\t");
+							conts.append(row.getDatum("UI_NAME", " ")).append("\t");
+							conts.append(row.getDatum("BASIC_URL", " ")).append("\t");
+							for(int i=1; i<=maxCallLevel; i++) {
+								conts.append(row.getDatum("FUNCTION_ID_"+i, " ")).append("\t");
+								conts.append(row.getDatum("FUNCTION_NAME_"+i, " ")).append("\t");
+								conts.append(row.getDatum("CLASS_KIND_"+i, " ")).append("\t");
+							}
+							conts.append( makeAnalyzeTblInfo(row.getDatum("CALL_TBL", " ")) ).append("\t");
+							conts.append("\n");
+						}
+					}
+					FileUtil.writeFile(AppAnalyzer.WRITE_PATH, AppAnalyzer.SAVE_FILE_NAME, conts.toString());
+					getLogger().info("/*** F-4.파일생성 끝 ***/");
+					/***************** 작업끝 *****************/
+				} catch (Exception e) {
+					LogUtil.sysout(this.getClass().getName() + ".saveToFile()수행중 예외발생.");
+					e.printStackTrace();
+					isSucceded = false;
+				} finally {
+					if(isSucceded) {
+						taskHandler.getExecutorServiceTaskReport(executorServiceId).addSuccessCount();
+					}else {
+						taskHandler.getExecutorServiceTaskReport(executorServiceId).addErrorCount();
+					}
+					taskHandler.doMonitoring(executorServiceId);
+				}
+				return this;
+			}
+		};
+		taskItem.setId(executorServiceId + "-" + 0);
+
+		if( !this.taskHandler.isExecutorServiceExists(executorServiceId) ) {
+			this.taskHandler.addSingleExecutorService(executorServiceId);
+		}
+		this.taskHandler.doTheSyncTask(executorServiceId, taskItem);
+		
 	}
 	
 

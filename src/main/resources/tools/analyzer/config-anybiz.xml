@@ -46,13 +46,13 @@
     <WORKER_THREAD_KIND>2</WORKER_THREAD_KIND>
     
 	<!-- 분석작업을 진행 할 쓰레드 갯수(WORKER_THREAD_KIND가 Fixed 쓰레드풀 일 경우에만 유효) -->
-    <WORKER_THREAD_NUM>8</WORKER_THREAD_NUM>
+    <WORKER_THREAD_NUM>6</WORKER_THREAD_NUM>
     
 	<!-- 분석패키지루트 목록(콤마 구분자) -->
     <INCLUDE_PACKAGE_ROOT>kr.co.gnx</INCLUDE_PACKAGE_ROOT>
     
 	<!-- 분석제외패키지패턴 목록(콤마 구분자) -->
-    <EXCLUDE_PACKAGE_PATTERN>.vo.,.vo,VO,Vo,.model.,kr.co.gnx.base.Base</EXCLUDE_PACKAGE_PATTERN>
+    <EXCLUDE_PACKAGE_PATTERN>.vo.,.vo,VO,Vo,.model.,kr.co.gnx.base.Base,kr.co.gnx.comm.util.</EXCLUDE_PACKAGE_PATTERN>
     
 	<!-- 분석대상어플리케이션 클래스패스 -->
     <APP_CLASSPATH>D:/AppHome/anybiz_prd/WEB-INF/lib/activation-1.1.1.jar;

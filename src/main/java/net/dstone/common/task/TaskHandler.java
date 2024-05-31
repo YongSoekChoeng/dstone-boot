@@ -101,8 +101,9 @@ public class TaskHandler extends BaseObject{
 				if( this.getTryCount() > 0 && this.getSuccessCount() > 0) {
 					BigDecimal bRate = new BigDecimal(this.getSuccessCount());
 					bRate = bRate.add(new BigDecimal(this.getErrorCount()));
-					bRate = bRate.divide(new BigDecimal(this.getTryCount()), 2, BigDecimal.ROUND_HALF_UP);
+					bRate = bRate.divide(new BigDecimal(this.getTryCount()), 4, BigDecimal.ROUND_HALF_UP);
 					bRate = bRate.multiply(new BigDecimal(100));
+					bRate = bRate.setScale(2);
 					this.rate = bRate;
 				}
 			} catch (Exception e) {
@@ -140,9 +141,9 @@ public class TaskHandler extends BaseObject{
 			ExecutorService executorService = null;
 	        executorService = Executors.newSingleThreadExecutor(threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+		}
+		if(!EXECUTOR_SERVICE_REPORT_MAP.containsKey(executorServiceId)) {
 			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
-		}else {
-			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
 		return this;
 	}
@@ -162,9 +163,9 @@ public class TaskHandler extends BaseObject{
 			}
 			executorService = Executors.newFixedThreadPool(threadNumWhenFixed, threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+		}
+		if(!EXECUTOR_SERVICE_REPORT_MAP.containsKey(executorServiceId)) {
 			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
-		}else {
-			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
 		return this;
 	}
@@ -180,9 +181,9 @@ public class TaskHandler extends BaseObject{
 			ExecutorService executorService = null;
 	        executorService = Executors.newCachedThreadPool(threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+		}
+		if(!EXECUTOR_SERVICE_REPORT_MAP.containsKey(executorServiceId)) {
 			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
-		}else {
-			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
 		return this;
 	}
@@ -203,17 +204,41 @@ public class TaskHandler extends BaseObject{
 			BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(queueCapacity);
 	        executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, java.util.concurrent.TimeUnit.SECONDS, workQueue, threadFactory);
 			EXECUTOR_SERVICE_MAP.put(executorServiceId, executorService);
+		}
+		if(!EXECUTOR_SERVICE_REPORT_MAP.containsKey(executorServiceId)) {
 			EXECUTOR_SERVICE_REPORT_MAP.put(executorServiceId, new TaskReport());
-		}else {
-			throw new Exception("["+executorServiceId+"]은 이미 존재하는 ExecutorService 입니다.");
 		}
 		return this;
 	}
 	
-	private ExecutorService getExecutorService(String executorServiceId){
+	private ExecutorService getExecutorService(String executorServiceId) throws Exception{
 		ExecutorService executorService = null;
-		executorService = EXECUTOR_SERVICE_MAP.get(executorServiceId);
+		if(this.isExecutorServiceExists(executorServiceId)) {
+			executorService = EXECUTOR_SERVICE_MAP.get(executorServiceId);
+		}else {
+			throw new Exception("["+executorServiceId+"]은  존재하지 않는 ExecutorService입니다.");
+		}
 		return executorService;
+	}
+	
+	private void close(String executorServiceId){
+		ExecutorService executorService = null;
+		try {
+			executorService = this.getExecutorService(executorServiceId);
+			if( executorService != null ){
+				executorService.shutdown();
+	            int waitTimeAfterShutdown = 1*60;
+		        if (executorService.awaitTermination(waitTimeAfterShutdown, TimeUnit.SECONDS)) {
+		        	getLogger().debug(LocalTime.now() + " 모든 Task가 종료.");
+		        } else {
+		        	getLogger().debug(LocalTime.now() + " "+waitTimeAfterShutdown+"초 대기하였으나 일부 Task가 종료되지 않아서 강제종료 처리.");
+		        	executorService.shutdownNow();
+		        }
+			}
+		} catch (Exception e) {
+			getLogger().debug( this.getClass().getName() + ".close() 작없중 예외발생. 상세내용:" + e.toString());
+		}
+
 	}
 	
 	public boolean isExecutorServiceExists(String executorServiceId) {
@@ -227,17 +252,18 @@ public class TaskHandler extends BaseObject{
 		return taskReport;
 	}
 	
-	public void removeExecutorService(String executorServiceId){
+	public void removeExecutorService(String executorServiceId) throws Exception{
 		if(EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
-			ExecutorService executorService = this.getExecutorService(executorServiceId);
-			this.close(executorService);
+			this.close(executorServiceId);
 			EXECUTOR_SERVICE_MAP.remove(executorServiceId);
+		}
+		if(EXECUTOR_SERVICE_REPORT_MAP.containsKey(executorServiceId)) {
 			EXECUTOR_SERVICE_REPORT_MAP.remove(executorServiceId);
 		}
 	}
 	
 	public void checkExecutorServiceAll(){
-		Iterator<String> keys = EXECUTOR_SERVICE_MAP.keySet().iterator();
+		Iterator<String> keys = EXECUTOR_SERVICE_REPORT_MAP.keySet().iterator();
 		StringBuffer buff = new StringBuffer();
 
 		buff.append("\n\n");
@@ -257,7 +283,7 @@ public class TaskHandler extends BaseObject{
 	}
 	
 	public void checkExecutorService(String executorServiceId){
-		if(EXECUTOR_SERVICE_MAP.containsKey(executorServiceId)) {
+		if(EXECUTOR_SERVICE_REPORT_MAP.containsKey(executorServiceId)) {
 			this.doMonitoringNow(executorServiceId);
 		}
 	}
@@ -306,9 +332,7 @@ public class TaskHandler extends BaseObject{
 		try {
 			net.dstone.common.utils.DateUtil.stopWatchStart("TaskHandler["+executorServiceId+"].doTheSyncTask");
 			executorService = this.getExecutorService(executorServiceId);
-			
 			item.setExecutorServiceId(executorServiceId);
-
 			future = executorService.submit((Callable<TaskItem>)item);
 			
 			if(future != null){
@@ -321,7 +345,7 @@ public class TaskHandler extends BaseObject{
 		} finally {
 			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheSyncTask");
-			//this.close(executorService);
+			//this.close(executorServiceId);
 		}
 		return item;
 	}
@@ -347,7 +371,7 @@ public class TaskHandler extends BaseObject{
 		} finally {
 			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd("TaskHandler["+executorServiceId+"].doTheAyncTask");
-			//this.close(executorService);
+			//this.close(executorServiceId);
 		}
 	}
 
@@ -394,7 +418,17 @@ public class TaskHandler extends BaseObject{
 		} finally {
 			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd(msg);
-			//this.close(executorService);
+
+			if(futureList != null) {
+				futureList.clear();
+				futureList = null;
+			}
+			if(itemList != null) {
+				itemList.clear();
+				itemList = null;
+			}
+			
+			//this.close(executorServiceId);
 		}
 		return returnVal;
 	}
@@ -423,27 +457,16 @@ public class TaskHandler extends BaseObject{
 		} finally {
 			doMonitoring(executorServiceId);
 			net.dstone.common.utils.DateUtil.stopWatchEnd(msg);
-			//this.close(executorService);
+
+			if(itemList != null) {
+				itemList.clear();
+				itemList = null;
+			}
+			//this.close(executorServiceId);
 		}
 	}
 	
-	private void close(ExecutorService executorService){
-		try {
-			if( executorService != null ){
-				executorService.shutdown();
-	            int waitTimeAfterShutdown = 30;
-		        if (executorService.awaitTermination(waitTimeAfterShutdown, TimeUnit.SECONDS)) {
-		        	getLogger().debug(LocalTime.now() + " 모든 Task가 종료.");
-		        } else {
-		        	getLogger().debug(LocalTime.now() + " "+waitTimeAfterShutdown+"초 대기하였으나 일부 Task가 종료되지 않아서 강제종료 처리.");
 
-		        }
-			}
-		} catch (Exception e) {
-			getLogger().debug( this.getClass().getName() + ".close() 작없중 예외발생. 상세내용:" + e.toString());
-		}
-
-	}
 	
 	/**
 	 * 작업진행모니터링(EXECUTOR_SERVICE_REPORT_INTERVAL 만큼 주기를 두고 모니터링한다.)

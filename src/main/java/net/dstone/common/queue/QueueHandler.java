@@ -1,8 +1,8 @@
 package net.dstone.common.queue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 public class QueueHandler {
 	
@@ -78,6 +78,25 @@ public class QueueHandler {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void removeQueueById(String queueItemId) {
+		try {
+			synchronized(queue) {
+				debug("||======================================= Removing QueueItem Start... =======================================||");
+				for(int i=0; i<queue.size(); i++) {
+					QueueItem queueItem = queue.get(i);
+					if(queueItemId.equals(queueItem.getId())) {
+						queue.remove(i);
+						break;
+					}
+				}
+				debug("||======================================= Removing QueueItem End... =======================================||");
+			}
+		} catch (Exception e) {
+			debug(e);
+		}
+	}
+	
 	public int getQueueSize(){
 		int intSize = 0;
 		if(this.queue != null){
@@ -91,7 +110,7 @@ public class QueueHandler {
 	}
 	
 	@SuppressWarnings({ "serial", "rawtypes" })
-	class Queue extends Vector{
+	class Queue extends ArrayList<QueueItem>{
 		
 		public boolean isEmpty(){
 			boolean isEmpty = true;

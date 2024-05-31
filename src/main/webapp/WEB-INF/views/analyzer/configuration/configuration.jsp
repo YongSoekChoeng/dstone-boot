@@ -423,17 +423,17 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 												<td><input type="text" name="DBID" size="30"  value="" /></td>
 												<td>DB저장여부가 true 일 때 사용할 DB아이디</td>
 											</tr>
-											<tr>
+											<tr style="display: none;">
 												<td>테이블명DB추출여부</td>
 												<td>
 													<select name="IS_TABLE_LIST_FROM_DB" >
-														<option value="false">false</option>
+														<option value="false" selected >false</option>
 														<option value="true">true</option>
 													</select>
 												</td>
 												<td>테이블명을 DB로부터 읽어올지 여부</td>
 											</tr>
-											<tr>
+											<tr style="display: none;">
 												<td>테이블명 조회프리픽스</td>
 												<td><input type="text" name="TABLE_NAME_LIKE_STR" size="30"  value="" /></td>
 												<td>테이블명을 DB로부터 읽어올 때 적용할 프리픽스</td>
