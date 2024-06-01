@@ -18,7 +18,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 										<a href="<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/configuration/configuration" class="<%=(requestUtil.getParameter("defaultLink", "").equals("analyzer/configuration/configuration")?"current-page-item":"")%>" >Configuration</a>
 										<a href="<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/configuration/optionsetting" class="<%=(requestUtil.getParameter("defaultLink", "").equals("analyzer/configuration/optionsetting")?"current-page-item":"")%>" >Options</a>
 										<a href="<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/analyzation/analyzation" class="<%=(requestUtil.getParameter("defaultLink", "").equals("analyzer/analyzation/analyzation")?"current-page-item":"")%>" >Analyzation</a>
-										<a href="<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/report/main" class="<%=(requestUtil.getParameter("defaultLink", "").equals("analyzer/report/main")?"current-page-item":"")%>" >Report</a
+										<a href="<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/report/overall" class="<%=(requestUtil.getParameter("defaultLink", "").equals("analyzer/report/main")?"current-page-item":"")%>" >Report</a
 									</nav>
 								</header>
 

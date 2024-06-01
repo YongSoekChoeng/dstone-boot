@@ -76,23 +76,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 				<div id="main">
 					<div class="container">
 						<div class="row main-row">
-							<div class="col-2 col-12-medium">
-
-								<section>
-									<h2>Compelling links</h2>
-									<ul class="link-list">
-										<li><a href="#">Quis accumsan lorem</a></li>
-										<li><a href="#">Sed neque nisi consequat</a></li>
-										<li><a href="#">Eget et amet consequat</a></li>
-										<li><a href="#">Dapibus sed mattis blandit</a></li>
-										<li><a href="#">Vitae magna sed dolore</a></li>
-										<li><a href="#">Eget et amet consequat</a></li>
-										<li><a href="<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/report/overall">종합결과</a></li>
-									</ul>
-								</section>
-								
-							</div>
-							<div class="col-10 col-12-medium imp-medium">
+							<div class="col-12">
 
 								<section class="middle-content">
 									<h2 align="center" style="font-weight: bold;">종합결과</h2>
@@ -103,7 +87,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									
 								<section>
 								
-									<h2>● 검색조건</h2>
+									<h2>● Over all</h2>
 
 									<table width="100%" border="1" style="border-width:thin; border-color:gray; border-bottom-style: solid; border-top-style: solid; border-left-style: solid; border-right-style: solid;" >
 										<thead>
@@ -149,14 +133,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									<h2 align="right">
 										<button type="button" id="btnSearch"  class="mini_button" >조회</button>
 									</h2>
-								</section>
-								
-								<section>
 
-									<h2>● 검색결과</h2>
-									
 									<div class="scroll">
-									<table class="scroll" width="100%" border="1" style="border-width:thin; border-color:gray; border-bottom-style: solid; border-top-style: solid; border-left-style: solid; border-right-style: solid;" >
+									<table class="scroll" width="100%" border="1" >
 										<thead class="scroll">
 											<tr class="scroll">
 												<th class="scroll" >Application</th>
@@ -176,6 +155,326 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 											</tr>														
 										</thead>													
 										<tbody class="scroll">	
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>	
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>		
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>			
+											<tr class="scroll">
+												<td class="scroll" >Application</td>
+												<td class="scroll" >UI</td>
+												<td class="scroll" >UI명</td>
+												<td class="scroll" >URL</td>
+												<td class="scroll" >API-LVL-1</td>
+												<td class="scroll" >API-LVL-1명</td>
+												<td class="scroll" >API-LVL-1종류</td>
+												<td class="scroll" >API-LVL-2</td>
+												<td class="scroll" >API-LVL-2명</td>
+												<td class="scroll" >API-LVL-2종류</td>
+												<td class="scroll" >API-LVL-3</td>
+												<td class="scroll" >API-LVL-3명</td>
+												<td class="scroll" >API-LVL-3종류</td>
+												<td class="scroll" >테이블</td>
+											</tr>	
 											<tr class="scroll">
 												<td class="scroll" >Application</td>
 												<td class="scroll" >UI</td>
