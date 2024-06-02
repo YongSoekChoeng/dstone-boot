@@ -93,200 +93,110 @@ table {
 		padding-right: 0px;
 	}
 
-/* div.scroll { */
-/* 	overflow: auto; */
-/* 	width: 100%; */
-/* 	height: 408px;	 */
-	
-/* 	margin: 0; */
-/* 	padding: 0; */
-	
-/* 	border-width:0px; */
-/* 	border-color:gray;  */
-/* 	border-bottom-style: solid;  */
-/* 	border-top-style: solid;  */
-/* 	border-left-style: solid;  */
-/* 	border-right-style: solid; */
-	
-/* 	font-size: inherit; */
-/* 	font: inherit; */
-/* 	vertical-align: inherit; */
-/* } */
-	
-/* 	div.scroll table.scroll { */
-/* 		table-layout: fixed; */
-/* 		width: 100%; */
-			
-/* 		margin: 0; */
-/* 		padding: 0; */
-	
-/* 		border-width:0px; */
-/* 		border-color:gray;  */
-/* 		border-bottom-style: solid;  */
-/* 		border-top-style: solid;  */
-/* 		border-left-style: solid;  */
-/* 		border-right-style: solid; */
-/* 	} */
 
-/* 	div.scroll table.scroll thead.scroll tr.scroll th.scroll { */
-/* 		padding: 0; */
-/* 		border: 1; */
-/* 		width: 100px; */
-/* 		font-weight: bold; */
-/* 		background-color: #d1cfcd; */
-/* 		font-size: 15px; */
-/* 		padding-top: 5px; */
-/* 		padding-bottom: 5px; */
-/* 		padding-left: 5px; */
-/* 		padding-right: 5px; */
-/* 	} */
-
-/* 	div.scroll table.scroll tbody.scroll tr.scroll td.scroll { */
-/* 		padding: 0; */
-/* 		border: 1; */
-/* 		width: 100px; */
-/* 		font-weight: normal; */
-/* 		background-color: white; */
-/* 		font-size: 15px; */
-/* 		padding-top: 5px; */
-/* 		padding-bottom: 5px; */
-/* 		padding-left: 5px; */
-/* 		padding-right: 5px; */
-/* 	} */
-	
-/* 	div.scroll table.scroll thead.scroll,tbody.scrol tr.scroll:first-child { */
-/* 		position:-webkit-sticky; */
-/* 		position:sticky; */
-/* 		top:0; */
-/* 		z-index:1; */
-/* 	} */
-
-/* 	div.scroll table.scroll th.scroll:nth-child(1),td.scroll:nth-child(1) { */
-/* 		position:-webkit-sticky; */
-/* 		position:sticky; */
-/* 		left: 0; */
-/* 		z-index:0; */
-/* 	} */
-
-
-div.scroll {
+/***************************** 스크롤 테이블 Start *****************************/
+div.scrollable {
 	overflow: auto;
 	width: 100%;
 	height: 408px;	
-    border: 0px solid gray;
+	
+	margin: 0;
+	padding: 0;
+	
+	border-width:0px;
+	border-color:gray; 
+	border-bottom-style: solid; 
+	border-top-style: solid; 
+	border-left-style: solid; 
+	border-right-style: solid;
+	
+	font-size: inherit;
+	font: inherit;
+	vertical-align: inherit;
 }
 	
-	div.scroll table {
-	    border-spacing: 0;
-	}
-	
-	div.scroll th {
-			padding: 0;
-			border: 1;
-			width: 100px;
-			font-weight: bold;
-			background-color: #d1cfcd;
-			font-size: 15px;
-			padding-top: 5px;
-			padding-bottom: 5px;
-			padding-left: 5px;
-			padding-right: 5px;
-	}
-	
-	div.scroll td {
-	    border-left: none;
-	    border-right: 1px solid #d1cfcd;
-	    border-bottom: 1px solid #d1cfcd;
-	    padding: 0px;
-	    width: 150px;
-	    min-width: 80px;
-	}
-	
-	div.scroll th:nth-child(1),
-	div.scroll td:nth-child(1) {
-	    position: sticky;
-	    left: 0;
-	    width: 150px;
-	    min-width: 150px;
-	}
-	
-	div.scroll th:nth-child(2),
-	div.scroll td:nth-child(2) {
-	    position: sticky;
-	    /* 1st cell left/right padding + 1st cell width + 1st cell left/right border width */
-	    /* 0 + 1 + 150 + 1 + 1 */
-	    left: 150px;
-	    width: 150px;
-	    min-width: 150px;
-	}
-	
-	div.scroll td:nth-child(1),
-	div.scroll td:nth-child(2) {
-	    background: #ffebb5;
-	}
-	
-	div.scroll th:nth-child(1),
-	div.scroll th:nth-child(2) {
-	    z-index: 2;
-	}
-
-
-
-
-div.fixed_headers {
-	overflow: auto;
-	width: 100%;
-	height: 408px;
-	border: 0px solid gray;
-}
-	
-	div.fixed_headers table {
-		border-collapse: collapse;
+	div.scrollable table {
+		table-layout: fixed;
 		width: 100%;
-	}
+			
+		margin: 0;
+		padding: 0;
 	
-	div.fixed_headers table td {
-		padding: 0px;
-		text-align: left;
-		font-size: 15px;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		padding-left: 5px;
-		padding-right: 5px;
+		border-width:0px;
+		border-color:gray; 
+		border-bottom-style: solid; 
+		border-top-style: solid; 
+		border-left-style: solid; 
+		border-right-style: solid;
 	}
-	
-	div.fixed_headers table thead th {
-		padding: 0px;
-		text-align: center;
-		font-size: 15px;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		padding-left: 5px;
-		padding-right: 5px;
-	}
-	
-	div.fixed_headers table thead {
-		background-color: white;
-	}
-	
-	div.fixed_headers table thead tr {
-		position: relative;
-	}
-	
-	div.fixed_headers table tbody tr:nth-child(even) {
-		background-color: #ffebb5;
-	}
-	
-	div.fixed_headers table thead th {
-		position: sticky;
-		top: 0;
-		background-color: #d1cfcd;
-		resize: horizontal;
-		overflow: auto;
-		min-width: 70px;
-	}
-	
 
+	div.scrollable table thead tr th {
+	
+		padding: 0;
+		border:1px;
+		
+		border-width:1px;
+		border-color:gray; 
+		border-bottom-style: solid; 
+		border-top-style: solid; 
+		border-left-style: solid; 
+		border-right-style: solid;
+
+		width: 100px;
+		font-weight: bold;
+		background-color: #d1cfcd;
+		font-size: 15px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+
+	div.scrollable table tbody tr td {
+		padding: 0;
+		border:1px;
+		
+		border-width:1px;
+		border-color:gray; 
+		border-bottom-style: solid; 
+		border-top-style: solid; 
+		border-left-style: solid; 
+		border-right-style: solid;
+		
+		width: 100px;
+		font-weight: normal;
+		background-color: white;
+		font-size: 15px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	
+	div.scrollable table thead th:nth-child(1) {
+		position:-webkit-sticky;
+		position:sticky;
+		left: 0;
+		top:0;
+		z-index:2;  /* 숫자가 클수록 우선한다. */
+	}
+	
+	div.scrollable table thead tr:nth-child(1) {
+		position:-webkit-sticky;
+		position:sticky;
+		top:0;
+		z-index:1;  /* 숫자가 클수록 우선한다. */
+	}
+
+	div.scrollable table td:nth-child(1) {
+		background-color: #d1cfcd;
+		position:-webkit-sticky;
+		position:sticky;
+		left: 0;
+		z-index:0;  /* 숫자가 클수록 우선한다. */
+	}
+
+/***************************** 스크롤 테이블 End *****************************/
 
 body {
 	-webkit-text-size-adjust: none;

@@ -19,4 +19,12 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/breakpoints.min.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/util.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/main.js"></script>		
+		
+		<!-- jqGrid Start -->
+		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/css/jquery-ui.css">
+		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/css/ui.jqgrid.min.css">
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/jquery/1.12.4/jquery.min.js"></script>
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/jquery.jqgrid.min.js"></script>
+		<!-- jqGrid End -->		
+		
 	</head>
