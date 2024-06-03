@@ -24,7 +24,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	<script type="text/javascript"> 
 		var timeOutObj;
 		$(document).ready(function(){
-			
+			readySlickGrid();
 		});
 		
 	    function goAppSelectList(){ 
@@ -136,513 +136,517 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									</h2>
 
 									<div class="scrollable" >
-									<table>
-										<thead >
-											<tr >
-												<th  >메뉴</th>
-												<th  >UI</th>
-												<th  >UI명</th>
-												<th style="width:250px;"  >URL</th>
-												<th  >API-LVL-1</th>
-												<th  >API-LVL-1명</th>
-												<th  >API-LVL-1종류</th>
-												<th  >API-LVL-2</th>
-												<th  >API-LVL-2명</th>
-												<th  >API-LVL-2종류</th>
-												<th  >API-LVL-3</th>
-												<th  >API-LVL-3명</th>
-												<th  >API-LVL-3종류</th>
-												<th  >테이블</th>
-											</tr>														
-										</thead>													
-										<tbody >	
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>	
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>	
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>		
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>			
-											<tr >
-												<td  >Application</td>
-												<td  >UI</td>
-												<td  >UI명</td>
-												<td  >URL</td>
-												<td  >API-LVL-1</td>
-												<td  >API-LVL-1명</td>
-												<td  >API-LVL-1종류</td>
-												<td  >API-LVL-2</td>
-												<td  >API-LVL-2명</td>
-												<td  >API-LVL-2종류</td>
-												<td  >API-LVL-3</td>
-												<td  >API-LVL-3명</td>
-												<td  >API-LVL-3종류</td>
-												<td  >테이블</td>
-											</tr>												
-										</tbody>
-									</table>
+										
+										<table>
+											<thead >
+												<tr >
+													<th  >메뉴</th>
+													<th  >UI</th>
+													<th  >UI명</th>
+													<th style="width:250px;"  >URL</th>
+													<th  >API-LVL-1</th>
+													<th  >API-LVL-1명</th>
+													<th  >API-LVL-1종류</th>
+													<th  >API-LVL-2</th>
+													<th  >API-LVL-2명</th>
+													<th  >API-LVL-2종류</th>
+													<th  >API-LVL-3</th>
+													<th  >API-LVL-3명</th>
+													<th  >API-LVL-3종류</th>
+													<th  >테이블</th>
+												</tr>														
+											</thead>													
+											<tbody >	
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>	
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>	
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>		
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>			
+												<tr >
+													<td  >Application</td>
+													<td  >UI</td>
+													<td  >UI명</td>
+													<td  >URL</td>
+													<td  >API-LVL-1</td>
+													<td  >API-LVL-1명</td>
+													<td  >API-LVL-1종류</td>
+													<td  >API-LVL-2</td>
+													<td  >API-LVL-2명</td>
+													<td  >API-LVL-2종류</td>
+													<td  >API-LVL-3</td>
+													<td  >API-LVL-3명</td>
+													<td  >API-LVL-3종류</td>
+													<td  >테이블</td>
+												</tr>												
+											</tbody>
+										</table>
+										
 									</div>
 
 								</section>
 								
 								<table id="grid"></table>
+								
+								<div id="myGrid" class="slick-container" style="width:600px;height:500px;"></div>
 								
 								</form> 
 							    <!--폼 끝--> 									
@@ -659,9 +663,97 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		</div>
 
 	</body>
-	
+		
 	<script>
+	  var grid;
+	  var data = [];
+	  
+	  var columns = [
+	    { id: "title", name: "Title", field: "title", sortable: true },
+	    { id: "duration", name: "Duration", field: "duration", sortable: true, formatter: dayFormatter },
+	    { id: "%", name: "% Complete", field: "percentComplete", width: 95, sortable: true },
+	    { id: "start", name: "Start", field: "start", formatter: dateFormatter, sortable: true },
+	    { id: "finish", name: "Finish", field: "finish", formatter: dateFormatter, sortable: true },
+	    { id: "effort-driven", name: "Effort Driven", field: "effortDriven", width: 95, sortable: true }
+	  ];
 	
+	  function dayFormatter(row, cell, value, columnDef, dataContext) {
+	      return value + ' days';
+	  }
+	
+	  function dateFormatter(row, cell, value, columnDef, dataContext) {
+	      return value.getMonth() + '/' + value.getDate() + '/' + value.getFullYear();
+	  }
+	
+	  var options = {
+	    enableCellNavigation: true,
+	    enableColumnReorder: false,
+	    multiColumnSort: true
+	  };
+	
+	  //document.addEventListener("DOMContentLoaded", function() {
+	  function readySlickGrid() {
+
+	    var MS_PER_DAY = 24 * 60 * 60 * 1000;
+	    
+	    for (var i = 0; i < 500; i++) {
+	      var startDate = new Date(new Date("1/1/1980").getTime() + Math.round(Math.random() * 365 * 25) * MS_PER_DAY);
+	      var endDate = new Date(startDate.getTime() + Math.round(Math.random() * 365) * MS_PER_DAY);
+	      data[i] = {
+	        title: "Task " + i,
+	        duration: Math.round(Math.random() * 30) + 2,
+	        percentComplete: Math.round(Math.random() * 100),
+	        start: startDate,
+	        finish: endDate,
+	        effortDriven: (i % 5 == 0)
+	      };
+
+	    }
+	
+	    grid = new Slick.Grid("#myGrid", data, columns, options);
+	
+	    // when "onBeforeSort" returns false, the "onSort" won't execute (for example a backend server error while calling backend query to sort)
+	    grid.onBeforeSort.subscribe(function (e, args) {
+	      return true;
+	    });
+	
+	    grid.onSort.subscribe(function (e, args) {
+	      var cols = args.sortCols;
+	
+	      data.sort(function (dataRow1, dataRow2) {
+	        for (var i = 0, l = cols.length; i < l; i++) {
+	          var field = cols[i].sortCol.field;
+	          var sign = cols[i].sortAsc ? 1 : -1;
+	          var value1 = dataRow1[field], value2 = dataRow2[field];
+	          var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
+	          if (result != 0) {
+	            return result;
+	          }
+	        }
+	        return 0;
+	      });
+	      grid.invalidate();
+	      grid.render();
+	    });
+	  }
+	</script>
+
+	<script>
+		var jqGridData = [
+            { id: "10",  invdate: "2015-10-01", name: "test",   amount: "" },
+            { id: "20",  invdate: "2015-09-01", name: "test2",  amount: "300.00", tax:"20.00", closed:false, ship_via:"FE", total:"320.00"},
+            { id: "30",  invdate: "2015-09-01", name: "test3",  amount: "400.00", tax:"30.00", closed:false, ship_via:"FE", total:"430.00"},
+            { id: "40",  invdate: "2015-10-04", name: "test4",  amount: "200.00", tax:"10.00", closed:true,  ship_via:"TN", total:"210.00"},
+            { id: "50",  invdate: "2015-10-31", name: "test5",  amount: "300.00", tax:"20.00", closed:false, ship_via:"FE", total:"320.00"},
+            { id: "60",  invdate: "2015-09-06", name: "test6",  amount: "400.00", tax:"30.00", closed:false, ship_via:"FE", total:"430.00"},
+            { id: "70",  invdate: "2015-10-04", name: "test7",  amount: "200.00", tax:"10.00", closed:true,  ship_via:"TN", total:"210.00"},
+            { id: "80",  invdate: "2015-10-03", name: "test8",  amount: "300.00", tax:"20.00", closed:false, ship_via:"FE", total:"320.00"},
+            { id: "90",  invdate: "2015-09-01", name: "test9",  amount: "400.00", tax:"30.00", closed:false, ship_via:"TN", total:"430.00"},
+            { id: "100", invdate: "2015-09-08", name: "test10", amount: "500.00", tax:"30.00", closed:true,  ship_via:"TN", total:"530.00"},
+            { id: "110", invdate: "2015-09-08", name: "test11", amount: "500.00", tax:"30.00", closed:false, ship_via:"FE", total:"530.00"},
+            { id: "120", invdate: "2015-09-10", name: "test12", amount: "500.00", tax:"30.00", closed:false, ship_via:"FE", total:"530.00"}
+        ];
+			
 	    $(function () {
 	        "use strict";
 	        $("#grid").jqGrid({
@@ -674,20 +766,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                { name: "closed", label: "Closed", width: 59, template: "booleanCheckbox", firstsortorder: "desc" },
 	                { name: "ship_via", label: "Shipped via", width: 87, align: "center", formatter: "select", formatoptions: { value: "FE:FedEx;TN:TNT;DH:DHL", defaultValue: "DH" } }
 	            ],
-	            data: [
-	                { id: "10",  invdate: "2015-10-01", name: "test",   amount: "" },
-	                { id: "20",  invdate: "2015-09-01", name: "test2",  amount: "300.00", tax:"20.00", closed:false, ship_via:"FE", total:"320.00"},
-	                { id: "30",  invdate: "2015-09-01", name: "test3",  amount: "400.00", tax:"30.00", closed:false, ship_via:"FE", total:"430.00"},
-	                { id: "40",  invdate: "2015-10-04", name: "test4",  amount: "200.00", tax:"10.00", closed:true,  ship_via:"TN", total:"210.00"},
-	                { id: "50",  invdate: "2015-10-31", name: "test5",  amount: "300.00", tax:"20.00", closed:false, ship_via:"FE", total:"320.00"},
-	                { id: "60",  invdate: "2015-09-06", name: "test6",  amount: "400.00", tax:"30.00", closed:false, ship_via:"FE", total:"430.00"},
-	                { id: "70",  invdate: "2015-10-04", name: "test7",  amount: "200.00", tax:"10.00", closed:true,  ship_via:"TN", total:"210.00"},
-	                { id: "80",  invdate: "2015-10-03", name: "test8",  amount: "300.00", tax:"20.00", closed:false, ship_via:"FE", total:"320.00"},
-	                { id: "90",  invdate: "2015-09-01", name: "test9",  amount: "400.00", tax:"30.00", closed:false, ship_via:"TN", total:"430.00"},
-	                { id: "100", invdate: "2015-09-08", name: "test10", amount: "500.00", tax:"30.00", closed:true,  ship_via:"TN", total:"530.00"},
-	                { id: "110", invdate: "2015-09-08", name: "test11", amount: "500.00", tax:"30.00", closed:false, ship_via:"FE", total:"530.00"},
-	                { id: "120", invdate: "2015-09-10", name: "test12", amount: "500.00", tax:"30.00", closed:false, ship_via:"FE", total:"530.00"}
-	            ],
+	            data: jqGridData,
 	            iconSet: "fontAwesome",
 	            idPrefix: "g1_",
 	            rownumbers: true,
