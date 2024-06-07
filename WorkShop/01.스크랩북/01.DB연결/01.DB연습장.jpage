@@ -4,7 +4,7 @@ net.dstone.common.utils.DbUtil db = null;
 net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
 
 StringBuffer sql = new StringBuffer();
-String TABLE_NAME = "TB_FUNC";
+String TABLE_NAME = "TB_METRIX";
 net.dstone.common.utils.DateUtil.stopWatchStart("연습장");
 try {
 
@@ -12,13 +12,11 @@ try {
 	sql.append("	* ").append("\n");
 	sql.append("FROM  ").append("\n");
 	sql.append("	" + TABLE_NAME + "  ").append("\n");
-	sql.append("WHERE 1=1 ").append("\n");	
+	sql.append("WHERE 1=1 ").append("\n");	sql.append("LIMIT 1 ").append("\n");	
 	db = new net.dstone.common.utils.DbUtil(DBID);
 	db.getConnection();
 	db.setQuery(sql.toString());
-		ds.buildFromResultSet(db.select(), "");	
-	
-	ds.checkData();
+		ds.buildFromResultSet(db.select(), "");		ds.checkData();
 	
 }catch(Exception e){
 	System.out.println(db.getQuery());

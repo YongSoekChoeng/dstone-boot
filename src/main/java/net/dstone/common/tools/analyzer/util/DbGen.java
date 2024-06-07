@@ -137,6 +137,7 @@ public class DbGen {
 
 			/* <종합메트릭스-TB_METRIX> */
 			MYSQL_CREATE.append("CREATE TABLE TB_METRIX ( ").append("\n");
+			MYSQL_CREATE.append("  SEQ BIGINT UNSIGNED NOT NULL COMMENT '시퀀스', ").append("\n");
 			MYSQL_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL COMMENT '시스템ID', ").append("\n");
 			MYSQL_CREATE.append("  UI_ID VARCHAR(100) COMMENT '화면ID', ").append("\n");
 			MYSQL_CREATE.append("  UI_NM VARCHAR(200) COMMENT '화면명', ").append("\n");
@@ -147,9 +148,10 @@ public class DbGen {
 				MYSQL_CREATE.append("  CLASS_KIND_"+i+" VARCHAR(2) COMMENT '클래스종류"+i+"(CT:컨트롤러/SV:서비스/DA:DAO/OT:나머지)', ").append("\n");
 			}
 			MYSQL_CREATE.append("  CALL_TBL VARCHAR(4000) COMMENT '호출테이블', ").append("\n");
-			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID' ").append("\n");
+			MYSQL_CREATE.append("  WORKER_ID VARCHAR(10) NOT NULL COMMENT '입력자ID', ").append("\n");
+			MYSQL_CREATE.append("  PRIMARY KEY (SYS_ID, SEQ) ").append("\n");
 			MYSQL_CREATE.append(") COMMENT '종합메트릭스'; ").append("\n");
-			
+
 			/* <시스템-TB_SYS> */
 			ORACLE_CREATE.append("CREATE TABLE TB_SYS ( ").append("\n");
 			ORACLE_CREATE.append("  SYS_ID VARCHAR2(20) NOT NULL, ").append("\n");
@@ -324,6 +326,7 @@ public class DbGen {
 
 			/* <종합메트릭스-TB_METRIX> */
 			ORACLE_CREATE.append("CREATE TABLE TB_METRIX ( ").append("\n");
+			ORACLE_CREATE.append("  SEQ NUMBER(10) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  SYS_ID VARCHAR(20) NOT NULL, ").append("\n");
 			ORACLE_CREATE.append("  UI_ID VARCHAR2(100), ").append("\n");
 			ORACLE_CREATE.append("  UI_NM VARCHAR2(200), ").append("\n");
@@ -334,9 +337,11 @@ public class DbGen {
 				ORACLE_CREATE.append("  CLASS_KIND_"+i+" VARCHAR2(2), ").append("\n");
 			}
 			ORACLE_CREATE.append("  CALL_TBL VARCHAR2(4000), ").append("\n");
-			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL").append("\n");
+			ORACLE_CREATE.append("  WORKER_ID VARCHAR2(10) NOT NULL,").append("\n");
+			ORACLE_CREATE.append("  PRIMARY KEY (SYS_ID, SEQ) ").append("\n");
 			ORACLE_CREATE.append("); ").append("\n");			
 			ORACLE_CREATE.append("COMMENT ON TABLE TB_METRIX IS '종합메트릭스' ; ").append("\n");
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.SEQ IS '시퀀스' ; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.SYS_ID IS '시스템' ; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.UI_ID IS '화면ID'; ").append("\n");
 			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.UI_NM IS '화면명'; ").append("\n");
@@ -346,8 +351,8 @@ public class DbGen {
 				ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.FUNCTION_NAME_"+i+" IS '기능명"+i+"'; ").append("\n");
 				ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.CLASS_KIND_"+i+" IS '클래스종류"+i+"'; ").append("\n");
 			}
-			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.WORKER_ID IS '입력자ID'; ").append("\n");			
-
+			ORACLE_CREATE.append("COMMENT ON COLUMN TB_METRIX.WORKER_ID IS '입력자ID'; ").append("\n");
+			
 			/* <시스템-TB_SYS> */
 			DROP.append("DROP TABLE TB_SYS;").append("\n");
 			/* <클래스-TB_CLZZ> */
@@ -364,6 +369,8 @@ public class DbGen {
 			DROP.append("DROP TABLE TB_UI; ").append("\n");
 			/* <화면기능맵핑-TB_UI_FUNC_MAPPING> */
 			DROP.append("DROP TABLE TB_UI_FUNC_MAPPING; ").append("\n");
+			/* <종합메트릭스-TB_METRIX> */
+			DROP.append("DROP TABLE TB_METRIX; ").append("\n");
 
 		}
 	}
@@ -572,7 +579,8 @@ public class DbGen {
 
 			/* <종합메트릭스-TB_METRIX> */
 			INSERT_TB_METRIX.append("INSERT INTO TB_METRIX (").append("\n");
-			INSERT_TB_METRIX.append("	SYS_ID /* 시스템ID */ ").append("\n");
+			INSERT_TB_METRIX.append("	SEQ /* 시퀀스 */ ").append("\n");
+			INSERT_TB_METRIX.append("	, SYS_ID /* 시스템ID */ ").append("\n");
 			INSERT_TB_METRIX.append("	, UI_ID /* 화면ID */").append("\n");
 			INSERT_TB_METRIX.append("	, UI_NM /* 화면명 */").append("\n");
 			INSERT_TB_METRIX.append("	, BASIC_URL /* 기준URL */").append("\n");
@@ -584,7 +592,8 @@ public class DbGen {
 			INSERT_TB_METRIX.append("	, CALL_TBL /* 호출테이블 */").append("\n");
 			INSERT_TB_METRIX.append("	, WORKER_ID /* 입력자ID */").append("\n");
 			INSERT_TB_METRIX.append(") VALUES (").append("\n");
-			INSERT_TB_METRIX.append("	? /* 시스템ID */ ").append("\n");
+			INSERT_TB_METRIX.append("	? /* 시퀀스 */ ").append("\n");
+			INSERT_TB_METRIX.append("	, ? /* 시스템ID */ ").append("\n");
 			INSERT_TB_METRIX.append("	, ? /* 화면ID */").append("\n");
 			INSERT_TB_METRIX.append("	, ? /* 화면명 */").append("\n");
 			INSERT_TB_METRIX.append("	, ? /* 기준URL */").append("\n");
@@ -596,7 +605,7 @@ public class DbGen {
 			INSERT_TB_METRIX.append("	, ? /* 호출테이블 */").append("\n");
 			INSERT_TB_METRIX.append("	, 'SYSTEM' /* 입력자ID */").append("\n");
 			INSERT_TB_METRIX.append(")").append("\n");
-			
+
 			/* <클래스-TB_CLZZ> */
 			DELETE_TB_CLZZ.append("DELETE FROM TB_CLZZ WHERE SYS_ID = ? AND WORKER_ID = 'SYSTEM' ").append("\n");
 			
@@ -1139,7 +1148,6 @@ public class DbGen {
 
 			/* <종합메트릭스-TB_METRIX> */
 			db.setQuery(QUERY.INSERT_TB_METRIX.toString());
-			
 			String[] lines = FileUtil.readFileByLines(AppAnalyzer.WRITE_PATH + "/AppMetrix.ouput");
 			if(lines != null) {
 				String line = "";
@@ -1164,6 +1172,7 @@ public class DbGen {
 						}
 
 						parameterIndex = 0;
+						parameterIndex = setParam(db.pstmt, parameterIndex, String.valueOf(i));	/* 시퀀스 */
 						parameterIndex = setParam(db.pstmt, parameterIndex, sysId);	/* 시스템ID */
 						parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("UI_ID"));	/* 화면ID */
 						parameterIndex = setParam(db.pstmt, parameterIndex, dsRow.getDatum("UI_NM"));	/* 화면명 */

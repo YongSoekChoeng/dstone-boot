@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Ubuntu+Condensed");
+/* @import url("https://fonts.googleapis.com/css?family=Ubuntu+Condensed"); */
 
 /*
 	Minimaxing by HTML5 UP
@@ -19,13 +19,18 @@ section, summary, time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
+	font-family: var(--alpine-font-family, -apple-system,
+		BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+		"Helvetica Neue", sans-serif);
 	font-size: 100%;
 	font: inherit;
-	vertical-align: baseline;}
+	vertical-align: baseline;
+}
 
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-	display: block;}
+	display: block;
+}
 
 body {
 	line-height: 1;
@@ -63,7 +68,7 @@ table {
 		color: #008ead;
 		font-weight: bold;
 		background-color: #d1cfcd;
-		font-size: 15px;
+		font-size: 14px;
 		padding-top: 5px;
 		padding-bottom: 5px;
 		padding-left: 5px;
@@ -74,7 +79,7 @@ table {
 		padding: 1;
 		border: 1;
 		font-weight: normal;
-		font-size: 15px;
+		font-size: 14px;
 		padding-top: 5px;
 		padding-bottom: 5px;
 		padding-left: 5px;
@@ -86,7 +91,7 @@ table {
 		border: 0;
 		font-weight: normal;
 		background-color: #d1cfcd;
-		font-size: 15px;
+		font-size: 14px;
 		padding-top: 0px;
 		padding-bottom: 0px;
 		padding-left: 0px;
@@ -145,7 +150,7 @@ div.scrollable {
 		width: 100px;
 		font-weight: bold;
 		background-color: #d1cfcd;
-		font-size: 15px;
+		font-size: 14px;
 		padding-top: 5px;
 		padding-bottom: 5px;
 		padding-left: 5px;
@@ -166,7 +171,7 @@ div.scrollable {
 		width: 100px;
 		font-weight: normal;
 		background-color: white;
-		font-size: 15px;
+		font-size: 14px;
 		padding-top: 5px;
 		padding-bottom: 5px;
 		padding-left: 5px;
@@ -208,16 +213,11 @@ mark {
 }
 
 input {
-/* 	-moz-appearance: none; */
-/* 	-webkit-appearance: none; */
-/* 	-ms-appearance: none; */
-/* 	appearance: none; */
-	
 	padding: 1px 2px 1px 2px;
 	text-transform: none;
 	text-decoration: none;
 	color: #4e4d43;
-	font-size: 12pt; 
+	font-size: 10pt; 
 	letter-spacing: -1px;
 	border: solid 1px #006e8b;
 }
@@ -228,29 +228,19 @@ input::-moz-focus-inner {
 }
 
 textarea {
-/* 	-moz-appearance: none; */
-/* 	-webkit-appearance: none; */
-/* 	-ms-appearance: none; */
-/* 	appearance: none; */
-	
 	padding: 1px 1px 1px 1px;
 	text-transform: none;
 	text-decoration: none;
 	color: #4e4d43;
-	font-size: 12pt; 
+	font-size: 10pt; 
 	letter-spacing: -1px;
 	border: solid 1px #006e8b;
 }
 
 select {
-/* 	-moz-appearance: none; */
-/* 	-webkit-appearance: none; */
-/* 	-ms-appearance: none; */
-/* 	appearance: none; */
- 	
 	padding: 1px 2px 1px 2px;
 	color: #4e4d43;
-	font-size: 12pt; 
+	font-size: 10pt; 
 	letter-spacing: -1px;
 	border: solid 1px #006e8b; 	
 }
@@ -324,6 +314,7 @@ input[type='checkbox'] {
 
 	p {
 		line-height: 1.8em;
+		font-size: 15px;
 	}
 
 	strong {

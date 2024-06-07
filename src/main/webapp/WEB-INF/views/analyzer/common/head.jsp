@@ -10,7 +10,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<title>Application Analyzer</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/assets/css/main.css" />
 		<!-- Scripts -->
 		<script src="<%=requestUtil.getStrContextPath()%>/js/jquery-1.7.2.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/js/jquery.json-2.4.js" ></script> 
@@ -23,7 +22,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<!-- jqGrid Start -->
 		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/css/jquery-ui.css">
 		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/css/ui.jqgrid.min.css">
+		<!--  
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/jquery/1.12.4/jquery.min.js"></script>
+		-->
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/jquery.jqgrid.min.js"></script>
 		<!-- jqGrid End -->		
 		
@@ -36,5 +37,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.interactions.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.grid.js"></script>
 		<!-- slickGrid End -->		
+		
+		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/assets/css/main.css" />
 		
 	</head>
