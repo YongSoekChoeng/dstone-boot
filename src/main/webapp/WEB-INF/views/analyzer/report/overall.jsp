@@ -75,8 +75,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
 	            var $g = $("#myGrid");
-	            var loadingIndicatorTop = $g.position().top + ($g.height()/2) - (loadingIndicator.height()/2);
-	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2) - (loadingIndicator.width()/2);
+	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2);
+	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
 	            loadingIndicator.css("top", loadingIndicatorTop);
 	            loadingIndicator.css("left", loadingIndicatorLeft);
@@ -189,7 +189,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 												<th >조회갯수</th>
 												<td align="left" style="padding: 2px;">
 													<select name="LIMIT" id="LIMIT" >
-														<option value="">전체</option>
+														<option value="<%=Integer.MAX_VALUE %>">전체</option>
 														<option value="100" selected >100</option>
 														<option value="300">300</option>
 														<option value="500">500</option>
@@ -270,26 +270,30 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	  		
 		var options = {
 			enableCellNavigation : true,
-			enableColumnReorder : false,
+			enableColumnReorder : true,
 			multiColumnSort : true
 		};
 
 		function readySlickGrid() {	
-			grid = new Slick.Grid("#myGrid", overAllData, columns, options);
-			// when "onBeforeSort" returns false, the "onSort" won't execute (for example a backend server error while calling backend query to sort)
+			var data = [];
+			refreshSlickGrid(data);
+		}
+		
+		function refreshSlickGrid(data) {
+			grid = new Slick.Grid("#myGrid", data, columns, options);
+
 			grid.onBeforeSort.subscribe(function(e, args) {
 				return true;
 			});
+			
 			grid.onSort.subscribe(function(e, args) {
-console.log( "onSort.subscribe==============>>> called !!!");			
 				var cols = args.sortCols;
-				overAllData.sort(function(dataRow1, dataRow2) {
+				data.sort(function(dataRow1, dataRow2) {
 					for (var i = 0, l = cols.length; i < l; i++) {
 						var field = cols[i].sortCol.field;
 						var sign = cols[i].sortAsc ? 1 : -1;
 						var value1 = dataRow1[field], value2 = dataRow2[field];
 						var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
-console.log( "result==============>>>" + result);						
 						if (result != 0) {
 							return result;
 						}
@@ -300,9 +304,6 @@ console.log( "result==============>>>" + result);
 			    //grid.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: true }) );
 				grid.render();
 			});
-		}
-		function refreshSlickGrid(data) {
-			grid = new Slick.Grid("#myGrid", data, columns, options);
 		}
 	</script>
 
