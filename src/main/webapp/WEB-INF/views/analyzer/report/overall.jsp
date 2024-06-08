@@ -229,48 +229,27 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		
 	<script>
 	  	var grid;
-	  	var columns = [
-	  		{ id: "SEQ", name: "SEQ", field: "SEQ", width: 100, sortable: true },
-	  		{ id: "SYS_ID", name: "Application", field: "SYS_ID", width: 100, sortable: true },
-	  		{ id: "UI_ID", name: "화면ID", field: "UI_ID", width: 100, sortable: true },
-	  		{ id: "UI_NM", name: "화면명", field: "UI_NM", width: 100, sortable: true },
-	  		{ id: "BASIC_URL", name: "기준URL", field: "BASIC_URL", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_1", name: "기능ID-1", field: "FUNCTION_ID_1", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_1", name: "기능명-1", field: "FUNCTION_NAME_1", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_1", name: "기능종류-1", field: "CLASS_KIND_1", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_2", name: "기능ID-2", field: "FUNCTION_ID_2", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_2", name: "기능명-2", field: "FUNCTION_NAME_2", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_2", name: "기능종류-2", field: "CLASS_KIND_2", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_3", name: "기능ID-3", field: "FUNCTION_ID_3", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_3", name: "기능명-3", field: "FUNCTION_NAME_3", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_3", name: "기능종류-3", field: "CLASS_KIND_3", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_4", name: "기능ID-4", field: "FUNCTION_ID_4", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_4", name: "기능명-4", field: "FUNCTION_NAME_4", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_4", name: "기능종류-4", field: "CLASS_KIND_4", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_5", name: "기능ID-5", field: "FUNCTION_ID_5", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_5", name: "기능명-5", field: "FUNCTION_NAME_5", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_5", name: "기능종류-5", field: "CLASS_KIND_5", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_6", name: "기능ID-6", field: "FUNCTION_ID_6", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_6", name: "기능명-6", field: "FUNCTION_NAME_6", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_6", name: "기능종류-6", field: "CLASS_KIND_6", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_7", name: "기능ID-7", field: "FUNCTION_ID_7", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_7", name: "기능명-7", field: "FUNCTION_NAME_7", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_7", name: "기능종류-7", field: "CLASS_KIND_7", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_8", name: "기능ID-8", field: "FUNCTION_ID_8", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_8", name: "기능명-8", field: "FUNCTION_NAME_8", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_8", name: "기능종류-8", field: "CLASS_KIND_8", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_9", name: "기능ID-9", field: "FUNCTION_ID_9", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_9", name: "기능명-9", field: "FUNCTION_NAME_9", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_9", name: "기능종류-9", field: "CLASS_KIND_9", width: 100, sortable: true },
-	  		{ id: "FUNCTION_ID_10", name: "기능ID-10", field: "FUNCTION_ID_10", width: 100, sortable: true },
-	  		{ id: "FUNCTION_NAME_10", name: "기능명-10", field: "FUNCTION_NAME_10", width: 100, sortable: true },
-	  		{ id: "CLASS_KIND_10", name: "기능종류-10", field: "CLASS_KIND_10", width: 100, sortable: true },
-	  		{ id: "CALL_TBL", name: "호출테이블", field: "CALL_TBL", width: 100, sortable: true }
-	  	];
-	  		
+
+		var callLevel = 10;
+		var columns = new Array();
+		columns[columns.length] = { id: "SEQ"				, name: "SEQ"			, field: "SEQ"				, width: 100, sortable: true	};
+		columns[columns.length] = { id: "화면"				, name: "화면"			, field: "화면"
+			,children: [
+				{ id: "UI_ID"				, name: "ID"			, field: "UI_ID"			, width: 100, sortable: true},
+				{ id: "UI_NM"				, name: "명"				, field: "UI_NM"			, width: 100, sortable: true}
+			]
+		};
+		columns[columns.length] = { id: "BASIC_URL"			, name: "URL"			, field: "BASIC_URL"		, width: 100, sortable: true	};
+		for(var i=0; i<callLevel; i++){
+			columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)  };
+			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)  }
+			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)  }
+		}
+		columns[columns.length] = { id: "CALL_TBL"			, name: "호출테이블"		, field: "CALL_TBL"			, width: 2000, sortable: true };
+		
 		var options = {
 			enableCellNavigation : true,
-			enableColumnReorder : true,
+			enableColumnReorder : false,
 			multiColumnSort : true
 		};
 
@@ -281,6 +260,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		
 		function refreshSlickGrid(data) {
 			grid = new Slick.Grid("#myGrid", data, columns, options);
+			grid.registerPlugin(new Slick.Plugins.ColGroup());
 
 			grid.onBeforeSort.subscribe(function(e, args) {
 				return true;
@@ -301,9 +281,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 					return 0;
 				});
 				grid.invalidate();
-			    //grid.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: true }) );
 				grid.render();
+				
 			});
+			
 		}
 	</script>
 
