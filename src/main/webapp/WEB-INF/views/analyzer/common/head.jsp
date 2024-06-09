@@ -35,10 +35,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.interactions.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.grid.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.dataview.js"></script>
-		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/slick.colgroup.js"></script>
-		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/lib/jquery.event.drag-2.3.0.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/npm/sortablejs/Sortable.min.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/npm/sortablejs/sortable-cdn-fallback.js"></script>
+		
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/lib/utils.js"></script>
 		<!-- slickGrid End -->		
 		
 		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/assets/css/main.css" />

@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement( name="OverAllVo" ) 
 public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.Serializable { 
+
+	@JsonProperty("ID") 
+	private String ID; 
+	
 	@JsonProperty("SEQ") 
 	private String SEQ; 
 	@JsonProperty("SYS_ID") 
@@ -644,6 +648,12 @@ public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.S
 	}
 	public void setCLASS_KIND(String cLASS_KIND) {
 		CLASS_KIND = cLASS_KIND;
+	}
+	public String getID() {
+		return ID;
+	}
+	public void setID(String iD) {
+		ID = iD;
 	}
 	public String getSEQ() {
 		return SEQ;

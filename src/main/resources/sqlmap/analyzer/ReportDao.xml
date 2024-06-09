@@ -53,7 +53,8 @@
     <!--  종합결과 리스트조회 -->                                                      
     <select id="listOverAll" parameterType="net.dstone.analyzer.vo.OverAllVo" resultType="net.dstone.analyzer.vo.OverAllVo">         
 		SELECT 
-			A.SEQ /* 시퀀스 */
+			A.SEQ ID /* 아이디 */
+			, A.SEQ /* 시퀀스 */
 			, A.SYS_ID /* 시스템ID */
 			, A.UI_ID /* 화면ID */
 			, A.UI_NM /* 화면명 */

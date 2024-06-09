@@ -91,6 +91,77 @@
 	text-align: left !important
 }
 
+
+.slick-header-col-style1 {
+	align-items: var(--alpine-header-align-items, flex-start);
+	border-color: var(--alpine-header-border-color, #dae1e7);
+	border-style: solid;
+	border-width: var(--alpine-header-border-width, 0);
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 4px dashed;	
+	display: var(--alpine-header-display, inline-flex);	
+	height: var(--alpine-header-column-height, calc(23px * var(--alpine-header-name-row-count, 1)));	
+	justify-content: var(--alpine-header-justify-content, flex-start);
+	line-height: var(--alpine-header-column-line-height, 23px);
+	margin: 0;
+	margin-left: 4px;
+	margin-top: 7px;	
+	overflow: hidden;
+	padding: 0;	
+	position: relative;
+	vertical-align: middle;	
+	white-space: nowrap;	
+	background-color: var(--alpine-header-bg-color, #f8f8f8);
+	background-image: none;
+	bottom: 0;
+	cursor: default;
+	right: 0;
+	top: 0;
+	width: 0;
+	color: var(--alpine-sort-indicator-color, #3490dc);
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;	
+	font-size: var(--alpine-sort-numbered-font-size, 10px);	
+}
+
+
+.slick-header-col-style2 {
+	align-items: var(--alpine-header-align-items, flex-start);
+	border-color: var(--alpine-header-border-color, #f0f0f0);
+	border-style: solid;
+	border-width: var(--alpine-header-border-width, 0);
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 4px dashed;	
+	display: var(--alpine-header-display, inline-flex);	
+	height: var(--alpine-header-column-height, calc(23px * var(--alpine-header-name-row-count, 1)));	
+	justify-content: var(--alpine-header-justify-content, flex-start);
+	line-height: var(--alpine-header-column-line-height, 23px);
+	margin: 0;
+	margin-left: 4px;
+	margin-top: 7px;	
+	overflow: hidden;
+	padding: 0;	
+	position: relative;
+	vertical-align: middle;	
+	white-space: nowrap;	
+	background-color: var(--alpine-header-bg-color, #f8f8f8);
+	background-image: none;
+	bottom: 0;
+	cursor: default;
+	right: 0;
+	top: 0;
+	width: 0;
+	color: var(--alpine-sort-indicator-color, #3490dc);
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;	
+	font-size: var(--alpine-sort-numbered-font-size, 10px);	
+}
+
+	  	
 .slick-group-toggle {
 	background-color: currentColor;
 	color: inherit;

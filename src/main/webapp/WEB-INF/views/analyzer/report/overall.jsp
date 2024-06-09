@@ -18,7 +18,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 
 	<!-- Head -->
 	<jsp:include page="../common/head.jsp"></jsp:include>
-		
+	
 	<!-- Script -->
 	<script type="text/javascript"> 
 	
@@ -229,29 +229,30 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		
 	<script>
 	  	var grid;
+	  	var dataView;
 
 		var callLevel = 10;
 		var columns = new Array();
-		columns[columns.length] = { id: "SEQ"				, name: "SEQ"			, field: "SEQ"				, width: 100, sortable: true	};
-		columns[columns.length] = { id: "화면"				, name: "화면"			, field: "화면"
-			,children: [
-				{ id: "UI_ID"				, name: "ID"			, field: "UI_ID"			, width: 100, sortable: true},
-				{ id: "UI_NM"				, name: "명"				, field: "UI_NM"			, width: 100, sortable: true}
-			]
-		};
-		columns[columns.length] = { id: "BASIC_URL"			, name: "URL"			, field: "BASIC_URL"		, width: 100, sortable: true	};
+		columns[columns.length] 	= { id: "SEQ"					, name: "SEQ"			, field: "SEQ"					, width: 40, sortable: true		, columnGroup:"기본"};
+		columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"기본"};
+		columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"기본"};
+		columns[columns.length] 	= { id: "BASIC_URL"				, name: "URL"			, field: "BASIC_URL"			, width: 150, sortable: true	, columnGroup:"기본"};
 		for(var i=0; i<callLevel; i++){
-			columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)  };
-			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)  }
-			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)  }
+			columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)+""  };
+			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)+""  };
+			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)+""  };
 		}
-		columns[columns.length] = { id: "CALL_TBL"			, name: "호출테이블"		, field: "CALL_TBL"			, width: 2000, sortable: true };
-		
+		columns[columns.length] 	= { id: "CALL_TBL"				, name: "호출테이블"		, field: "CALL_TBL"				, width: 2000, sortable: true	, columnGroup:"테이블"   };
+
 		var options = {
-			enableCellNavigation : true,
-			enableColumnReorder : false,
-			multiColumnSort : true
+		    enableCellNavigation: true,
+		    enableColumnReorder: false,
+		    createPreHeaderPanel: true,
+		    showPreHeaderPanel: true,
+		    preHeaderPanelHeight: 23,
+		    explicitInitialization: true
 		};
+		
 
 		function readySlickGrid() {	
 			var data = [];
@@ -259,33 +260,32 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 		
 		function refreshSlickGrid(data) {
-			grid = new Slick.Grid("#myGrid", data, columns, options);
-			grid.registerPlugin(new Slick.Plugins.ColGroup());
+			dataView = new Slick.Data.DataView();
+			grid = new Slick.Grid("#myGrid", dataView, columns, options);
 
-			grid.onBeforeSort.subscribe(function(e, args) {
-				return true;
+			dataView.onRowCountChanged.subscribe(function (e, args) {
+				grid.updateRowCount();
+			    grid.render();
+			});
+
+			dataView.onRowsChanged.subscribe(function (e, args) {
+			    grid.invalidateRows(args.rows);
+			    grid.render();
 			});
 			
-			grid.onSort.subscribe(function(e, args) {
-				var cols = args.sortCols;
-				data.sort(function(dataRow1, dataRow2) {
-					for (var i = 0, l = cols.length; i < l; i++) {
-						var field = cols[i].sortCol.field;
-						var sign = cols[i].sortAsc ? 1 : -1;
-						var value1 = dataRow1[field], value2 = dataRow2[field];
-						var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
-						if (result != 0) {
-							return result;
-						}
-					}
-					return 0;
-				});
-				grid.invalidate();
-				grid.render();
-				
+			grid.onColumnsResized.subscribe(function (e, args) {
+				createAddlHeaderRow();
 			});
 			
+			grid.init();
+			createAddlHeaderRow();
+			
+			// Initialise data
+			dataView.beginUpdate();
+			dataView.setItems(data);
+			dataView.endUpdate();
 		}
+		
 	</script>
 
 </html>
