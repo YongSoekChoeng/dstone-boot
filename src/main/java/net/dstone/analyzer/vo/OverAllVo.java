@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlRootElement( name="OverAllVo" ) 
 public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.Serializable { 
 
+	@JsonProperty("RNUM") 
+	private int RNUM; 
+
 	@JsonProperty("ID") 
 	private String ID; 
 	
@@ -666,5 +669,11 @@ public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.S
 	}
 	public void setLIMIT(int lIMIT) {
 		LIMIT = lIMIT;
+	}
+	public int getRNUM() {
+		return RNUM;
+	}
+	public void setRNUM(int rNUM) {
+		RNUM = rNUM;
 	}
 }                     

@@ -19,24 +19,18 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/util.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/main.js"></script>		
 		
-		<!-- jqGrid Start -->
-		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/css/jquery-ui.css">
-		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/css/ui.jqgrid.min.css">
-		<!--  
-		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/jquery/1.12.4/jquery.min.js"></script>
-		-->
-		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/jqGrid/jquery.jqgrid.min.js"></script>
-		<!-- jqGrid End -->		
-		
 		<!-- slickGrid Start -->
 		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/styles/css/example-demo.css">
 		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/styles/css/slick-alpine-theme.css">
+		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/styles/css/slick.rowdetailview.css">
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.core.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.interactions.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.grid.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/slick.dataview.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/npm/sortablejs/Sortable.min.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/npm/sortablejs/sortable-cdn-fallback.js"></script>
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/slick.rowdetailview.js"></script>
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/slick.rowselectionmodel.js"></script>
 		
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/lib/utils.js"></script>
 		<!-- slickGrid End -->		

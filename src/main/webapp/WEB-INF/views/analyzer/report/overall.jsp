@@ -75,7 +75,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
 	            var $g = $("#myGrid");
-	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2);
+	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
 	            loadingIndicator.css("top", loadingIndicatorTop);
@@ -158,15 +158,15 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 												</td>
 											</tr>		
 											<tr>
-												<th >기준URL</th>
+												<th >호출URL</th>
 												<td align="left" style="padding: 2px;">
-													<input type="text" name="URL" value="" style="width: 100%" />
+													<input type="text" name="BASIC_URL" value="" style="width: 100%" />
 												</td>
-												<th >기능ID</th>
+												<th >API ID</th>
 												<td align="left" style="padding: 2px;">
 													<input type="text" name="FUNCTION_ID" value="" style="width: 100%" />
 												</td>
-												<th >기능명</th>
+												<th >API 명</th>
 												<td align="left" style="padding: 2px;">
 													<input type="text" name="FUNCTION_NM" value="" style="width: 100%" />
 												</td>
@@ -174,7 +174,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 											<tr>
 												<th >테이블</th>
 												<td align="left" style="padding: 2px;">
-													<input type="text" name="TBL" value="" size="30%" />
+													<input type="text" name="CALL_TBL" value="" size="30%" />
 												</td>
 												<th >테이블CRUD</th>
 												<td align="left" style="padding: 2px;">
@@ -226,23 +226,26 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		</div>
 
 	</body>
-		
+
 	<script>
-	  	var grid;
-	  	var dataView;
+	
+	  	var grid;		// 그리드
+	  	var dataView; 	// 데이터뷰
+	    var detailView; // 상세데이터뷰 플러그인
 
 		var callLevel = 10;
 		var columns = new Array();
-		columns[columns.length] 	= { id: "SEQ"					, name: "SEQ"			, field: "SEQ"					, width: 40, sortable: true		, columnGroup:"기본"};
-		columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"기본"};
-		columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"기본"};
-		columns[columns.length] 	= { id: "BASIC_URL"				, name: "URL"			, field: "BASIC_URL"			, width: 150, sortable: true	, columnGroup:"기본"};
+		columns[columns.length] 	= { id: "DETAIL"				, name: ""				, field: "DETAIL"				, width: 30	, sortable: true	, columnGroup:""};
+		columns[columns.length] 	= { id: "RNUM"					, name: "No"			, field: "RNUM"					, width: 40	, sortable: true	, columnGroup:""};
+		columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"화면"};
+		columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"화면"};
+		columns[columns.length] 	= { id: "BASIC_URL"				, name: "호출URL"			, field: "BASIC_URL"			, width: 150, sortable: true	, columnGroup:"화면"};
 		for(var i=0; i<callLevel; i++){
-			columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)+""  };
-			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)+""  };
-			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 100, sortable: true	, columnGroup:"호출LEVEL-"+(i+1)+""  };
+			columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 150, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 50	, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
 		}
-		columns[columns.length] 	= { id: "CALL_TBL"				, name: "호출테이블"		, field: "CALL_TBL"				, width: 2000, sortable: true	, columnGroup:"테이블"   };
+		columns[columns.length] 	= { id: "CALL_TBL"				, name: "참조테이블"		, field: "CALL_TBL"				, width: 2000, sortable: true	, columnGroup:"테이블"   };
 
 		var options = {
 		    enableCellNavigation: true,
@@ -252,7 +255,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		    preHeaderPanelHeight: 23,
 		    explicitInitialization: true
 		};
-		
 
 		function readySlickGrid() {	
 			var data = [];
@@ -260,31 +262,123 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		}
 		
 		function refreshSlickGrid(data) {
+			// DataView 선언
 			dataView = new Slick.Data.DataView();
+			
+			// 상세화면 플러그인 선언
+			detailView = new Slick.Plugins.RowDetailView({
+		        cssClass: "detailView-toggle",
+		        preTemplate: loadingTemplate,
+		        process: simulateServerCall,
+		        postTemplate: loadDetailView,
+		        useRowClick: true,
+		        // how many grid rows do we want to use for the detail panel
+		        // also note that the detail view adds an extra 1 row for padding purposes
+		        // example, if you choosed 6 panelRows, the display will in fact use 5 rows
+		        panelRows: 6,
+		        // make only every 2nd row an expandable row,
+		        // by using the override function to provide custom logic of which row is expandable
+		        // you can override it here in the options or externally by calling the method on the plugin instance
+		        //expandableOverride: function(row, dataContext, grid) {
+		        //  return (dataContext.id % 2 === 1);
+		        //}
+			});
+			var dOptions = detailView.getOptions();
+			dOptions.width = 30;
+			detailView.setOptions(dOptions);
+			/************************ 그리드 생성 시작 ************************/
+			// push the plugin as the first column
+			columns[0] = detailView.getColumnDefinition();
 			grid = new Slick.Grid("#myGrid", dataView, columns, options);
+			
+			// 상세화면 플러그인 등록
+			grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+			grid.registerPlugin(detailView);
 
+			/*** 이벤트 선언 시작 ***/
 			dataView.onRowCountChanged.subscribe(function (e, args) {
 				grid.updateRowCount();
 			    grid.render();
 			});
-
 			dataView.onRowsChanged.subscribe(function (e, args) {
 			    grid.invalidateRows(args.rows);
 			    grid.render();
 			});
-			
 			grid.onColumnsResized.subscribe(function (e, args) {
 				createAddlHeaderRow();
 			});
+ 			// 상세화면 토글되기 전
+ 	      	detailView.onBeforeRowDetailToggle.subscribe(function(e, args) {
+ 		    	console.log('before toggling row detail', args.item);
+ 		    });
+ 			// 상세화면 토글된 후
+ 			detailView.onAfterRowDetailToggle.subscribe(function(e, args) {
+ 				console.log('after toggling row detail', args.item);
+ 				if (args.item._collapsed) {
+ 				}
+ 			});
+			/*** 이벤트 선언 끝 ***/
 			
+			// 그리드 시작
 			grid.init();
+			// 헤더 만들기
 			createAddlHeaderRow();
-			
-			// Initialise data
+			// 데이터 입력
 			dataView.beginUpdate();
 			dataView.setItems(data);
 			dataView.endUpdate();
+			/************************ 그리드 생성 끝 ************************/
 		}
+		
+
+		/************************ 상세화면 선언 시작 ************************/
+ 	    function loadingTemplate() {
+ 	      return '<div class="preload">Loading...</div>';
+ 	    }
+		function simulateServerCall(item) {
+			console.log('simulateServerCall has been called !!!');
+			setTimeout(function() {
+				notifyTemplate(item);
+			}, 1000);
+		}
+	    // notify the onAsyncResponse with the "args.item" (required property)
+	    // the plugin will then use itemDetail to populate the detail panel with "postTemplate"
+		function notifyTemplate(itemDetail) {
+			console.log('notifyTemplate has been called !!!');
+			detailView.onAsyncResponse.notify({
+				"item": itemDetail
+			}, undefined, this);
+		}		
+ 	    function loadDetailView(itemDetail) {
+ 	      return [
+ 	        '<div class="container">',
+ 	        '	<div class="row main-row">',
+ 	        '		<div class="col-12-medium">',
+ 	        '			<section>',
+ 	        '				<ul>',
+ 	        '					<li><h4>호출상세</h4></li>',
+ 	        '				</ul>',
+ 	        '			</section>',
+ 	        '		</div>',
+ 	        '	</div>',
+ 	        '	<div class="row main-row">',
+ 	        // |UI_ID|UI_NM|BASIC_URL|FUNCTION_ID_1|FUNCTION_NAME_1|CLASS_KIND_1|FUNCTION_ID_2|FUNCTION_NAME_2|CLASS_KIND_2|FUNCTION_ID_3|FUNCTION_NAME_3|CLASS_KIND_3|FUNCTION_ID_4|FUNCTION_NAME_4|CLASS_KIND_4|FUNCTION_ID_5|FUNCTION_NAME_5|CLASS_KIND_5|FUNCTION_ID_6|FUNCTION_NAME_6|CLASS_KIND_6|FUNCTION_ID_7|FUNCTION_NAME_7|CLASS_KIND_7|FUNCTION_ID_8|FUNCTION_NAME_8|CLASS_KIND_8|FUNCTION_ID_9|FUNCTION_NAME_9|CLASS_KIND_9|FUNCTION_ID_10|FUNCTION_NAME_10|CLASS_KIND_10|CALL_TBL|
+ 	        //'	<label>Assignee:</label> <input id="assignee_' + itemDetail.id + '" type="text" value="' + itemDetail.assignee + '"/>',
+ 	       // '	<span style="float: right">Find out who is the Assignee <button id="who-is-assignee_' + itemDetail.id + '">Click Me</button></span></div>',
+	        
+ 	        '		<div class="col-12 col-6-medium">',
+ 	        '			<section>',
+ 	        '				<label>아이디</label> <span>' + itemDetail.ID + '</span></div>',
+ 	        '				<label>UI</label> <span>' + itemDetail.ID + '</span></div>',
+ 	        '			</section>',
+ 	        '		</div>',
+	        
+ 	        '	</div>',
+ 	        '</div>'
+ 	      ].join('');
+ 	    }
+
+		/************************ 상세화면 선언 끝 ************************/
 		
 	</script>
 
