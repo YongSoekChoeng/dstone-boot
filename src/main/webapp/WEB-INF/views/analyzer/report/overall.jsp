@@ -289,12 +289,12 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			detailView.setOptions(dOptions);
 			/************************ 그리드 생성 시작 ************************/
 			// push the plugin as the first column
-			columns[0] = detailView.getColumnDefinition();
+			//columns[0] = detailView.getColumnDefinition();
 			grid = new Slick.Grid("#myGrid", dataView, columns, options);
 			
 			// 상세화면 플러그인 등록
 			//grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
-			grid.registerPlugin(detailView);
+			//grid.registerPlugin(detailView);
 
 			/*** 이벤트 선언 시작 ***/
 			dataView.onRowCountChanged.subscribe(function (e, args) {
