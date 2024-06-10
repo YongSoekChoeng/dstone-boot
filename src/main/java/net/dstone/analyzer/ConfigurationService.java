@@ -1,15 +1,14 @@
 package net.dstone.analyzer; 
  
-import java.util.Map; 
-import java.util.HashMap; 
-import java.util.List; 
- 
-import org.springframework.beans.factory.annotation.Autowired; 
-import org.springframework.stereotype.Service; 
-import org.springframework.transaction.annotation.Transactional; 
- 
-import net.dstone.common.biz.BaseService; 
-import net.dstone.common.consts.ErrCd; 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import net.dstone.common.biz.BaseService;
+import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.BizException;
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.utils.LogUtil;

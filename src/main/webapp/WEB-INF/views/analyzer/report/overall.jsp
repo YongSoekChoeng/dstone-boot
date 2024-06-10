@@ -74,7 +74,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    	refreshSlickGrid(overAllData);
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid");
+	            var $g = $("#myGrid");  
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
@@ -241,7 +241,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"화면"};
 		columns[columns.length] 	= { id: "BASIC_URL"				, name: "호출URL"			, field: "BASIC_URL"			, width: 150, sortable: true	, columnGroup:"화면"};
 		for(var i=0; i<callLevel; i++){
-			columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 150, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+			//columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 150, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+			columns[columns.length] = { id: "DISPLAY_ID_"+(i+1)		, name: "ID"			, field: "DISPLAY_ID_"+(i+1)	, width: 200, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
 			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
 			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 50	, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
 		}
@@ -292,7 +293,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			grid = new Slick.Grid("#myGrid", dataView, columns, options);
 			
 			// 상세화면 플러그인 등록
-			grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+			//grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
 			grid.registerPlugin(detailView);
 
 			/*** 이벤트 선언 시작 ***/
@@ -333,13 +334,13 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 
 		/************************ 상세화면 선언 시작 ************************/
  	    function loadingTemplate() {
- 	      return '<div class="preload">Loading...</div>';
+ 	      return '<div class="preload" style="text-align:left;">Loading...</div>';
  	    }
 		function simulateServerCall(item) {
 			console.log('simulateServerCall has been called !!!');
 			setTimeout(function() {
 				notifyTemplate(item);
-			}, 1000);
+			}, 0.5* 1000);
 		}
 	    // notify the onAsyncResponse with the "args.item" (required property)
 	    // the plugin will then use itemDetail to populate the detail panel with "postTemplate"
@@ -350,32 +351,28 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			}, undefined, this);
 		}		
  	    function loadDetailView(itemDetail) {
- 	      return [
- 	        '<div class="container">',
- 	        '	<div class="row main-row">',
- 	        '		<div class="col-12-medium">',
- 	        '			<section>',
- 	        '				<ul>',
- 	        '					<li><h4>호출상세</h4></li>',
- 	        '				</ul>',
- 	        '			</section>',
- 	        '		</div>',
- 	        '	</div>',
- 	        '	<div class="row main-row">',
- 	        // |UI_ID|UI_NM|BASIC_URL|FUNCTION_ID_1|FUNCTION_NAME_1|CLASS_KIND_1|FUNCTION_ID_2|FUNCTION_NAME_2|CLASS_KIND_2|FUNCTION_ID_3|FUNCTION_NAME_3|CLASS_KIND_3|FUNCTION_ID_4|FUNCTION_NAME_4|CLASS_KIND_4|FUNCTION_ID_5|FUNCTION_NAME_5|CLASS_KIND_5|FUNCTION_ID_6|FUNCTION_NAME_6|CLASS_KIND_6|FUNCTION_ID_7|FUNCTION_NAME_7|CLASS_KIND_7|FUNCTION_ID_8|FUNCTION_NAME_8|CLASS_KIND_8|FUNCTION_ID_9|FUNCTION_NAME_9|CLASS_KIND_9|FUNCTION_ID_10|FUNCTION_NAME_10|CLASS_KIND_10|CALL_TBL|
- 	        //'	<label>Assignee:</label> <input id="assignee_' + itemDetail.id + '" type="text" value="' + itemDetail.assignee + '"/>',
- 	       // '	<span style="float: right">Find out who is the Assignee <button id="who-is-assignee_' + itemDetail.id + '">Click Me</button></span></div>',
-	        
- 	        '		<div class="col-12 col-6-medium">',
- 	        '			<section>',
- 	        '				<label>아이디</label> <span>' + itemDetail.ID + '</span></div>',
- 	        '				<label>UI</label> <span>' + itemDetail.ID + '</span></div>',
- 	        '			</section>',
- 	        '		</div>',
-	        
- 	        '	</div>',
- 	        '</div>'
- 	      ].join('');
+ 	    	console.log('loadDetailView has been called !!!');	
+ 	    	return [
+ 	    		  '<div class="container">',
+ 	    		  // |UI_ID|UI_NM|BASIC_URL|FUNCTION_ID_1|FUNCTION_NAME_1|CLASS_KIND_1|FUNCTION_ID_2|FUNCTION_NAME_2|CLASS_KIND_2|FUNCTION_ID_3|FUNCTION_NAME_3|CLASS_KIND_3|FUNCTION_ID_4|FUNCTION_NAME_4|CLASS_KIND_4|FUNCTION_ID_5|FUNCTION_NAME_5|CLASS_KIND_5|FUNCTION_ID_6|FUNCTION_NAME_6|CLASS_KIND_6|FUNCTION_ID_7|FUNCTION_NAME_7|CLASS_KIND_7|FUNCTION_ID_8|FUNCTION_NAME_8|CLASS_KIND_8|FUNCTION_ID_9|FUNCTION_NAME_9|CLASS_KIND_9|FUNCTION_ID_10|FUNCTION_NAME_10|CLASS_KIND_10|CALL_TBL|
+ 	    		  //'	<label>Assignee:</label> <input id="assignee_' + itemDetail.id + '" type="text" value="' + itemDetail.assignee + '"/>',
+ 	    		 // '	<span style="float: right">Find out who is the Assignee <button id="who-is-assignee_' + itemDetail.id + '">Click Me</button></span></div>',
+ 	    		  
+ 	    		  '		<div class="col-12 col-6-medium" >',
+ 	    		  '			<section >',
+ 	    		  '				<ul>',
+ 	    		  '					<li><h4>호출상세</h4></li>',
+ 	    		  '				</ul>',
+ 	    		  '			</section>',
+ 	    		  '			<section >',
+ 	    		  '				<label>아이디</label> <span>' + itemDetail.ID + '</span></div>',
+ 	    		  '				<label>UI</label> <span>' + itemDetail.ID + '</span></div>',
+ 	    		  '			</section>',
+ 	    		  '		</div>',
+ 	    		  
+ 	    		  '	</div>',
+ 	    		  '</div>'
+ 	    		].join('');
  	    }
 
 		/************************ 상세화면 선언 끝 ************************/
