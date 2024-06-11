@@ -71,10 +71,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    function listOverAll(){ 
 	    	
 	    	overAllData = [];
-	    	refreshSlickGrid(overAllData);
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid");  
+	            var $g = $("#myGrid");
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
@@ -98,8 +97,13 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
 	                    }else{ 
 	                        //console.log('success ===>>> data:' + (JSON.stringify(data))); 
+	                        var totalCnt = data.returnObj.totalCnt; 
+	                        var maxLevel = data.returnObj.maxLevel; 
 	                        overAllData = data.returnObj.returnObj; 
-	                        refreshSlickGrid(overAllData);
+	                        $("#totalCnt").text(totalCnt + "건");
+	                        $("#maxLevel").text(maxLevel);
+	                        
+	                        refreshSlickGrid(overAllData, maxLevel);
 	                    } 
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -207,6 +211,22 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 										<button type="button" id="btnSearch"  class="mini_button" >조회</button>
 									</h2>
 
+									<table width="100%" style="font-size:14px; border-color:gray; border-width:thin; border-style: solid; " >
+										<thead>
+											<tr>
+												<th width="10%">총건수</th>
+												<td width="15%" align="right" style="padding: 5px;" id="totalCnt" >0건</td>
+												<th width="20%">Max API-레벨(호출레벨)</th>
+												<td width="15%" align="right" style="padding: 5px;" id="maxLevel" ></td>
+												<th width="10%">API종류</th>
+												<td width="30%" align="left" style="padding: 5px;">
+													CT:컨트롤러, SV:서비스, DA:DAO, OT:기타
+												</td>
+											</tr>												
+										</thead>
+									</table>
+									
+									<h5>&nbsp;</h5>
 									<div id="myGrid" class="slick-container" style="width:100%;height:500px;"></div>
 								
 								</section>
@@ -232,21 +252,23 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	  	var grid;		// 그리드
 	  	var dataView; 	// 데이터뷰
 	    var detailView; // 상세데이터뷰 플러그인
-
-		var callLevel = 10;
-		var columns = new Array();
-		columns[columns.length] 	= { id: "DETAIL"				, name: ""				, field: "DETAIL"				, width: 30	, sortable: true	, columnGroup:""};
-		columns[columns.length] 	= { id: "RNUM"					, name: "No"			, field: "RNUM"					, width: 40	, sortable: true	, columnGroup:""};
-		columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"화면"};
-		columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"화면"};
-		columns[columns.length] 	= { id: "BASIC_URL"				, name: "호출URL"			, field: "BASIC_URL"			, width: 150, sortable: true	, columnGroup:"화면"};
-		for(var i=0; i<callLevel; i++){
-			//columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 150, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
-			columns[columns.length] = { id: "DISPLAY_ID_"+(i+1)		, name: "ID"			, field: "DISPLAY_ID_"+(i+1)	, width: 200, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
-			columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
-			columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 50	, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
-		}
-		columns[columns.length] 	= { id: "CALL_TBL"				, name: "참조테이블"		, field: "CALL_TBL"				, width: 2000, sortable: true	, columnGroup:"테이블"   };
+	    var columns = new Array();
+	    
+	    function setColums( callLevel ) {	
+	    	columns = new Array();
+			columns[columns.length] 	= { id: "DETAIL"				, name: ""				, field: "DETAIL"				, width: 30	, sortable: true	, columnGroup:""};
+			columns[columns.length] 	= { id: "RNUM"					, name: "No"			, field: "RNUM"					, width: 40	, sortable: true	, columnGroup:""};
+			columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"화면"};
+			columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"화면"};
+			columns[columns.length] 	= { id: "BASIC_URL"				, name: "호출URL"			, field: "BASIC_URL"			, width: 150, sortable: true	, columnGroup:"화면"};
+			for(var i=0; i<callLevel; i++){
+				//columns[columns.length] = { id: "FUNCTION_ID_"+(i+1)	, name: "ID"			, field: "FUNCTION_ID_"+(i+1)	, width: 150, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+				columns[columns.length] = { id: "DISPLAY_ID_"+(i+1)		, name: "ID"			, field: "DISPLAY_ID_"+(i+1)	, width: 200, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+				columns[columns.length] = { id: "FUNCTION_NAME_"+(i+1)	, name: "명"				, field: "FUNCTION_NAME_"+(i+1)	, width: 100, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+				columns[columns.length] = { id: "CLASS_KIND_"+(i+1)		, name: "종류"			, field: "CLASS_KIND_"+(i+1)	, width: 50	, sortable: true	, columnGroup:"API-레벨-"+(i+1)+""  };
+			}
+			columns[columns.length] 	= { id: "CALL_TBL"				, name: "참조테이블"		, field: "CALL_TBL"				, width: 2000, sortable: true	, columnGroup:"테이블"   };
+	    }
 
 		var options = {
 		    enableCellNavigation: true,
@@ -259,10 +281,12 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 
 		function readySlickGrid() {	
 			var data = [];
-			refreshSlickGrid(data);
+			refreshSlickGrid(data, 5);
 		}
 		
-		function refreshSlickGrid(data) {
+		function refreshSlickGrid(data, callLevel) {
+			// 컬럼세팅
+			setColums( callLevel );
 			// DataView 선언
 			dataView = new Slick.Data.DataView();
 			

@@ -69,19 +69,19 @@ public class ReportService extends BaseService {
     				vo.setDISPLAY_ID_9(getDisplayId(vo.getFUNCTION_ID_9()));
     				vo.setDISPLAY_ID_10(getDisplayId(vo.getFUNCTION_ID_10()));
     				
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_1()) && maxLevel < 1) { maxLevel = 1; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_2()) && maxLevel < 2) { maxLevel = 2; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_3()) && maxLevel < 3) { maxLevel = 3; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_4()) && maxLevel < 4) { maxLevel = 4; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_5()) && maxLevel < 5) { maxLevel = 5; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_6()) && maxLevel < 6) { maxLevel = 6; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_7()) && maxLevel < 7) { maxLevel = 7; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_8()) && maxLevel < 8) { maxLevel = 8; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_9()) && maxLevel < 9) { maxLevel = 9; }
-    				if(StringUtil.isEmpty(vo.getDISPLAY_ID_10()) && maxLevel < 10) { maxLevel = 10; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_1()) && maxLevel < 1) { maxLevel = 1; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_2()) && maxLevel < 2) { maxLevel = 2; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_3()) && maxLevel < 3) { maxLevel = 3; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_4()) && maxLevel < 4) { maxLevel = 4; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_5()) && maxLevel < 5) { maxLevel = 5; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_6()) && maxLevel < 6) { maxLevel = 6; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_7()) && maxLevel < 7) { maxLevel = 7; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_8()) && maxLevel < 8) { maxLevel = 8; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_9()) && maxLevel < 9) { maxLevel = 9; }
+    				if(!StringUtil.isEmpty(vo.getDISPLAY_ID_10()) && maxLevel < 10) { maxLevel = 10; }
     			}
             }
-            returnMap.put("totalCnt", String.valueOf(totalCnt)); 
+            returnMap.put("totalCnt", StringUtil.moneyForamt(String.valueOf(totalCnt))); 
             returnMap.put("maxLevel", String.valueOf(maxLevel)); 
             returnMap.put("returnObj", list); 
             
