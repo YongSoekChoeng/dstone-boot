@@ -73,7 +73,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    	overAllData = [];
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid");
+	            var $g = $("#myGrid"); 
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
@@ -229,6 +229,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									<h5>&nbsp;</h5>
 									<div id="myGrid" class="slick-container" style="width:100%;height:500px;"></div>
 								
+									<h2 align="right">
+										<a id="downloadLink"  class="mini_button" >Excel Down</a>
+									</h2>
 								</section>
 								
 								</form> 
@@ -244,7 +247,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			<jsp:include page="../common/footer.jsp"></jsp:include>
 
 		</div>
-
 	</body>
 
 	<script>
@@ -353,6 +355,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			dataView.setItems(data);
 			dataView.endUpdate();
 			/************************ 그리드 생성 끝 ************************/
+			setExcelData();
 		}
 		
 
@@ -398,8 +401,44 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
  	    		  '</div>'
  	    		].join('');
  	    }
-
 		/************************ 상세화면 선언 끝 ************************/
+		
+		/************************ Excel 관련 시작 ************************/
+		//default excel options
+		var excelOptions = {
+			headerStyle: {
+				font: {
+					bold: true,  //enable bold
+					font: 12, // font size
+					color: '00ffffff' //font color --Note: Add 00 before the color code
+	  			},
+				fill: {   //fill background
+					type: 'pattern', 
+					patternType: 'solid',
+					fgColor: '00428BCA' //background color --Note: Add 00 before the color code
+				}
+			},
+			cellStyle: {
+				font: {
+					bold: false,  //enable bold
+					font: 12, // font size
+					color: '00000000' //font color --Note: Add 00 before the color code
+				},
+				fill: {   //fill background
+					type: 'pattern',
+					patternType: 'solid',
+					fgColor: '00ffffff' //background color --Note: Add 00 before the color code
+				}
+      		},
+  		};
+		
+		function setExcelData(){
+		    $('#myGrid').exportToExcel("OverAll.xlsx", "OverAll", overAllData, excelOptions, function (response) {
+		        //console.log(response);
+		    });
+		}
+		
+		/************************ Excel 관련  끝 ************************/
 		
 	</script>
 

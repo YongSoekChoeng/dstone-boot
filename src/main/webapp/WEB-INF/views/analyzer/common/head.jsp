@@ -32,6 +32,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/slick.rowdetailview.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/slick.rowselectionmodel.js"></script>
 		
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/export.excel.js/jquery.slickgrid.export.excel.js"></script>
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/export.excel.js/require.js"></script>
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/browser/plugins/export.excel.js/underscore.js"></script>
+		
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/lib/utils.js"></script>
 		<!-- slickGrid End -->		
 		
