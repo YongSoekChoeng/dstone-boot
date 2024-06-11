@@ -815,7 +815,6 @@ var requirejs, require, define;
                 e.src = d;
                 Q = e;
 							
-console.log("line =================================>>> 817 " + " e.src["+e.src+"]");				
                 I ? D.insertBefore(e, I) : D.appendChild(e);
                 Q = null;
                 return e

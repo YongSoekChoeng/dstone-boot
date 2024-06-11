@@ -125,17 +125,13 @@
 
             //downloader method to add the excel file as base 64 
             var downloader = function (filename, value) {
-console.log("downloader ===============================>>> line 128 " + " filename["+filename+"]" + " value["+value+"]" );
                 //add the download and href attributes to the excel file download trigeer button
             	$("#downloadLink").attr({
                     download: filename,
                     href: 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + value
             	});
-
-console.log("downloader ===============================>>> line 135 " );
             	//store the base 64 content to be returned
             	returnValue = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + value;
-console.log("downloader ===============================>>> line 138 returnValue:" + returnValue );
             };
 
 

@@ -314,12 +314,11 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			dOptions.width = 30;
 			detailView.setOptions(dOptions);
 			/************************ 그리드 생성 시작 ************************/
-			// push the plugin as the first column
+			// 상세화면 플러그인 적용-1
 			//columns[0] = detailView.getColumnDefinition();
 			grid = new Slick.Grid("#myGrid", dataView, columns, options);
-			
-			// 상세화면 플러그인 등록
-			//grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+
+			// 상세화면 플러그인 적용-2
 			//grid.registerPlugin(detailView);
 
 			/*** 이벤트 선언 시작 ***/
@@ -354,8 +353,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			dataView.beginUpdate();
 			dataView.setItems(data);
 			dataView.endUpdate();
-			/************************ 그리드 생성 끝 ************************/
+			// 엑셀데이터 생성
 			setExcelData();
+			/************************ 그리드 생성 끝 ************************/
 		}
 		
 
@@ -411,8 +411,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 					bold: true,  //enable bold
 					font: 12, // font size
 					color: '00ffffff' //font color --Note: Add 00 before the color code
-	  			},
-				fill: {   //fill background
+	  			}
+				,fill: {   //fill background
 					type: 'pattern', 
 					patternType: 'solid',
 					fgColor: '00428BCA' //background color --Note: Add 00 before the color code
@@ -423,12 +423,14 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 					bold: false,  //enable bold
 					font: 12, // font size
 					color: '00000000' //font color --Note: Add 00 before the color code
-				},
-				fill: {   //fill background
+				}
+				/*
+				,fill: {   //fill background
 					type: 'pattern',
 					patternType: 'solid',
 					fgColor: '00ffffff' //background color --Note: Add 00 before the color code
 				}
+				*/
       		},
   		};
 		
