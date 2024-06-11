@@ -73,7 +73,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    	overAllData = [];
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid"); 
+	            var $g = $("#myGrid");
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
@@ -354,7 +354,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			dataView.setItems(data);
 			dataView.endUpdate();
 			// 엑셀데이터 생성
-			setExcelData();
+			setExcelData(data, callLevel);
 			/************************ 그리드 생성 끝 ************************/
 		}
 		
@@ -424,18 +424,34 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 					font: 12, // font size
 					color: '00000000' //font color --Note: Add 00 before the color code
 				}
-				/*
 				,fill: {   //fill background
 					type: 'pattern',
-					patternType: 'solid',
+					patternType: 'solid',	
 					fgColor: '00ffffff' //background color --Note: Add 00 before the color code
 				}
-				*/
       		},
   		};
 		
-		function setExcelData(){
-		    $('#myGrid').exportToExcel("OverAll.xlsx", "OverAll", overAllData, excelOptions, function (response) {
+		function setExcelData(data, callLevel){
+			var xlsData = new Array();
+			for(var i=0; i<data.length; i++){
+				var row = new Object();
+				row["ID"] 			= data[i]["ID"];
+				row["UI_ID"] 		= data[i]["UI_ID"];
+				row["UI_NM"] 		= data[i]["UI_NM"];
+				row["BASIC_URL"] 	= data[i]["BASIC_URL"];
+				for(var k=0; k<callLevel; k++){
+					row["FUNCTION_ID_"+(k+1)+""] 	= data[i]["FUNCTION_ID_"+(k+1)+""];
+					row["DISPLAY_ID_"+(k+1)+""] 	= data[i]["DISPLAY_ID_"+(k+1)+""];
+					row["FUNCTION_NAME_"+(k+1)+""]	= data[i]["FUNCTION_NAME_"+(k+1)+""];
+					row["CLASS_KIND_"+(k+1)+""] 	= data[i]["CLASS_KIND_"+(k+1)+""];
+				};
+				row["CALL_TBL"] 	= data[i]["CALL_TBL"];
+				
+				xlsData.push(row);
+			}
+			
+		    $('#myGrid').exportToExcel("OverAll.xlsx", "OverAll", xlsData, excelOptions, function (response) {
 		        //console.log(response);
 		    });
 		}
