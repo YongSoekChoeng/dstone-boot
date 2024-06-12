@@ -257,8 +257,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    var columns = new Array();
 	    
 	    function setColums( callLevel ) {	
-	    	columns = new Array();
-			columns[columns.length] 	= { id: "DETAIL"				, name: ""				, field: "DETAIL"				, width: 30	, sortable: true	, columnGroup:""};
+	    	columns = new Array();	    	
+			//columns[columns.length] 	= { id: "DETAIL"				, name: ""				, field: "DETAIL"				, width: 30	, sortable: true	, columnGroup:""}; // 상세화면
 			columns[columns.length] 	= { id: "RNUM"					, name: "No"			, field: "RNUM"					, width: 40	, sortable: true	, columnGroup:""};
 			columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"화면"};
 			columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"화면"};
