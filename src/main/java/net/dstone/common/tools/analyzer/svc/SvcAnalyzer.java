@@ -1803,7 +1803,7 @@ public class SvcAnalyzer extends BaseObject{
 			DataSet dsRowCopy = null;
 			int index = 0;
 			for(String callFunctionId : mtdVo.getCallMtdVoList()) {
-				if(FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/method/" + callFunctionId + ".txt")) {
+				if(FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/method/" + ParseUtil.convFunctionIdToFileName(callFunctionId)  + ".txt")) {
 					if( !callStackList.contains(callFunctionId) ) {
 						List<String> callStackListCopy = new ArrayList<String>();
 						callStackListCopy.addAll(callStackList);
@@ -1818,7 +1818,7 @@ public class SvcAnalyzer extends BaseObject{
 				}
 			}
 		}else {
-			if(FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/method/" + functionId + ".txt")) {
+			if(FileUtil.isFileExist(AppAnalyzer.WRITE_PATH + "/method/" + ParseUtil.convFunctionIdToFileName(functionId) + ".txt")) {
 				dsList.add(dsRow);
 			}
 		}
