@@ -11,6 +11,14 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/test")
 public class TestController extends BaseController {
 	
+	/**
+	 * 테스트용 메서드
+	 * @param request
+	 * @param response
+	 * @param mav
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/doTestService01.do")
 	public ModelAndView doTestService01(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) throws Exception{
 

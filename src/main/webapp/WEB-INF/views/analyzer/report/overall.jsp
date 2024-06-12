@@ -172,7 +172,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 												</td>
 												<th >API 명</th>
 												<td align="left" style="padding: 2px;">
-													<input type="text" name="FUNCTION_NM" value="" style="width: 100%" />
+													<input type="text" name="FUNCTION_NAME" value="" style="width: 100%" />
 												</td>
 											</tr>		
 											<tr>

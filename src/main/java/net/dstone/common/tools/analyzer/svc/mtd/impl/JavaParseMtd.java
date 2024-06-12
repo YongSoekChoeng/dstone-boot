@@ -6,25 +6,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+import org.apache.ibatis.javassist.compiler.ast.Visitor;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.svc.SvcAnalyzer;
-
 import net.dstone.common.tools.analyzer.svc.mtd.ParseMtd;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
@@ -46,10 +42,11 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
 		List<Map<String, String>> mList = new ArrayList<Map<String, String>>();
 		
 		CompilationUnit cu = ParseUtil.getCompilationUnit(classFile);
-
+		
     	// classUrl
         String classUrl = "";
         if(cu.findFirst(ClassOrInterfaceDeclaration.class).isPresent()) {
+        	
             ClassOrInterfaceDeclaration classOrInterfaceDeclaration = cu.findFirst(ClassOrInterfaceDeclaration.class).get();
             List<AnnotationExpr> annotationList = classOrInterfaceDeclaration.getAnnotations();
             for(AnnotationExpr an : annotationList) {
@@ -74,6 +71,8 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             	}
             }
 
+        	List<Map<String, String>> methodInfoFromTextList = ParseUtil.getMtdListFromJava(FileUtil.readFile(classFile));
+        	
             List<MethodDeclaration> methodDeclarationList = cu.findAll(MethodDeclaration.class);
             for(MethodDeclaration methodDec : methodDeclarationList) {
             	Map<String, String> item = new HashMap<String, String>();
@@ -95,6 +94,14 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             	if(methodDec.getJavadocComment().isPresent()) {
             		METHOD_NAME = ParseUtil.getFnNameFromComment(methodDec.getJavadocComment().get().asString());
             	}
+            	if( StringUtil.isEmpty(METHOD_NAME)) {
+            		for(Map<String, String> methodInfoFromText : methodInfoFromTextList) {
+            			if( methodInfoFromText.containsKey("METHOD_ID") && METHOD_ID.equals(methodInfoFromText.get("METHOD_ID")) ) {
+            				METHOD_NAME = methodInfoFromText.get("METHOD_NAME");
+            				break;
+            			}
+            		}
+            	}         	
             	item.put("METHOD_NAME", METHOD_NAME);
             	
             	// METHOD_URL

@@ -6,14 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.LiteralStringValueExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -68,6 +63,9 @@ public class JavaParseClzz extends TextParseClzz implements ParseClzz {
 		CompilationUnit clzzCU = ParseUtil.getCompilationUnit(classFile);
         if(clzzCU.getType(0).getJavadocComment().isPresent()) {
         	className = ParseUtil.getFnNameFromComment(clzzCU.getType(0).getJavadocComment().get().asString());
+        }
+        if(StringUtil.isEmpty(className)) {
+        	className = super.getClassName(classFile);
         }
 		return className;
 	}

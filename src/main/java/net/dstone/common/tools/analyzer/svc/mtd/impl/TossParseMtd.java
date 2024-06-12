@@ -64,6 +64,8 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
             	}
             }
 
+        	List<Map<String, String>> methodInfoFromTextList = ParseUtil.getMtdListFromJava(FileUtil.readFile(classFile));
+        	
             List<MethodDeclaration> methodDeclarationList = cu.findAll(MethodDeclaration.class);
             for(MethodDeclaration methodDec : methodDeclarationList) {
             	Map<String, String> item = new HashMap<String, String>();
@@ -79,6 +81,14 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
             	if(methodDec.getJavadocComment().isPresent()) {
             		METHOD_NAME = ParseUtil.getFnNameFromComment(methodDec.getJavadocComment().get().asString());
             	}
+            	if( StringUtil.isEmpty(METHOD_NAME)) {
+            		for(Map<String, String> methodInfoFromText : methodInfoFromTextList) {
+            			if( methodInfoFromText.containsKey("METHOD_ID") && METHOD_ID.equals(methodInfoFromText.get("METHOD_ID")) ) {
+            				METHOD_NAME = methodInfoFromText.get("METHOD_NAME");
+            				break;
+            			}
+            		}
+            	}    
             	item.put("METHOD_NAME", METHOD_NAME);
             	// METHOD_URL
                 String METHOD_URL = "";
@@ -239,7 +249,7 @@ public class TossParseMtd extends TextParseMtd implements ParseMtd {
 	private static Map<String, String> METHOD_VALUE_NAME_MAP = new HashMap<String, String>();
 	static {
 		try {
-			if(METHOD_NAME_VALUE_MAP.size() == 0 || METHOD_VALUE_NAME_MAP.size() == 0) {
+			if( (METHOD_NAME_VALUE_MAP.size() == 0 || METHOD_VALUE_NAME_MAP.size() == 0) && FileUtil.isFileExist( AppAnalyzer.CLASS_ROOT_PATH + "/kr/co/gnx/base/BaseDAO.java" ) ) {
 				Map<String, String> MEMBER_VALUE_MAP = new HashMap<String, String>();
 				com.github.javaparser.ast.CompilationUnit cu = com.github.javaparser.StaticJavaParser.parse(new java.io.File( AppAnalyzer.CLASS_ROOT_PATH + "/kr/co/gnx/base/BaseDAO.java" ));
 				java.util.List<com.github.javaparser.ast.body.FieldDeclaration> fieldDeclarationList = cu.findAll(com.github.javaparser.ast.body.FieldDeclaration.class);

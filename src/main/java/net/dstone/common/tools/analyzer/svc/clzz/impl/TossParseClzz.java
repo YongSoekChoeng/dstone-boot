@@ -15,7 +15,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 
 import net.dstone.common.tools.analyzer.AppAnalyzer;
 import net.dstone.common.tools.analyzer.consts.ClzzKind;
@@ -24,7 +23,6 @@ import net.dstone.common.tools.analyzer.svc.clzz.ParseClzz;
 import net.dstone.common.tools.analyzer.util.ParseUtil;
 import net.dstone.common.tools.analyzer.vo.ClzzVo;
 import net.dstone.common.utils.FileUtil;
-import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class TossParseClzz extends TextParseClzz implements ParseClzz {
@@ -67,6 +65,9 @@ public class TossParseClzz extends TextParseClzz implements ParseClzz {
 		CompilationUnit cu = StaticJavaParser.parse(new File(classFile));
         if(cu.getType(0).getJavadocComment().isPresent()) {
         	className = ParseUtil.getFnNameFromComment(cu.getType(0).getJavadocComment().get().asString());
+        }
+        if(StringUtil.isEmpty(className)) {
+        	className = super.getClassName(classFile);
         }
 		return className;
 	}
