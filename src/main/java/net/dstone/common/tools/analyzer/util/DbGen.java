@@ -1070,6 +1070,7 @@ public class DbGen {
 				parameterIndex = setParam(db.pstmt, parameterIndex, sysId);	/* 시스템ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiId());	/* 화면ID */
 				parameterIndex = setParam(db.pstmt, parameterIndex, uiVo.getUiName());	/* 화면명 */
+
 				db.pstmt.addBatch();
 				
 				if(i > 0 && i%chunkSize==0 ) {
@@ -1170,7 +1171,6 @@ public class DbGen {
 							colVal = colVals[k];
 							dsRow.setDatum(col, colVal);
 						}
-
 						parameterIndex = 0;
 						parameterIndex = setParam(db.pstmt, parameterIndex, String.valueOf(i));	/* 시퀀스 */
 						parameterIndex = setParam(db.pstmt, parameterIndex, sysId);	/* 시스템ID */

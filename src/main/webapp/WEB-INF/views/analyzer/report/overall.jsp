@@ -73,7 +73,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    	overAllData = [];
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid");
+	            var $g = $("#myGrid"); 
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");

@@ -1576,7 +1576,7 @@ public class SvcAnalyzer extends BaseObject{
 					getLogger().info("/*** F-4.파일생성 시작 ***/");
 					// 컬럼
 					conts.append("UI_ID").append("\t");
-					conts.append("UI_NAME").append("\t");
+					conts.append("UI_NM").append("\t");
 					conts.append("BASIC_URL").append("\t");
 					for(int i=1; i<=maxCallLevel; i++) {
 						conts.append("FUNCTION_ID_"+i).append("\t");
@@ -1596,7 +1596,7 @@ public class SvcAnalyzer extends BaseObject{
 								}
 							}
 							conts.append(uiId).append("\t");
-							conts.append(row.getDatum("UI_NAME", " ")).append("\t");
+							conts.append(row.getDatum("UI_NM", " ")).append("\t");
 							conts.append(row.getDatum("BASIC_URL", " ")).append("\t");
 							for(int i=1; i<=maxCallLevel; i++) {
 								conts.append(row.getDatum("FUNCTION_ID_"+i, " ")).append("\t");
@@ -1729,7 +1729,7 @@ public class SvcAnalyzer extends BaseObject{
 					for(UiVo uiVo : uiVoList) {
 						dsRowForCopy = dsRow.copy();
 						dsRowForCopy.setDatum("UI_ID", uiVo.getUiId());
-						dsRowForCopy.setDatum("UI_NAME", StringUtil.nullCheck(uiVo.getUiName(), "") );
+						dsRowForCopy.setDatum("UI_NM", StringUtil.nullCheck(uiVo.getUiName(), "") );
 						dsMetrixList.add(dsRowForCopy);
 						isUiAdded = true;
 					}

@@ -216,30 +216,35 @@ public class AppAnalyzer extends BaseObject{
 		rootPath = StringUtil.replace(rootPath, "\\", "/");
 		if(rootPath.endsWith("/")) {rootPath = rootPath.substring(0, rootPath.lastIndexOf("/"));}
 		AppAnalyzer.ROOT_PATH = rootPath;
+		AppAnalyzer.ROOT_PATH = StringUtil.replace(AppAnalyzer.ROOT_PATH, "//", "/");
 		
 		// 2. 어플리케이션서버소스경로
 		String classRootPath = CONF.getNode("APP_SRC_PATH").getTextContent();
 		classRootPath = StringUtil.replace(classRootPath, "\\", "/");
 		if(classRootPath.endsWith("/")) {classRootPath = classRootPath.substring(0, classRootPath.lastIndexOf("/"));}
 		AppAnalyzer.CLASS_ROOT_PATH = AppAnalyzer.ROOT_PATH + "/" + classRootPath;
+		AppAnalyzer.CLASS_ROOT_PATH = StringUtil.replace(AppAnalyzer.CLASS_ROOT_PATH, "//", "/");
 		
 		// 3. 어플리케이션웹소스경로
 		String webRootPath = CONF.getNode("APP_WEB_PATH").getTextContent();
 		webRootPath = StringUtil.replace(webRootPath, "\\", "/");
 		if(webRootPath.endsWith("/")) {webRootPath = webRootPath.substring(0, webRootPath.lastIndexOf("/"));}
 		AppAnalyzer.WEB_ROOT_PATH = AppAnalyzer.ROOT_PATH + "/" + webRootPath;
+		AppAnalyzer.WEB_ROOT_PATH = StringUtil.replace(AppAnalyzer.WEB_ROOT_PATH, "//", "/");
 
 		// 4. 어플리케이션쿼리소스루트
 		String queryRootPath = CONF.getNode("APP_SQL_PATH").getTextContent();
 		queryRootPath = StringUtil.replace(queryRootPath, "\\", "/");
 		if(queryRootPath.endsWith("/")) {queryRootPath = queryRootPath.substring(0, queryRootPath.lastIndexOf("/"));}
 		AppAnalyzer.QUERY_ROOT_PATH = queryRootPath;
+		AppAnalyzer.QUERY_ROOT_PATH = StringUtil.replace(AppAnalyzer.QUERY_ROOT_PATH, "//", "/");
 		
 		// 5. 분석결과생성경로
 		String writePath = CONF.getNode("WRITE_PATH").getTextContent();
 		writePath = StringUtil.replace(writePath, "\\", "/");
 		if(writePath.endsWith("/")) {writePath = writePath.substring(0, writePath.lastIndexOf("/"));}
 		AppAnalyzer.WRITE_PATH = writePath;
+		AppAnalyzer.WRITE_PATH = StringUtil.replace(AppAnalyzer.WRITE_PATH, "//", "/");
 		
 		// 6.분석결과저장파일명
 		String saveFileName = CONF.getNode("SAVE_FILE_NAME").getTextContent();

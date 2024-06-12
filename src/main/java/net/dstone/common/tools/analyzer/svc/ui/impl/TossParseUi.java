@@ -23,6 +23,7 @@ public class TossParseUi implements ParseUi {
 		String fileName = FileUtil.getFileName(uiFile, false);
 		String subPath = FileUtil.getFilePath(uiFile);
 		subPath = StringUtil.replace(subPath, AppAnalyzer.WEB_ROOT_PATH, "");
+		
 		if(subPath.startsWith("/")) {
 			subPath = subPath.substring(subPath.indexOf("/")+1);
 		}
@@ -33,7 +34,7 @@ public class TossParseUi implements ParseUi {
 		if( !StringUtil.isEmpty(subPath)) {
 			fileName = subPath + "." + fileName;
 		}
-		
+
 		String uiId = fileName;
 		return uiId;
 	}
@@ -51,19 +52,20 @@ public class TossParseUi implements ParseUi {
 		
 		if(lines!=null) {
 			for(String line : lines) {
+				line = line.trim();
 				for(String keyword : keywordList) {
 					if(line.indexOf(keyword) != -1) {
 						uiName = line.substring(line.indexOf(keyword) + keyword.length());
 						break;
 					}
 				}
-				if(!StringUtil.isEmpty(uiName)) {
-					uiName = StringUtil.replace(uiName, ":", "");
-					uiName = StringUtil.replace(uiName, ";", "");
-					uiName = StringUtil.replace(uiName, " ", "");
-					break;
-				}
 			}
+		}
+		
+		if(!StringUtil.isEmpty(uiName)) {
+			uiName = StringUtil.replace(uiName, ":", "");
+			uiName = StringUtil.replace(uiName, ";", "");
+			uiName = StringUtil.replace(uiName, " ", "");
 		}
 		return uiName;
 	}
@@ -91,6 +93,7 @@ public class TossParseUi implements ParseUi {
 				if(lines!=null) {
 					String[] div = {" ", "\"", "'", ")"};
 					for(String line : lines) {
+						line = line.trim();
 						line = StringUtil.replace(line, "?", " ?");
 						link = "";
 						isUsedInTheLine = false;
