@@ -71,7 +71,8 @@ public class JavaParseMtd extends TextParseMtd implements ParseMtd {
             	}
             }
 
-        	List<Map<String, String>> methodInfoFromTextList = ParseUtil.getMtdListFromJava(FileUtil.readFile(classFile));
+            // javaparser로 Comment가 얻어지지 않는 버그가 있음. 따라서  METHOD_NAME 은 Text베이스로 직접 파싱한 것을 사용할 필요가 있음.
+        	List<Map<String, String>> methodInfoFromTextList = ParseUtil.getMtdListFromJava(FileUtil.readFile(classFile)); 
         	
             List<MethodDeclaration> methodDeclarationList = cu.findAll(MethodDeclaration.class);
             for(MethodDeclaration methodDec : methodDeclarationList) {

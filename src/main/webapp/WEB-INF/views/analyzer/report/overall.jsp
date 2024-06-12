@@ -333,6 +333,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			grid.onColumnsResized.subscribe(function (e, args) {
 				createAddlHeaderRow();
 			});
+			grid.onClick.subscribe(function (e, args) {
+				var cell = grid.getCellFromEvent(e);
+				console.log( JSON.stringify(cell) + " onClick has been called !!!");
+			});
  			// 상세화면 토글되기 전
  	      	detailView.onBeforeRowDetailToggle.subscribe(function(e, args) {
  		    	console.log('before toggling row detail', args.item);
