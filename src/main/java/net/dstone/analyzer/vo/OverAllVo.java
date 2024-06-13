@@ -146,6 +146,8 @@ public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.S
 	private String CALL_TBL; 
 	@JsonProperty("WORKER_ID") 
 	private String WORKER_ID; 
+	@JsonProperty("LIKE_EQUAL") 
+	private String LIKE_EQUAL; 
 	
 	@JsonProperty("LIMIT") 
 	private int LIMIT; 
@@ -181,6 +183,7 @@ public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.S
 		INT_TO = iNT_TO; 
 	} 
 	/*** 페이징용 멤버 끝 ***/
+	
 	public int getRNUM() {
 		return RNUM;
 	}
@@ -584,8 +587,14 @@ public class OverAllVo extends net.dstone.common.biz.BaseVo implements java.io.S
 				+ ", CLASS_KIND_NM_9=" + CLASS_KIND_NM_9 + ", FUNCTION_ID_10=" + FUNCTION_ID_10 + ", DISPLAY_ID_10="
 				+ DISPLAY_ID_10 + ", FUNCTION_NAME_10=" + FUNCTION_NAME_10 + ", CLASS_KIND_10=" + CLASS_KIND_10
 				+ ", CLASS_KIND_NM_10=" + CLASS_KIND_NM_10 + ", CALL_TBL=" + CALL_TBL + ", WORKER_ID=" + WORKER_ID
-				+ ", LIMIT=" + LIMIT + ", PAGE_SIZE=" + PAGE_SIZE + ", PAGE_NUM=" + PAGE_NUM + ", INT_FROM=" + INT_FROM
-				+ ", INT_TO=" + INT_TO + "]";
+				+ ", LIKE_EQUAL=" + LIKE_EQUAL + ", LIMIT=" + LIMIT + ", PAGE_SIZE=" + PAGE_SIZE + ", PAGE_NUM="
+				+ PAGE_NUM + ", INT_FROM=" + INT_FROM + ", INT_TO=" + INT_TO + "]";
+	}
+	public String getLIKE_EQUAL() {
+		return LIKE_EQUAL;
+	}
+	public void setLIKE_EQUAL(String lIKE_EQUAL) {
+		LIKE_EQUAL = lIKE_EQUAL;
 	}
 
 

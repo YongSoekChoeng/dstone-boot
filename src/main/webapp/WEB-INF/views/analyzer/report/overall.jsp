@@ -25,6 +25,11 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		$(document).ready(function(){
 			readySlickGrid();
 			$("#btnSearch").on("click", listOverAll);
+			$("input").on("keyup",function(key){         
+				if(key.keyCode==13) {
+					listOverAll();
+				}     
+			});
 		});
 		
 	    function goAppSelectList(){ 
@@ -73,7 +78,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    	overAllData = [];
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid"); 
+	            var $g = $("#myGrid");   
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
@@ -135,7 +140,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 							<div class="col-12">
 
 								<section class="middle-content">
-									<h2 align="center" style="font-weight: bold;">종합결과</h2>
+									<h2 align="center" style="font-weight: bold;">Over All Report</h2>
 								</section>
 
 								<!--폼 시작--> 
@@ -143,8 +148,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									
 								<section>
 								
-									<h2>● Over all</h2>
-
 									<table width="100%" border="1" style="border-width:thin; border-color:gray; border-bottom-style: solid; border-top-style: solid; border-left-style: solid; border-right-style: solid;" >
 										<thead>
 											<tr>
@@ -178,16 +181,13 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 											<tr>
 												<th >테이블</th>
 												<td align="left" style="padding: 2px;">
-													<input type="text" name="CALL_TBL" value="" size="30%" />
+													<input type="text" name="CALL_TBL" value="" style="width: 100%" />
 												</td>
-												<th >테이블CRUD</th>
+												<th >조회방법</th>
 												<td align="left" style="padding: 2px;">
-													<select name="CRUD" id="CRUD" >
-														<option value="" selected >전체</option>
-														<option value="R" >조회</option>
-														<option value="C" >입력</option>
-														<option value="U" >수정</option>
-														<option value="D" >삭제</option>
+													<select name="LIKE_EQUAL" id="LIKE_EQUAL" >
+														<option value="LIKE" selected >LIKE</option>
+														<option value="EQUAL" >EQUAL</option>
 													</select>
 												</td>
 												<th >조회갯수</th>
@@ -227,7 +227,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 									</table>
 									
 									<h5>&nbsp;</h5>
-									<div id="myGrid" class="slick-container" style="width:100%;height:500px;"></div>
+									<div id="myGrid" class="slick-container" style="width:100%;height:565px;"></div>
 								
 									<h2 align="right">
 										<a id="downloadLink"  class="mini_button" >Excel Down</a>
@@ -259,6 +259,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    function setColums( callLevel ) {	
 	    	columns = new Array();	    	
 			//columns[columns.length] 	= { id: "DETAIL"				, name: ""				, field: "DETAIL"				, width: 30	, sortable: true	, columnGroup:""}; // 상세화면
+			columns[columns.length] 	= { id: "DETAIL_BTN"			, name: ""				, field: "DETAIL_BTN"			, width: 60	, sortable: true	, formatter:showDtail , columnGroup:""};
 			columns[columns.length] 	= { id: "RNUM"					, name: "No"			, field: "RNUM"					, width: 40	, sortable: true	, columnGroup:""};
 			columns[columns.length] 	= { id: "UI_ID"					, name: "ID"			, field: "UI_ID"				, width: 120, sortable: true	, columnGroup:"화면"};
 			columns[columns.length] 	= { id: "UI_NM"					, name: "명"				, field: "UI_NM"				, width: 100, sortable: true	, columnGroup:"화면"};
@@ -336,7 +337,17 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			grid.onClick.subscribe(function (e, args) {
 				var cell = grid.getCellFromEvent(e);
 				console.log( JSON.stringify(cell) + " onClick has been called !!!");
+				if(cell.cell == 0){
+					var url = "<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/report/detail&SYS_ID="+overAllData[cell.row]["SYS_ID"]+"&SEQ=" + overAllData[cell.row]["SEQ"];
+					openWin(url, '', 1100, 700);
+				}
 			});
+			/*
+			grid.onDblClick.subscribe(function (e, args) {
+				var cell = grid.getCellFromEvent(e);
+				console.log( JSON.stringify(cell) + " onDblClick has been called !!!");
+			});
+			*/
  			// 상세화면 토글되기 전
  	      	detailView.onBeforeRowDetailToggle.subscribe(function(e, args) {
  		    	console.log('before toggling row detail', args.item);
@@ -364,6 +375,11 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		
 
 		/************************ 상세화면 선언 시작 ************************/
+		function showDtail(row, cell, value, columnDef, dataContext) {
+		      return '<button style="height: 20px; vertical-align: middle;" onclick="return false;" >Detail</button>';
+		}
+
+		
  	    function loadingTemplate() {
  	      return '<div class="preload" style="text-align:left;">Loading...</div>';
  	    }

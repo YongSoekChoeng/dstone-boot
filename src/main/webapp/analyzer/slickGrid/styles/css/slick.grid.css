@@ -36,7 +36,7 @@
 	padding: 4px;
 	position: relative;
 	text-overflow: ellipsis;
-	z-index: 1
+	z-index: 1;
 }
 
 .slick-footerrow-column.ui-state-default {

@@ -25,3 +25,15 @@
         return o; 
     }
     
+	function openWin(url, target, width, height, option){
+		var left  = ($(window).width()/2)-(width/2);
+		var top   = ($(window).height()/2)-(height/2);
+		var optionStr = "width="+width+", height="+height+", top="+top+", left="+left+" ";
+		if(option){
+			optionStr = optionStr + option;
+		}else{
+			optionStr = optionStr + ", toolbar=no, scrollbars=auto, resizable=yes";
+		}
+		var popup = window.open (url, target, optionStr);
+		return popup;
+	}
