@@ -77,7 +77,18 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		                        html = html + "<tr>";
 		                        html = html + "	<td>"+tblList[i]["TBL_ID"]+"</td>";
 		                        html = html + "	<td>"+tblList[i]["TBL_NM"]+"</td>";
-		                        html = html + "	<td>"+tblList[i]["TBL_CRUD"]+"</td>";
+		                        if( tblList[i]["TBL_CRUD"] == "I" ){
+		                        	html = html + "	<td style='text-align:center;'>입력("+tblList[i]["TBL_CRUD"]+")</td>";
+		                        }else if( tblList[i]["TBL_CRUD"] == "S" ){
+		                        	html = html + "	<td style='text-align:center;'>조회("+tblList[i]["TBL_CRUD"]+")</td>";
+		                        }else if( tblList[i]["TBL_CRUD"] == "U" ){
+		                        	html = html + "	<td style='text-align:center;'>수정("+tblList[i]["TBL_CRUD"]+")</td>";
+		                        }else if( tblList[i]["TBL_CRUD"] == "D" ){
+		                        	html = html + "	<td style='text-align:center;'>삭제("+tblList[i]["TBL_CRUD"]+")</td>";
+		                        }else{
+		                        	html = html + "	<td>"+tblList[i]["TBL_CRUD"]+"</td>";
+		                        }
+		                        
 		                        html = html + "</tr>";
 	                        }
 	                        $('#tbTbl').html(html);
@@ -116,7 +127,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 								</form> 
 						        <!--폼 끝--> 									
 								
-								<h3>1.화면</h3>
+								<h3>Step1. 화면</h3>
 								<table width="100%" border="1">
 									<thead>
 										<tr>
@@ -131,12 +142,12 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 							</section>
 							
 							<section>
-								<h3>2.API</h3>
+								<h3>Step2. API</h3>
 								<table width="100%" border="1">
 									<thead>
 										<tr>
-											<th width="5%">순서</th>
-											<th width="65%">ID</th>
+											<th width="8%">호출순서</th>
+											<th width="62%">ID</th>
 											<th width="25%">명</th>
 											<th width="5%">종류</th>
 										</tr>
@@ -147,7 +158,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 							</section>
 			
 							<section>
-								<h3>3.테이블</h3>
+								<h3>Step3. 테이블</h3>
 								<table width="100%" border="1">
 									<thead>
 										<tr>
