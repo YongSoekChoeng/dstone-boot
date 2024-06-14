@@ -42,67 +42,16 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 				<div id="main">
 					<div class="container">
 						<div class="row main-row">
-							<div class="col-4 col-12-medium">
+							<div class="col-12 col-12-medium">
 
 								<section>
-									<h2>Welcome to Minimaxing!</h2>
-									<p>This is <strong>Minimaxing</strong>, a fully responsive HTML5 site template designed by <a href="http://twitter.com/ajlkn">AJ</a> and released for free by <a href="http://html5up.net">HTML5 UP</a>. It features
-									a simple, lightweight design, solid HTML5 and CSS3 code, and full responsive support for desktop, tablet, and small displays.</p>
-									<footer class="controls">
-										<a href="http://html5up.net" class="button">More cool designs ...</a>
-									</footer>
+									<h2>레거시 Application 분석 툴</h2>
+									<p>화면에서 API를 통해서 테이블까지 호출구조를 분석하여 모듈별 영향도와 구조 분석.</p>
+									<p>SI 프로젝트의 분석단계에서 레거시 Application의 빠른 이해도 향상.</p>
+
 								</section>
 
 							</div>
-							<div class="col-4 col-6-medium col-12-small">
-
-								<section>
-									<h2>Who are you guys?</h2>
-									<ul class="small-image-list">
-										<li>
-											<a href="#"><img src="<%=requestUtil.getStrContextPath()%>/analyzer/images/pic2.jpg" alt="" class="left" /></a>
-											<h4>Jane Anderson</h4>
-											<p>Varius nibh. Suspendisse vitae magna eget et amet mollis justo facilisis amet quis.</p>
-										</li>
-										<li>
-											<a href="#"><img src="<%=requestUtil.getStrContextPath()%>/analyzer/images/pic1.jpg" alt="" class="left" /></a>
-											<h4>James Doe</h4>
-											<p>Vitae magna eget odio amet mollis justo facilisis amet quis. Sed sagittis consequat.</p>
-										</li>
-									</ul>
-								</section>
-
-							</div>
-							<div class="col-4 col-6-medium col-12-small">
-
-								<section>
-									<h2>How about some links?</h2>
-									<div>
-										<div class="row">
-											<div class="col-6 col-12-small">
-												<ul class="link-list">
-													<li><a href="#">Sed neque nisi consequat</a></li>
-													<li><a href="#">Dapibus sed mattis blandit</a></li>
-													<li><a href="#">Quis accumsan lorem</a></li>
-													<li><a href="#">Suspendisse varius ipsum</a></li>
-													<li><a href="#">Eget et amet consequat</a></li>
-												</ul>
-											</div>
-											<div class="col-6 col-12-small">
-												<ul class="link-list">
-													<li><a href="#">Quis accumsan lorem</a></li>
-													<li><a href="#">Sed neque nisi consequat</a></li>
-													<li><a href="#">Eget et amet consequat</a></li>
-													<li><a href="#">Dapibus sed mattis blandit</a></li>
-													<li><a href="#">Vitae magna sed dolore</a></li>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</section>
-
-							</div>
-							
 							
 						</div>
 					</div>

@@ -120,7 +120,24 @@
 					</choose>
 				</if>
 				<if test="CALL_TBL != null and !CALL_TBL.equals('')" >
-					AND CALL_TBL LIKE CONCAT( '%',  #{CALL_TBL} , '%' )
+					<choose>
+						<when test = "LIKE_EQUAL != null and LIKE_EQUAL.equals('LIKE')">
+							AND CALL_TBL LIKE CONCAT( '%',  #{CALL_TBL} , '%' )
+						</when>
+						<otherwise>
+							AND (
+								CALL_TBL LIKE CONCAT( '%',  ' ', #{CALL_TBL}, '(' , '%' )
+								OR CALL_TBL LIKE CONCAT( '%',  ',', #{CALL_TBL}, '(' , '%' )
+								OR CALL_TBL LIKE CONCAT( #{CALL_TBL}, '(' , '%' )
+								
+								OR CALL_TBL LIKE CONCAT( '%',  ' ', #{CALL_TBL}, '-' , '%' )
+								OR CALL_TBL LIKE CONCAT( '%',  ',', #{CALL_TBL}, '-' , '%' )
+								OR CALL_TBL LIKE CONCAT( #{CALL_TBL}, '-' , '%' )
+								
+								OR CALL_TBL = #{CALL_TBL}
+								)
+						</otherwise>
+					</choose>	
 				</if>
         ) P
     </select>                                                                       
@@ -277,7 +294,24 @@
 				</choose>
 			</if>
 			<if test="CALL_TBL != null and !CALL_TBL.equals('')" >
-				AND CALL_TBL LIKE CONCAT( '%',  #{CALL_TBL} , '%' )
+				<choose>
+					<when test = "LIKE_EQUAL != null and LIKE_EQUAL.equals('LIKE')">
+						AND CALL_TBL LIKE CONCAT( '%',  #{CALL_TBL} , '%' )
+					</when>
+					<otherwise>
+						AND (
+							CALL_TBL LIKE CONCAT( '%',  ' ', #{CALL_TBL}, '(' , '%' )
+							OR CALL_TBL LIKE CONCAT( '%',  ',', #{CALL_TBL}, '(' , '%' )
+							OR CALL_TBL LIKE CONCAT( #{CALL_TBL}, '(' , '%' )
+							
+							OR CALL_TBL LIKE CONCAT( '%',  ' ', #{CALL_TBL}, '-' , '%' )
+							OR CALL_TBL LIKE CONCAT( '%',  ',', #{CALL_TBL}, '-' , '%' )
+							OR CALL_TBL LIKE CONCAT( #{CALL_TBL}, '-' , '%' )
+							
+							OR CALL_TBL = #{CALL_TBL}
+							)
+					</otherwise>
+				</choose>			
 			</if>
 
 		<if test="LIMIT != null and !LIMIT.equals('')" >LIMIT #{LIMIT}</if>

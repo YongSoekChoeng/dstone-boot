@@ -20,7 +20,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	<script type="text/javascript"> 
 	
 		$(document).ready(function(){
-			$("#sTitle").text('Call Chain For SEQ[<%=requestUtil.getParameter("SEQ")%>]');
+			$("#sTitle").text('Call Chain For Seq[<%=requestUtil.getParameter("SEQ")%>]');
 			goSelectDetail();
 			$("#btnClose").on("click", closeThis);
 		});
