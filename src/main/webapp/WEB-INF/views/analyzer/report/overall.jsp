@@ -401,10 +401,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
  	    	console.log('loadDetailView has been called !!!');	
  	    	return [
  	    		  '<div class="container">',
- 	    		  // |UI_ID|UI_NM|BASIC_URL|FUNCTION_ID_1|FUNCTION_NAME_1|CLASS_KIND_1|FUNCTION_ID_2|FUNCTION_NAME_2|CLASS_KIND_2|FUNCTION_ID_3|FUNCTION_NAME_3|CLASS_KIND_3|FUNCTION_ID_4|FUNCTION_NAME_4|CLASS_KIND_4|FUNCTION_ID_5|FUNCTION_NAME_5|CLASS_KIND_5|FUNCTION_ID_6|FUNCTION_NAME_6|CLASS_KIND_6|FUNCTION_ID_7|FUNCTION_NAME_7|CLASS_KIND_7|FUNCTION_ID_8|FUNCTION_NAME_8|CLASS_KIND_8|FUNCTION_ID_9|FUNCTION_NAME_9|CLASS_KIND_9|FUNCTION_ID_10|FUNCTION_NAME_10|CLASS_KIND_10|CALL_TBL|
- 	    		  //'	<label>Assignee:</label> <input id="assignee_' + itemDetail.id + '" type="text" value="' + itemDetail.assignee + '"/>',
- 	    		 // '	<span style="float: right">Find out who is the Assignee <button id="who-is-assignee_' + itemDetail.id + '">Click Me</button></span></div>',
- 	    		  
  	    		  '		<div class="col-12 col-6-medium" >',
  	    		  '			<section >',
  	    		  '				<ul>',
@@ -416,8 +412,6 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
  	    		  '				<label>UI</label> <span>' + itemDetail.ID + '</span></div>',
  	    		  '			</section>',
  	    		  '		</div>',
- 	    		  
- 	    		  '	</div>',
  	    		  '</div>'
  	    		].join('');
  	    }
