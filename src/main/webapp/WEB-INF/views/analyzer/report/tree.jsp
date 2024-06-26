@@ -27,13 +27,18 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 
 
 	<script id="code">
-		
+		var sysId = "";
+		var maxLevel = 0;
 		var names = {}; // hash to keep track of what names have been used
 
 		var treeData = new Array();
-		treeData[treeData.length] = {"key":"ROOT","name":"anybiz" };
+		treeData[treeData.length] = {"key":"ROOT","name":sysId};
 	
 		function init() {
+			
+			sysId = opener.document.getElementById("SYS_ID");
+			maxLevel = opener.maxLevel;
+			
 			// Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
 			// For details, see https://gojs.net/latest/intro/buildingObjects.html
 			const $ = go.GraphObject.make; // for conciseness in defining templates
@@ -43,7 +48,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 				// define the layout for the diagram
 				layout : $(go.TreeLayout, {
 					nodeSpacing : 5,
-					layerSpacing : 30,
+					layerSpacing : (maxLevel*10),
 					arrangement : go.TreeArrangement.FixedRoots
 				}),
 			});
@@ -80,12 +85,11 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			var tData = new Array();
 			var row = new Object();
 			
+			tData[tData.length] = {"key":"ROOT","name":"anybiz" };
 			
-			/*
 			if( opener.overAllData ){
 				var data = opener.overAllData;
 				var dataRow = new Object();
-				var maxLevel = opener.maxLevel;
 				var isAlreadyAdded = false;
 				for(var i=0; i<data.length; i++){
 					dataRow = data[i];
@@ -176,10 +180,8 @@ console.log("TABLE================>>>" + JSON.stringify( row ) );
 	 				}
 				}
 			}
-			*/
 			
-			tData[tData.length] = {"key":"ROOT","name":"anybiz" };
-			
+			/*
 			row = {"key":"A","name":"노드A","parent":"ROOT"}; tData[tData.length] = row;
 			row = {"key":"A-1","name":"노드A-1","parent":"A"}; tData[tData.length] = row;
 			row = {"key":"A-1-1","name":"노드A-1-1","parent":"A-1"}; tData[tData.length] = row;
@@ -203,7 +205,8 @@ console.log("TABLE================>>>" + JSON.stringify( row ) );
 			row = {"key":"B-1-1-1","name":"노드B-1-1-1","parent":"B-1-1"}; tData[tData.length] = row;
 			row = {"key":"B-1-1-2","name":"노드B-1-1-2","parent":"B-1-1"}; tData[tData.length] = row;
 			row = {"key":"B-1-1-3","name":"노드B-1-1-3","parent":"B-1-1"}; tData[tData.length] = row;
-			row = {"key":"A-1-1-1","name":"노드A-1-1-1","parent":"B-1"}; tData[tData.length] = row;
+			row = {"key":"A-1-1-1","name":"노드A-1-1-1","parent":"B"}; tData[tData.length] = row;
+			*/
 			
 			/*
 			row = {"key":"kr.co.gnx.performance.performance.PerformanceService.getProductGroupMonthAchievementsList(kr.co.gnx.performance.performance.PerformanceVO)","name":"보종별마감업적리스트조회","parent":"kr.co.gnx.performance.performance.PerformanceController.getProductGroupMonthAchievementsList(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, kr.co.gnx.performance.performance.PerformanceVO)"}; tData[tData.length] = row;
@@ -273,7 +276,7 @@ console.log('getName has been called !!!');
 	
 		// When a Node is selected, highlight the corresponding HTML element.
 		function nodeSelectionChanged(node) {
-console.log('nodeSelectionChanged has been called !!!');
+console.log('nodeSelectionChanged has been called !!! node.font:' + node.name);
 			/*
 			if (node.isSelected) {
 				names[node.data.name].style.backgroundColor = 'lightblue';
