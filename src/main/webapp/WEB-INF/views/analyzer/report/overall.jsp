@@ -30,6 +30,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 					listOverAll();
 				}     
 			});
+			$("#openTree").on("click", openTree);
 		});
 		
 	    function goAppSelectList(){ 
@@ -73,12 +74,15 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	    var loadingIndicator = null;
 
 		var overAllData = [];
+		var totalCnt = 0;
+		var maxLevel = 0;
+		
 	    function listOverAll(){ 
 	    	
 	    	overAllData = [];
 	        if (!loadingIndicator) {
 	            loadingIndicator = $("<span class='loading-indicator'><label>Buffering...</label></span>").appendTo(document.body);
-	            var $g = $("#myGrid");   
+	            var $g = $("#myGrid");  
 	            var loadingIndicatorTop  = $g.position().top  + ($g.height()/2) - (loadingIndicator.height()/2); 
 	            var loadingIndicatorLeft = $g.position().left + ($g.width()/2)  - (loadingIndicator.width()/2);
 	            loadingIndicator.css("position", "absolute");
@@ -102,8 +106,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
 	                    }else{ 
 	                        //console.log('success ===>>> data:' + (JSON.stringify(data))); 
-	                        var totalCnt = data.returnObj.totalCnt; 
-	                        var maxLevel = data.returnObj.maxLevel; 
+	                        totalCnt = data.returnObj.totalCnt; 
+	                        maxLevel = data.returnObj.maxLevel; 
 	                        overAllData = data.returnObj.returnObj; 
 	                        $("#totalCnt").text(totalCnt + "건");
 	                        $("#maxLevel").text(maxLevel);
@@ -231,6 +235,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 								
 									<h2 align="right">
 										<a id="downloadLink"  class="mini_button" >Excel Down</a>
+										<a id="openTree"  class="mini_button" >Open Tree</a>
 									</h2>
 								</section>
 								
@@ -469,8 +474,14 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		        //console.log(response);
 		    });
 		}
-		
 		/************************ Excel 관련  끝 ************************/
+		
+		/************************ Tree 관련  시작 ************************/
+		function openTree(){
+			var url = "<%=requestUtil.getStrContextPath()%>/defaultLink.do?defaultLink=analyzer/report/tree";
+			openWin(url, '', 1100, 700);
+		}
+		/************************ Tree 관련  끝 ************************/
 		
 	</script>
 

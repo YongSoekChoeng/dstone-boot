@@ -18,6 +18,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/breakpoints.min.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/util.js"></script>
 		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/main.js"></script>		
+		<script src="<%=requestUtil.getStrContextPath()%>/analyzer/assets/js/go.js"></script>		
 		
 		<!-- slickGrid Start -->
 		<link rel="stylesheet" href="<%=requestUtil.getStrContextPath()%>/analyzer/slickGrid/styles/css/example-demo.css">

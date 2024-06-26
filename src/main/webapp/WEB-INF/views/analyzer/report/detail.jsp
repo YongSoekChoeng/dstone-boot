@@ -64,6 +64,21 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                        for(var i=0; i<data.maxLevel; i++){
 		                        html = html + "<tr>";
 		                        html = html + "	<td style='text-align:right;'>"+(i+1)+"</td>";
+		                        var displayId = detailVo["DISPLAY_ID_"+(i+1)];
+		                        if(displayId != ""){
+		                        	var classId = "";
+		                        	var methodId = "";
+		                        	if(displayId.indexOf(".") > -1){
+		                        		var dpIdArr = displayId.split(".");
+		                        		classId = dpIdArr[0];
+		                        		methodId = dpIdArr[1];
+		                        		
+		                        		classId = "<font color='green'>" + classId +  "</font>";
+		                        		methodId = "<font color='blue'>" + methodId  + "</font>";
+		                        		displayId =  "<section style='font-weight:bold;'>" + classId + "<br>&nbsp;" + "." + methodId + "</section>";
+		                        	}
+		                        }
+		                        html = html + "	<td>"+displayId+"</td>";
 		                        html = html + "	<td><textarea style='width:100%' row=2 readonly >"+detailVo["FUNCTION_ID_"+(i+1)]+"</textarea></td>";
 		                        html = html + "	<td>"+detailVo["FUNCTION_NAME_"+(i+1)]+"</td>";
 		                        html = html + "	<td style='text-align:center;'>"+detailVo["CLASS_KIND_"+(i+1)]+"</td>";
@@ -146,9 +161,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 								<table width="100%" border="1">
 									<thead>
 										<tr>
-											<th width="8%">호출순서</th>
-											<th width="62%">ID</th>
-											<th width="25%">명</th>
+											<th width="5%">호출<br>순서</th>
+											<th width="20%">ID</th>
+											<th width="50%">FUNCTION ID</th>
+											<th width="20%">명</th>
 											<th width="5%">종류</th>
 										</tr>
 									</thead>
