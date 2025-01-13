@@ -342,6 +342,13 @@
 		    <version>0.10.2</version>
 		</dependency>
 
+		<!-- Rule Engine / Easy Rules -->
+		<dependency>
+		    <groupId>org.jeasy</groupId>
+		    <artifactId>easy-rules-core</artifactId>
+		    <version>4.1.0</version>
+		</dependency>
+
 	</dependencies>
 
 
