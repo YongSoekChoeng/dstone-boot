@@ -96,8 +96,7 @@
 	</table>
 	</form>
 	
-	<br>
-	<br>
+	<br><br>
 	
 	폼서밋 로그인<br>
 	<form name="SUBMIT_FORM" method="post" action="">

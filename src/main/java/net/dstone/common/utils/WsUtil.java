@@ -62,6 +62,7 @@ public class WsUtil {
 	public Bean bean;
 	public String charset = "UTF-8";
 	public ResponseReader response;
+	public int StatusCd = -1;
 	
 	public String execute(Bean tBean) {
 		return execute(tBean, null);
@@ -84,7 +85,7 @@ public class WsUtil {
 			}
 
 			// 작업처리		
-			this.doExecute();
+			this.StatusCd = this.doExecute();
 
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
@@ -190,8 +191,8 @@ public class WsUtil {
 	/**
 	 * Executing HttpMethod.
 	 */
-	private void doExecute() {
-		
+	private int doExecute() {
+		int statusCd = -1;
 		HttpClientBuilder httpClientBuilder = null;
 		CloseableHttpClient client			= null;
 		HttpRequestBase httpRequest 		= null;
@@ -225,7 +226,6 @@ public class WsUtil {
 			httpResponse = client.execute(httpRequest);
 			// 5. 응답확인
 			this.response.read(httpResponse);
-
 			eTime = System.currentTimeMillis();
 
 			if(debugInOutYn){
@@ -255,7 +255,9 @@ public class WsUtil {
 					// TODO: handle exception
 				}
 			}
+			statusCd = this.response.StatusCd;
 		}
+		return statusCd;
 	}
 	
 	/**
@@ -332,6 +334,7 @@ public class WsUtil {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			} finally {
 			}
 		}
 	}

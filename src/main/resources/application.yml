@@ -21,7 +21,7 @@ server:
         - TLSv1
         - TLSv1.1
         - TLSv1.2
-        key-store: D:/AppHome/framework/dstone-boot/ssl/dstone-keystore.p12
+        key-store: C:/WorkShop/D/AppHome/framework/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
         key-store-alias: dstone-ssl
@@ -84,3 +84,7 @@ resources:
     fileUp: 
         path: D:/Temp
 
+interface: 
+    kakao:
+      client-id: 6f89f3f82713133646791acf04bb78c7
+      redirect-uri: https://localhost:7081/kakao/loginCallback.do
