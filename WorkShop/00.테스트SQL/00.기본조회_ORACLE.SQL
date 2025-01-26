@@ -13,6 +13,8 @@ WHERE 1=1
 	AND A.OWNER       = B.OWNER
 	AND A.TABLE_NAME  = B.TABLE_NAME
     
+    AND B.OWNER       = 'DBO'
+    
     /* 테이블ID/테이블명 */
 	AND A.TABLE_NAME LIKE '%' || 'TB_PP_PP_M'
 	AND B.COMMENTS LIKE '%' || '' || '%'
@@ -65,6 +67,8 @@ WHERE 1=1
     AND B.OWNER       = P.OWNER(+)
     AND B.TABLE_NAME  = P.TABLE_NAME(+)
     AND C.COLUMN_NAME = P.COLUMN_NAME(+)
+    
+    AND B.OWNER       = 'DBO'
     
     /* 테이블ID/테이블명 */
 	AND B.TABLE_NAME LIKE '%' || 'TB_PP_PP_M'
