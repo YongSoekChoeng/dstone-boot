@@ -1,4 +1,4 @@
-package net.dstone.common.tools;
+package net.dstone.common.tools.bizgen;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.FileUtil;
@@ -150,7 +150,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genVoForCud("TB_EVT_INFO", "이벤트정보", false);
 	 */
 	public static void genVoForCud(String TABLE_NAME, String TABLE_HAN_NAME, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new VoGen().genVoByTable(TABLE_NAME, TABLE_HAN_NAME, net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + ".vo", "", fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new VoGen().genVoByTable(TABLE_NAME, TABLE_HAN_NAME, net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_PACKAGE_NAME + ".vo", "", fileGenYn);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genVoByTable("TB_EVT_INFO", "이벤트정보", "com.test.common.biz.vo", "TbEvtInfoVo", false);
 	 */
 	public static void genVoByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strVoPackageName, String strVoName, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new VoGen().genVoByTable(TABLE_NAME, TABLE_HAN_NAME, strVoPackageName, strVoName, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new VoGen().genVoByTable(TABLE_NAME, TABLE_HAN_NAME, strVoPackageName, strVoName, fileGenYn);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genVoBySql("com.test.biz.event.vo", "EventListVo", true, false);
 	 */
 	public static void genVoBySql(String strVoPackageName, String strVoName, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new VoGen().genVoBySql(strVoPackageName, strVoName, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new VoGen().genVoBySql(strVoPackageName, strVoName, pageYn, fileGenYn);
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlForCud("TB_EVT_INFO", "이벤트정보", "event", true, false);
 	 */
 	public static void genSqlForCud(String TABLE_NAME, String TABLE_HAN_NAME, String strModuleName, boolean cudOnlyYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, COMM_CUD_PACKAGE_NAME, COMM_CUD_DAO_NAME, strModuleName, cudOnlyYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, COMM_CUD_PACKAGE_NAME, COMM_CUD_DAO_NAME, strModuleName, cudOnlyYn, fileGenYn);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlByTable("TB_EVT_INFO", "이벤트정보", "com.test.biz.event", "EventDao", "event", false, false);
 	 */
 	public static void genSqlByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, String strModuleName, boolean cudOnlyYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, strDaoPackageName, strDaoName, strModuleName, cudOnlyYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new SqlGen().genSqlByTable(TABLE_NAME, TABLE_HAN_NAME, strDaoPackageName, strDaoName, strModuleName, cudOnlyYn, fileGenYn);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (SQL 소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSqlBySql( "com.test.biz.event", "EventDao", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", "event", true, false);
 	 */
 	public static void genSqlBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, String strModuleName, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SqlGen().genSqlBySql(strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, strModuleName, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new SqlGen().genSqlBySql(strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, strModuleName, pageYn, fileGenYn);
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (DAO소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genDaoForCud("TB_EVT_INFO", "이벤트정보", true, false);
 	 */
 	public static void genDaoForCud(String TABLE_NAME, String TABLE_HAN_NAME, boolean cudOnlyYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new DaoGen().genDaoByTable(TABLE_NAME, TABLE_HAN_NAME, COMM_CUD_PACKAGE_NAME, COMM_CUD_DAO_NAME, cudOnlyYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new DaoGen().genDaoByTable(TABLE_NAME, TABLE_HAN_NAME, COMM_CUD_PACKAGE_NAME, COMM_CUD_DAO_NAME, cudOnlyYn, fileGenYn);
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (DAO소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genDaoByTable("TB_EVT_INFO", "이벤트정보", "com.test.biz.event", "EventDao", false, false);
 	 */
 	public static void genDaoByTable(String TABLE_NAME, String TABLE_HAN_NAME, String strDaoPackageName, String strDaoName, boolean cudOnlyYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new DaoGen().genDaoByTable(TABLE_NAME, TABLE_HAN_NAME, strDaoPackageName, strDaoName, cudOnlyYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new DaoGen().genDaoByTable(TABLE_NAME, TABLE_HAN_NAME, strDaoPackageName, strDaoName, cudOnlyYn, fileGenYn);
 	}
 
 	/**
@@ -265,7 +265,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (DAO소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genDaoBySql( "com.test.biz.event", "EventDao", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", true, false);
 	 */
 	public static void genDaoBySql(String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, boolean listYn, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new DaoGen().genDaoBySql(strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, listYn, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new DaoGen().genDaoBySql(strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, listYn, pageYn, fileGenYn);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (SVC소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genSvcForJsp( "com.test.biz.event", "EventService", "com.test.biz.event", "EventDao", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", 0, true, false);
 	 */
 	public static void genSvc(String strSvcPackageName, String strSvcName, String strDaoPackageName, String strDaoName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, int CRUD, String strTableName, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new SvcGen().genSvc(strSvcPackageName, strSvcName, strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, CRUD, strTableName, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new SvcGen().genSvc(strSvcPackageName, strSvcName, strDaoPackageName, strDaoName, strMethodName, strMethodComment, strVoPackageName, strVoName, CRUD, strTableName, pageYn, fileGenYn);
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (CTRL소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genCtrlForJsp( "com.test.biz.event", "EventController", "com.test.biz.event", "EventService", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", 0, "TB_EVENT", "/jsp/event", "/listEventPlain.do", "listEventPlain", true, false);
 	 */
 	public static void genCtrlForJsp(String strCtrlPackageName, String strCtrlName, String strSvcPackageName, String strSvcName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, int CRUD, String strTableName, String strPrefix, String strUri, String strReturnJsp, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new CtrlGen().genCtrlForJsp(strCtrlPackageName, strCtrlName, strSvcPackageName, strSvcName, strMethodName, strMethodComment, strVoPackageName, strVoName, CRUD, strTableName, strPrefix, strUri, strReturnJsp, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new CtrlGen().genCtrlForJsp(strCtrlPackageName, strCtrlName, strSvcPackageName, strSvcName, strMethodName, strMethodComment, strVoPackageName, strVoName, CRUD, strTableName, strPrefix, strUri, strReturnJsp, pageYn, fileGenYn);
 	}
 
 	/**
@@ -330,7 +330,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (CTRL소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genCtrlForJson( "com.test.biz.event", "EventController", "com.test.biz.event", "EventService", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo", "EventListVo", 0, "TB_EVENT", "/jsp/event", "/listEventPlain.do", false);
 	 */
 	public static void genCtrlForJson(String strCtrlPackageName, String strCtrlName, String strSvcPackageName, String strSvcName, String strMethodName, String strMethodComment, String strVoPackageName, String strVoName, int CRUD, String strTableName, String strPrefix, String strUri, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new CtrlGen().genCtrlForJson(strCtrlPackageName, strCtrlName, strSvcPackageName, strSvcName, strMethodName, strMethodComment, strVoPackageName, strVoName, CRUD, strTableName, strPrefix, strUri, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new CtrlGen().genCtrlForJson(strCtrlPackageName, strCtrlName, strSvcPackageName, strSvcName, strMethodName, strMethodComment, strVoPackageName, strVoName, CRUD, strTableName, strPrefix, strUri, pageYn, fileGenYn);
 	}
 
 	/**
@@ -355,7 +355,7 @@ public class BizGenerator extends BaseObject {
 	 * @param fileGenYn (WS소스를 파일로 생성할지 여부.) 예) net.dstone.common.tools.BizGenerator.genWsForRestFul( "com.test.biz.event.ws", "WsEventService", "com.test.biz.event", "EventService", "/Event", "PUT", "listEvent", "이벤트리스트조회", "com.test.biz.event.vo.ws", "EventListWsVo", "com.test.biz.event.vo", "EventListVo", 0, "TB_EVENT", "XML", true, false);
 	 */
 	public static void genWsForRestFul(String strWSPackageName, String strWSName, String strSvcPackageName, String strSvcName, String strWSPath, String strMethodKind, String strMethodName, String strMethodComment, String strWsVoPackageName, String strWsVoName, String strVoPackageName, String strVoName, int CRUD, String strTableName, String strMediaType, boolean pageYn, boolean fileGenYn) {
-		(new net.dstone.common.tools.BizGenerator()).new WsGen().genWsForRestFul(strWSPackageName, strWSName, strSvcPackageName, strSvcName, strWSPath, strMethodKind, strMethodName, strMethodComment, strWsVoPackageName, strWsVoName, strVoPackageName, strVoName, CRUD, strTableName, strMediaType, pageYn, fileGenYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new WsGen().genWsForRestFul(strWSPackageName, strWSName, strSvcPackageName, strSvcName, strWSPath, strMethodKind, strMethodName, strMethodComment, strWsVoPackageName, strWsVoName, strVoPackageName, strVoName, CRUD, strTableName, strMediaType, pageYn, fileGenYn);
 	}
 
 	/**
@@ -370,7 +370,7 @@ public class BizGenerator extends BaseObject {
 	 * @param pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음.)
 	 */
 	public static void genTestSrcForJsp(int CRUD, String strTableName, String strPrefix, String strUri, String strVoPackageName, String strVoName, boolean pageYn) {
-		(new net.dstone.common.tools.BizGenerator()).new TestGen().genTestSrcForJsp(CRUD, strTableName, strPrefix, strUri, strVoPackageName, strVoName, pageYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new TestGen().genTestSrcForJsp(CRUD, strTableName, strPrefix, strUri, strVoPackageName, strVoName, pageYn);
 	}
 
 	/**
@@ -385,7 +385,7 @@ public class BizGenerator extends BaseObject {
 	 * @param pageYn (페이징 여부. CRUD가 0 일 경우에만 의미있음.)
 	 */
 	public static void genTestSrcForJson(int CRUD, String strTableName, String strPrefix, String strUri, String strVoPackageName, String strVoName, boolean pageYn) {
-		(new net.dstone.common.tools.BizGenerator()).new TestGen().genTestSrcForJson(CRUD, strTableName, strPrefix, strUri, strVoPackageName, strVoName, pageYn);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new TestGen().genTestSrcForJson(CRUD, strTableName, strPrefix, strUri, strVoPackageName, strVoName, pageYn);
 	}
 
 	/**
@@ -400,7 +400,7 @@ public class BizGenerator extends BaseObject {
 	 * @param strMediaType (미디어타입:XML/JSON). 필수.) 예) (new net.dstone.common.tools.BizGenerator()).new TestGen().genTestSrcForWsJquery("/Event", "PUT", "listEvent", "com.test.biz.event.vo", "EventListWsVo", 0, "XML");
 	 */
 	public static void genTestSrcForWsJquery(String strWSPath, String strMethodKind, String strMethodName, String strVoPackageName, String strVoName, int CRUD, String strMediaType) {
-		(new net.dstone.common.tools.BizGenerator()).new TestGen().genTestSrcForWsJquery(strWSPath, strMethodKind, strMethodName, strVoPackageName, strVoName, CRUD, strMediaType);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new TestGen().genTestSrcForWsJquery(strWSPath, strMethodKind, strMethodName, strVoPackageName, strVoName, CRUD, strMediaType);
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class BizGenerator extends BaseObject {
 	 * @param strMediaType (미디어타입:XML/JSON). 필수.) 예) (new net.dstone.common.tools.BizGenerator()).new TestGen().genTestSrcForWsJava("/Event", "PUT", "listEvent", "com.test.biz.event.vo", "EventListWsVo", 0, "XML");
 	 */
 	public static void genTestSrcForWsJava(String strWSPath, String strMethodKind, String strMethodName, String strVoPackageName, String strVoName, int CRUD, String strMediaType) {
-		(new net.dstone.common.tools.BizGenerator()).new TestGen().genTestSrcForWsJava(strWSPath, strMethodKind, strMethodName, strVoPackageName, strVoName, CRUD, strMediaType);
+		(new net.dstone.common.tools.bizgen.BizGenerator()).new TestGen().genTestSrcForWsJava(strWSPath, strMethodKind, strMethodName, strVoPackageName, strVoName, CRUD, strMediaType);
 	}
 
 	public static class DbInfo{
@@ -439,7 +439,7 @@ public class BizGenerator extends BaseObject {
 					tab = (TabInfo)tabs.get(TABLE_NAME);
 				}else{
 					// 1. 컬럼기본정보 조회
-					ds = net.dstone.common.tools.BizGenerator.Util.getCols(TABLE_NAME);
+					ds = net.dstone.common.tools.bizgen.BizGenerator.Util.getCols(TABLE_NAME);
 					if(ds != null){
 						if (ds.getDataSetRowCount("COL_LIST") > 0) {
 							tab = new DbInfo().newTabInfo();
@@ -462,7 +462,7 @@ public class BizGenerator extends BaseObject {
 					}	
 					tabs.put(TABLE_NAME, tab);
 					// 2. 키값 조회
-					ds = net.dstone.common.tools.BizGenerator.Util.getKeys(TABLE_NAME);
+					ds = net.dstone.common.tools.bizgen.BizGenerator.Util.getKeys(TABLE_NAME);
 					if(ds != null){
 						if (ds.getDataSetRowCount("KEY_LIST") > 0) {
 							for (int i = 0; i < ds.getDataSetRowCount("KEY_LIST"); i++) {
@@ -585,7 +585,7 @@ public class BizGenerator extends BaseObject {
 					}
 				}
 				if (strVoPackageName == null || "".equals(strVoPackageName)) {
-					strVoPackageName = net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + ".vo";
+					strVoPackageName = net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_PACKAGE_NAME + ".vo";
 				}
 				if (!strVoName.endsWith("CudVo")) {
 					strVoName = strVoName + "CudVo";
@@ -1630,7 +1630,7 @@ public class BizGenerator extends BaseObject {
 			String sVoName = "";
 			String svcName = "";
 			String svcFileName = "";
-			String commonDaoAlias = net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME.substring(0, 1).toLowerCase() + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME.substring(1);
+			String commonDaoAlias = net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_DAO_NAME.substring(0, 1).toLowerCase() + net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_DAO_NAME.substring(1);
 
 			String tableVoPackageName = "";
 			String tableVoName = "";
@@ -1712,7 +1712,7 @@ public class BizGenerator extends BaseObject {
 				if (!FileUtil.isFileExist(svcFileName)) {
 					autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/").append("\n");
 					autowiredPartCUD.append("    @Autowired ").append("\n");
-					autowiredPartCUD.append("    private " + net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
+					autowiredPartCUD.append("    private " + net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
 					autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/").append("\n");
 
 					/* 트랜젝션종류 - 0:다건조회, 1:단건조회 */
@@ -1728,7 +1728,7 @@ public class BizGenerator extends BaseObject {
 					if (!net.dstone.common.utils.BeanUtil.isBeanMemberName(PACKAGE_NAME + "." + strSvcName, commonDaoAlias)) {
 						autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/").append("\n");
 						autowiredPartCUD.append("    @Autowired ").append("\n");
-						autowiredPartCUD.append("    private " + net.dstone.common.tools.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
+						autowiredPartCUD.append("    private " + net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_PACKAGE_NAME + "." + net.dstone.common.tools.bizgen.BizGenerator.COMM_CUD_DAO_NAME + " " + commonDaoAlias + "; ").append("\n");
 						autowiredPartCUD.append("    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/").append("\n");
 					}
 					/* 트랜젝션종류 - 0:다건조회, 1:단건조회 */
@@ -4217,7 +4217,7 @@ public class BizGenerator extends BaseObject {
 				// tBuff.append("  var data = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>");
 				tBuff.append("  var data = \"");
 				try {
-					Object obj = net.dstone.common.tools.DataGenerator.genRandomData(strWsVoPackageName + "." + strWsVoName, 1);
+					Object obj = net.dstone.common.tools.datagen.DataGenerator.genRandomData(strWsVoPackageName + "." + strWsVoName, 1);
 					String dataStr = net.dstone.common.utils.BeanUtil.toXml(obj);
 					dataStr = StringUtil.replace(dataStr, "\"", "\\\"");
 					dataStr = StringUtil.replace(dataStr, "\n", "");
@@ -4227,7 +4227,7 @@ public class BizGenerator extends BaseObject {
 				}
 			} else if ("JSON".equals(strMediaType)) {
 				try {
-					Object obj = net.dstone.common.tools.DataGenerator.genRandomData(strWsVoPackageName + "." + strWsVoName, 1);
+					Object obj = net.dstone.common.tools.datagen.DataGenerator.genRandomData(strWsVoPackageName + "." + strWsVoName, 1);
 					String dataStr = net.dstone.common.utils.BeanUtil.toJson(obj);
 					dataStr = StringUtil.replace(dataStr, "\"", "\\\"");
 					dataStr = StringUtil.replace(dataStr, "\n", "");
