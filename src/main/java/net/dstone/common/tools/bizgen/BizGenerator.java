@@ -989,7 +989,7 @@ public class BizGenerator extends BaseObject {
 			xmlMethd3.append( getNewKeySql(mainKey, SystemUtil.getInstance().getProperty(DBID + ".DbKind")) );
 			xmlMethd3.append("        FROM                                                                          ").append("\n");
 			xmlMethd3.append("            " + TABLE_NAME + "                                                                       ").append("\n");
-			xmlMethd3.append("        WHERE 1=1                                                                     ").append("\n");
+			xmlMethd3.append("        WHERE ROWNUM < 2		                                                        ").append("\n");
 			xmlMethd3.append( getNewKeyWhereSql(parentKeys, mainKey, SystemUtil.getInstance().getProperty(DBID + ".DbKind")) );
 			xmlMethd3.append("    </select>                                                                       ").append("\n");
 			xmlMethd3.append("                                                                                   ").append("\n");
@@ -1212,7 +1212,8 @@ public class BizGenerator extends BaseObject {
 							sql.append("            SYSTIMESTAMP " + mainKey.COLUMN_NAME + " ").append("\n");
 						}
 					} else {
-						sql.append("            LPAD((NVL(MAX(" + mainKey.COLUMN_NAME + "),0)+1), " + mainKey.DATA_LENGTH + ", '0') " + mainKey.COLUMN_NAME + " ").append("\n");
+						//sql.append("            LPAD((NVL(MAX(" + mainKey.COLUMN_NAME + "),0)+1), " + mainKey.DATA_LENGTH + ", '0') " + mainKey.COLUMN_NAME + " ").append("\n");
+						sql.append("            LPAD(TRUNC(DBMS_RANDOM.VALUE(1, "+StringUtil.filler("9", mainKey.DATA_LENGTH, "9")+")), " + mainKey.DATA_LENGTH + ", '0') " + mainKey.COLUMN_NAME + " ").append("\n");
 					}
 				} else if ("MSSQL".equals(dbKind)) {
 					if (mainKey.DATA_TYPE.equals("float") || mainKey.DATA_TYPE.equals("int") ||  mainKey.DATA_TYPE.equals("double")) {
