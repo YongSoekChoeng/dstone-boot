@@ -456,6 +456,7 @@ public class BizGenerator extends BaseObject {
 									col.DATA_LENGTH = Integer.parseInt(ds.getDataSet("COL_LIST", i).getDatum("DATA_LENGTH", "0"));
 								}
 								col.COLUMN_NAME = ds.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME");
+								col.NULLABLE = ( "Y".equals(ds.getDataSet("COL_LIST", i).getDatum("NULLABLE"))?true:false );
 								tab.cols.put(ds.getDataSet("COL_LIST", i).getDatum("COLUMN_NAME"), col);
 							}
 						}
@@ -537,6 +538,7 @@ public class BizGenerator extends BaseObject {
 			public boolean IS_KEY = false;
 			public String COLUMN_NAME = "";
 			public String COLUMN_COMMENT = "";
+			public boolean NULLABLE = true;
 			/**
 			 * DATA_TYPE 은 다음과 같은 값을 갖는다.
 			 * <숫자형> float/int/double
@@ -547,7 +549,7 @@ public class BizGenerator extends BaseObject {
 			public int 	DATA_LENGTH = 0;
 			@Override
 			public String toString() {
-				return "ColInfo [IS_KEY=" + IS_KEY + ", COLUMN_NAME=" + COLUMN_NAME + ", COLUMN_COMMENT=" + COLUMN_COMMENT + ", DATA_TYPE=" + DATA_TYPE + ", DATA_LENGTH=" + DATA_LENGTH + "]";
+				return "ColInfo [IS_KEY=" + IS_KEY + ", COLUMN_NAME=" + COLUMN_NAME + ", COLUMN_COMMENT=" + COLUMN_COMMENT + ", DATA_TYPE=" + DATA_TYPE + ", DATA_LENGTH=" + DATA_LENGTH + ", NULLABLE=" + NULLABLE + "]";
 			}
 		}
 	}
