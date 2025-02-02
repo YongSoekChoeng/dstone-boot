@@ -506,9 +506,9 @@ public class SqlUtil extends BaseObject {
 					}
 				}else if ( colType.startsWith("TIMESTAMP") ) {
 					if("MYBATIS".equals(queryKind)) {
-						outStr = "TO_DATE( #{" + COLUMN_NAME + "}, 'YYYYMMDDHH24MISSFF3')";
+						outStr = "TO_TIMESTAMP( #{" + COLUMN_NAME + "}, 'YYYYMMDDHH24MISSFF3')";
 					}else {
-						outStr = "TO_DATE( ?, 'YYYYMMDDHH24MISSFF3')";
+						outStr = "TO_TIMESTAMP( ?, 'YYYYMMDDHH24MISSFF3')";
 					}
 				}
 			} else {
