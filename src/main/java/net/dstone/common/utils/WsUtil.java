@@ -331,6 +331,7 @@ public class WsUtil {
 					}
 				} else {
 					outputStr.append("Response is error : " + response.getStatusLine().getStatusCode());
+					outputStr.append("\n").append("상세사항 : " + response);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

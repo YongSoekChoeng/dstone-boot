@@ -42,6 +42,7 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     	info( "serverUrl =====>>>" + serverUrl );
     	
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
+        request.getSession().setAttribute("accessToken", accessToken);
 
         kakaoService.getUserInfo(accessToken);
 
@@ -49,5 +50,23 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
         
         
         return "/sample/kakao/loginCallback";
+    }
+    
+    @RequestMapping("/logout.do")
+    public String logout(Model model, HttpServletRequest request) {
+    	
+    	String serverUrl = request.getScheme() + "://" +  "localhost"  + ":" + request.getLocalPort();
+    	info( "serverUrl =====>>>" + serverUrl );
+    	
+    	if( request.getSession().getAttribute("accessToken") != null ) {
+    		kakaoService.logoutFromKakao(request.getSession().getAttribute("accessToken").toString());
+    	}
+
+    	String clientId = ConfigProperty.getProperty("interface.kakao.client-id");
+    	String redirectUri = ConfigProperty.getProperty("interface.kakao.redirect-uri");
+        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+clientId+"&redirect_uri="+redirectUri;
+        model.addAttribute("location", location);
+        
+        return "/sample/kakao/login";
     }
 }

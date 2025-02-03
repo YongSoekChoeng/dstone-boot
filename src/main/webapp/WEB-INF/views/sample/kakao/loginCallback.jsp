@@ -21,6 +21,10 @@
 <div class="container" style="display: flex; justify-content: center; align-content: center; align-items: center; flex-direction: column; margin: 200px auto; ">
     <h1>카카오 로그인</h1>
        로그인 되었습니다.
+    <br>
+    <br>
+    <br>
+    <a href="/kakao/logout.do" >로그아웃</a>
 </div>
 </body>
 </html>

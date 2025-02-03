@@ -11,6 +11,15 @@ System.out.println( "slocation=====>>>" + slocation );
 <html>
 <head>
 
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<!--  
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self' *.kakao.com">
+	<meta http-equiv="Content-Security-Policy" content="*">
+	-->
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	
 <script type="text/javascript" src="/js/jquery-1.7.2.js"></script> 
 <script type="text/javascript" src="/js/jquery.json-2.4.js" ></script> 
 <script type="text/javascript">

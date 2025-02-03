@@ -29,6 +29,7 @@ public class KakaoService extends BaseService {
 
     private final String KAUTH_TOKEN_URL_HOST ="https://kauth.kakao.com/oauth/token";
     private final String KAUTH_USER_URL_HOST ="https://kapi.kakao.com/v2/user/me";
+    private final String KAUTH_LOGOUT_HOST ="https://kapi.kakao.com/v1/user/logout";
 
 
     public String getAccessTokenFromKakao(String code) {
@@ -144,5 +145,38 @@ public class KakaoService extends BaseService {
 		
 		return userInfo;
 
+    }
+
+    public void logoutFromKakao(String accessToken) {
+
+		net.dstone.common.utils.WsUtil ws = new net.dstone.common.utils.WsUtil();
+		try {
+			
+			net.dstone.common.utils.WsUtil.Bean wsBean = new net.dstone.common.utils.WsUtil.Bean();
+			
+			// URL 세팅
+			wsBean.url = KAUTH_LOGOUT_HOST;
+			wsBean.method = "POST";	
+			
+			// Header 세팅
+			wsBean.addHeader("Content-Security-Policy", "default-src 'self' *.kakao.com");
+			wsBean.addHeader("Access-Control-Allow-Origin", "*");
+			wsBean.addHeader("Authorization", "Bearer " + accessToken);
+			wsBean.setContentType("application/x-www-form-urlencoded;charset=utf-8");
+			
+			// 호출
+			ws.execute(wsBean);
+			info( "ws.StatusCd ===>>>" + ws.StatusCd );
+			
+			if( ws.StatusCd == net.dstone.common.utils.WsUtil.HTTP_OK ) {
+				info( "KAKAO 로그아웃."  );
+			}else {
+				throw new Exception( "KAKAO 로그아웃에 실패하였습니다."  );
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+		}
     }
 }
