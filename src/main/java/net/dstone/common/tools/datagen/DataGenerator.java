@@ -1,4 +1,4 @@
-package net.dstone.common.tools;
+package net.dstone.common.tools.datagen;
 
 import io.github.benas.jpopulator.api.Populator;
 import io.github.benas.jpopulator.impl.PopulatorImpl;

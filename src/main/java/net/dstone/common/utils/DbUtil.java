@@ -2694,6 +2694,7 @@ public class DbUtil {
 				sql.append("    , D.COMMENTS COLUMN_COMMENT ").append("\n");
 				sql.append("    , C.DATA_TYPE ").append("\n");
 				sql.append("    , C.DATA_LENGTH ").append("\n");
+				sql.append("    , C.NULLABLE ").append("\n");
 				sql.append("FROM  ").append("\n");
 				sql.append("    USER_TAB_COLUMNS C ").append("\n");
 				sql.append("    , USER_COL_COMMENTS D ").append("\n");
@@ -2708,6 +2709,7 @@ public class DbUtil {
 				sql.append("	, '' COLUMN_COMMENT ").append("\n");
 				sql.append("	, A.DATA_TYPE  ").append("\n");
 				sql.append("	, ISNULL(CAST(A.CHARACTER_MAXIMUM_LENGTH AS VARCHAR), CAST(A.NUMERIC_PRECISION AS VARCHAR) + ',' + CAST(A.NUMERIC_SCALE AS VARCHAR)) AS DATA_LENGTH  ").append("\n");
+				sql.append("    , NULL NULLABLE ").append("\n");
 				sql.append("FROM   ").append("\n");
 				sql.append("	INFORMATION_SCHEMA.COLUMNS A  ").append("\n");
 				sql.append("WHERE   ").append("\n");
@@ -2728,6 +2730,7 @@ public class DbUtil {
 				sql.append("	, COLUMN_COMMENT ").append("\n");
 				sql.append("	, DATA_TYPE ").append("\n");
 				sql.append("	, (CASE WHEN character_maximum_length IS NULL THEN NUMERIC_PRECISION ELSE character_maximum_length END) AS DATA_LENGTH ").append("\n");
+				sql.append("    , NULL NULLABLE ").append("\n");
 				sql.append("FROM  ").append("\n");
 				sql.append("	INFORMATION_SCHEMA.COLUMNS  ").append("\n");
 				sql.append("WHERE 1=1 ").append("\n");

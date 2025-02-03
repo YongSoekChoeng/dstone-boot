@@ -1,10 +1,8 @@
 package net.dstone.common.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import net.dstone.common.core.BaseObject;
 import net.sf.jsqlparser.util.TablesNamesFinder;
@@ -493,7 +491,7 @@ public class SqlUtil extends BaseObject {
 				}else {
 					outStr = "?";
 				}
-			}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.equals("TIMESTAMP")) {
+			}else if (colType.equals("DATE") || colType.equals("TIME") ||  colType.startsWith("TIMESTAMP")) {
 				if ( colType.equals("DATE") ) {
 					if("MYBATIS".equals(queryKind)) {
 						outStr = "TO_DATE( #{" + COLUMN_NAME + "}, 'YYYYMMDDHH24MISS')";
@@ -506,11 +504,11 @@ public class SqlUtil extends BaseObject {
 					}else {
 						outStr = "TO_DATE( ?, 'YYYYMMDDHH24MISS')";
 					}
-				}else if ( colType.equals("Timestamp") ) {
+				}else if ( colType.startsWith("TIMESTAMP") ) {
 					if("MYBATIS".equals(queryKind)) {
-						outStr = "TO_DATE( #{" + COLUMN_NAME + "}, 'YYYYMMDDHH24MISSFF3')";
+						outStr = "TO_TIMESTAMP( #{" + COLUMN_NAME + "}, 'YYYYMMDDHH24MISSFF3')";
 					}else {
-						outStr = "TO_DATE( ?, 'YYYYMMDDHH24MISSFF3')";
+						outStr = "TO_TIMESTAMP( ?, 'YYYYMMDDHH24MISSFF3')";
 					}
 				}
 			} else {

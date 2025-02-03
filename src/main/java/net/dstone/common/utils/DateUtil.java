@@ -589,7 +589,7 @@ public class DateUtil {
 		Calendar before = Calendar.getInstance();
 		SimpleDateFormat hhmmssSSS = new SimpleDateFormat("HH:mm:ss.SSS");
 		STOPWATCH_MAP.put(stopWatchId, before);
-		logger.info( "||====================================== ["+stopWatchId+"]START [시작시간 "+hhmmssSSS.format(before.getTime())+"] ======================================||" );
+		logger.info( "||====================================== ["+stopWatchId+"]START [시작시간 "+hhmmssSSS.format(before.getTime())+"] ======================================||\n" );
 	}
 	public static void stopWatchEnd(String stopWatchId) {
 		if(!STOPWATCH_MAP.containsKey(stopWatchId)){
