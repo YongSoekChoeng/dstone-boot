@@ -8,7 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.mortbay.util.StringUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.http.HttpStatusCode;
@@ -36,6 +36,9 @@ public class KakaoService extends BaseService {
     	String clientId 				= ConfigProperty.getProperty("interface.kakao.client-id");
     	String redirectUri 				= ConfigProperty.getProperty("interface.kakao.login-redirect-uri");
     	
+    	Map<String, String> reqMap		= new HashMap<String, String>();
+		Map<String, String> header 		= new HashMap<String, String>();
+		HttpEntity<String> request 		= null;
 		ResponseEntity<String> response	= null;
 		String jsonStr 					= "";
 		
@@ -45,7 +48,8 @@ public class KakaoService extends BaseService {
 			accessTokenUrl 				= StringUtil.replace(accessTokenUrl, "@redirect_uri@", redirectUri);
 			accessTokenUrl 				= StringUtil.replace(accessTokenUrl, "@code@", code);
 			
-			response 					= this.getRestTemplate().getForEntity(accessTokenUrl, String.class);
+			request 					= this.getEntity(MediaType.APPLICATION_JSON, header, BeanUtil.toJson(reqMap));
+			response 					= this.getRestTemplate().exchange(accessTokenUrl, HttpMethod.GET, request, String.class);
 			jsonStr						= response.getBody();
 			
 			if(response.getStatusCode().is2xxSuccessful()) {
@@ -76,7 +80,7 @@ public class KakaoService extends BaseService {
 
 		String userinfoUrl = ConfigProperty.getProperty("interface.kakao.userinfo-url");
 
-		java.util.Map<String, String> reqMap	= new java.util.HashMap<String, String>();
+		Map<String, String> reqMap				= new HashMap<String, String>();
 		Map<String, String> header 				= new HashMap<String, String>();
 		HttpEntity<String> request 				= null;
 		ResponseEntity<String> response			= null;
