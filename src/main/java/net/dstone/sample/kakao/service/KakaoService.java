@@ -1,24 +1,24 @@
 package net.dstone.sample.kakao.service;
 
-import net.dstone.common.biz.BaseService;
-import net.dstone.common.config.ConfigProperty;
-import net.dstone.common.utils.LogUtil;
-import net.dstone.sample.kakao.vo.KakaoTokenResponseVo;
-import net.dstone.sample.kakao.vo.KakaoUserInfoResponseVo;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.mortbay.util.StringUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 //import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.dstone.common.biz.BaseService;
+import net.dstone.common.config.ConfigProperty;
+import net.dstone.common.utils.BeanUtil;
 
 
 @Slf4j
@@ -27,44 +27,32 @@ import reactor.core.publisher.Mono;
 @ConfigurationProperties("interface.kakao")
 public class KakaoService extends BaseService { 
 
-    private final String KAUTH_TOKEN_URL_HOST ="https://kauth.kakao.com/oauth/token";
-    private final String KAUTH_USER_URL_HOST ="https://kapi.kakao.com/v2/user/me";
-    private final String KAUTH_LOGOUT_HOST ="https://kapi.kakao.com/v1/user/logout";
-
-
     public String getAccessTokenFromKakao(String code) {
 
-    	String accessToken = "";
-    	String refreshToken = "";
+    	String accessToken 				= "";
+    	String refreshToken 			= "";
     	
-    	String clientId = ConfigProperty.getProperty("interface.kakao.client-id");
-    	String redirectUri = ConfigProperty.getProperty("interface.kakao.redirect-uri");
+    	String accessTokenUrl 			= ConfigProperty.getProperty("interface.kakao.access-token-url");
+    	String clientId 				= ConfigProperty.getProperty("interface.kakao.client-id");
+    	String redirectUri 				= ConfigProperty.getProperty("interface.kakao.login-redirect-uri");
     	
-		net.dstone.common.utils.WsUtil ws = new net.dstone.common.utils.WsUtil();
+		ResponseEntity<String> response	= null;
+		String jsonStr 					= "";
+		
 		try {
 			
-			net.dstone.common.utils.WsUtil.Bean wsBean = new net.dstone.common.utils.WsUtil.Bean();
+			accessTokenUrl 				= StringUtil.replace(accessTokenUrl, "@client_id@", clientId);
+			accessTokenUrl 				= StringUtil.replace(accessTokenUrl, "@redirect_uri@", redirectUri);
+			accessTokenUrl 				= StringUtil.replace(accessTokenUrl, "@code@", code);
 			
-			// URL 세팅
-			wsBean.url = KAUTH_TOKEN_URL_HOST + "?";
-			wsBean.url += "grant_type=authorization_code";
-			wsBean.url += "&client_id=" + clientId;
-			wsBean.url += "&redirect_uri=" + redirectUri;
-			wsBean.url += "&code=" + code;
-			wsBean.method = "GET";	
+			response 					= this.getRestTemplate().getForEntity(accessTokenUrl, String.class);
+			jsonStr						= response.getBody();
 			
-			// Header 세팅
-			wsBean.setContentType("application/x-www-form-urlencoded;charset=utf-8");
-			
-			// 호출
-			String jsonStr = ws.execute(wsBean);
-			info( "ws.StatusCd ===>>>" + ws.StatusCd );
-			
-			if( ws.StatusCd == net.dstone.common.utils.WsUtil.HTTP_OK ) {
-				JSONParser parser = new JSONParser();
-				JSONObject element     = (JSONObject)parser.parse(jsonStr);
-				accessToken = element.get("access_token").toString();
-				refreshToken = element.get("refresh_token").toString();
+			if(response.getStatusCode().is2xxSuccessful()) {
+				JSONParser parser 		= new JSONParser();
+				JSONObject element     	= (JSONObject)parser.parse(jsonStr);
+				accessToken 			= element.get("access_token").toString();
+				refreshToken 			= element.get("refresh_token").toString();
 				info( "accessToken["+accessToken+"]" + " refreshToken["+refreshToken+"]" );
 			}else {
 				throw new Exception( "KAKAO 인증토큰을 얻는데 실패하였습니다." +  "accessToken["+accessToken+"]" + " refreshToken["+refreshToken+"]"  );
@@ -81,30 +69,29 @@ public class KakaoService extends BaseService {
 
 
 
-    public java.util.Map<String, String> getUserInfo(String accessToken) {
+    @SuppressWarnings("deprecation")
+	public java.util.Map<String, String> getUserInfo(String accessToken) {
     	
     	java.util.Map<String, String> userInfo = new java.util.HashMap<String, String>();
 
-		net.dstone.common.utils.WsUtil ws = new net.dstone.common.utils.WsUtil();
+		String userinfoUrl = ConfigProperty.getProperty("interface.kakao.userinfo-url");
+
+		java.util.Map<String, String> reqMap	= new java.util.HashMap<String, String>();
+		Map<String, String> header 				= new HashMap<String, String>();
+		HttpEntity<String> request 				= null;
+		ResponseEntity<String> response			= null;
+		String jsonStr 							= "";
+		
 		try {
 			
-			net.dstone.common.utils.WsUtil.Bean wsBean = new net.dstone.common.utils.WsUtil.Bean();
-			
-			// URL 세팅
-			wsBean.url = KAUTH_USER_URL_HOST ;
-			wsBean.method = "POST";	
-			
-			// Header 세팅
-			wsBean.addHeader("Authorization", "Bearer " + accessToken);
-			wsBean.setContentType("application/x-www-form-urlencoded;charset=utf-8");
-			
-			// 호출
-			String jsonStr = ws.execute(wsBean);
-			info( "ws.StatusCd ===>>>" + ws.StatusCd );
-			
-			if( ws.StatusCd == net.dstone.common.utils.WsUtil.HTTP_OK ) {
-				JSONParser parser = new JSONParser();
-				JSONObject element     = (JSONObject)parser.parse(jsonStr);
+			header.put("Authorization", "Bearer " + accessToken);
+			request 							= this.getEntity(MediaType.APPLICATION_JSON, header, BeanUtil.toJson(reqMap));
+			response 							= this.getRestTemplate().postForEntity(userinfoUrl, request, String.class);
+			jsonStr								= response.getBody();
+
+			if(response.getStatusCode().is2xxSuccessful()) {
+				JSONParser parser 				= new JSONParser();
+				JSONObject element     			= (JSONObject)parser.parse(jsonStr);
 				
 //				{
 //					"id": 3886924629,
@@ -126,8 +113,8 @@ public class KakaoService extends BaseService {
 //					}
 //				}
 				
-				JSONObject kakaoAccount = (JSONObject)element.get("kakao_account");
-				JSONObject properties = (JSONObject)element.get("properties");
+				JSONObject kakaoAccount 		= (JSONObject)element.get("kakao_account");
+				JSONObject properties 			= (JSONObject)element.get("properties");
 				userInfo.put("id", element.get("id").toString());
 				userInfo.put("email", kakaoAccount.get("email").toString());
 				userInfo.put("nickname", properties.get("nickname").toString());
@@ -145,38 +132,5 @@ public class KakaoService extends BaseService {
 		
 		return userInfo;
 
-    }
-
-    public void logoutFromKakao(String accessToken) {
-
-		net.dstone.common.utils.WsUtil ws = new net.dstone.common.utils.WsUtil();
-		try {
-			
-			net.dstone.common.utils.WsUtil.Bean wsBean = new net.dstone.common.utils.WsUtil.Bean();
-			
-			// URL 세팅
-			wsBean.url = KAUTH_LOGOUT_HOST;
-			wsBean.method = "POST";	
-			
-			// Header 세팅
-			wsBean.addHeader("Content-Security-Policy", "default-src 'self' *.kakao.com");
-			wsBean.addHeader("Access-Control-Allow-Origin", "*");
-			wsBean.addHeader("Authorization", "Bearer " + accessToken);
-			wsBean.setContentType("application/x-www-form-urlencoded;charset=utf-8");
-			
-			// 호출
-			ws.execute(wsBean);
-			info( "ws.StatusCd ===>>>" + ws.StatusCd );
-			
-			if( ws.StatusCd == net.dstone.common.utils.WsUtil.HTTP_OK ) {
-				info( "KAKAO 로그아웃."  );
-			}else {
-				throw new Exception( "KAKAO 로그아웃에 실패하였습니다."  );
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally{
-		}
     }
 }

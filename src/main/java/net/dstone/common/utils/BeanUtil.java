@@ -1356,42 +1356,33 @@ public class BeanUtil {
 			mapper.setPropertyNamingStrategy(new JsonPropertyNamingStrategy());
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
-			bean = (java.util.Map<String, Object>)mapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>(){});
+			bean = (java.util.Map<String, Object>)mapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>(){});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return bean;
 	}
+	
 	/**
-	 * JSON 스트링을 Map객체로 변환합니다.<br />
+	 * JSON 스트링을 List<Map>객체로 변환합니다.<br />
 	 * 
 	 * @param JSON객체
-	 * @param JSON객체의 하위 노드명
-	 * @return  Object Bean(JSON객체의 하위 노드를 맵핑할 클래스)
+	 * @return  Object Bean(JSON객체를 맵핑할 클래스)
 	 */
 	@SuppressWarnings("unchecked")
-	public static java.util.Map<String, Object> fromJsonToMap(String json, String nodeName) {
-		java.util.Map<String, Object> bean = null;
+	public static List<Map<String, Object>> fromJsonToList(String json) {
+		List<Map<String, Object>> bean = null;
 		try {
 			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-			com.fasterxml.jackson.databind.JsonNode treeNode = mapper.readTree(json);
-			com.fasterxml.jackson.databind.JsonNode childNode = treeNode.get(nodeName);
-			if( childNode != null ){
-				if( childNode.isArray() ){
-					mapper.setPropertyNamingStrategy(new JsonPropertyNamingStrategy());
-					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-					mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
-					bean = (java.util.Map<String, Object>)mapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>(){});
-				}else{
-					bean = fromJsonToMap(childNode.toString());
-				}
-			}
+			mapper.setPropertyNamingStrategy(new JsonPropertyNamingStrategy());
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
+			bean = (List<Map<String, Object>>)mapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>(){});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return bean;
 	}
-
 	public static String getRootDir() {
 		String rootDirectory =  java.nio.file.Paths.get("").toAbsolutePath().toString();
 		rootDirectory = StringUtil.replace(rootDirectory, "\\", "/");

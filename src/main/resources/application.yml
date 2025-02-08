@@ -85,6 +85,18 @@ resources:
         path: D:/Temp
 
 interface: 
-    kakao:
+    kakao: 
+      # 발급받은 클라이언트ID
       client-id: 6f89f3f82713133646791acf04bb78c7
-      redirect-uri: https://localhost:7081/kakao/loginCallback.do
+      # 1. 로그인 URL
+      login-url: https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=@client_id@&redirect_uri=@redirect_uri@
+      # 2. 로그인 후 콜백 URL
+      login-redirect-uri: https://localhost:7081/kakao/loginCallback.do
+      # 3. 사용자토큰 조회 URL
+      access-token-url: https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=@client_id@&redirect_uri=@redirect_uri@&code=@code@
+      # 4. 사용자정보 조회 URL
+      userinfo-url: https://kapi.kakao.com/v2/user/me
+      # 5. 로그아웃 URL
+      logout-url: https://kauth.kakao.com/oauth/logout?response_type=code&client_id=@client_id@&logout_redirect_uri=@logout_redirect_uri@
+      # 6. 로그아웃 후 콜백 URL
+      logout-redirect-uri: https://localhost:7081/kakao/logoutCallback.do
