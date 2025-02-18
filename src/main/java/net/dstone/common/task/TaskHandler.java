@@ -17,8 +17,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.glassfish.jersey.internal.jsr166.SubmittableFlowPublisher;
-
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.DateUtil;
 import net.dstone.common.utils.StringUtil;

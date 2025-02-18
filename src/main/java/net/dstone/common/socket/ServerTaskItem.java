@@ -5,22 +5,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import net.dstone.common.task.TaskItem;
 import net.dstone.common.utils.LogUtil;
 
-public abstract class ServerTaskItem extends Thread {
+public class ServerTaskItem extends TaskItem {
 
     LogUtil logger = new LogUtil(ServerTaskItem.class);
 
 	private Socket socket;
+	private Object response;
 
 	public ServerTaskItem(){
+		
 	}
 	
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 	}
+
+	public Object getResponse() {
+		return response;
+	}
+
 	
-	public void run(){
+	public TaskItem doTheTask() {
 		
 		ObjectOutputStream oos = null;
 		ObjectInputStream  ois = null;
@@ -32,7 +40,7 @@ public abstract class ServerTaskItem extends Thread {
 			ois = new ObjectInputStream (socket.getInputStream());  
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			
-			Object response = this.doTask(ois.readObject());
+			Object response = this.doTheServerJob(ois.readObject());
 			if( response != null ) {
 				oos.writeObject(response);
 			}
@@ -43,21 +51,19 @@ public abstract class ServerTaskItem extends Thread {
 			try{
 				if(oos != null) { oos.close();}
 				if(ois != null) { ois.close();}
-				this.closeSocket();
+				if(socket != null){socket.close();}
 			}catch(IOException e){
 				logger.error(e);
 			}
 		}
-	}
-
-	public void closeSocket() {
-		try{
-			if(socket != null){socket.close();}
-		}catch(IOException e){
-			logger.error(e);
-		}
+		
+		return this;
 	}
 	
-	protected abstract Object doTask(Object param);
+	protected Object doTheServerJob( Object param) {
+		Object output = "Hi [" + param + "] ~!";
+		System.out.println(output);
+		return output;
+	}
 
 }

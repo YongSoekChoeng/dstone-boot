@@ -8,6 +8,7 @@ import net.dstone.common.core.BaseObject;
 
 public class Client extends BaseObject{
 
+	private String executorServiceId;
 	private Socket socket;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
@@ -15,7 +16,12 @@ public class Client extends BaseObject{
 	String ip;
 	int port;
 	
-	public Client(String ip, int port) {
+	private Client() {
+		
+	}
+	
+	public Client(String executorServiceId, String ip, int port) {
+		this.executorServiceId = executorServiceId;
 		this.ip = ip;
 		this.port = port;
 	}
@@ -63,8 +69,11 @@ public class Client extends BaseObject{
 			if(this.socket == null) {
 				throw new Exception("소켓연결이 되어있지 않습니다.");
 			}
+			if(this.executorServiceId == null) {
+				throw new Exception("실행서버ID가 설정되어있지 않습니다.");
+			}
 			
-			//VO 메시지 발송
+			//메시지 발송
 			oos.writeObject(sendMsg);
 			oos.flush();
 
@@ -76,6 +85,6 @@ public class Client extends BaseObject{
 		}
 		return receiveMsg;
 	}
-	
+
 	
 }
