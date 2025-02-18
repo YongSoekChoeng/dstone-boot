@@ -1,5 +1,5 @@
 /*****************************************************************/String ip 	= "127.0.0.1";int port 	= 1000;/*****************************************************************/
-try {	net.dstone.common.utils.DateUtil.stopWatchStart("01.소켓테스트");	net.dstone.common.socket.Client client = new net.dstone.common.socket.Client(ip, port);	client.connect();		Object returnObj = client.sendMsg("안녕하세요.");		System.out.println( "returnObj:" + returnObj );		client.disConnect();
+try {	net.dstone.common.utils.DateUtil.stopWatchStart("01.소켓테스트");	net.dstone.common.socket.Client client = new net.dstone.common.socket.Client(net.dstone.common.socket.Server.SOCKET_SERVER_LIST.GREETING, ip, port);	client.connect();	Object returnObj = client.sendMsg("안녕하세요 !!!");	System.out.println( "returnObj:" + returnObj );	client.disConnect();
 } catch (Exception e) {
 	e.printStackTrace();
 } finally {	net.dstone.common.utils.DateUtil.stopWatchEnd("01.소켓테스트");}
