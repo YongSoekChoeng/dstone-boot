@@ -918,9 +918,7 @@ public class FileUtil {
 	class LineBufferedReader extends BufferedReader {
 
 		private int defaultExpectedLineLength = 80;
-
 		private Reader in;
-
 		private char cb[];
 		private int nChars, nextChar;
 		private char lastLineTerminatorChars[];
@@ -939,14 +937,9 @@ public class FileUtil {
 		/**
 		 * Creates a buffering character-input stream that uses an input buffer
 		 * of the specified size.
-		 *
-		 * @param in
-		 *            A Reader
-		 * @param sz
-		 *            Input-buffer size
-		 *
-		 * @exception IllegalArgumentException
-		 *                If {@code sz <= 0}
+		 * @param in A Reader
+		 * @param sz Input-buffer size
+		 * @exception IllegalArgumentException If {@code sz <= 0}
 		 */
 		public LineBufferedReader(Reader in, int sz) {
 			super(in);
@@ -997,7 +990,6 @@ public class FileUtil {
 					nextChar = nChars = delta;
 				}
 			}
-
 			int n;
 			do {
 				n = in.read(cb, dst, cb.length - dst);
@@ -1010,12 +1002,10 @@ public class FileUtil {
 
 		/**
 		 * Reads a single character.
-		 *
 		 * @return The character read, as an integer in the range 0 to 65535 (
 		 *         <tt>0x00-0xffff</tt>), or -1 if the end of the stream has
 		 *         been reached
-		 * @exception IOException
-		 *                If an I/O error occurs
+		 * @exception IOException If an I/O error occurs
 		 */
 		public int read() throws IOException {
 			synchronized (lock) {
@@ -1307,7 +1297,6 @@ public class FileUtil {
 		public boolean ready() throws IOException {
 			synchronized (lock) {
 				ensureOpen();
-
 				/*
 				 * If newline needs to be skipped and the next char to be read
 				 * is a newline character, then just skip it right away.
@@ -1470,28 +1459,21 @@ public class FileUtil {
 		 * 
 		 * @return char array containing one of four possibilities detailed
 		 *         below.
-		 * 
 		 *         <p>
 		 *         1. For lines ending with a Carriage Return character ('\r') :
-		 * 
 		 *         <p>
 		 *         char[0] = '\r'
-		 * 
 		 *         <p>
 		 *         2. For lines ending with a Line Feed character ('\n') :
-		 * 
 		 *         <p>
 		 *         char[0] = '\n'
-		 * 
 		 *         <p>
 		 *         3. For lines ending with Carriage Return character
 		 *         immediately followed by a Line Feed character ('\r\n') :
-		 * 
 		 *         <p>
 		 *         char[0] = '\r'
 		 *         <p>
 		 *         char[1] = '\n'
-		 * 
 		 *         <p>
 		 *         4. For line without any line terminator (i.e. last line in
 		 *         the file) an empty char array will be returned.
