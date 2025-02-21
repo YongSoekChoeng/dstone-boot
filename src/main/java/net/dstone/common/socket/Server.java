@@ -12,8 +12,17 @@ import net.dstone.common.utils.LogUtil;
 public class Server extends BaseObject {
 	
 	public static class SOCKET_SERVER_LIST{
-		public static String ECHO = "ECHO";
-		public static String GREETING = "GREETING";
+		
+		public static class ECHO_SERVER{
+			public static String ID = "ECHO_SOCKET_SERVER";
+			public static int PORT = 1000;
+		}
+		
+		public static class GREETING_SERVER{
+			public static String ID = "GREETING_SOCKET_SERVER";
+			public static int PORT = 2000;
+		}
+		
 	}
 	
 	LogUtil logger = new LogUtil(Server.class);
@@ -59,10 +68,10 @@ public class Server extends BaseObject {
 		
 		try {
 			
-			Server greetingServer = new Server(SOCKET_SERVER_LIST.GREETING, 1000);
+			Server greetingServer = new Server(SOCKET_SERVER_LIST.GREETING_SERVER.ID, SOCKET_SERVER_LIST.GREETING_SERVER.PORT);
 			greetingServer.start();
 
-			Server echoServer = new Server(SOCKET_SERVER_LIST.ECHO, 2000);
+			Server echoServer = new Server(SOCKET_SERVER_LIST.ECHO_SERVER.ID, SOCKET_SERVER_LIST.ECHO_SERVER.PORT);
 			echoServer.start();
 			
 		} catch (Exception e) {

@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
@@ -16,6 +18,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,9 +30,14 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class FileUtil {
 
@@ -1491,5 +1499,39 @@ public class FileUtil {
 		public char[] getLastLineTerminatorChars() {
 			return lastLineTerminatorChars;
 		}
+	}
+	
+
+	public static MultipartFile toMultiFile(String filePath) {
+		MultipartFile multipartFile = null;
+		try {
+			if( isFileExist(filePath) ) {
+				File file = new File(filePath);
+				FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+				InputStream input = null;
+				OutputStream os = null;
+				try {
+				    input = new FileInputStream(file);
+				    os = fileItem.getOutputStream();
+				    IOUtils.copy(input, os);
+				    // Or faster..
+				    // IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
+				} catch (IOException ex) {
+				    throw ex;
+				} finally {
+					if( input != null) {
+						input.close();
+					}
+					if( os != null) {
+						os.close();
+					}
+				} 
+				multipartFile = new CommonsMultipartFile(fileItem); 
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return multipartFile;
 	}
 }

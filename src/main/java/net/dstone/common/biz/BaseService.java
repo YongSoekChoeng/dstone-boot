@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import net.dstone.common.utils.RestTempletUtil;
+import net.dstone.common.utils.RestFulUtil;
 
 @Service
 public class BaseService extends net.dstone.common.core.BaseObject {
@@ -18,7 +18,7 @@ public class BaseService extends net.dstone.common.core.BaseObject {
 	/*** 외부 인터페이스를 위하 RestTemplate 관련 기능 시작 ***/
 	
 	protected RestTemplate getRestTemplate() {
-		return RestTempletUtil.getInstance().getRestTemplate();
+		return RestFulUtil.getInstance().getRestTemplate();
 	}
 	
 	protected HttpEntity<String> getEntity( MediaType mediaType, String input){

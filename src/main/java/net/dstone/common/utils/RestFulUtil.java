@@ -1,25 +1,38 @@
 package net.dstone.common.utils;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-public class RestTempletUtil {
+public class RestFulUtil {
 	
-	private static RestTempletUtil restTempletUtil = null;
+	private static RestFulUtil restFulUtil = null;
 	private HttpComponentsClientHttpRequestFactory HTTP_CLIENT_FACTORY;
-	private RestTempletUtil() {
+	private static String DEFAULT_CHARSET = "UTF-8";
+	
+	private RestFulUtil() {
 		init();
 	}
 	
 	private void init() {
 		try {
-			
+	        /******************************************
+	        SSL 검증 비활성화 (로컬 환경에서만 사용)
+	        // 모든 인증서 신뢰
+	        SSLContext sslContext = SSLContextBuilder.create()
+	                .loadTrustMaterial(TrustAllStrategy.INSTANCE)
+	                .build();
+			******************************************/
+	
 			/***************** 설정 시작 *****************/
 			HttpClient httpClient = HttpClientBuilder.create()
+					//.setSSLContext(sslContext)
 					.setMaxConnTotal(100) // 최대로 연결할 수 있는 커넥션 쓰레드 수
 					.setMaxConnPerRoute(60) // (IP + PORT) 당 커넥션 쓰레드 수
 					.evictIdleConnections(60L, TimeUnit.SECONDS) // 최대 연결 유효시간을 지정한다
@@ -38,14 +51,26 @@ public class RestTempletUtil {
 		}
 	}
 	
-	public static RestTempletUtil getInstance() {
-		if( restTempletUtil == null ) {
-			restTempletUtil = new RestTempletUtil();
+	public static RestFulUtil getInstance() {
+		if( restFulUtil == null ) {
+			restFulUtil = new RestFulUtil();
 		}
-		return restTempletUtil;
+		return restFulUtil;
 	}
 	
 	public RestTemplate getRestTemplate() {
-		return new RestTemplate(HTTP_CLIENT_FACTORY);
+		return this.getRestTemplate(DEFAULT_CHARSET);
+	}
+	
+	public RestTemplate getRestTemplate(String charSet) {
+		RestTemplate restTemplate = new RestTemplate(HTTP_CLIENT_FACTORY);
+		for (HttpMessageConverter<?> messageConverter : restTemplate.getMessageConverters()) {
+			if (messageConverter instanceof AllEncompassingFormHttpMessageConverter) {
+				((AllEncompassingFormHttpMessageConverter) messageConverter).setCharset(Charset.forName(charSet));
+				((AllEncompassingFormHttpMessageConverter) messageConverter)
+						.setMultipartCharset(Charset.forName(charSet));
+			}
+		}
+		return restTemplate;
 	}
 }
