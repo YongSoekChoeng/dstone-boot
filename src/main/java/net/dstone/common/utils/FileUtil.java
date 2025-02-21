@@ -30,12 +30,12 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -1502,6 +1502,11 @@ public class FileUtil {
 	}
 	
 
+	/**
+	 * 파일을 멀티파트로 변경하는 메소드.
+	 * @param filePath
+	 * @return
+	 */
 	public static MultipartFile toMultiFile(String filePath) {
 		MultipartFile multipartFile = null;
 		try {
@@ -1533,5 +1538,31 @@ public class FileUtil {
 			e.printStackTrace();
 		}
 		return multipartFile;
+	}
+	
+	/**
+	 * 파일을 바이트배열자원으로 변경하는 메소드.<br>
+	 * HttpClient 를 이용해서 파일을 muti-part로 보낼때 필요한 기능.<br>
+	 * 예)<br>
+	 * Map<String, Object> fileMap = new HashMap<String, Object>();<br>
+	 * fileMap.put("name", "홍길동");<br>
+	 * fileMap.put("filePart1", toByteArrayResource("file01", "C:/Temp/테스트01.txt"));<br>
+	 * fileMap.put("filePart2", toByteArrayResource("file02", "C:/Temp/테스트02.txt"));<br>
+	 * request = this.getEntity(MediaType.MULTIPART_FORM_DATA, 헤더맵, fileMap);<br>
+	 * response = this.getRestTemplate().postForEntity(URL, request, 리턴타입.class);<br>
+	 * @param fileName
+	 * @param fileFullPath
+	 * @return
+	 * @throws Exception
+	 */
+	public static ByteArrayResource toByteArrayResource(String fileName, String fileFullPath) throws Exception  {
+		MultipartFile multiFile = FileUtil.toMultiFile(fileFullPath);
+		ByteArrayResource contentsAsResource = new ByteArrayResource(multiFile.getBytes()) {
+			@Override
+			public String getFilename() {
+				return fileName;
+			}
+		};
+		return contentsAsResource;
 	}
 }
