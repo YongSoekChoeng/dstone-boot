@@ -31,37 +31,15 @@ public class Client extends BaseObject{
 			// 서버에 요청 보내기
 			socket = new Socket(ip, port);
 			info(socket.getInetAddress().getHostAddress() + " 연결됨");
+
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream (socket.getInputStream());
+			
 		} catch (Exception e) {
 			error(e);
 		}
 	}
 
-	public void disConnect() {
-		if( this.socket != null ) {
-			try {
-				this.socket.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		if( this.oos != null ) {
-			try {
-				this.oos.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		if( this.ois != null ) {
-			try {
-				this.ois.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	public Object sendMsg(Object sendMsg) {
 		Object receiveMsg = null;
 		try {
@@ -72,7 +50,7 @@ public class Client extends BaseObject{
 			if(this.executorServiceId == null) {
 				throw new Exception("실행서버ID가 설정되어있지 않습니다.");
 			}
-			
+
 			//메시지 발송
 			oos.writeObject(sendMsg);
 			oos.flush();
@@ -86,5 +64,29 @@ public class Client extends BaseObject{
 		return receiveMsg;
 	}
 
+	public void disConnect() {
+		if( this.ois != null ) {
+			try {
+				this.ois.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if( this.oos != null ) {
+			try {
+				this.oos.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if( this.socket != null && !this.socket.isClosed() ) {
+			try {
+				this.socket.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	
 }

@@ -25,6 +25,10 @@ public class Server extends BaseObject {
 		
 	}
 	
+	public static class SOCKET_COMMAND{
+		public static String QUIT = "SOCKET_COMMAND.QUIT";
+	}
+	
 	LogUtil logger = new LogUtil(Server.class);
 	
 	private net.dstone.common.task.TaskHandler taskHandler;
@@ -43,23 +47,47 @@ public class Server extends BaseObject {
 	
 	public void start() throws Exception{
 
-		try(ServerSocket server = new ServerSocket(this.port)){
-
+		ServerSocket serverSocket = null;
+		Socket socket = null;
+		try{
 			LogUtil.sysout("executorServiceId["+executorServiceId+"] START");
+			serverSocket = new ServerSocket(this.port);
 			
-			while(true){
-				Socket socket = server.accept();
+			while( true ) {
+				socket = serverSocket.accept();
 				
 				ServerTaskItem taskItem = new ServerTaskItem();
-				taskItem.setSocket(socket);
+				taskItem.setSocket(serverSocket, socket);
 				taskItem.setExecutorServiceId(executorServiceId);
 				taskHandler.doTheAsyncTask(executorServiceId+"_FIXED", taskItem);
+				
 			}
 			
 		} catch(IOException e){
 			LogUtil.sysout(e);
 		} finally {
+			release(serverSocket);
 			LogUtil.sysout("executorServiceId["+executorServiceId+"] END");
+		}
+	}
+	
+	private void release(Object obj) {
+		if(obj != null) {
+			try {
+				if( obj instanceof java.net.ServerSocket ) {
+					ServerSocket serverSocket = (java.net.ServerSocket)obj;
+					if( !serverSocket.isClosed() ) {
+						serverSocket.close();
+					}
+				}else if( obj instanceof java.net.Socket ) {
+					Socket socket = (java.net.Socket)obj;
+					if( !socket.isClosed() ) {
+						socket.close();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -71,9 +99,6 @@ public class Server extends BaseObject {
 			Server greetingServer = new Server(SOCKET_SERVER_LIST.GREETING_SERVER.ID, SOCKET_SERVER_LIST.GREETING_SERVER.PORT);
 			greetingServer.start();
 
-			Server echoServer = new Server(SOCKET_SERVER_LIST.ECHO_SERVER.ID, SOCKET_SERVER_LIST.ECHO_SERVER.PORT);
-			echoServer.start();
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
