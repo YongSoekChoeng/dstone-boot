@@ -1,6 +1,10 @@
 package net.dstone.common.utils;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -375,4 +379,17 @@ public class WebUtil {
 		return "";
 	}
 
+	public static String getExternalIp() {
+		String ip = "";
+        try {
+            URL url = new URL("http://checkip.amazonaws.com");
+            URLConnection connection = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            ip = in.readLine();
+            System.out.println("External IP Address: " + ip);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return ip;
+	}
 }

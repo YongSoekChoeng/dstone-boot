@@ -15,7 +15,7 @@ server:
             init-parameters: 
                 development: true
     ssl: 
-        enabled: true
+        enabled: false
         protocol: TLS
         enabled-protocols: 
         - TLSv1
