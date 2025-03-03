@@ -1,4 +1,4 @@
-package net.dstone.sample.google;
+package net.dstone.sample.google.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
