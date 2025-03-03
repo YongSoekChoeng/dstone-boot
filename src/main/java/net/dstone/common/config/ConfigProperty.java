@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import net.dstone.common.utils.LogUtil;
 
 @Component("configProperty")
-public class ConfigProperty {
+public class ConfigProperty { 
 
 	@SuppressWarnings("unused")
 	private static final LogUtil logger = new LogUtil(ConfigProperty.class);
