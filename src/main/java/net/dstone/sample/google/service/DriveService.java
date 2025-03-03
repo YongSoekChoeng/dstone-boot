@@ -74,6 +74,7 @@ public class DriveService extends BaseService {
             if (list == null) {
             	list = new ArrayList<File>();
             }
+            info("list:" + list);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
