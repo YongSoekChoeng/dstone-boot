@@ -34,7 +34,7 @@ import com.google.api.services.drive.model.FileList;
 
 public class GoogleDriveServiceTest {
 
-	private static String CREDENTIALS_FILE_PATH = "D:/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json";
+	private static String CREDENTIALS_FILE_PATH = "C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json";
 	//private static String CREDENTIALS_FILE_PATH = "D:/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-76mg18i9o8mi6ktif1bt92i0dendmvmj.apps.googleusercontent.com.json";
 	private static String APPLICATION_NAME = "H-Energy";
 	private static JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -98,8 +98,8 @@ public class GoogleDriveServiceTest {
     public static void main(String[] args) throws GeneralSecurityException, IOException, Exception {
     	GoogleDriveServiceTest test = new GoogleDriveServiceTest();
     	
-    	//test.test1();
-    	test.test2();
+    	test.test1();
+    	//test.test2();
     	
     }
     

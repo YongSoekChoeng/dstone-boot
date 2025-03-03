@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -25,6 +27,7 @@ import net.dstone.common.biz.BaseService;
 import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.utils.FileUtil;
 
+@Service
 public class DriveService extends BaseService {
 
     /** Global Drive API Scope. */
@@ -75,5 +78,9 @@ public class DriveService extends BaseService {
 			e.printStackTrace();
 		}
     	return list;
+    }
+    
+    public void echo(String msg) {
+    	System.out.println(msg);
     }
 }

@@ -102,4 +102,4 @@ interface:
       logout-redirect-uri: https://localhost:7081/kakao/logoutCallback.do
     google: 
       # OAuth 클라이언트ID 인증정보파일경로
-      credentials-filepath: D:/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json
+      credentials-filepath: C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json
