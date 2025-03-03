@@ -23,7 +23,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 public class GoogleSheetServiceTest {
 	
 
-	private static final String CREDENTIALS_FILE_PATH = "C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/resources/google/h-energy-449822-774133867821.json";
+	private static final String CREDENTIALS_FILE_PATH = "D:/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-68nq1p97g9u3t9isu7a50km7upsiggc6.apps.googleusercontent.com.json";
 	private static final String APPLICATION_NAME = "H-Energy";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
