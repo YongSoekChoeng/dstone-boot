@@ -19,6 +19,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1547,4 +1548,44 @@ public class FileUtil {
 		};
 		return contentsAsResource;
 	}
+	
+	/**
+	 * 파일명이 중복일때 숫자를 붙여서 새로운 파일명 생성
+	 * @param toFilePath
+	 * @return
+	 */
+	public static String getNewFileName(String toFilePath) {
+		String dest = toFilePath;
+		String dot = ".";
+
+		if (StringUtil.isEmpty(toFilePath))
+			return dest;
+		
+		if(!Files.exists(Paths.get(dest))) 
+	    		return dest;
+	    
+	    try {
+	    	File f = new File(toFilePath);
+	    	String fileHead = f.getName();
+	    	String fileExt = "";
+	    	
+	    	int pos = f.getName().lastIndexOf(dot);
+	    	if(pos > -1) {
+			fileHead = f.getName().substring(0, f.getName().lastIndexOf("."));
+			fileExt = f.getName().substring(f.getName().lastIndexOf(".")+1);
+	    	} else {
+	    		dot = "";
+	    	}
+
+		for (int i = 1; i < Integer.MAX_VALUE; i++) {
+			dest = Paths.get(f.getParent(), String.format("%s(%d)%s%s", fileHead, i, dot, fileExt)).toString();
+			if (!Files.exists(Paths.get(dest)))
+			break;
+		}
+		    
+	    } catch(IllegalStateException ie ) {}
+	    
+	    return dest;
+	}
+
 }
