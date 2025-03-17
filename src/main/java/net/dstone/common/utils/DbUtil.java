@@ -2688,7 +2688,7 @@ public class DbUtil {
 			
 			// 1. 컬럼 기본정보 조회.
 			if ("ORACLE".equals(db.currentDbKind)) {
-				sql.append("SELECT  ").append("\n");
+				sql.append("SELECT DISTINCT ").append("\n");
 				sql.append("    C.TABLE_NAME ").append("\n");
 				sql.append("    , C.COLUMN_NAME ").append("\n");
 				sql.append("    , D.COMMENTS COLUMN_COMMENT ").append("\n");
@@ -2696,8 +2696,8 @@ public class DbUtil {
 				sql.append("    , C.DATA_LENGTH ").append("\n");
 				sql.append("    , C.NULLABLE ").append("\n");
 				sql.append("FROM  ").append("\n");
-				sql.append("    USER_TAB_COLUMNS C ").append("\n");
-				sql.append("    , USER_COL_COMMENTS D ").append("\n");
+				sql.append("    ALL_TAB_COLUMNS C ").append("\n");
+				sql.append("    , ALL_COL_COMMENTS D ").append("\n");
 				sql.append("WHERE 1=1 ").append("\n");
 				sql.append("    AND C.TABLE_NAME = D.TABLE_NAME ").append("\n");
 				sql.append("    AND C.COLUMN_NAME = D.COLUMN_NAME ").append("\n");

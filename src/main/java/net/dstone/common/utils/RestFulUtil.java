@@ -42,8 +42,8 @@ public class RestFulUtil {
 			
 			HTTP_CLIENT_FACTORY = new HttpComponentsClientHttpRequestFactory();
 			HTTP_CLIENT_FACTORY.setConnectionRequestTimeout(5000 * 1000); //  HttpClient가 커넥션 풀에서 사용 가능한 연결을 가져오기 위해 대기하는 최대 시간을 지정하는 옵션. 커넥션 풀에서 사용 가능한 연결이 없을 때, 요청은 커넥션 풀에 새로운 연결이 생성될 때까지 해당 시간만큼 대기.
-			HTTP_CLIENT_FACTORY.setConnectTimeout(5000); // 커넥션 최대 시간
-			HTTP_CLIENT_FACTORY.setReadTimeout(5000); // 읽기 최대 시간
+			HTTP_CLIENT_FACTORY.setConnectTimeout(30*1000); // 커넥션 최대 시간
+			HTTP_CLIENT_FACTORY.setReadTimeout(30*1000); // 읽기 최대 시간
 			HTTP_CLIENT_FACTORY.setHttpClient(httpClient);
 			/***************** 설정 종료 *****************/
 		} catch (Exception e) {
