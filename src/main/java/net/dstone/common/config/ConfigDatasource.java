@@ -31,7 +31,17 @@ public class ConfigDatasource {
 
     @Bean(name = "dataSourceSample")
     @ConfigurationProperties("spring.datasource.sample.hikari")
-    public DataSource dataSource1() {
+    public DataSource dataSourceSample() {
+    	if( "Y".equals(ConfigProperty.getProperty("use-jndi-lookup")) ) {
+    		return (new JndiDataSourceLookup()).getDataSource(ConfigProperty.getProperty("jndi-lookup-name"));
+    	}else {
+    		return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    	}
+    }
+
+    @Bean(name = "dataSourceSampleOracle")
+    @ConfigurationProperties("spring.datasource.sample-oracle.hikari")
+    public DataSource dataSourceSampleOracle() {
     	if( "Y".equals(ConfigProperty.getProperty("use-jndi-lookup")) ) {
     		return (new JndiDataSourceLookup()).getDataSource(ConfigProperty.getProperty("jndi-lookup-name"));
     	}else {

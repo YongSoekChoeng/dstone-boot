@@ -122,7 +122,51 @@ public class ConfigTransaction {
 	}
 
 	/********************************************************************************
-	3. Analyzer 관련 설정
+	3. Sample-Oracle 관련 설정
+	********************************************************************************/
+	@Bean(name = "txManagerSampleOracle")
+	public DataSourceTransactionManager txManagerSampleOracle(@Qualifier("dataSourceSampleOracle") DataSource dataSourceSampleOracle) {
+		DataSourceTransactionManager txManagerSampleOracle = new DataSourceTransactionManager(dataSourceSampleOracle);
+		return txManagerSampleOracle;
+	}
+
+	@Bean(name = "txAdviceSampleOracle")
+	public TransactionInterceptor txAdviceSampleOracle(DataSourceTransactionManager txManagerSampleOracle) {
+	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+		Properties txAttributes = new Properties();
+		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
+		/** If need to add additionall exception, add here **/
+		rollbackRules.add(new RollbackRuleAttribute(Exception.class));
+		// read-only
+		DefaultTransactionAttribute readOnlyAttribute = new DefaultTransactionAttribute( TransactionDefinition.PROPAGATION_SUPPORTS);
+		readOnlyAttribute.setReadOnly(true);
+		readOnlyAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String readOnlyTransactionAttributesDefinition = readOnlyAttribute.toString();
+		txAttributes.setProperty("get*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("select*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("list*", readOnlyTransactionAttributesDefinition);
+		// write rollback-rule
+		RuleBasedTransactionAttribute writeAttribute = new RuleBasedTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED, rollbackRules);
+		writeAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String writeTransactionAttributesDefinition = writeAttribute.toString();
+		txAttributes.setProperty("insert*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("update*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("delete*", writeTransactionAttributesDefinition);
+		
+		transactionInterceptor.setTransactionAttributes(txAttributes);
+		transactionInterceptor.setTransactionManager(txManagerSampleOracle);
+	    return transactionInterceptor;
+	}
+
+	@Bean(name = "txAdvisorSampleOracle")
+	public Advisor txAdvisorSampleOracle(@Qualifier("txManagerSampleOracle") DataSourceTransactionManager txManagerSampleOracle) {
+		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
+		return new DefaultPointcutAdvisor(pointcut, txAdviceSample(txManagerSampleOracle));
+	}
+
+	/********************************************************************************
+	4. Analyzer 관련 설정
 	********************************************************************************/
 	@Bean(name = "txManagerAnalyzer")
 	public DataSourceTransactionManager txManagerAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) {
