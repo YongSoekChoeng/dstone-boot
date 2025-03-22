@@ -17,6 +17,10 @@ public class BaseDao extends net.dstone.common.core.BaseObject {
     protected SqlSessionTemplate sqlSessionSample; 
 
     @Autowired 
+    @Qualifier("sqlSessionSampleOracle") 
+    protected SqlSessionTemplate sqlSessionSampleOracle; 
+
+    @Autowired 
     @Qualifier("sqlSessionAnalyzer") 
     protected SqlSessionTemplate sqlSessionAnalyzer; 
 

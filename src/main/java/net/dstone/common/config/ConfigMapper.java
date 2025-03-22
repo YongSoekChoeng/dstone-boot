@@ -27,7 +27,6 @@ public class ConfigMapper {
 		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/common/**/*Dao.xml"));
 		return bean.getObject();
 	}
-
 	@Bean(name = "sqlSessionCommon")
 	public SqlSessionTemplate sqlSessionCommon(@Qualifier("sqlSessionFactoryCommon") SqlSessionFactory sqlSessionFactoryCommon) {
 		return new SqlSessionTemplate(sqlSessionFactoryCommon);
@@ -42,10 +41,23 @@ public class ConfigMapper {
 		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
 		return bean.getObject();
 	}
-	
 	@Bean(name = "sqlSessionSample")
 	public SqlSessionTemplate sqlSessionSample(@Qualifier("sqlSessionFactorySample") SqlSessionFactory sqlSessionFactorySample) {
 		return new SqlSessionTemplate(sqlSessionFactorySample);
+	}
+
+	@Bean(name = "sqlSessionFactorySampleOracle")
+	public SqlSessionFactory sqlSessionFactorySampleOracle(@Qualifier("dataSourceSampleOracle") DataSource dataSourceSampleOracle) throws Exception {
+		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
+		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+		bean.setDataSource(dataSourceSampleOracle);
+		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
+		return bean.getObject();
+	}
+	@Bean(name = "sqlSessionSampleOracle")
+	public SqlSessionTemplate sqlSessionSampleOracle(@Qualifier("sqlSessionFactorySampleOracle") SqlSessionFactory sqlSessionFactorySampleOracle) {
+		return new SqlSessionTemplate(sqlSessionFactorySampleOracle);
 	}
 
 	@Bean(name = "sqlSessionFactoryAnalyzer")
@@ -57,7 +69,6 @@ public class ConfigMapper {
 		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/analyzer/**/*Dao.xml"));
 		return bean.getObject();
 	}
-	
 	@Bean(name = "sqlSessionAnalyzer")
 	public SqlSessionTemplate sqlSessionAnalyzer(@Qualifier("sqlSessionFactoryAnalyzer") SqlSessionFactory sqlSessionFactoryAnalyzer) {
 		return new SqlSessionTemplate(sqlSessionFactoryAnalyzer);
