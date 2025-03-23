@@ -1,10 +1,8 @@
-<%@page import="net.dstone.common.utils.StringUtil"%>
+<%@page import="net.dstone.common.utils.SystemUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-	String ERR_CD 			= StringUtil.nullCheck(request.getAttribute("ERR_CD"), "");
-	String ERR_MSG 			= StringUtil.nullCheck(request.getAttribute("ERR_MSG"), "");
-	String ERR_MSG_DETAIL 	= StringUtil.nullCheck(request.getAttribute("ERR_MSG_DETAIL"), "");
-%>
+<%    
+
+%>   
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
@@ -25,15 +23,11 @@
 
 					<section>
 						<!-- Content Start  -->
+						
 						<header class="main">
-							에러코드 : <%=ERR_CD %>
-							<br>
-							에러메세지 : <%=ERR_MSG %>
-							<br>
-							에러메세지상세
-							<br>
-							<textarea rows="10" cols="100"><%=ERR_MSG_DETAIL %></textarea>
+							<h1>Main </h1>
 						</header>
+						
 						<!-- Content End  -->
 					</section>
 

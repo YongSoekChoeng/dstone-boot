@@ -139,6 +139,7 @@ public class ConfigSecurity {
 			// CSS	
 			"/css/**"
 			, "/**/*.css"
+			, "/**/*.woff2"
 			// IMAGE
 			, "/images/**"
 			, "/**/*.bmp"
