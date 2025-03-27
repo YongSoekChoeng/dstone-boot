@@ -1,5 +1,9 @@
 package net.dstone.common.utils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 public class SystemUtil {
 	
 	private static SystemUtil systemInfo = null;
@@ -198,4 +202,49 @@ public class SystemUtil {
 		return System.getProperty(name, "");
 	}
 	
+	public static String executeCli(String[] cli, String charSet) {
+
+		InputStream stdIn = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+
+		StringBuffer output = new StringBuffer();
+
+		try {
+
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.command(cli);
+			Process proc = pb.start();
+
+			stdIn = proc.getInputStream();
+			isr = new InputStreamReader(stdIn, charSet);
+			br = new BufferedReader(isr);
+
+			String line = null;
+
+			while ((line = br.readLine()) != null) {
+				output.append(line).append("\n");
+			}
+
+			proc.waitFor();
+
+		} catch (Throwable t) {
+			t.printStackTrace();
+		} finally {
+			try {
+				if (stdIn != null) {
+					stdIn.close();
+				}
+				if (isr != null) {
+					isr.close();
+				}
+				if (br != null) {
+					br.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return output.toString();
+	}
 }
