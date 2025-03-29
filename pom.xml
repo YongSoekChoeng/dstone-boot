@@ -23,6 +23,7 @@
 		<!-- Web -->
 		<jsp.version>2.2.1</jsp.version>
 		<jstl.version>1.2.1</jstl.version>
+		<servlet.version>3.0.1</servlet.version>
 		<!-- Maven-Plugin -->
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
 		<!-- Log4j -->
@@ -163,6 +164,7 @@
 		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
+		    <version>${servlet.version}</version>
 		    <scope>provided</scope>
 		</dependency>
 		<!-- VIEW -->
@@ -381,6 +383,11 @@
 			<version>1.25.0</version>
 		</dependency>
 		<dependency>
+		    <groupId>com.google.apis</groupId>
+		    <artifactId>google-api-services-drive</artifactId>
+		    <version>v3-rev197-1.25.0</version>
+		</dependency>		
+		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client</artifactId>
 			<version>1.34.1</version>
@@ -398,18 +405,13 @@
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>1.21.0</version>
+			<version>1.33.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-jackson2</artifactId>
 			<version>1.20.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.google.apis</groupId>
-		    <artifactId>google-api-services-drive</artifactId>
-		    <version>v3-rev197-1.25.0</version>
-		</dependency>
+		</dependency>	
 	    
 	</dependencies>
 
