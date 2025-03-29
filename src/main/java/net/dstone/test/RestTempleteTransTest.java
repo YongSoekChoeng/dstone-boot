@@ -1,23 +1,19 @@
 package net.dstone.test;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import net.dstone.common.utils.DataSet;
@@ -26,14 +22,15 @@ import net.dstone.common.utils.DataSet;
 @RequestMapping(value = "/test/rest/*")
 public class RestTempleteTransTest extends net.dstone.common.core.BaseObject {
 	
+	@SuppressWarnings("deprecation")
 	@RequestMapping(value = "/callTest.do") 
     public ResponseEntity callTest(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
 
     	info( this.getClass().getName() + ".callTest has been called !!!" );
     	
     	RestTemplate restTemplate = null;
-    	HttpEntity<String> requestEntity = null;
-    	ResponseEntity<String> responseEntity = null;
+    	HttpEntity<?> requestEntity = null;
+    	ResponseEntity<?> responseEntity = null;
     	
 		try {
 			/* 1. Header 생성 */
@@ -43,40 +40,35 @@ public class RestTempleteTransTest extends net.dstone.common.core.BaseObject {
 				String hKey = reqHeaderKeys.nextElement();
 				httpHeaders.add(hKey, request.getHeader(hKey));
 			}
+			httpHeaders.setContentType(MediaType.valueOf(request.getContentType()));
 
-	    	//info( this.getClass().getName() + ".callTest =================================>>> line 53 request.getParameterMap():" + request.getParameterMap());
-	    	
-			/* 2. Body 생성 */
-			DataSet resDs = new DataSet();
-			resDs.setDatum("NAME", "과일목록");
-			DataSet rowDs = resDs.addDataSet("FRUIT_LIST");
-			rowDs.setDatum("NAME", "사과");
-			rowDs.setDatum("PRICE", "1000");
-			rowDs.setDatum("PCS", "10");
-			rowDs = resDs.addDataSet("FRUIT_LIST");
-			rowDs.setDatum("NAME", "배");
-			rowDs.setDatum("PRICE", "2000");
-			rowDs.setDatum("PCS", "15");
-			rowDs.checkData();
-	    	
-			/* 3. HttpEntity 생성 */
-			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-			requestEntity = new HttpEntity<String>(resDs.toJson(), httpHeaders);
+			/* 2. Body 및 HttpEntity 생성 */
+			// Json 방식
+			if( httpHeaders.getContentType().equals(MediaType.APPLICATION_JSON) ||  httpHeaders.getContentType().equals(MediaType.APPLICATION_JSON_UTF8) ) {
+				DataSet reqDs = new DataSet();
+				reqDs.setDatum("TEST", "과일목록");
+				requestEntity = new HttpEntity<String>(reqDs.toJson(), httpHeaders);
+			// Form	방식
+			}else {
+				MultiValueMap<String, String> reqParam = new LinkedMultiValueMap<>();
+				reqParam.add("TEST", "과일목록");
+				requestEntity = new HttpEntity<Map>(reqParam, httpHeaders);
+			}
+			
 	    	info( this.getClass().getName() + ".callTest =================================>>> line 62 requestEntity.getBody():" + requestEntity.getBody() );
 
-			/* 4. RestTemplate 생성 */
+			/* 3. RestTemplate 생성 */
 			restTemplate = net.dstone.common.utils.RestFulUtil.getInstance().getRestTemplate();
 
-			/* 5. RestTemplate 호출 */
-	    	info( this.getClass().getName() + ".callTest =================================>>> line 69 request.getMethod():" + request.getMethod() );
-	    	if( "POST".equals(request.getMethod().toUpperCase()) || "PUT".equals(request.getMethod().toUpperCase()) ) {
-	    		responseEntity = restTemplate.postForEntity("http://localhost:7081/test/rest/callProxy.do", requestEntity, String.class);
-	    	}else {
-	    		responseEntity = restTemplate.getForEntity("http://localhost:7081/test/rest/callProxy.do", String.class);
-	    	}
+			/* 4. RestTemplate 호출 */
+			responseEntity = restTemplate.exchange(
+				"http://localhost:7081/test/rest/callProxy.do",
+	             HttpMethod.valueOf(request.getMethod()),
+	             requestEntity,
+	             String.class
+	        );
 
 			System.out.println( "callTest ::: responseEntity===>>>" + responseEntity );
-			System.out.println( "callTest ::: responseEntity.getBody()===>>>" + responseEntity.getBody() );
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -97,11 +89,11 @@ public class RestTempleteTransTest extends net.dstone.common.core.BaseObject {
         try {
         	
 			/* 1. Header 생성 */
-			HttpHeaders headers = new HttpHeaders();
+			HttpHeaders httpHeaders = new HttpHeaders();
 			java.util.Enumeration<String> reqHeaderKeys = request.getHeaderNames();
 			while( reqHeaderKeys.hasMoreElements() ) {
 				String hKey = reqHeaderKeys.nextElement();
-				headers.add(hKey, request.getHeader(hKey));
+				httpHeaders.add(hKey, request.getHeader(hKey));
 			}
 			
         	String body = IOUtils.toString(request.getInputStream(), Charset.forName(request.getCharacterEncoding()));
@@ -109,7 +101,7 @@ public class RestTempleteTransTest extends net.dstone.common.core.BaseObject {
 			responseEntity = restTemplate.exchange(
 				"http://localhost:7081/test/rest/callMain.do",
                 HttpMethod.valueOf(request.getMethod()),
-                new HttpEntity<>(body, headers),
+                new HttpEntity<>(body, httpHeaders),
                 String.class
             );
 
@@ -129,25 +121,25 @@ public class RestTempleteTransTest extends net.dstone.common.core.BaseObject {
     	
 		try {
 
-			/* 1. Header 생성 */
-			HttpHeaders headers = new HttpHeaders();
-			java.util.Enumeration<String> reqHeaderKeys = request.getHeaderNames();
-			while( reqHeaderKeys.hasMoreElements() ) {
-				String hKey = reqHeaderKeys.nextElement();
-				headers.add(hKey, request.getHeader(hKey));
-			}
-			
-			/* 2. Body 생성 */
+			/* 1. Body 생성 */
         	String body = IOUtils.toString(request.getInputStream(), Charset.forName(request.getCharacterEncoding()));
         	DataSet resDs = new DataSet();
-        	resDs.buildFromJson(body, "");
-        	for(int i=0; i<resDs.getDataSetRowCount("FRUIT_LIST"); i++) {
-        		DataSet reqRowDs = resDs.getDataSet("FRUIT_LIST", i);
-        		reqRowDs.setDatum("SUM", String.valueOf( (Integer.parseInt(reqRowDs.getDatum("PRICE")) * Integer.parseInt(reqRowDs.getDatum("PCS")) ) ));
-        	}
-        	
+        	resDs.setDatum("NAME", "과일목록");
+			DataSet rowDs = resDs.addDataSet("FRUIT_LIST");
+			rowDs.setDatum("NAME", "사과");
+			rowDs.setDatum("PRICE", "1000");
+			rowDs.setDatum("PCS", "10");
+			rowDs = resDs.addDataSet("FRUIT_LIST");
+			rowDs.setDatum("NAME", "배");
+			rowDs.setDatum("PRICE", "2000");
+			rowDs.setDatum("PCS", "15");
+			/* 2. Header 생성 */
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			httpHeaders.setContentLength(resDs.toJson().getBytes().length);
+			
 			/* 3. ResponseEntity 생성 */
-			responseEntity = new ResponseEntity<String>(resDs.toJson(), headers, HttpStatus.valueOf(200));
+			responseEntity = new ResponseEntity<String>(resDs.toJson(), httpHeaders, HttpStatus.valueOf(200));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
