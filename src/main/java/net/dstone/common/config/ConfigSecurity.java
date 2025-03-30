@@ -49,6 +49,7 @@ public class ConfigSecurity {
 	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";			// 로그아웃 처리 성공시 진행될 액션
 	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do"; 			// 접근권한이 없을 시 진행될 액션
 	public static String KAKAO_LOGIN_PAGE 				= "/kakao/*.do"; 							// 카카오로그인 액션
+	public static String PROXY_ACTION 					= "/sample/proxy/*.do"; 					// 프락시 액션
 
 	public static String ERROR_URL_PATTERN				= "/error/**"; 								// 에러 URL패턴.(스프링 내부적으로 호출되는 에러 URL패턴 존재. Permit All로 설정)
 	
@@ -171,6 +172,7 @@ public class ConfigSecurity {
 			, LOGOUT_SUCCS_ACTION
 			, ERROR_URL_PATTERN
 			, KAKAO_LOGIN_PAGE
+			, PROXY_ACTION
 		).permitAll()
 		.mvcMatchers("/", "/index.html") // antMatchers 는 슬래쉬(/)로 끝나는 경우 제대로 검증하지 못하므로 루트(/)는 mvcMatchers를 사용한다.
 		.permitAll(); 
