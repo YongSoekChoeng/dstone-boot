@@ -116,7 +116,6 @@ info( this.getClass().getName() + ".callTest ::: body 라인 72===>>>["+key+"]" 
 				String hKey = reqHeaderKeys.nextElement();
 				httpHeaders.add(hKey, request.getHeader(hKey));
 			}
-
 			/* 2. Body 및 HttpEntity 생성 */
 			// METHOD - POST, PUT 방식
 			if( request.getMethod().toUpperCase().equals("POST") || request.getMethod().toUpperCase().equals("PUT") ) {
