@@ -249,6 +249,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
        
         try {
         	String realUrl = getSimpleDec( request.getParameter("realUrl") );
+        	info( this.getClass().getName() + ".proxy realUrl["+realUrl+"]" );
 
 			/* 1. Header 생성 */
 			HttpHeaders httpHeaders = new HttpHeaders();
