@@ -33,6 +33,7 @@ public class RequestUtil {
 	private String scheme = "";
 	private String serverName = "";
 	private int serverPort = 80;
+	private String method = "";
 	
 	private String strClientIP = "";
 	private String strURI = "";
@@ -47,16 +48,15 @@ public class RequestUtil {
 	java.util.ArrayList<java.util.Properties> uploadList = new java.util.ArrayList<java.util.Properties>();
 	java.util.HashMap<String, String[]> jsonMap = new java.util.HashMap<String, String[]>();
 
-	@SuppressWarnings("unchecked")
 	public RequestUtil(javax.servlet.http.HttpServletRequest request) throws Exception {
 		this.init(request, null);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public RequestUtil(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
 		this.init(request, response);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void init(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
 		this.request = request;
 		if(response != null) {
@@ -67,6 +67,7 @@ public class RequestUtil {
 		this.scheme = this.request.getScheme();
 		this.serverName = this.request.getServerName();
 		this.serverPort = this.request.getServerPort();
+		this.method = this.request.getMethod().toUpperCase();
 
 		this.strClientIP = this.request.getRemoteAddr();
 		this.strURI = this.request.getRequestURI();
@@ -114,6 +115,7 @@ public class RequestUtil {
 			buff.append(strT).append("scheme [" + requestUtil.scheme + "]").append("\r\n");
 			buff.append(strT).append("serverName [" + requestUtil.serverName + "]").append("\r\n");
 			buff.append(strT).append("serverPort [" + requestUtil.serverPort + "]").append("\r\n");
+			buff.append(strT).append("method [" + requestUtil.method + "]").append("\r\n");
 			buff.append(strT).append("strCharacterEncoding [" + requestUtil.strCharacterEncoding + "]").append("\r\n");
 			buff.append(strT).append("strClientIP [" + requestUtil.strClientIP + "]").append("\r\n");
 			buff.append(strT).append("strContentsType [" + requestUtil.strContentsType + "]").append("\r\n");
@@ -137,22 +139,8 @@ public class RequestUtil {
 				buff.append(strT).append(strTempParamName + " [" + this.getParameter(strTempParamName) + "]").append("\r\n");
 			}
 		}
-		
-		// multipart 일때
-		if (requestUtil.boolUploadYn) {
-			if(getFileCount() > 0){
-				buff.append(strT).append("<<< Attached File Start >>>\r\n");
-				for(int i=0; i<getFileCount(); i++){
-					String originalFileName = getOriginalFileName(i);
-					String savedFileName = getSavedFileName(i);
-					int fileSize = getFileSize(i);
-					buff.append(strT).append("originalFileName [" + originalFileName + "] savedFileName [" + savedFileName + "] fileSize [" + fileSize + "]").append("\r\n");
-				}buff.append(strT).append("<<< Attached File End >>>\r\n");
-			}
-		}
-
 		buff.append(strT).append("/").append(MAST_BAR_2).append(" " + requestUtil.getClass().getName() + ".parseRequest ").append(MAST_BAR_2).append("/\r\n");
-		logger.debug(buff.toString());
+		logger.info(buff.toString());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -292,63 +280,49 @@ public class RequestUtil {
 	}
 
 	public String getParameter(String name) {
-		if (this.fileup == null) {
-			if(isAjax(this.request) || isJson(this.request)) {
-				return nullCheck(this.getJsonParameter(name), "");
-			}else {
-				return nullCheck(this.request.getParameter(name), "");
-			}
-		} else {
-			return nullCheck(fileup.getParameter(name), "");
+		String value = nullCheck(this.request.getParameter(name), "");
+		if("".equals(value)) {
+			value = nullCheck(this.getJsonParameter(name), "");
 		}
+		if("".equals(value)) {
+			value = nullCheck(fileup.getParameter(name), "");
+		}
+		return value;
 	}
 
 	public String getParameter(String name, String defaultVal) {
-		if (this.fileup == null) {
-			if(isAjax(this.request) || isJson(this.request)) {
-				return nullCheck(this.getJsonParameter(name), defaultVal);
-			}else {
-				return nullCheck(this.request.getParameter(name), defaultVal);
-			}
-		} else {
-			return nullCheck(fileup.getParameter(name), defaultVal);
+		String value = this.getParameter(name);
+		if("".equals(value)) {
+			value = defaultVal;
 		}
+		return value;
 	}
 
+	@SuppressWarnings("unchecked")
 	public java.util.Enumeration<String> getParameterNames() {
-		if (this.fileup == null) {
-			if(isAjax(this.request) || isJson(this.request)) {
-				return this.getJsonParameterNames();
-			}else {
-				return request.getParameterNames();
-			}
-		} else {
-			return fileup.getParameterNames();
+		java.util.Enumeration<String> names = this.request.getParameterNames();
+		if( !names.hasMoreElements() ) {
+			names = this.getJsonParameterNames();
 		}
+		if( !names.hasMoreElements() ) {
+			names = fileup.getParameterNames();
+		}
+		return names;
 	}
 
 	public String[] getParameterValues(String name) {
-		if (this.fileup == null) {
-			if(isAjax(this.request) || isJson(this.request)) {
-				return this.getJsonParameterValues(name);
-			}else {
-				return request.getParameterValues(name);
-			}
-		} else {
-			return fileup.getParameterValues(name);
+		String[] values = this.request.getParameterValues(name);
+		if( values == null) {
+			values = this.getJsonParameterValues(name);
 		}
+		if( values == null) {
+			values = fileup.getParameterValues(name);
+		}
+		return values;
 	}
 
 	public int getIntParameter(String name) {
-		if (this.fileup == null) {
-			if(isAjax(this.request) || isJson(this.request)) {
-				return Integer.parseInt(this.getJsonParameter(name));
-			}else {
-				return Integer.parseInt(request.getParameter(name));
-			}
-		} else {
-			return Integer.parseInt(fileup.getParameter(name));
-		}
+		return Integer.parseInt(this.getParameter(name));
 	}
 
 	public String getSavedFileName(int index) {
@@ -464,6 +438,14 @@ public class RequestUtil {
 		this.serverPort = serverPort;
 	}
 
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
 	public String getStrRealPath() {
 		return strRealPath;
 	}
@@ -516,5 +498,4 @@ public class RequestUtil {
 		}
 		return isJson;
 	}
-
 }
