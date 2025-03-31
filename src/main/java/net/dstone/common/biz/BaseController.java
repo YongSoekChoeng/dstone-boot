@@ -26,6 +26,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.utils.RequestUtil;
 import net.dstone.common.utils.StringUtil;
@@ -220,7 +221,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 	/**
 	 * 간단 암/복호화 Key. 16자리수.
 	 */
-	private static String SIMPLE_ENCRYPT_KEY = "db2admindb2admin";
+	private static String SIMPLE_ENCRYPT_KEY = ConfigProperty.getProperty("app.common.biz.simple-encrypt-key");
 	
 	/**
      * 간단 암호화 메소드.
@@ -246,6 +247,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 	protected String getSimpleDec(String input) {
 		String output = "";
 		try {
+
 			javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/ECB/PKCS5Padding");
 			javax.crypto.SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(SIMPLE_ENCRYPT_KEY.getBytes(), "AES");
 			cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey);
@@ -282,6 +284,9 @@ public class BaseController extends net.dstone.common.core.BaseObject {
    		return mav;
 	}
     
+    /**
+     * Proxy 에서 허용할 Header 값.
+     */
     private static HashMap<String, String> PROXY_ALLOWED_HEADER_KEY_MAP = new HashMap<String, String>();
 	static {
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("accept-encoding"			, "Accept-Encoding"			);
@@ -302,7 +307,8 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 	 * @param response
 	 * @param exception
 	 */
-    @RequestMapping(value = "/proxy.do") 
+    @SuppressWarnings({ "rawtypes", "deprecation" })
+	@RequestMapping(value = "/proxy.do") 
 	protected ResponseEntity proxy(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception{
 
     	info( this.getClass().getName() + ".proxy has been called !!!" );
@@ -312,7 +318,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
     	ResponseEntity<?> responseEntity = null;
        
         try {
-        	String realUrl = getSimpleDec( request.getParameter("realUrl") );
+        	String realUrl = this.getSimpleDec( request.getParameter("realUrl") );
         	info( this.getClass().getName() + ".proxy realUrl["+realUrl+"]" );
 
 			/* 1. Header 생성 */

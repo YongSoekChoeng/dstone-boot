@@ -87,6 +87,11 @@ resources:
     fileUp: 
         path: D:/Temp
 
+app: 
+    common: 
+        biz: 
+            simple-encrypt-key: jysn007db2admin!
+
 interface: 
     kakao: 
       # 발급받은 클라이언트ID
