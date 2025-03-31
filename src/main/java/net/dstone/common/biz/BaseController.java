@@ -184,7 +184,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 			javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/ECB/PKCS5Padding");
 			javax.crypto.SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(SIMPLE_ENCRYPT_KEY.getBytes(), "AES");
 			cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey);
-			output = new String(cipher.doFinal(java.util.Base64.getDecoder().decode(input)));
+			output = new String(cipher.doFinal(java.util.Base64.getDecoder().decode(input)), "UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
