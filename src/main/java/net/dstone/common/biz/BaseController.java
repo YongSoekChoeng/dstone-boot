@@ -3,6 +3,7 @@ package net.dstone.common.biz;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +24,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.utils.RequestUtil;
 import net.dstone.common.utils.StringUtil;
@@ -32,11 +35,73 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 
 	public static String RETURN_SUCCESS = "0";
 	public static String RETURN_FAIL 	= "1"; 
-	
+
+	protected static String CALL_DIV_LINE 	= "********************************************************" ;
+	protected static String DIV_LINE 		= "===========================" ;
+
 	protected String nullCheck(Object o) {
 		return net.dstone.common.utils.StringUtil.nullCheck(o, "");
 	}
 
+	protected void logInput(String url, Object obj) {
+		StringBuffer buff = new StringBuffer();
+		buff.append("\n").append("\n").append("\n");
+		buff.append("|| " +CALL_DIV_LINE+ " API CALL 시작 " +CALL_DIV_LINE+" ||").append("\n");
+		buff.append("URL:").append(url).append("\n");
+		if ( obj != null && obj.getClass() != byte[].class) {
+			buff.append("|| " +DIV_LINE+ " INPUT START " +DIV_LINE+" ||").append("\n");
+			buff.append(this.convertToJson(obj)).append("\n");
+			buff.append("|| " +DIV_LINE+ " INPUT END " +DIV_LINE+" ||");
+			buff.append("\n");
+		}
+		info(buff.toString());
+	}
+	
+	protected void logInput(String url, Object header, Object body) {
+		StringBuffer buff = new StringBuffer();
+		buff.append("\n").append("\n").append("\n");
+		buff.append("|| " +CALL_DIV_LINE+ " API CALL 시작 " +CALL_DIV_LINE+" ||").append("\n");
+		buff.append("URL:").append(url).append("\n");
+		buff.append("|| " +DIV_LINE+ " INPUT HEADER START " +DIV_LINE+" ||").append("\n");
+		buff.append(this.convertToJson(header)).append("\n");
+		buff.append("|| " +DIV_LINE+ " INPUT HEADER END " +DIV_LINE+" ||").append("\n");
+		if ( body != null && body.getClass() != byte[].class) {
+			buff.append("|| " +DIV_LINE+ " INPUT BODY START " +DIV_LINE+" ||").append("\n");
+			buff.append(this.convertToJson(body)).append("\n");
+			buff.append("|| " +DIV_LINE+ " INPUT BODY END " +DIV_LINE+" ||");
+			buff.append("\n");
+		}
+		info(buff.toString());
+	}
+	
+	protected void logOutput(Object header, Object body) {
+		StringBuffer buff = new StringBuffer();
+		buff.append("\n");
+		buff.append("|| " +DIV_LINE+ " OUTPUT HEADER START " +DIV_LINE+" ||").append("\n");
+		buff.append(this.convertToJson(header)).append("\n");
+		buff.append("|| " +DIV_LINE+ " OUTPUT HEADER END " +DIV_LINE+" ||").append("\n");
+		if ( body != null && body.getClass() != byte[].class) {
+			buff.append("|| " +DIV_LINE+ " OUTPUT BODY START " +DIV_LINE+" ||").append("\n");
+			buff.append(this.convertToJson(body)).append("\n");
+			buff.append("|| " +DIV_LINE+ " OUTPUT BODY END " +DIV_LINE+" ||");
+			buff.append("\n");
+		}
+		buff.append("|| " +CALL_DIV_LINE+ " API CALL 종료 " +CALL_DIV_LINE+" ||").append("\n");
+		buff.append("\n").append("\n");
+		info(buff.toString());
+	}
+	
+	protected String convertToJson(Object param) {
+		String jsonStr = "{}";
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			jsonStr = mapper.writeValueAsString(param);
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+		return jsonStr;
+	}
+	
 	/**
 	 * 리퀘스트의 값을 빈객체에 세팅하여 반환 .(단건용)
 	 * @param request
@@ -217,19 +282,18 @@ public class BaseController extends net.dstone.common.core.BaseObject {
    		return mav;
 	}
     
-
-	private static ArrayList<String> PROXY_ALLOWED_HEADER_KEY_LIST = new ArrayList<String>();
+    private static HashMap<String, String> PROXY_ALLOWED_HEADER_KEY_MAP = new HashMap<String, String>();
 	static {
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("Accept-Encoding");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("eformsign_signature");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("Authorization");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("X-Naver-Client-Id");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("X-Naver-Client-Secret");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("x-ncp-apigw-api-key");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("x-ncp-apigw-api-key-id");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("client-id");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("client-secret");
-		PROXY_ALLOWED_HEADER_KEY_LIST.add("productID");
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("accept-encoding"			, "Accept-Encoding"			);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("eformsign_signature"		, "eformsign_signature"		);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("authorization"			, "Authorization"			);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("x-naver-client-id"		, "X-Naver-Client-Id"		);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("x-naver-client-secret"	, "X-Naver-Client-Secret"	);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("x-ncp-apigw-api-key"		, "x-ncp-apigw-api-key"		);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("x-ncp-apigw-api-key-id"	, "x-ncp-apigw-api-key-id"	);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("client-id"				, "client-id"				);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("client-secret"			, "client-secret"			);
+		PROXY_ALLOWED_HEADER_KEY_MAP.put("productid"				, "productID"				);
 	}
 
 	/**
@@ -256,10 +320,10 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 			java.util.Enumeration<String> reqHeaderKeys = request.getHeaderNames();
 			while( reqHeaderKeys.hasMoreElements() ) {
 				String hKey = reqHeaderKeys.nextElement();
-				if( PROXY_ALLOWED_HEADER_KEY_LIST.size() == 0 ) {
+				if( PROXY_ALLOWED_HEADER_KEY_MAP.size() == 0 ) {
 					httpHeaders.add(hKey, request.getHeader(hKey));
-				}else if( PROXY_ALLOWED_HEADER_KEY_LIST.contains(hKey) ) {
-					httpHeaders.add(hKey, request.getHeader(hKey));
+				}else if( PROXY_ALLOWED_HEADER_KEY_MAP.containsKey(hKey) ) {
+					httpHeaders.add(PROXY_ALLOWED_HEADER_KEY_MAP.get(hKey), request.getHeader(hKey));
 				}
 			}
 			httpHeaders.setContentType(MediaType.valueOf(request.getContentType()));
@@ -295,12 +359,17 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 			
 			/* 3. RestTemplate 호출 */
 	    	restTemplate = net.dstone.common.utils.RestFulUtil.getInstance().getRestTemplate();
+
+			this.logInput(realUrl, requestEntity.getHeaders(), requestEntity.getBody());
+			
 			responseEntity = restTemplate.exchange(
 				realUrl
 				, HttpMethod.valueOf(request.getMethod())
 				, requestEntity
 				, String.class
             );
+			
+			this.logOutput(responseEntity.getHeaders(), responseEntity.getBody());
 			
         } catch (Exception e) {
             e.printStackTrace();
