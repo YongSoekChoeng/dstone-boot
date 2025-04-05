@@ -289,6 +289,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
      */
     private static HashMap<String, String> PROXY_ALLOWED_HEADER_KEY_MAP = new HashMap<String, String>();
 	static {
+		/*
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("accept-encoding"			, "Accept-Encoding"			);
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("eformsign_signature"		, "eformsign_signature"		);
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("authorization"			, "Authorization"			);
@@ -299,6 +300,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("client-id"				, "client-id"				);
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("client-secret"			, "client-secret"			);
 		PROXY_ALLOWED_HEADER_KEY_MAP.put("productid"				, "productID"				);
+		*/
 	}
 
 	/**

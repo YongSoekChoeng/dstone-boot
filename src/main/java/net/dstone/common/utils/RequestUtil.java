@@ -285,7 +285,9 @@ public class RequestUtil {
 			value = nullCheck(this.getJsonParameter(name), "");
 		}
 		if("".equals(value)) {
-			value = nullCheck(fileup.getParameter(name), "");
+			if( this.fileup != null ) {
+				value = nullCheck(fileup.getParameter(name), "");
+			}
 		}
 		return value;
 	}
@@ -305,7 +307,9 @@ public class RequestUtil {
 			names = this.getJsonParameterNames();
 		}
 		if( !names.hasMoreElements() ) {
-			names = fileup.getParameterNames();
+			if( this.fileup != null ) {
+				names = fileup.getParameterNames();
+			}
 		}
 		return names;
 	}
@@ -316,7 +320,9 @@ public class RequestUtil {
 			values = this.getJsonParameterValues(name);
 		}
 		if( values == null) {
-			values = fileup.getParameterValues(name);
+			if( this.fileup != null ) {
+				values = fileup.getParameterValues(name);
+			}
 		}
 		return values;
 	}
