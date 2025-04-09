@@ -2688,8 +2688,9 @@ public class DbUtil {
 			
 			// 1. 컬럼 기본정보 조회.
 			if ("ORACLE".equals(db.currentDbKind)) {
-				sql.append("SELECT DISTINCT ").append("\n");
-				sql.append("    C.TABLE_NAME ").append("\n");
+				sql.append("SELECT DISTINCT A.* FROM ( ").append("\n");
+				sql.append("SELECT ROWNUM RNUM ").append("\n");
+				sql.append("    , C.TABLE_NAME ").append("\n");
 				sql.append("    , C.COLUMN_NAME ").append("\n");
 				sql.append("    , D.COMMENTS COLUMN_COMMENT ").append("\n");
 				sql.append("    , C.DATA_TYPE ").append("\n");
@@ -2701,7 +2702,10 @@ public class DbUtil {
 				sql.append("WHERE 1=1 ").append("\n");
 				sql.append("    AND C.TABLE_NAME = D.TABLE_NAME ").append("\n");
 				sql.append("    AND C.COLUMN_NAME = D.COLUMN_NAME ").append("\n");
+				sql.append("    AND C.COLUMN_NAME = D.COLUMN_NAME ").append("\n");
 				sql.append("	AND C.TABLE_NAME = '" + TABLE_NAME + "' ").append("\n");
+				sql.append("ORDER BY C.COLUMN_ID ").append("\n");
+				sql.append(") A ORDER BY RNUM ").append("\n");
 			} else if ("MSSQL".equals(db.currentDbKind)) {
 				sql.append("SELECT   ").append("\n");
 				sql.append("	A.TABLE_NAME  ").append("\n");
