@@ -19,12 +19,16 @@ if(returnObj != null){
     returnVoList    	= (java.util.List<net.dstone.sample.vo.UserVo>)returnObj.get("returnObj"); 
     pageUtil        	= (net.dstone.common.utils.PageUtil)returnObj.get("pageUtil");                                   
 }                                                                                                             
-/******************************************* 변수 정의 끝 *********************************************/        
+/******************************************* 변수 정의 끝 *********************************************/   
+System.out.println( "========================================================>>> line 231 " );
 %>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
+	
+		<!-- Header 영역 -->
 		<jsp:include page="../../common/header.jsp" flush="true"/>
+		
 		<script type="text/javascript">
 
 			function goForAjax(){ 
@@ -106,75 +110,81 @@ if(returnObj != null){
 			
 				<div class="inner">
 
-					<!-- Top -->
+					<!-- Top 영역 -->
 					<jsp:include page="../../common/top.jsp" flush="true"/>
-
+					
 					<section>
-						<!-- Content Start  -->
+						<!-- =============================================== Content 영역 Start =============================================== -->
+						   
+						폼서밋 방식<br>                                                                              
+						<!--폼 시작-->                                                                                                   
+						<form name="SUBMIT_FORM" method="post" action="/sample/user/listUser.do">                            
+							<input type=hidden name="PAGE_NUM" value="<%= (pageUtil != null ? pageUtil.intPageNum : 1) %>">           
+							<input type='button' name='' value='LIST' onclick='javascript:goForSubmit();' > 	                     
+                                
+							<table border=1 class="table-wrapper" >   						                                                                                        
+								<thead>                                                                                             
+									<tr>                                                                                                      
+										<th>GROUP_ID&nbsp;</th><th>USER_ID&nbsp;</th><th>USER_PW&nbsp;</th><th>MEMBER_NAME&nbsp;</th><th>AGE&nbsp;</th><th>DUTY&nbsp;</th><th>REGION&nbsp;</th><th>ADDRESS&nbsp;</th><th>ADDRESS_DTL&nbsp;</th><th>JUMINNO&nbsp;</th><th>GENDER&nbsp;</th><th>TEL&nbsp;</th><th>HP&nbsp;</th><th>EMAIL&nbsp;</th><th>INPUT_DT&nbsp;</th><th>UPDATE_DT&nbsp;</th>
+									</tr>   
+								</thead> 
+								<tbody>
+								                                                                                                  
+								<%                                                                                                        
+								if(returnVoList!=null){                                                                                   
+									for(int i=0; i<returnVoList.size(); i++){                                                             
+										userVo = returnVoList.get(i);                                                         
+								%>                                                                                                        
+								<tr>                                                                                                      
+									<td><%=userVo.getGROUP_ID() %>&nbsp;</td><td><%=userVo.getUSER_ID() %>&nbsp;</td><td><%=userVo.getUSER_PW() %>&nbsp;</td><td><%=userVo.getMEMBER_NAME() %>&nbsp;</td><td><%=userVo.getAGE() %>&nbsp;</td><td><%=userVo.getDUTY() %>&nbsp;</td><td><%=userVo.getREGION() %>&nbsp;</td><td><%=userVo.getADDRESS() %>&nbsp;</td><td><%=userVo.getADDRESS_DTL() %>&nbsp;</td><td><%=userVo.getJUMINNO() %>&nbsp;</td><td><%=userVo.getGENDER() %>&nbsp;</td><td><%=userVo.getTEL() %>&nbsp;</td><td><%=userVo.getHP() %>&nbsp;</td><td><%=userVo.getEMAIL() %>&nbsp;</td><td><%=userVo.getINPUT_DT() %>&nbsp;</td><td><%=userVo.getUPDATE_DT() %>&nbsp;</td>
+								</tr>	                                                                                                  
+								<%                                                                                                        
+									}                                                                                                     
+								}                                                                                                         
+								%>                                                                                                        
+								<tr>                                                                                                      
+									<td colspan=16 &nbsp; ><%= (pageUtil != null ? pageUtil.htmlPostPage(request, "SUBMIT_FORM", "PAGE_NUM" ) : "" ) %></td> 
+								</tr>	 
+								</tbody>                                                                                              
+							</table>                                                                                                   
+						                                                                                                             
+						</form>                                                                                                          
+						<!--폼 끝-->       
 						
-	폼서밋 방식<br>                                                                                                   
-	<!--폼 시작-->                                                                                                   
-	<form name="SUBMIT_FORM" method="post" action="/sample/user/listUser.do">                            
-		<input type=hidden name="PAGE_NUM" value="<%= (pageUtil != null ? pageUtil.intPageNum : 1) %>">           
-		<input type='button' name='' value='LIST' onclick='javascript:goForSubmit();' >                                 
-		<table border=1>                                                                                              
-			<thead>                                                                                             
-				<tr>                                                                                                      
-					<th>GROUP_ID&nbsp;</th><th>USER_ID&nbsp;</th><th>USER_PW&nbsp;</th><th>MEMBER_NAME&nbsp;</th><th>AGE&nbsp;</th><th>DUTY&nbsp;</th><th>REGION&nbsp;</th><th>ADDRESS&nbsp;</th><th>ADDRESS_DTL&nbsp;</th><th>JUMINNO&nbsp;</th><th>GENDER&nbsp;</th><th>TEL&nbsp;</th><th>HP&nbsp;</th><th>EMAIL&nbsp;</th><th>INPUT_DT&nbsp;</th><th>UPDATE_DT&nbsp;</th>
-				</tr>   
-			</thead> 
-			<tbody>                                                                                                         
-			<%                                                                                                        
-			if(returnVoList!=null){                                                                                   
-				for(int i=0; i<returnVoList.size(); i++){                                                             
-					userVo = returnVoList.get(i);                                                         
-			%>                                                                                                        
-			<tr>                                                                                                      
-				<td><%=userVo.getGROUP_ID() %>&nbsp;</td><td><%=userVo.getUSER_ID() %>&nbsp;</td><td><%=userVo.getUSER_PW() %>&nbsp;</td><td><%=userVo.getMEMBER_NAME() %>&nbsp;</td><td><%=userVo.getAGE() %>&nbsp;</td><td><%=userVo.getDUTY() %>&nbsp;</td><td><%=userVo.getREGION() %>&nbsp;</td><td><%=userVo.getADDRESS() %>&nbsp;</td><td><%=userVo.getADDRESS_DTL() %>&nbsp;</td><td><%=userVo.getJUMINNO() %>&nbsp;</td><td><%=userVo.getGENDER() %>&nbsp;</td><td><%=userVo.getTEL() %>&nbsp;</td><td><%=userVo.getHP() %>&nbsp;</td><td><%=userVo.getEMAIL() %>&nbsp;</td><td><%=userVo.getINPUT_DT() %>&nbsp;</td><td><%=userVo.getUPDATE_DT() %>&nbsp;</td>
-			</tr>	                                                                                                  
-			<%                                                                                                        
-				}                                                                                                     
-			}                                                                                                         
-			%>                                                                                                        
-			<tr>                                                                                                      
-				<td colspan=16 &nbsp; ><%= (pageUtil != null ? pageUtil.htmlPostPage(request, "SUBMIT_FORM", "PAGE_NUM" ) : "" ) %></td> 
-			</tr>	 
-			</tbody>                                                                                                  
-		</table>                                                                                                      
-	</form>                                                                                                          
-	<!--폼 끝-->                                                                                                      
-	       
-	<br>
-	<br>
-	
-	AJAX 방식<br>                
-	<!--폼 시작-->                                                                                                   
-	<form name="AJAX_FORM" method="post" action="">                            
-		<input type=hidden name="PAGE_NUM" value="<%= (pageUtil != null ? pageUtil.intPageNum : 1) %>">           
-		<input type='button' name='' value='LIST' onclick='javascript:goForAjax();' >                                 
-		<table border=1>      
-			<thead>                                                                                             
-				<tr>                                                                                                      
-					<th>GROUP_ID&nbsp;</th><th>USER_ID&nbsp;</th><th>USER_PW&nbsp;</th><th>MEMBER_NAME&nbsp;</th><th>AGE&nbsp;</th><th>DUTY&nbsp;</th><th>REGION&nbsp;</th><th>ADDRESS&nbsp;</th><th>ADDRESS_DTL&nbsp;</th><th>JUMINNO&nbsp;</th><th>GENDER&nbsp;</th><th>TEL&nbsp;</th><th>HP&nbsp;</th><th>EMAIL&nbsp;</th><th>INPUT_DT&nbsp;</th><th>UPDATE_DT&nbsp;</th>
-				</tr>   
-			</thead>  
-			<tbody id="AJAX_TBL">
-			</tbody>                                                                                                                    
-			<tr>                                                                                                      
-				<td colspan=16 &nbsp; ><div id="paging" ></div> </td> 
-			</tr>	                                                                                                  
-		</table>                                                                                                      
-	</form>                                                                                                          
-	<!--폼 끝-->                                                                                                      
-	       
-						<!-- Content End  -->
+						<br>
+						<br>
+						
+						AJAX 방식<br>               
+						<!--폼 시작-->                                                                                                   
+						<form name="AJAX_FORM" method="post" action="">                            
+							<input type=hidden name="PAGE_NUM" value="<%= (pageUtil != null ? pageUtil.intPageNum : 1) %>">           
+							<input type='button' name='' value='LIST' onclick='javascript:goForAjax();' >  
+							 
+							<table border=1 class="table-wrapper" > 
+							                               
+								<thead>                                                                                             
+									<tr>                                                                                                      
+										<th>GROUP_ID&nbsp;</th><th>USER_ID&nbsp;</th><th>USER_PW&nbsp;</th><th>MEMBER_NAME&nbsp;</th><th>AGE&nbsp;</th><th>DUTY&nbsp;</th><th>REGION&nbsp;</th><th>ADDRESS&nbsp;</th><th>ADDRESS_DTL&nbsp;</th><th>JUMINNO&nbsp;</th><th>GENDER&nbsp;</th><th>TEL&nbsp;</th><th>HP&nbsp;</th><th>EMAIL&nbsp;</th><th>INPUT_DT&nbsp;</th><th>UPDATE_DT&nbsp;</th>
+									</tr>   
+								</thead>  
+								<tbody id="AJAX_TBL">
+								</tbody>                                                                                                                    
+								<tr>                                                                                                      
+									<td colspan=16 &nbsp; ><div id="paging" ></div> </td> 
+								</tr>	
+							</table>  
+	                                                                                                         
+						</form>                                                                                                          
+						<!--폼 끝-->                                                                                                      
+	                                 
+						<!-- =============================================== Content 영역 End =============================================== -->
 					</section>
 
 				</div>
 			
 			</div>
 
-			<!-- Menu -->
+			<!-- Menu 영역 -->
 			<jsp:include page="../../common/left.jsp" flush="true"/>
 
 		</div>

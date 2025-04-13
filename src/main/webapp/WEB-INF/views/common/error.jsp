@@ -8,7 +8,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<jsp:include page="common/header.jsp" flush="true"/>
+		<jsp:include page="./header.jsp" flush="true"/>
 	</head>
 	<body class="is-preload">
 
@@ -21,7 +21,7 @@
 				<div class="inner">
 
 					<!-- Top -->
-					<jsp:include page="common/top.jsp" flush="true"/>
+					<jsp:include page="./top.jsp" flush="true"/>
 
 					<section>
 						<!-- Content Start  -->
@@ -42,7 +42,7 @@
 			</div>
 
 			<!-- Menu -->
-			<jsp:include page="common/left.jsp" flush="true"/>
+			<jsp:include page="./left.jsp" flush="true"/>
 
 		</div>
 

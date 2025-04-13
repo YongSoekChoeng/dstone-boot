@@ -6,6 +6,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
+		<!-- Header 영역 -->
 		<jsp:include page="common/header.jsp" flush="true"/>
 	</head>
 	<body class="is-preload">
@@ -18,24 +19,24 @@
 			
 				<div class="inner">
 
-					<!-- Top -->
+					<!-- Top 영역 -->
 					<jsp:include page="common/top.jsp" flush="true"/>
 
 					<section>
-						<!-- Content Start  -->
-						
+					
+						<!-- =============================================== Content 영역 Start =============================================== -->
 						<header class="main">
 							<h1>Main </h1>
 						</header>
+						<!-- =============================================== Content 영역 End =============================================== -->
 						
-						<!-- Content End  -->
 					</section>
 
 				</div>
 			
 			</div>
 
-			<!-- Menu -->
+			<!-- Menu 영역 -->
 			<jsp:include page="common/left.jsp" flush="true"/>
 
 		</div>

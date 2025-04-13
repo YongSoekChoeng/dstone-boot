@@ -39,7 +39,7 @@ spring:
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
                 username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
-                maximum-pool-size: 50
+                maximum-pool-size: 30
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/sampleDB
             networks: 
@@ -50,7 +50,7 @@ spring:
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
-                maximum-pool-size: 50
+                maximum-pool-size: 30
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/sampleDB
             networks: 
@@ -58,9 +58,9 @@ spring:
         sample-oracle: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:oracle:thin:@localhost:9521:xe
-                username: ENC(1Vc8JCXoCl4GBsif5/DgOWd/UaRQGzbDPxdCBTcotwU=)
-                password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
+                jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
+                username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
+                password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 50
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/xe
@@ -72,16 +72,17 @@ spring:
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/analyze
                 username: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
                 password: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
-                maximum-pool-size: 50
+                maximum-pool-size: 30
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/analyze
             networks: 
                 - backend
-    rabbitmq: 
-        host: localhost
-        port: 5672
-        username: jysn007
-        password: db2admin
+
+rabbitmq: 
+    host: localhost
+    port: 5672
+    username: jysn007
+    password: db2admin
 
 resources: 
     fileUp: 
