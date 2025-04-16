@@ -350,10 +350,33 @@ public class DbUtil {
 						props.put(Context.PROVIDER_URL, net.dstone.common.utils.SystemUtil.getInstance().getProperty("CURRENT_PROVIDER_URL"));
 						props.put(Context.INITIAL_CONTEXT_FACTORY, net.dstone.common.utils.SystemUtil.getInstance().getProperty("CURRENT_INITIAL_CONTEXT_FACTORY"));
 						ctx = new InitialContext(props);
+					} else if (net.dstone.common.utils.SystemUtil.getInstance().getProperty("CURRENT_WAS_KIND").trim().equals(net.dstone.common.utils.SystemUtil.getInstance().getProperty("JEUS").trim())) {
+						props.put(Context.PROVIDER_URL, net.dstone.common.utils.SystemUtil.getInstance().getProperty("CURRENT_PROVIDER_URL"));
+						props.put(Context.INITIAL_CONTEXT_FACTORY, net.dstone.common.utils.SystemUtil.getInstance().getProperty("CURRENT_INITIAL_CONTEXT_FACTORY"));
+						ctx = new InitialContext(props);
+						
+//						props.put(Context.PROVIDER_URL, "172.17.3.48:9736");
+//						props.put(Context.INITIAL_CONTEXT_FACTORY, "jeus.jndi.JNSContextFactory");
+//						props.put(Context.INITIAL_CONTEXT_FACTORY, "jeus.jndi.JEUSContextFactory");
+//						props.put(Context.SECURITY_AUTHENTICATION, "none");
+//						props.put(Context.SECURITY_PRINCIPAL, "administrator");
+//						props.put(Context.SECURITY_CREDENTIALS, "jeusadmin");
+//						props.put(Context.URL_PKG_PREFIXES, "jeus.jndi.jns.url");
+//						ctx = new InitialContext(props);
+//						try {
+//							ds = (DataSource) ctx.lookup(sDataSource);
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						} finally {
+//							System.out.println("=========================>>>sDataSource["+sDataSource+"] ds["+ds+"]");
+//						}
+
 					} else {
 						ctx = new InitialContext();
 					}
+
 					ds = (DataSource) ctx.lookup(sDataSource);
+					
 					if (ds == null) {
 						throw new Exception("데이터소스가 null 입니다.  DataSource["+sDataSource+"] lookup 실패.");
 					}

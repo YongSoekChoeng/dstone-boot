@@ -20,7 +20,7 @@ public class BizGenerator extends BaseObject {
 	// SqlSessionTemplate 로 등록된 ID
 	public static String SQL_CLIENT_ID = "sqlMapClientTemplate1";
 	// 프로젝트 루트
-	public static String PROJ_ROOT = "D:/AppHome/framework/dstone-boot";
+	public static String PROJ_ROOT = "C:/WorkShop/D/AppHome/framework/dstone-boot";
 	// 소스가 생성될 루트
 	public static String SRC_ROOT = PROJ_ROOT + "/src/main/java";
 	// SQL이 생성될 루트

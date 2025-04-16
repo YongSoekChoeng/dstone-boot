@@ -66,11 +66,11 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
         	// 프레임웍
         	if(mode.equals(MODE_FRAMEWORK)) {
-            	configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config.xml";
+            	configPath														= "C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config.xml";
 
         	//토스ERP
         	} else if(mode.equals(MODE_ANYBIZ)) {
-        		configPath														= "D:/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config-anybiz.xml";
+        		configPath														= "C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/resources/tools/analyzer/config-anybiz.xml";
         	}
         	// 1.분석모듈 인스턴스 생성
         	net.dstone.common.tools.analyzer.AppAnalyzer appAnalyzer = net.dstone.common.tools.analyzer.AppAnalyzer.getInstance(configPath);
@@ -133,7 +133,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/hsqldb/hsqldb/2.5.2/hsqldb-2.5.2.jar")));
-    		combinedTypeSolver.add(new JarTypeSolver(new File("D:/AppHome/framework/dstone-boot/src/main/webapp/WEB-INF/lib/ojdbc8-12.2.0.1.jar")));
+    		combinedTypeSolver.add(new JarTypeSolver(new File("C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/webapp/WEB-INF/lib/ojdbc8-12.2.0.1.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/apache/commons/commons-dbcp2/2.9.0/commons-dbcp2-2.9.0.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/mybatis/mybatis-spring/1.3.0/mybatis-spring-1.3.0.jar")));
@@ -169,7 +169,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/github/ulisesbocchio/jasypt-spring-boot-starter/3.0.4/jasypt-spring-boot-starter-3.0.4.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/github/ulisesbocchio/jasypt-spring-boot/3.0.4/jasypt-spring-boot-3.0.4.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar")));
-    		combinedTypeSolver.add(new JarTypeSolver(new File("D:/AppHome/framework/dstone-boot/src/main/webapp/WEB-INF/lib/bcprov-ext-jdk18on-175.jar")));
+    		combinedTypeSolver.add(new JarTypeSolver(new File("C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/webapp/WEB-INF/lib/bcprov-ext-jdk18on-175.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/spotify/docker-client/8.15.1/docker-client-8.15.1.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/google/guava/guava/20.0/guava-20.0.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.13.3/jackson-jaxrs-json-provider-2.13.3.jar")));
@@ -215,7 +215,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/com/github/javaparser/javaparser-symbol-solver-core/3.25.7/javaparser-symbol-solver-core-3.25.7.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File("D:/REPO/MAVEN/org/javassist/javassist/3.29.2-GA/javassist-3.29.2-GA.jar")));
     		
-    		combinedTypeSolver.add(new JavaParserTypeSolver(new File("D:/AppHome/framework/dstone-boot/src/main/java")));
+    		combinedTypeSolver.add(new JavaParserTypeSolver(new File("C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/java")));
 
     		combinedTypeSolver.add(new ReflectionTypeSolver());
 
@@ -228,7 +228,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 	
 	public static void testAnalysis() throws Exception {
 
-        String srcRoot = "D:/AppHome/framework/dstone-boot/src/main/java";
+        String srcRoot = "C:/WorkShop/D/AppHome/framework/dstone-boot/src/main/java";
     	String path = srcRoot + "/" + "net/dstone/sample/analyze";
     	
 		
