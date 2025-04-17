@@ -1,0 +1,34 @@
+20250414 10:57:06 Scouter Server Version 2.10.2 2020-12-19 01:45 GMT
+20250414 10:57:06 [PID]12584
+  ____                  _            
+ / ___|  ___ ___  _   _| |_ ___ _ __ 
+ \___ \ / __/   \| | | | __/ _ \ '__|
+  ___) | (_| (+) | |_| | ||  __/ |   
+ |____/ \___\___/ \__,_|\__\___|_|                                      
+ Open Source S/W Performance Monitoring  
+ Scouter version 2.10.2
+ 
+20250414 10:57:06 Load Account Group File
+20250414 10:57:07 Load Account File
+20250414 10:57:07 Load Account Group File
+20250414 10:57:07 udp listen 0.0.0.0:6100
+20250414 10:57:07 	udp_host=0.0.0.0
+20250414 10:57:07 	udp_port=6100
+20250414 10:57:07 	udp_buffer=65535
+20250414 10:57:07 	udp_so_rcvbuf=4194304
+20250414 10:57:07 Load Account File
+20250414 10:57:07 	tcp_port=6100
+20250414 10:57:07 	cp_agent_so_timeout=60000
+20250414 10:57:07 	cp_client_so_timeout=8000
+20250414 10:57:12 [S215] Alert rule detected : ErrorRate.alert
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.IAlert loaded #x1kmlu9c
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.ICounter loaded #x1iqkp15
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.IObject loaded #xfitmkb
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.IXLog loaded #x173teip
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.IXLog loaded #x1dnsmeo
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.IXLogProfile loaded #x9te529
+20250414 10:57:12 PLUG-IN : scouter.server.plugin.ISummary loaded #xtukoie
+20250414 11:03:12 [S104] New OBJECT  objType=java objHash=z1ncm2qp objName=/DESKTOP-0LK7PR4/dstone addr=127.0.0.1 2.10.2 2020-12-19 01:45 GMT_ENV_java8plus alive 2025-04-14 11:03:12.258 {detected=java,ADC=false}
+20250414 11:03:14 [S105] Update OBJECT  objType=tomcat objHash=z1ncm2qp objName=/DESKTOP-0LK7PR4/dstone addr=127.0.0.1 2.10.2 2020-12-19 01:45 GMT_ENV_java8plus alive 2025-04-14 11:03:14.198 {detected=tomcat,ADC=false}
+20250414 11:03:46 [S145] GeoIP db file is not readable : C:\WorkShop\D\Swap\Utils\APM\Scouter\scouter-all-2.10.2\scouter\server\conf\GeoLiteCity.dat
+20250414 12:11:40 [S104] New OBJECT  objType=tomcat objHash=xjl3nat objName=/DESKTOP-0LK7PR4/hen addr=127.0.0.1 2.10.2 2020-12-19 01:45 GMT_ENV_java8plus alive 2025-04-14 12:11:40.221 {detected=tomcat,ADC=false}
