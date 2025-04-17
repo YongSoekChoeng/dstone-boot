@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Address;
 import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.core.io.FileSystemResource;
@@ -98,7 +100,7 @@ public class MailUtil {
 		JavaMailSender javaMailSender = getJavaMailSender();
 		MimeMessage message = javaMailSender.createMimeMessage();
 	    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-		message.setFrom(from);
+		message.setFrom(new InternetAddress(from));
 		message.addRecipients(Message.RecipientType.TO, to);
 		if( ccList != null ) {
 			for(String cc : ccList) {
