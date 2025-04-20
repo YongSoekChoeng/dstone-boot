@@ -389,7 +389,14 @@
 		    <artifactId>pdfbox</artifactId>
 		    <version>2.0.27</version>
 		</dependency>
-	
+		
+		<!-- OCR API -->
+		<dependency>
+		    <groupId>net.sourceforge.tess4j</groupId>
+		    <artifactId>tess4j</artifactId>
+		    <version>5.4.0</version>
+		</dependency>
+		
 		<!-- Google API -->
 		<dependency>
 			<groupId>com.google.api-client</groupId>
