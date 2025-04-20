@@ -1,5 +1,6 @@
 package net.dstone.common.utils;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,11 +33,16 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -1588,4 +1595,76 @@ public class FileUtil {
 	    return dest;
 	}
 
+	/**
+	 * PDF 파일명을 (페이지별)jpg 파일로 변환하는 메소드
+	 * @param pdfPath PDF파일경로
+	 * @param toPath 페이지별jpg가 생성될 디렉토리
+	 * @return
+	 */
+	public static void convertPdfToJpg(String pdfPath, String toPath) throws IOException {
+	    File file = new File(pdfPath);
+	    PDDocument document = PDDocument.load(file);
+	    PDFRenderer pdfRenderer = new PDFRenderer(document);
+	    makeDir(toPath);
+	    for (int page = 0; page < document.getNumberOfPages(); ++page) {
+	        BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
+	        File outputfile = new File(toPath + "/" + page + ".jpg");
+	        ImageIO.write(bim, "jpg", outputfile);
+	    }
+	    document.close();
+	}
+
+	/**
+	 * Image파일을 Base64스트링으로 변환하는 메소드
+	 * @param imagePath
+	 * @return
+	 */
+	public static String convertImageToBase64(String imagePath) throws IOException {
+		byte[] fileContent = FileUtils.readFileToByteArray(new File(imagePath));
+		String encodedString = Base64.getEncoder().encodeToString(fileContent);
+		return encodedString;
+	}
+
+	/**
+	 * Base64스트링을 Image파일로 변환하는 메소드
+	 * @param imagePath
+	 * @param encodedString
+	 * @return
+	 */
+	public static void convertBase64ToImage(String imagePath, String encodedString) throws IOException {
+		makeDir(getFilePath(imagePath));
+		byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
+		FileUtils.writeByteArrayToFile(new File(imagePath), decodedBytes);
+	}
+	
+	/**
+	 * PDF 파일명을 (페이지별)BufferedImage로 변환하는 메소드
+	 * @param pdfPath PDF파일경로
+	 * @return
+	 */
+	public static List<BufferedImage> convertPdfToBufferedImage(String pdfPath) throws IOException {
+	    File file = new File(pdfPath);
+	    PDDocument document = PDDocument.load(file);
+	    PDFRenderer pdfRenderer = new PDFRenderer(document);
+	    List<BufferedImage> images = new ArrayList<>();
+	    for (int page = 0; page < document.getNumberOfPages(); ++page) {
+	        BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
+	        images.add(bim);
+	    }
+	    document.close();
+	    return images;
+	}
+
+	/**
+	 * BufferedImage 파일을 Base64 스트링으로 변환하는 메소드
+	 * @param image
+	 * @return
+	 */
+	public static String convertBufferedImageToBase64(BufferedImage image) throws IOException {
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    ImageIO.write(image, "jpg", baos);
+	    byte[] imageBytes = baos.toByteArray();
+	    return Base64.getEncoder().encodeToString(imageBytes);
+	}
+	
 }
