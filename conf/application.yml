@@ -24,16 +24,18 @@ server:
         - TLSv1
         - TLSv1.1
         - TLSv1.2
-        key-store: D:/AppHome/framework/dstone-boot/ssl/dstone-keystore.p12
+        key-store: ${APP_HOME}/framework/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
         key-store-alias: dstone-ssl
 
-spring:
-    main:
+spring: 
+    config: 
+        import: optional:file:env.properties
+    main: 
         allow-bean-definition-overriding: true
     datasource: 
-        common:
+        common: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
                 jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/sampleDB
@@ -117,4 +119,4 @@ interface:
       logout-redirect-uri: https://localhost:7081/kakao/logoutCallback.do
     google: 
       # OAuth 클라이언트ID 인증정보파일경로
-      credentials-filepath: D:/AppHome/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json
+      credentials-filepath: ${APP_HOME}/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json

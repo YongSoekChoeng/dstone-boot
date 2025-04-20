@@ -3,6 +3,8 @@ import java.io.FileNotFoundException;
 import java.util.Properties;
 
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.EncodedResource;
@@ -11,6 +13,9 @@ import org.springframework.stereotype.Component;
 import net.dstone.common.utils.LogUtil;
 
 @Component("configProperty")
+@PropertySources({
+    @PropertySource("classpath:env.properties")
+})
 public class ConfigProperty { 
 
 	@SuppressWarnings("unused")
