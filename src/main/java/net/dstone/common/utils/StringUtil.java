@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class StringUtil {
 
 	/**
@@ -1540,4 +1542,22 @@ public class StringUtil {
 		}
 		return output.toString();
 	}
+
+	/**
+	 * 두 문자의 일치비율을 반환.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+    public static double findSimilarity(String x, String y) {
+    	double similarity = 0.0;
+        if (x == null && y == null) {
+            return 1.0;
+        }else if (x == null || y == null) {
+            return 0.0;
+        }else {
+        	similarity = StringUtils.getJaroWinklerDistance(x, y);
+        }
+        return (similarity * 100);
+    }
 }
