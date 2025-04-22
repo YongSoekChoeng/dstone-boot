@@ -1603,15 +1603,23 @@ public class FileUtil {
 	 */
 	public static void convertPdfToJpg(String pdfPath, String toPath) throws IOException {
 	    File file = new File(pdfPath);
-	    PDDocument document = PDDocument.load(file);
-	    PDFRenderer pdfRenderer = new PDFRenderer(document);
-	    makeDir(toPath);
-	    for (int page = 0; page < document.getNumberOfPages(); ++page) {
-	        BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
-	        File outputfile = new File(toPath + "/" + page + ".jpg");
-	        ImageIO.write(bim, "jpg", outputfile);
-	    }
-	    document.close();
+	    PDDocument document = null;
+	    try {
+	    	document = PDDocument.load(file);
+		    PDFRenderer pdfRenderer = new PDFRenderer(document);
+		    makeDir(toPath);
+		    for (int page = 0; page < document.getNumberOfPages(); ++page) {
+		        BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
+		        File outputfile = new File(toPath + "/" + page + ".jpg");
+		        ImageIO.write(bim, "jpg", outputfile);
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(document != null) {
+				document.close();
+			}
+		}
 	}
 
 	/**
@@ -1644,14 +1652,21 @@ public class FileUtil {
 	 */
 	public static List<BufferedImage> convertPdfToBufferedImage(String pdfPath) throws IOException {
 	    File file = new File(pdfPath);
-	    PDDocument document = PDDocument.load(file);
-	    PDFRenderer pdfRenderer = new PDFRenderer(document);
-	    List<BufferedImage> images = new ArrayList<>();
-	    for (int page = 0; page < document.getNumberOfPages(); ++page) {
-	        BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
-	        images.add(bim);
-	    }
-	    document.close();
+	    PDDocument document = null;
+	    try {
+	    	document = PDDocument.load(file);
+		    PDFRenderer pdfRenderer = new PDFRenderer(document);
+		    for (int page = 0; page < document.getNumberOfPages(); ++page) {
+		        BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB);
+		        images.add(bim);
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(document != null) {
+				document.close();
+			}
+		}
 	    return images;
 	}
 
