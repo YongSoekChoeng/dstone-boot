@@ -1651,6 +1651,7 @@ public class FileUtil {
 	 * @return
 	 */
 	public static List<BufferedImage> convertPdfToBufferedImage(String pdfPath) throws IOException {
+		List<BufferedImage> images = new ArrayList<BufferedImage>();
 	    File file = new File(pdfPath);
 	    PDDocument document = null;
 	    try {
