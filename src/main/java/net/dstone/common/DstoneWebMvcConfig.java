@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -21,7 +25,6 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 import net.dstone.common.config.ConfigProperty;
-import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.exception.resolver.DsExceptionResolver;
 import net.dstone.common.utils.LogUtil;
 
@@ -29,6 +32,9 @@ import net.dstone.common.utils.LogUtil;
 public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 
 	private static final LogUtil logger = new LogUtil(DstoneWebMvcConfig.class);
+	
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 
 	/**
 	 * 뷰 등록을 하는 메소드.
@@ -162,7 +168,7 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
     	 * 예) [/fileUp/testDoc.xlsx] ==>> [D:/Temp/testDoc.xlsx]  
     	 * ResourceLocations 설정 프로토콜 - file:(파일시스템), classpath:(클래스패스)
     	 */
-		registry.addResourceHandler("/fileUp/**").addResourceLocations("file:" + ConfigProperty.getProperty("resources.fileUp.path") + "/"  );
+		registry.addResourceHandler("/fileUp/**").addResourceLocations("file:" + configProperty.getProperty("resources.fileUp.path") + "/"  );
 		registry.addResourceHandler("/**").addResourceLocations("/");
     }
 

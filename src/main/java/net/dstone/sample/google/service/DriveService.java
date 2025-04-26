@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -30,6 +31,9 @@ import net.dstone.common.utils.FileUtil;
 @Service
 public class DriveService extends BaseService {
 
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
+
     /** Global Drive API Scope. */
 	private static List<String> SCOPES = Arrays.asList(
 		DriveScopes.DRIVE
@@ -40,10 +44,10 @@ public class DriveService extends BaseService {
     public Credential authorize(final NetHttpTransport HTTP_TRANSPORT) throws Exception {
 
 		// 1. OAuth 클라이언트 키 파일이 있는지 체크 
-    	if( !FileUtil.isFileExist(ConfigProperty.getProperty("interface.google.credentials-filepath")) ) {
-    		throw new Exception("OAuth 클라이언트 키파일["+ConfigProperty.getProperty("interface.google.credentials-filepath")+"] 미존재.");
+    	if( !FileUtil.isFileExist(configProperty.getProperty("interface.google.credentials-filepath")) ) {
+    		throw new Exception("OAuth 클라이언트 키파일["+configProperty.getProperty("interface.google.credentials-filepath")+"] 미존재.");
     	}
-		InputStream in = new FileInputStream(ConfigProperty.getProperty("interface.google.credentials-filepath"));
+		InputStream in = new FileInputStream(configProperty.getProperty("interface.google.credentials-filepath"));
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(GsonFactory.getDefaultInstance(), new InputStreamReader(in));
 
 		// 2. 유저 인증 플로우 생성

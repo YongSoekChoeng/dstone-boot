@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.utils.BeanUtil;
 import net.dstone.common.utils.DateUtil;
 import net.dstone.common.utils.RequestUtil;
@@ -26,7 +27,10 @@ public class AdminController extends net.dstone.common.biz.BaseController {
     @Autowired 
     private net.dstone.sample.AdminService adminService; 
     /********* SVC 정의부분 끝 *********/
-    
+
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
+
     /** 
      * 샘플사용자정보 입력 
      * @param request 

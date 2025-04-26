@@ -21,6 +21,9 @@ import net.dstone.sample.kakao.service.KakaoService;
 @RequiredArgsConstructor
 public class KakaoLoginController extends net.dstone.common.biz.BaseController { 
 
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
+
     @Autowired 
     private KakaoService kakaoService;
 
@@ -28,9 +31,9 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     @ConfigurationProperties("interface.kakao")
     public String loginPage(Model model) {
     	
-    	String clientId = ConfigProperty.getProperty("interface.kakao.client-id");
-    	String loginUri = ConfigProperty.getProperty("interface.kakao.login-url");
-    	String loginRedirectUri = ConfigProperty.getProperty("interface.kakao.login-redirect-uri");
+    	String clientId = configProperty.getProperty("interface.kakao.client-id");
+    	String loginUri = configProperty.getProperty("interface.kakao.login-url");
+    	String loginRedirectUri = configProperty.getProperty("interface.kakao.login-redirect-uri");
     	loginUri = StringUtil.replace(loginUri, "@client_id@" , clientId);
     	loginUri = StringUtil.replace(loginUri, "@redirect_uri@" , loginRedirectUri);
     	
@@ -59,9 +62,9 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     @RequestMapping("/logout.do")
     public void logout(Model model, HttpServletRequest request, HttpServletResponse response) {
     	
-    	String clientId = ConfigProperty.getProperty("interface.kakao.client-id");
-    	String logoutUri = ConfigProperty.getProperty("interface.kakao.logout-url");
-    	String logoutRedirectUri = ConfigProperty.getProperty("interface.kakao.logout-redirect-uri");
+    	String clientId = configProperty.getProperty("interface.kakao.client-id");
+    	String logoutUri = configProperty.getProperty("interface.kakao.logout-url");
+    	String logoutRedirectUri = configProperty.getProperty("interface.kakao.logout-redirect-uri");
     	logoutUri = StringUtil.replace(logoutUri, "@client_id@" , clientId);
     	logoutUri = StringUtil.replace(logoutUri, "@logout_redirect_uri@" , logoutRedirectUri);
     	
@@ -80,9 +83,9 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     @RequestMapping("/logoutCallback.do")
     public String logoutCallback(Model model, HttpServletRequest request, HttpServletResponse response) {
 
-    	String clientId = ConfigProperty.getProperty("interface.kakao.client-id");
-    	String loginUri = ConfigProperty.getProperty("interface.kakao.login-url");
-    	String loginRedirectUri = ConfigProperty.getProperty("interface.kakao.login-redirect-uri");
+    	String clientId = configProperty.getProperty("interface.kakao.client-id");
+    	String loginUri = configProperty.getProperty("interface.kakao.login-url");
+    	String loginRedirectUri = configProperty.getProperty("interface.kakao.login-redirect-uri");
     	loginUri = StringUtil.replace(loginUri, "@client_id@" , clientId);
     	loginUri = StringUtil.replace(loginUri, "@redirect_uri@" , loginRedirectUri);
     	

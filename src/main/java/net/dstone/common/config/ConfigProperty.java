@@ -1,13 +1,12 @@
 package net.dstone.common.config;
-import java.io.FileNotFoundException;
 import java.util.Properties;
 
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.EncodedResource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import net.dstone.common.utils.LogUtil;
@@ -21,40 +20,41 @@ public class ConfigProperty {
 	@SuppressWarnings("unused")
 	private static final LogUtil logger = new LogUtil(ConfigProperty.class);
 
-	private static Properties PROP;
-	static {
+	/**
+	 * env는 기본적으로 application.yml의 프로퍼티정보를 로딩한다. @PropertySource 가 세팅되어 있으면 해당 프로퍼티의 정보도 시스템프로퍼티로 로딩한다. 
+	 * 이 경우 application.yml에서 시스템프로퍼티를 ${프로퍼티} 형식으로 사용할 수 있다.
+	 */
+	@Autowired 
+	Environment env;
+	
+	public String getProperty(String key) {
+		String val = env.getProperty(key);
+		return val;
+	}
+	
+	/**
+	 * 환경 프로퍼티 로딩 이후 호출되는 메소드 
+	 * @throws Exception
+	 */
+	@PostConstruct
+	public void afterPropertySet() {
+		System.out.println( "net.dstone.common.config.ConfigProperty.afterPropertySet() =============>>> has been called !!!" );
 		try {
-			String profile = System.getProperty("SEVER_KIND", System.getProperty("spring.profiles.active", ""));
-			Resource resource = new ClassPathResource("application"+profile+".yml");
-			EncodedResource encodedResource = new EncodedResource(resource);
-			PROP = load(encodedResource);
+	        Properties properties = new Properties();
+	        properties.load(getClass().getClassLoader().getResourceAsStream("env.properties"));
+
+	        properties.forEach((key, value) -> {
+	            String keyStr = key.toString();
+	            String valueStr = value.toString();
+
+	            if (System.getProperty(keyStr) == null) {
+	                System.setProperty(keyStr, valueStr);
+	                System.out.println( "net.dstone.common.config.ConfigProperty.afterPropertySet() =============>>> "+keyStr+"["+valueStr+"]" );
+	            }
+	        });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-    /**
-     * Load properties from the YAML file.
-     * @param resource Instance of {@link EncodedResource}
-     * @return instance of properties
-     */
-    private static Properties load(EncodedResource resource) throws FileNotFoundException {
-        try {
-            YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-            factory.setResources(resource.getResource());
-            factory.afterPropertiesSet();
-            return factory.getObject();
-        } catch (IllegalStateException ex) {
-            /* Ignore resource not found. */
-            Throwable cause = ex.getCause();
-            if (cause instanceof FileNotFoundException) throw (FileNotFoundException) cause;
-            throw ex;
-        }
-    }
-
-	public static String getProperty(String key) {
-		return PROP.getProperty(key);
-	}
-	
 }
 

@@ -11,6 +11,7 @@ import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -22,13 +23,16 @@ import net.dstone.common.config.ConfigProperty;
 @Component
 public class MailUtil {
 
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
+
 	private JavaMailSender getJavaMailSender() { 
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost(ConfigProperty.getProperty("mail.host"));
-		mailSender.setPort( Integer.parseInt(ConfigProperty.getProperty("mail.port")) );
+		mailSender.setHost(configProperty.getProperty("mail.host"));
+		mailSender.setPort( Integer.parseInt(configProperty.getProperty("mail.port")) );
 
-		mailSender.setUsername(ConfigProperty.getProperty("mail.user"));
-		mailSender.setPassword(ConfigProperty.getProperty("mail.password"));
+		mailSender.setUsername(configProperty.getProperty("mail.user"));
+		mailSender.setPassword(configProperty.getProperty("mail.password"));
 		
 		Properties props = mailSender.getJavaMailProperties();
 

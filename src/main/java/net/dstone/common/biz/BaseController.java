@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,9 @@ import net.dstone.common.utils.StringUtil;
 
 @Controller
 public class BaseController extends net.dstone.common.core.BaseObject {
+
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 
 	public static String RETURN_SUCCESS = "0";
 	public static String RETURN_FAIL 	= "1"; 
@@ -217,12 +221,6 @@ public class BaseController extends net.dstone.common.core.BaseObject {
         return new MappingJackson2JsonView();
     }
     
-    
-	/**
-	 * 간단 암/복호화 Key. 16자리수.
-	 */
-	private static String SIMPLE_ENCRYPT_KEY = ConfigProperty.getProperty("app.common.biz.simple-encrypt-key");
-	
 	/**
      * 간단 암호화 메소드.
      * @return
@@ -231,7 +229,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 		String output = "";
 		try {
 			javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/ECB/PKCS5Padding");
-			javax.crypto.SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(SIMPLE_ENCRYPT_KEY.getBytes(), "AES");
+			javax.crypto.SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(configProperty.getProperty("app.common.biz.simple-encrypt-key").getBytes(), "AES");
 			cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, secretKey);
 			output = java.util.Base64.getEncoder().encodeToString(cipher.doFinal(input.getBytes()));
 		} catch (Exception e) {
@@ -249,7 +247,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 		try {
 
 			javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/ECB/PKCS5Padding");
-			javax.crypto.SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(SIMPLE_ENCRYPT_KEY.getBytes(), "AES");
+			javax.crypto.SecretKey secretKey = new javax.crypto.spec.SecretKeySpec(configProperty.getProperty("app.common.biz.simple-encrypt-key").getBytes(), "AES");
 			cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey);
 			output = new String(cipher.doFinal(java.util.Base64.getDecoder().decode(input)), "UTF-8");
 		} catch (Exception e) {

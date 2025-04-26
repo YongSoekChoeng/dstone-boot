@@ -1,5 +1,8 @@
 package net.dstone.common.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.utils.LogUtil;
 
 public class BaseObject {

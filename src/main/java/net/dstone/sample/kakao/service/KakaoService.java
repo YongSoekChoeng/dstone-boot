@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -27,14 +28,17 @@ import net.dstone.common.utils.StringUtil;
 @ConfigurationProperties("interface.kakao")
 public class KakaoService extends BaseService { 
 
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
+
     public String getAccessTokenFromKakao(String code) {
 
     	String accessToken 				= "";
     	String refreshToken 			= "";
     	
-    	String accessTokenUrl 			= ConfigProperty.getProperty("interface.kakao.access-token-url");
-    	String clientId 				= ConfigProperty.getProperty("interface.kakao.client-id");
-    	String redirectUri 				= ConfigProperty.getProperty("interface.kakao.login-redirect-uri");
+    	String accessTokenUrl 			= configProperty.getProperty("interface.kakao.access-token-url");
+    	String clientId 				= configProperty.getProperty("interface.kakao.client-id");
+    	String redirectUri 				= configProperty.getProperty("interface.kakao.login-redirect-uri");
     	
     	Map<String, String> reqMap		= new HashMap<String, String>();
 		Map<String, String> header 		= new HashMap<String, String>();
@@ -78,7 +82,7 @@ public class KakaoService extends BaseService {
     	
     	java.util.Map<String, String> userInfo = new java.util.HashMap<String, String>();
 
-		String userinfoUrl = ConfigProperty.getProperty("interface.kakao.userinfo-url");
+		String userinfoUrl = configProperty.getProperty("interface.kakao.userinfo-url");
 
 		Map<String, String> reqMap				= new HashMap<String, String>();
 		Map<String, String> header 				= new HashMap<String, String>();
