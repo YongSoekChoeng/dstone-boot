@@ -215,7 +215,8 @@ public class AdminController extends net.dstone.common.biz.BaseController {
    		//paramList				= null;
    		returnObj				= null;
    		/************************ 변수 정의 끝 ************************/
-   		
+System.out.println( "APP_HOME=============>>>" + configProperty.getProperty("APP_HOME") );
+System.out.println( "server.ssl.key-store=============>>>" + configProperty.getProperty("server.ssl.key-store") );
    		/************************ 컨트롤러 로직 시작 ************************/
    		// 폼서밋의 경우
    		if( !isAjax(request) ) {

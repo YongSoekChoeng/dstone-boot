@@ -1,6 +1,4 @@
 package net.dstone.common.config;
-import java.util.Properties;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,29 +30,5 @@ public class ConfigProperty {
 		return val;
 	}
 	
-	/**
-	 * 환경 프로퍼티 로딩 이후 호출되는 메소드 
-	 * @throws Exception
-	 */
-	@PostConstruct
-	public void afterPropertySet() {
-		System.out.println( "net.dstone.common.config.ConfigProperty.afterPropertySet() =============>>> has been called !!!" );
-		try {
-	        Properties properties = new Properties();
-	        properties.load(getClass().getClassLoader().getResourceAsStream("env.properties"));
-
-	        properties.forEach((key, value) -> {
-	            String keyStr = key.toString();
-	            String valueStr = value.toString();
-
-	            if (System.getProperty(keyStr) == null) {
-	                System.setProperty(keyStr, valueStr);
-	                System.out.println( "net.dstone.common.config.ConfigProperty.afterPropertySet() =============>>> "+keyStr+"["+valueStr+"]" );
-	            }
-	        });
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }
 
