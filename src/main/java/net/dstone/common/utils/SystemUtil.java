@@ -205,7 +205,7 @@ public class SystemUtil {
 	/**
 	 * 컴맨드라인 시스템명령 실행 메서드<br>
 	 * 예)<br>
-	 * String[] cli = new String[]{"svn", "log", "http://220.95.212.225:6080/scm/repo/scmadmin/hen/hen", "--search", "dh.shin", "-v", "-r", "100:HEAD"};<br>
+	 * String[] cli = new String[]{"svn", "log", "http://220.95.212.225:6080/scm/repo/scmadmin/hen/hen", "--search", "dh.shin", "-v", "-r", "BASIC:HEAD"};<br>
 	 * String output = net.dstone.common.utils.SystemUtil.executeCli(cli, "EUC-KR");<br>
 	 * System.out.println("output:" + output);<br>
 	 * 
