@@ -113,11 +113,6 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 			
 			java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource("env.properties");
 			if (resource != null) {
-				File f = new File(resource.getFile());
-			    System.out.println("Resource getPath: " + resource.getPath());
-			    System.out.println("Resource getAbsolutePath: " + f.getAbsolutePath());
-			    System.out.println("Resource getContent: " + resource.getContent());
-			    
 		        try (InputStream input = resource.openStream()) {
 		        	Properties props = new Properties();
 		            if (input == null) {
