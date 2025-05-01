@@ -109,7 +109,7 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 	private static void setSysProperties() {
 		System.out.println("net.dstone.common.DstoneBootApplication.setSysProperties() has been called !!!");
 		try {
-			System.out.println("/******************************* env.properties System변수로 세팅 하기위한 조치 시작 *******************************/");
+			System.out.println("/********************* env.properties System변수로 세팅 하기위한 조치 시작 *********************/");
 			
 			java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource("env.properties");
 			if (resource != null) {
@@ -128,12 +128,14 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 						key = (String)keys.next();
 						val = props.getProperty(key, "");
 						System.setProperty(key, val);
+						System.out.println("시스템프로퍼티 "+key+"["+val+"]");
 		            }
 		        } catch (IOException ex) {
 		            ex.printStackTrace();
 		        }
 			}
-			System.out.println("/******************************* env.properties System변수로 세팅 하기위한 조치 끝 *******************************/");
+			System.out.println("/********************* env.properties System변수로 세팅 하기위한 조치 끝 *********************/");
+			System.out.println("");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
