@@ -1,6 +1,10 @@
 package net.dstone.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +30,7 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
     
 	public static void main(String[] args) {
 
+		setSysProperties();
 	    setSecurity();
 	    checkSecurity();
 	    
@@ -99,4 +104,46 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 			// TODO: handle exception
 		}
 	}
+
+	@SuppressWarnings("rawtypes")
+	private static void setSysProperties() {
+		System.out.println("net.dstone.common.DstoneBootApplication.setSysProperties() has been called !!!");
+		try {
+			/******************************* env.properties System변수로 세팅 하기위한 조치 시작 *******************************/
+			
+			java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource("env.properties");
+			if (resource != null) {
+				File f = new File(resource.getFile());
+			    System.out.println("Resource getPath: " + resource.getPath());
+			    System.out.println("Resource getAbsolutePath: " + f.getAbsolutePath());
+			    System.out.println("Resource getContent: " + resource.getContent());
+			    
+		        try (InputStream input = resource.openStream()) {
+		        	Properties props = new Properties();
+		            if (input == null) {
+		                System.out.println("Unable to find config.properties");
+		                return;
+		            }
+		            props.load(input);
+		            
+					String key = "";
+					String val = "";
+		            java.util.Iterator keys = props.keySet().iterator();
+		            while( keys.hasNext() ) {
+						key = (String)keys.next();
+						val = props.getProperty(key, "");
+						System.setProperty(key, val);
+		            }
+		        } catch (IOException ex) {
+		            ex.printStackTrace();
+		        }
+			}
+			/******************************* env.properties System변수로 세팅 하기위한 조치 끝 *********************************/
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	
+	
 }

@@ -30,8 +30,6 @@ server:
         key-store-alias: dstone-ssl
 
 spring: 
-    config: 
-        import: optional:file:env.properties
     main: 
         allow-bean-definition-overriding: true
     datasource: 
