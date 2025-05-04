@@ -11,6 +11,7 @@ public class LogUtil {
 	private Logger logger;
 	
 	public LogUtil() {
+		net.dstone.common.DstoneBootApplication.setSysProperties();
 		logger = getLogger(null);
 	}
 
