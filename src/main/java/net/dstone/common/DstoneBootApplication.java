@@ -30,8 +30,11 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
     
 	public static void main(String[] args) {
 
+		/*** env.properties의 항목들을 System변수로 세팅 ***/
 		setSysProperties();
+		/*** 낮은버젼에서 SSL을 사용할 수 있도록 세팅 ***/
 	    setSecurity();
+		/*** SSL/TLS 설정 체크 ***/
 	    checkSecurity();
 	    
 		SpringApplication app = new SpringApplication(DstoneBootApplication.class);
