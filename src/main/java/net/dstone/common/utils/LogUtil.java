@@ -15,10 +15,12 @@ public class LogUtil {
 	}
 
 	public LogUtil(Class clz) {
+		net.dstone.common.DstoneBootApplication.setSysProperties();
 		this.logger = LoggerFactory.getLogger(clz);
 	}
 	
 	public LogUtil(Object o) {
+		net.dstone.common.DstoneBootApplication.setSysProperties();
 		logger = getLogger(o);
 	}
 	

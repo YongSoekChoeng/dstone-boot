@@ -105,39 +105,43 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 		}
 	}
 
+	private static boolean IS_SYS_PROPERTIES_SET = false;
 	@SuppressWarnings("rawtypes")
-	private static void setSysProperties() {
-		System.out.println("net.dstone.common.DstoneBootApplication.setSysProperties() has been called !!!");
-		try {
-			System.out.println("/********************* env.properties System변수로 세팅 하기위한 조치 시작 *********************/");
-			
-			java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource("env.properties");
-			if (resource != null) {
-		        try (InputStream input = resource.openStream()) {
-		        	Properties props = new Properties();
-		            if (input == null) {
-		                System.out.println("Unable to find config.properties");
-		                return;
-		            }
-		            props.load(input);
-		            
-					String key = "";
-					String val = "";
-		            java.util.Iterator keys = props.keySet().iterator();
-		            while( keys.hasNext() ) {
-						key = (String)keys.next();
-						val = props.getProperty(key, "");
-						System.setProperty(key, val);
-						System.out.println("시스템프로퍼티 "+key+"["+val+"]");
-		            }
-		        } catch (IOException ex) {
-		            ex.printStackTrace();
-		        }
+	public static void setSysProperties() {
+		boolean showPropertyLog = false;
+		if(!IS_SYS_PROPERTIES_SET) {
+			try {
+				if(showPropertyLog)System.out.println("/********************* env.properties System변수로 세팅 하기위한 조치 시작 *********************/");
+				
+				java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource("env.properties");
+				if (resource != null) {
+			        try (InputStream input = resource.openStream()) {
+			        	Properties props = new Properties();
+			            if (input == null) {
+			                System.out.println("Unable to find config.properties");
+			                return;
+			            }
+			            props.load(input);
+			            
+						String key = "";
+						String val = "";
+			            java.util.Iterator keys = props.keySet().iterator();
+			            while( keys.hasNext() ) {
+							key = (String)keys.next();
+							val = props.getProperty(key, "");
+							System.setProperty(key, val);
+							if(showPropertyLog)System.out.println("시스템프로퍼티 "+key+"["+val+"]");
+			            }
+			        } catch (IOException ex) {
+			            ex.printStackTrace();
+			        }
+				}
+				if(showPropertyLog)System.out.println("/********************* env.properties System변수로 세팅 하기위한 조치 끝 *********************/");
+				if(showPropertyLog)System.out.println("");
+				IS_SYS_PROPERTIES_SET = true;
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
-			System.out.println("/********************* env.properties System변수로 세팅 하기위한 조치 끝 *********************/");
-			System.out.println("");
-		} catch (Exception e) {
-			// TODO: handle exception
 		}
 	}
 	
