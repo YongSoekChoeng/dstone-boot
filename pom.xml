@@ -29,21 +29,11 @@
 		<!-- Log4j -->
 		<log4j.version>2.16.0</log4j.version>
 	</properties>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 	
 	<repositories>
+	
+		<!-- Internet Repository -->
+		
         <repository>
             <id>central</id>
             <name>Central Repository</name>
@@ -56,8 +46,29 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        
+		<!-- Nexus Repository. Nexus 구성이 되어있을 경우에만 세팅. -->
+        <!--  
+        <repository>
+            <id>dstone-boot-public</id>
+            <name>dstone-boot-public</name>
+            <url>http://localhost:8081/repository/dstone-boot-public/</url>
+        </repository>
+        -->
+        
     </repositories>
 
+	<!-- 빌드된 아티팩트(dstone-boot)를 어떤 리포지토리에 배포할 것인지를 정의. Nexus 구성이 되어있을 경우에만 세팅.  -->
+	<!--
+    <distributionManagement>
+        <repository>
+            <id>dstone-boot-public</id>
+            <name>dstone-boot-public</name>
+            <url>http://localhost:8081/repository/dstone-boot-public/</url>
+        </repository>
+    </distributionManagement>
+    -->
+    
 	<dependencies>
 	
 		<!-- SpringBoot/Spring -->
