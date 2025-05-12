@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -512,6 +513,9 @@ public class DataSet implements java.io.Serializable {
 		}
 		return this;
 	}
+	
+	
+
 	private void buildFromXml(Node pNode) {
 		NodeList nodeList;
 		Node cNode = null;		
@@ -773,6 +777,48 @@ public class DataSet implements java.io.Serializable {
 						}
 					}
 					childDs.setDatum(columnName, columnValue );
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	/**
+	 * XML Map으로부터 DataSet을 빌드한다.
+	 * @param map
+	 * @return DataSet
+	 */
+	public DataSet buildFromMap(java.util.Map<String, Object> map) {
+		try {
+			this.clear();
+			if( map != null ) {
+				java.util.Iterator<String> keys = map.keySet().iterator();
+				while( keys.hasNext() ) {
+					String key = keys.next();
+					Object val = map.get(key);
+					// 단일값배열
+					if( BeanUtil.isAtomicArray(val.getClass()) ) {
+						Object[] valArr = (Object[])val;
+						for(Object valItem : valArr) {
+							this.setDatum(key, StringUtil.nullCheck(valItem, ""));
+						}
+					// 단일값	
+					}else if( BeanUtil.isAtomic(val.getClass()) ) {
+						this.setDatum(key, StringUtil.nullCheck(val, ""));
+					// 맵구조체	
+					}else if( val instanceof java.util.Map ) {
+						DataSet childDs = this.addDataSet(key);
+						childDs.buildFromMap( (java.util.Map)val );
+					// 맵구조체	
+					}else if( val instanceof java.util.List ) {
+						List valList = (java.util.List)val;
+						for(Object valItem : valList) {
+							DataSet childDs = this.addDataSet(key);
+							childDs.buildFromMap( (java.util.Map)valItem );
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -1082,6 +1128,7 @@ public class DataSet implements java.io.Serializable {
 		}
 		return buffer.toString();
 	}
+	
 
 	/**
 	 * DataSet 의 정보내용을 JSON 으로 직렬화하는 메소드
@@ -1321,6 +1368,60 @@ public class DataSet implements java.io.Serializable {
 			e.printStackTrace();
 		}
 		return propertyObj;
+	}
+	
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Map toMap(){
+		Map map = new HashMap<String, Object>();
+		
+		Datum datum = null;
+		List<DataSet> dsList = null;
+		
+		try {
+			for(int i=0; i<this.dataOrderInfo.size(); i++){
+				String key = this.dataOrderInfo.get(i);
+				if(this.datumMap.containsKey(key)){
+					datum = this.datumMap.get(key);
+					if(datum.isEmpty()){
+						continue;
+					}else{
+						if( datum.val.size()>1 ) {
+							String[] valArr = new String[datum.val.size()];
+							for(String val : datum.val) {
+								valArr[valArr.length] = val;
+							}
+							map.put(key, valArr);
+						}else {
+							map.put(key, this.getDatum(key));
+						}
+					}
+				}else if(this.dataSetMap.containsKey(key)){
+					dsList = this.dataSetMap.get(key);
+					if(dsList.size() > 0) {
+						if( "Y".equals(this.getDataSetExtraInfo(key, EXTRA_INFO_USE_JSON_MAP_WHEN_SINGLE_ARRAY)) ) {
+							DataSet childDs = dsList.get(0);
+							map.put(key, childDs.toMap());
+						}else {
+							List<Map<String, Object>> childMapList = new ArrayList<Map<String, Object>>();
+							for(int k=0; k<dsList.size(); k++){
+								DataSet childDs = dsList.get(k);
+								if(childDs.isEmpty()){
+									continue;
+								}else {
+									childMapList.add(childDs.toMap());
+								}
+							}
+							map.put(key, childMapList);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			debug(e);
+			e.printStackTrace();
+		}
+		return map;
 	}
 	
 	/**
