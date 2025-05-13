@@ -838,7 +838,9 @@ public class DataSet implements java.io.Serializable {
 				strKey = this.dataOrderInfo.get(i);
 				if(this.datumMap.containsKey(strKey)){
 					datum = this.datumMap.get(strKey);
-					datum.setVal(defaultVal);
+					if(datum.isEmpty()) {
+						datum.setVal(defaultVal);
+					}
 				}else if(this.dataSetMap.containsKey(strKey)){
 					dsList = this.dataSetMap.get(strKey);
 					for(int k=0; k<dsList.size(); k++){
