@@ -20,13 +20,37 @@ public class FldUtil {
 	private StructManager structManager = null;
 	
 	public class Member{
+		/**
+		 * 컬럼 ID
+		 */
 		private String id;
+		/**
+		 * 컬럼 NAME
+		 */
 		private String name;
+		/**
+		 * 컬럼 TYPE
+		 */
 		private String type;
+		/**
+		 * 컬럼 SIZE
+		 */
 		private int size = 0;
+		/**
+		 * 컬럼 배열갯수
+		 */
 		private int arrayCount = 0;
+		/**
+		 * 단순항목여부(Primitive 타입, Character, Byte, String, Float, Integer, Long, Double, BigDecimal, Date 및 java.lang 패키지 내의 클래스 여부)
+		 */
 		private boolean isAtomic = true;
+		/**
+		 * 배열여부
+		 */
 		private boolean isArray = false;
+		/**
+		 * 컬럼 배열갯수 SIZE(배열 바로앞에 배열갯수를 표시하는 항목의 길이)
+		 */
 		private int arrayCountSize = 0;
 		
 		public String getId() {
@@ -439,7 +463,7 @@ public class FldUtil {
 						member.setSize( Integer.valueOf(size) );
 						// 5. 컬럼 배열갯수
 						member.setArrayCount( Integer.valueOf(arrayCount) );
-						// 6. 컬럼 배열갯수 SIZE
+						// 6. 컬럼 배열갯수 SIZE(배열 바로앞에 배열갯수를 표시하는 항목의 길이)
 						member.setArrayCountSize( Integer.valueOf(arrayCountSize) );
 						// 7. 컬럼 Atomic여부
 						if( childNode.getNodeName().equals("col") ){
@@ -583,6 +607,7 @@ public class FldUtil {
 		buff.append("	<col id=\"Acno\" type=\"char\" size=\"14\" arrayCount=\"1\" name=\"계좌번호\"/>").append(N);
 		buff.append("	<col id=\"SecuNo\" type=\"char\" size=\"20\" arrayCount=\"1\" name=\"보험증권번호\"/>").append(N);
 		buff.append("	<col id=\"InqYm\" type=\"char\" size=\"6\" arrayCount=\"1\" name=\"조회년월\"/>").append(N);
+		buff.append("	<!-- arrayCount:컬럼 배열갯수, arrayCountSize:컬럼 배열갯수항목의 SIZE(배열 바로앞에 배열갯수를 표시하는 항목의 길이. 3일 경우 3바이트의 항목이 배열앞에 붙고 해당 항목에 배열의 갯수가 세팅됨.) -->").append(N);
 		buff.append("	<array id=\"PaymentArray\" arrayCount=\"12\"  arrayCountSize=\"3\" name=\"이체내역배열\">").append(N);
 		buff.append("		<col id=\"BilDt\" type=\"char\" size=\"10\" arrayCount=\"1\" name=\"청구년월일\"/>").append(N);
 		buff.append("		<col id=\"BilYm\" type=\"char\" size=\"6\" arrayCount=\"1\" name=\"청구년월\"/>").append(N);
