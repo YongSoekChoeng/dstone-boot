@@ -293,4 +293,13 @@ public class UserVo extends net.dstone.common.biz.BaseVo implements java.io.Seri
 		INT_TO = iNT_TO; 
 	} 
 	/*** 페이징용 멤버 끝 ***/
+	@Override
+	public String toString() {
+		return "UserVo [GROUP_ID=" + GROUP_ID + ", USER_ID=" + USER_ID + ", USER_PW=" + USER_PW + ", MEMBER_NAME="
+				+ MEMBER_NAME + ", AGE=" + AGE + ", DUTY=" + DUTY + ", REGION=" + REGION + ", ADDRESS=" + ADDRESS
+				+ ", ADDRESS_DTL=" + ADDRESS_DTL + ", JUMINNO=" + JUMINNO + ", GENDER=" + GENDER + ", TEL=" + TEL
+				+ ", HP=" + HP + ", EMAIL=" + EMAIL + ", INPUT_DT=" + INPUT_DT + ", UPDATE_DT=" + UPDATE_DT
+				+ ", PAGE_SIZE=" + PAGE_SIZE + ", PAGE_NUM=" + PAGE_NUM + ", INT_FROM=" + INT_FROM + ", INT_TO="
+				+ INT_TO + "]";
+	}
 }                     
