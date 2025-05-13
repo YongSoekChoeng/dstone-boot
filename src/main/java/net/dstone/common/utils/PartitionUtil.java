@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <테스트코드>
+    <테스트코드>
+    int tryNum = 1305;
 	java.util.List<String> list = new java.util.ArrayList<String>();
 	for(int i=0; i<tryNum; i++){
 		list.add(String.valueOf(i));
