@@ -790,6 +790,7 @@ public class DataSet implements java.io.Serializable {
 	 * @param map
 	 * @return DataSet
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })	
 	public DataSet buildFromMap(java.util.Map<String, Object> map) {
 		try {
 			this.clear();
