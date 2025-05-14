@@ -5,11 +5,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.SignatureAlgorithm;
+
+@Component
 public class WebUtil {
 
 	public static String makeComboYear(String strStartYear, String strHowLong,
@@ -392,4 +398,27 @@ public class WebUtil {
         }
 		return ip;
 	}
+	
+	private static String SECRETE_KEY_FOR_JWT = "jysn007db2admin!";
+	
+	public static String getJwt(String userId) {
+		return getJwt(userId, SECRETE_KEY_FOR_JWT);
+	}
+	
+	public static String getJwt(String userId, String secretKey) {
+		String jwt = "";
+        try {
+        	jwt = io.jsonwebtoken.Jwts.builder()
+        	.claim("id", userId)
+        	.setIssuedAt(new Date())
+        	.setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)))
+        	.signWith(SignatureAlgorithm.HS256, secretKey)
+        	.compact();
+            System.out.println("jwt[" + jwt + "]");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return jwt;
+	}
+	
 }
