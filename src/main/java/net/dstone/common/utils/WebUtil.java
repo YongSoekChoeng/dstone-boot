@@ -404,10 +404,21 @@ public class WebUtil {
 	
 	private static String SECRETE_KEY_FOR_JWT = "jysn007db2admin!";
 	
+	/**
+	 * Jwt(Json Web Token)생성 메서드
+	 * @param userId
+	 * @return
+	 */
 	public static String getJwt(String userId) {
 		return getJwt(userId, SECRETE_KEY_FOR_JWT);
 	}
 	
+	/**
+	 * Jwt(Json Web Token)생성 메서드
+	 * @param userId
+	 * @param secretKey
+	 * @return
+	 */
 	public static String getJwt(String userId, String secretKey) {
 		String jwt = "";
         try {
@@ -423,9 +434,20 @@ public class WebUtil {
 		return jwt;
 	}
 
+	/**
+	 * Jwt(Json Web Token)복호화 메서드
+	 * @param jwt
+	 * @return
+	 */
 	public static String getJwtDec(String jwt) {
 		return getJwtDec(jwt, SECRETE_KEY_FOR_JWT);
 	}
+	/**
+	 * Jwt(Json Web Token)복호화 메서드
+	 * @param jwt
+	 * @param secretKey
+	 * @return
+	 */
 	public static String getJwtDec(String jwt, String secretKey) {
 		String jwtDec = "";
         try {
