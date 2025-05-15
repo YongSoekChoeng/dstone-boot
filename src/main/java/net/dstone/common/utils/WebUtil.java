@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
@@ -408,17 +411,30 @@ public class WebUtil {
 	public static String getJwt(String userId, String secretKey) {
 		String jwt = "";
         try {
-        	jwt = io.jsonwebtoken.Jwts.builder()
+        	jwt = Jwts.builder()
         	.claim("id", userId)
         	.setIssuedAt(new Date())
         	.setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)))
         	.signWith(SignatureAlgorithm.HS256, secretKey)
         	.compact();
-            System.out.println("jwt[" + jwt + "]");
         } catch (Exception e) {
             e.printStackTrace();
         }
 		return jwt;
+	}
+
+	public static String getJwtDec(String jwt) {
+		return getJwtDec(jwt, SECRETE_KEY_FOR_JWT);
+	}
+	public static String getJwtDec(String jwt, String secretKey) {
+		String jwtDec = "";
+        try {
+        	Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
+        	jwtDec = claims.getBody().get("id").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return jwtDec;
 	}
 	
 }
