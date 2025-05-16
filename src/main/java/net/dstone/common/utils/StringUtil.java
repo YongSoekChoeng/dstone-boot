@@ -1549,7 +1549,7 @@ public class StringUtil {
 	 * @param y
 	 * @return
 	 */
-    public static double findSimilarity(String x, String y) {
+    public static double reteSimilarity(String x, String y) {
     	double similarity = 0.0;
         if (x == null && y == null) {
             return 1.0;
