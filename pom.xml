@@ -442,6 +442,11 @@
 		    <artifactId>datavec-api</artifactId>
 		    <version>0.9.1</version>
 		</dependency>		
+		<dependency>
+		    <groupId>org.datavec</groupId>
+		    <artifactId>datavec-api</artifactId>
+		    <version>0.9.1</version>
+		</dependency>
 		
 		<!-- JWT(Json Web Token) -->
 		<dependency>
