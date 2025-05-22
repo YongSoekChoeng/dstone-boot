@@ -15,6 +15,7 @@
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/user/listUser">멤버조회</a></li>
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/admin/manageUser">멤머입력</a></li>
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=analyzer/index">분석툴</a></li>
+				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/google/maps/main">구글맵</a></li>
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=test/test">테스트1</a></li>
 				<!--  
 				<li>

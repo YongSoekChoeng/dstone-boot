@@ -1,13 +1,21 @@
 package net.dstone.common.utils;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class RestFulUtil {
@@ -73,4 +81,29 @@ public class RestFulUtil {
 		}
 		return restTemplate;
 	}
+	
+	public HttpHeaders getHeader(MediaType mediaType, Map<String, String> header) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { mediaType }));
+		headers.setContentType(mediaType);
+		if( header != null && header.size() >0 ) {
+			Iterator<String> keys = header.keySet().iterator();
+			while(keys.hasNext()) {
+				String key = keys.next();
+				headers.add(key, header.get(key));
+			}
+		}
+		return headers;
+	}
+	
+	public HttpEntity<String> getEntity(HttpHeaders headers, String input) {
+		HttpEntity<String> entity = new HttpEntity<String>(input, headers);
+		return entity;
+	}
+
+	public HttpEntity<MultiValueMap<String, Object>> getEntity(HttpHeaders headers, LinkedMultiValueMap input) {
+		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(input, headers);
+		return entity;
+	}
+	
 }

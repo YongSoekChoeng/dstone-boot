@@ -118,3 +118,6 @@ interface:
     google: 
       # OAuth 클라이언트ID 인증정보파일경로
       credentials-filepath: ${APP_HOME}/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-m22c8qocfuodds1iut2ouunfv3u41tqo.apps.googleusercontent.com.json
+      # Maps Platform 키
+      maps-platform-key: AIzaSyDu-nIXG2yLg-Y2HgiRWKuupadjMXjnRT8
+      
