@@ -20,8 +20,8 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 			function openGoogleMap(){
 				var url = "<%=request.getContextPath()%>/google/map/initPage.do";
 				var target = "";
-				var width = "500";
-				var height = "400";
+				var width = "700";
+				var height = "500";
 				var option = "";
 				openWin(url, target, width, height, option);
 			}  

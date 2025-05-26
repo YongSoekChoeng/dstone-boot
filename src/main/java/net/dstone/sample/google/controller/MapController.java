@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
 import net.dstone.common.config.ConfigProperty;
-import net.dstone.sample.google.service.MapService;
 
 @Controller
 @RequestMapping("/google/map")
@@ -17,11 +16,8 @@ public class MapController extends net.dstone.common.biz.BaseController {
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 
-    @Autowired 
-    private MapService mapService;
-
     @RequestMapping("/initPage.do")
-    public String loginPage(Model model) {
+    public String initPage(Model model) {
     	
     	String mapsPlatformKey = configProperty.getProperty("interface.google.maps-platform-key");
     	
