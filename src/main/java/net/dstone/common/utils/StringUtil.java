@@ -17,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 
 public class StringUtil {
 
@@ -1559,5 +1560,22 @@ public class StringUtil {
         	similarity = StringUtils.getJaroWinklerDistance(x, y);
         }
         return (similarity * 100);
+    }
+    
+
+	/**
+	 * 인코딩체크
+	 * @param input
+	 * @return
+	 */
+    public static void encodingCheck(String input) {
+    	if(!StringUtil.isEmpty(input)) {
+    		UniversalDetector detector = new UniversalDetector(null);
+    		byte[] buffer = input.getBytes();
+        	detector.handleData(buffer, 0, buffer.length);
+        	detector.dataEnd();
+        	String charSet = detector.getDetectedCharset();
+        	System.out.println("Detected encoding: " + charSet);
+    	}
     }
 }
