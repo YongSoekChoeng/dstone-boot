@@ -32,6 +32,9 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -1682,5 +1685,66 @@ public class FileUtil {
 	    byte[] imageBytes = baos.toByteArray();
 	    return Base64.getEncoder().encodeToString(imageBytes);
 	}
-	
+
+	/**
+	 * 파일목록을 Zip으로 압축하는 메소드
+	 * @param zipFilePath
+	 * @param fullFilePathArray
+	 * @return
+	 */
+	public static void zip(String zipFilePath, String[] fullFilePathArray) throws Exception {
+		if( fullFilePathArray != null && fullFilePathArray.length > 0 ) {
+
+	        try (
+	        	FileOutputStream fos = new FileOutputStream(zipFilePath);
+	            ZipOutputStream zipOut = new ZipOutputStream(fos);
+	         ) {
+	        	
+				for(String fullFilePath : fullFilePathArray) {
+			        try (
+			        	FileInputStream fis = new FileInputStream(fullFilePath)
+				    ) {
+			        	ZipEntry zipEntry = new ZipEntry(fullFilePath);
+			        	zipOut.putNextEntry(zipEntry);
+			            byte[] buffer = new byte[1024];
+			            int len;
+			            while ((len = fis.read(buffer)) >= 0) {
+			                zipOut.write(buffer, 0, len);
+			            }
+					} catch (Exception e) {
+						e.printStackTrace();
+					} 
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+		}
+	}
+
+	/**
+	 * Zip파일을 압축해제하는 메소드
+	 * @param zipFilePath
+	 * @param destDir
+	 * @return
+	 */
+	public static void unZip(String zipFilePath, String destDir) throws Exception {
+		if( FileUtil.isFileExist(zipFilePath) ) {
+	        byte[] buffer = new byte[1024];
+	        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
+	            ZipEntry zipEntry;
+	            while ((zipEntry = zis.getNextEntry()) != null) {
+	                File newFile = new File(destDir, zipEntry.getName());
+	                new File(newFile.getParent()).mkdirs();
+
+	                try (FileOutputStream fos = new FileOutputStream(newFile)) {
+	                    int len;
+	                    while ((len = zis.read(buffer)) > 0) {
+	                        fos.write(buffer, 0, len);
+	                    }
+	                }
+	            }
+	        }
+		}
+	}
 }
