@@ -425,7 +425,7 @@
 	    
 	    <!-- AI -->
 		<!--
-         <dependency>DL4J Core
+        <dependency>DL4J Core
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-core</artifactId>
             <version>${dl4j.version}</version>
