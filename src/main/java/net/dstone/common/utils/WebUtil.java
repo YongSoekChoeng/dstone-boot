@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -406,24 +408,46 @@ public class WebUtil {
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
-	 * @param userId
+	 * @param plainStr
 	 * @return
 	 */
-	public static String getJwt(String userId) {
-		return getJwt(userId, SECRETE_KEY_FOR_JWT);
+	public static String getJwt(String plainStr) {
+		return getJwt(new HashMap<String, Object>(), plainStr, SECRETE_KEY_FOR_JWT);
 	}
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
-	 * @param userId
+	 * @param plainStr
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwt(String userId, String secretKey) {
+	public static String getJwt(String plainStr, String secretKey) {
+		return getJwt(new HashMap<String, Object>(), plainStr, secretKey);
+	}
+	
+	/**
+	 * Jwt(Json Web Token)생성 메서드
+	 * @param header
+	 * @param plainStr
+	 * @return
+	 */
+	public static String getJwt(Map<String, Object> header, String plainStr) {
+		return getJwt(header, plainStr, SECRETE_KEY_FOR_JWT);
+	}
+	
+	/**
+	 * Jwt(Json Web Token)생성 메서드
+	 * @param header
+	 * @param plainStr
+	 * @param secretKey
+	 * @return
+	 */
+	public static String getJwt(Map<String, Object> header, String plainStr, String secretKey) {
 		String jwt = "";
         try {
         	jwt = Jwts.builder()
-        	.claim("id", userId)
+        	.setHeader(header)
+        	.claim("id", plainStr)
         	.setIssuedAt(new Date())
         	.setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)))
         	.signWith(SignatureAlgorithm.HS256, secretKey)

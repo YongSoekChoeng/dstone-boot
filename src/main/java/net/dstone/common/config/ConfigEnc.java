@@ -2,13 +2,11 @@ package net.dstone.common.config;
 
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 import net.dstone.common.utils.LogUtil;
 
-@Configuration
 @EnableEncryptableProperties
 public class ConfigEnc {
 

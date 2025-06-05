@@ -18,7 +18,7 @@ server:
             force-response: true
             charset: UTF-8
     ssl: 
-        enabled: false
+        enabled: true
         protocol: TLS
         enabled-protocols: 
         - TLSv1

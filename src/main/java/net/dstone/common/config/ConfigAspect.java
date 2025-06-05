@@ -7,7 +7,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
@@ -16,7 +15,6 @@ import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 @Aspect
-@Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableEncryptableProperties
 public class ConfigAspect {

@@ -18,6 +18,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.springframework.util.Base64Utils;
 
 public class StringUtil {
 
@@ -1578,4 +1579,39 @@ public class StringUtil {
         	System.out.println("Detected encoding: " + charSet);
     	}
     }
+
+	/**
+	 * Base64 인코딩 메소드
+	 * @param input
+	 * @return
+	 */
+    public static String base64Encode(String input) {
+    	String output = "";
+    	try {
+    		if( !isEmpty(input) ) {
+    			output = new String(Base64Utils.encode(input.getBytes()));
+    		}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return output;
+    }
+
+	/**
+	 * Base64 디코딩 메소드
+	 * @param input
+	 * @return
+	 */
+    public static String base64Decode(String input) {
+    	String output = "";
+    	try {
+    		if( !isEmpty(input) ) {
+    			output = new String(Base64Utils.decode(input.getBytes()));
+    		}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return output;
+    }
+    
 }

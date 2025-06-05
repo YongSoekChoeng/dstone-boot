@@ -6,14 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 
 import com.zaxxer.hikari.HikariDataSource;
 
 import net.dstone.common.utils.LogUtil;
 
-@Configuration
 public class ConfigDatasource {
 
 	@Autowired 

@@ -11,7 +11,6 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
@@ -21,7 +20,6 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import net.dstone.common.utils.LogUtil;
 
-@Configuration
 public class ConfigTransaction {
 
 	private static final LogUtil logger = new LogUtil(ConfigTransaction.class);

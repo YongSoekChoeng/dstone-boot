@@ -88,6 +88,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -422,6 +426,11 @@
 			<artifactId>google-api-client-jackson2</artifactId>
 			<version>1.20.0</version>
 		</dependency>	
+		<dependency>
+			<groupId>com.google.auth</groupId>
+			<artifactId>google-auth-library-oauth2-http</artifactId>
+			<version>1.18.0</version>
+		</dependency>		
 	    
 	    <!-- AI -->
 		<!--
@@ -464,6 +473,11 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>4.4.0</version>
+		</dependency>		
 		
 		<!-- Encoding 자동체크 -->
 		<dependency>
