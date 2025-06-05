@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -1614,4 +1615,33 @@ public class StringUtil {
     	return output;
     }
     
+    /***
+     * 난수로 생성한 문자열을 만든다.
+     * @param strLength 난수를 만들 문자열의 길이
+     * @return
+     */
+    public static String getRandomNumber(int strLength) {
+        StringBuffer resultStr = new StringBuffer();
+        Random random = new Random();
+        for(int i = 0; i < strLength ; i++){
+        	int result = random.nextInt(10);
+        	resultStr.append(Integer.toString(result)); 
+        }
+    	return resultStr.toString();
+    }
+    
+    /***
+     * true가 반환될 확률로 Boolean값을 만든다.
+     * @param persentForTrue true가 반환될 확률(%)
+     * @return
+     */
+    public static boolean getRandomBoolean(int persentForTrue) {
+    	boolean resultBool = false;
+        Random random = new Random();
+        int result = random.nextInt(100);
+        if(persentForTrue >= result) {
+        	resultBool = true;
+        }
+    	return resultBool;
+    }
 }
