@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -408,50 +409,65 @@ public class WebUtil {
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
-	 * @param plainStr
+	 * @param body
 	 * @return
 	 */
-	public static String getJwt(String plainStr) {
-		return getJwt(new HashMap<String, Object>(), plainStr, SECRETE_KEY_FOR_JWT);
+	public static String getJwt(Map<String, Object> body) {
+		return getJwt(new HashMap<String, Object>(), body, SECRETE_KEY_FOR_JWT);
 	}
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
-	 * @param plainStr
+	 * @param body
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwt(String plainStr, String secretKey) {
-		return getJwt(new HashMap<String, Object>(), plainStr, secretKey);
+	public static String getJwt(Map<String, Object> body, String secretKey) {
+		return getJwt(new HashMap<String, Object>(), body, secretKey);
 	}
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
 	 * @param header
-	 * @param plainStr
+	 * @param body
 	 * @return
 	 */
-	public static String getJwt(Map<String, Object> header, String plainStr) {
-		return getJwt(header, plainStr, SECRETE_KEY_FOR_JWT);
+	public static String getJwt(Map<String, Object> header, Map<String, Object> body) {
+		return getJwt(header, body, SECRETE_KEY_FOR_JWT);
 	}
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
 	 * @param header
-	 * @param plainStr
+	 * @param body
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwt(Map<String, Object> header, String plainStr, String secretKey) {
+	public static String getJwt(Map<String, Object> header, Map<String, Object> body, String secretKey) {
 		String jwt = "";
+		io.jsonwebtoken.JwtBuilder builder = null;
         try {
-        	jwt = Jwts.builder()
-        	.setHeader(header)
-        	.claim("id", plainStr)
-        	.setIssuedAt(new Date())
-        	.setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)))
-        	.signWith(SignatureAlgorithm.HS256, secretKey)
-        	.compact();
+        	builder = io.jsonwebtoken.Jwts.builder();
+        	if( header != null && header.size() > 0 ) {
+        		Iterator<String> iter = header.keySet().iterator();
+        		while( iter.hasNext() ) {
+        			String key = iter.next();
+        			builder.setHeaderParam(key, header.get(key));
+        		}
+        	}
+        	
+        	if( body != null && body.size() > 0 ) {
+        		Iterator<String> iter = body.keySet().iterator();
+        		while( iter.hasNext() ) {
+        			String key = iter.next();
+        			builder.claim(key, body.get(key));
+        		}
+        	}
+        	
+        	builder.setIssuedAt(new Date());
+        	builder.setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)));
+        	
+        	jwt = builder.signWith(SignatureAlgorithm.HS256, secretKey).compact();
         } catch (Exception e) {
             e.printStackTrace();
         }
