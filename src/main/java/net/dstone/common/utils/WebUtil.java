@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -403,100 +404,6 @@ public class WebUtil {
             e.printStackTrace();
         }
 		return ip;
-	}
-	
-	private static String SECRETE_KEY_FOR_JWT = "jysn007db2admin!";
-	
-	/**
-	 * Jwt(Json Web Token)생성 메서드
-	 * @param body
-	 * @return
-	 */
-	public static String getJwt(Map<String, Object> body) {
-		return getJwt(new HashMap<String, Object>(), body, SECRETE_KEY_FOR_JWT);
-	}
-	
-	/**
-	 * Jwt(Json Web Token)생성 메서드
-	 * @param body
-	 * @param secretKey
-	 * @return
-	 */
-	public static String getJwt(Map<String, Object> body, String secretKey) {
-		return getJwt(new HashMap<String, Object>(), body, secretKey);
-	}
-	
-	/**
-	 * Jwt(Json Web Token)생성 메서드
-	 * @param header
-	 * @param body
-	 * @return
-	 */
-	public static String getJwt(Map<String, Object> header, Map<String, Object> body) {
-		return getJwt(header, body, SECRETE_KEY_FOR_JWT);
-	}
-	
-	/**
-	 * Jwt(Json Web Token)생성 메서드
-	 * @param header
-	 * @param body
-	 * @param secretKey
-	 * @return
-	 */
-	public static String getJwt(Map<String, Object> header, Map<String, Object> body, String secretKey) {
-		String jwt = "";
-		io.jsonwebtoken.JwtBuilder builder = null;
-        try {
-        	builder = io.jsonwebtoken.Jwts.builder();
-        	if( header != null && header.size() > 0 ) {
-        		Iterator<String> iter = header.keySet().iterator();
-        		while( iter.hasNext() ) {
-        			String key = iter.next();
-        			builder.setHeaderParam(key, header.get(key));
-        		}
-        	}
-        	
-        	if( body != null && body.size() > 0 ) {
-        		Iterator<String> iter = body.keySet().iterator();
-        		while( iter.hasNext() ) {
-        			String key = iter.next();
-        			builder.claim(key, body.get(key));
-        		}
-        	}
-        	
-        	builder.setIssuedAt(new Date());
-        	builder.setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)));
-        	
-        	jwt = builder.signWith(SignatureAlgorithm.HS256, secretKey).compact();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		return jwt;
-	}
-
-	/**
-	 * Jwt(Json Web Token)복호화 메서드
-	 * @param jwt
-	 * @return
-	 */
-	public static String getJwtDec(String jwt) {
-		return getJwtDec(jwt, SECRETE_KEY_FOR_JWT);
-	}
-	/**
-	 * Jwt(Json Web Token)복호화 메서드
-	 * @param jwt
-	 * @param secretKey
-	 * @return
-	 */
-	public static String getJwtDec(String jwt, String secretKey) {
-		String jwtDec = "";
-        try {
-        	Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
-        	jwtDec = claims.getBody().get("id").toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		return jwtDec;
 	}
 	
 }
