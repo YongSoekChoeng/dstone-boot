@@ -7,11 +7,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.stereotype.Component;
 
 import com.zaxxer.hikari.HikariDataSource;
 
 import net.dstone.common.utils.LogUtil;
 
+@Component
 public class ConfigDatasource {
 
 	@Autowired 

@@ -12,6 +12,7 @@ import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.RollbackRuleAttribute;
@@ -20,6 +21,7 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import net.dstone.common.utils.LogUtil;
 
+@Component
 public class ConfigTransaction {
 
 	private static final LogUtil logger = new LogUtil(ConfigTransaction.class);
