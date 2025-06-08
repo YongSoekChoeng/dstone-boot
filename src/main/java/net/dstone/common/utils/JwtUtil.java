@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.crypto.spec.SecretKeySpec;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -17,7 +19,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtUtil {
 
-	private static String SECRETE_KEY_FOR_JWT = "jysn007db2admin!";
+	private static String SECRETE_KEY_FOR_HS256 = ""; 
+	private static String SECRETE_KEY_FOR_HS384 = "";
+	private static String SECRETE_KEY_FOR_HS512 = "";
+	static {
+		// 256비트 (32바이트 / ~32문자 이상)
+		SECRETE_KEY_FOR_HS256 = "jysn007" + "226e6403effa0250609073202";
+		// 384비트 (48바이트)
+		SECRETE_KEY_FOR_HS384 = "jysn007" + "226e6403effa0250609073202" + "8287767126e6403e";
+		// 512비트 (64바이트)
+		SECRETE_KEY_FOR_HS512 = "jysn007" + "226e6403effa0250609073202" + "8287767126e6403e8842250609073302";
+	}
 	
 	/**
 	 * Jwt(Json Web Token)생성 메서드
@@ -25,7 +37,7 @@ public class JwtUtil {
 	 * @return
 	 */
 	public static String getJwt(Map<String, Object> body) {
-		return getJwt(new HashMap<String, Object>(), body, SECRETE_KEY_FOR_JWT);
+		return getJwt(new HashMap<String, Object>(), body, SECRETE_KEY_FOR_HS256);
 	}
 	
 	/**
@@ -45,7 +57,7 @@ public class JwtUtil {
 	 * @return
 	 */
 	public static String getJwt(Map<String, Object> header, Map<String, Object> body) {
-		String jwt = getJwt(header, body, SECRETE_KEY_FOR_JWT);
+		String jwt = getJwt(header, body, SECRETE_KEY_FOR_HS256);
 		return jwt;
 	}
 	
@@ -119,10 +131,12 @@ public class JwtUtil {
         	if( alg.getValue().startsWith("HS") ) {
         		if( keyObj instanceof String ) {
         			String keyStr = (String)keyObj;
-        			jwt = builder.signWith(alg, keyStr).compact();
+        			SecretKeySpec key = new SecretKeySpec(keyStr.getBytes(), alg.getJcaName());
+        			jwt = builder.signWith(key, alg).compact();
         		}else if( keyObj instanceof byte[] ) {
         			byte[] keyBytes = (byte[])keyObj;
-        			jwt = builder.signWith(alg, keyBytes).compact();
+        			SecretKeySpec key = new SecretKeySpec(keyBytes, alg.getJcaName());
+        			jwt = builder.signWith(key, alg).compact();
         		}else {
         			throw new Exception("Algorithm과 키타입을 확인하세요. 대칭키 (HMAC)일 경우 - HS256, HS384, HS512 등... ==>> keyObj는 String 또는 byte[] 이어야 합니다.");
         		}
@@ -130,7 +144,7 @@ public class JwtUtil {
         	}else {
         		if( keyObj instanceof java.security.Key ) {
         			java.security.Key key = (java.security.Key)keyObj;
-        			jwt = builder.signWith(alg, key).compact();
+        			jwt = builder.signWith(key, alg).compact();
         		}else {
         			throw new Exception("Algorithm과 키타입을 확인하세요. 비대칭키일 경우 - RS256, RS384, RS512, ES256, ES384, ES512 등... ==>> keyObj는 PrivateKey 이어야 합니다.");
         		}
@@ -141,15 +155,29 @@ public class JwtUtil {
         }
 		return jwt;
 	}
-	
+
 	/**
 	 * Jwt(Json Web Token)복호화 메서드
 	 * @param jwt
 	 * @param itemKey
 	 * @return
 	 */
-	public static String getJwtDec(String jwt, String itemKey) {
-		return getJwtDec(jwt, itemKey, SECRETE_KEY_FOR_JWT);
+	public static String getJwtDec(String jwt, SignatureAlgorithm alg, String itemKey) throws Exception {
+		String keyStr = "";
+		if( alg.getValue().startsWith("HS") ) {
+    		if( "HS256".equals(alg.getValue()) ) {
+    			keyStr = SECRETE_KEY_FOR_HS256;
+    		}else if( "HS384".equals(alg.getValue()) ) {
+    			keyStr = SECRETE_KEY_FOR_HS384;
+    		}else if( "HS512".equals(alg.getValue()) ) {
+    			keyStr = SECRETE_KEY_FOR_HS512;
+    		}else {
+    			throw new Exception("Algorithm과 키타입을 확인하세요.");
+    		}
+		}else {
+			throw new Exception("Algorithm과 키타입을 확인하세요. 대칭키 (HMAC)알고리즘이 아닙니다.");
+		}
+		return getJwtDec(jwt, itemKey, alg, keyStr);
 	}
 	
 	/**
@@ -159,15 +187,8 @@ public class JwtUtil {
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwtDec(String jwt, String itemKey, String secretKey) {
-		String jwtDec = "";
-        try {
-        	Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
-        	jwtDec = claims.getBody().get(itemKey).toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		return jwtDec;
+	public static String getJwtDec(String jwt, String itemKey, SignatureAlgorithm alg, String secretKey) {
+		return getJwtDec(jwt, itemKey, alg, new SecretKeySpec(secretKey.getBytes(), alg.getJcaName()) );
 	}
 	/**
 	 * Jwt(Json Web Token)복호화 메서드
@@ -176,17 +197,20 @@ public class JwtUtil {
 	 * @param key
 	 * @return
 	 */
-	public static String getJwtDec(String jwt, String itemKey, Key key) {
+	public static String getJwtDec(String jwt, String itemKey, SignatureAlgorithm alg, Key key) {
 		String jwtDec = "";
         try {
-        	Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt);
-        	jwtDec = claims.getBody().get(itemKey).toString();
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(jwt)
+                    .getBody();
+        	jwtDec = claims.get(itemKey).toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
 		return jwtDec;
 	}
-	
 
 	/**
 	 * PEM에서 PKCS#8 개인키 추출
