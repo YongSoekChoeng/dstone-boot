@@ -37,7 +37,7 @@ public class JwtUtil {
 	 * @return
 	 */
 	public static String getJwt(Map<String, Object> body) {
-		return getJwt(new HashMap<String, Object>(), body, SECRETE_KEY_FOR_HS256);
+		return getJwt(new HashMap<String, Object>(), body, SignatureAlgorithm.HS256, SECRETE_KEY_FOR_HS256);
 	}
 	
 	/**
@@ -46,19 +46,8 @@ public class JwtUtil {
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwt(Map<String, Object> body, String secretKey) {
-		return getJwt(new HashMap<String, Object>(), body, secretKey);
-	}
-	
-	/**
-	 * Jwt(Json Web Token)생성 메서드
-	 * @param header
-	 * @param body
-	 * @return
-	 */
-	public static String getJwt(Map<String, Object> header, Map<String, Object> body) {
-		String jwt = getJwt(header, body, SECRETE_KEY_FOR_HS256);
-		return jwt;
+	public static String getJwt(Map<String, Object> body, SignatureAlgorithm alg, String secretKey) {
+		return getJwt(new HashMap<String, Object>(), body, alg, secretKey);
 	}
 	
 	/**
@@ -68,8 +57,8 @@ public class JwtUtil {
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwt(Map<String, Object> header, Map<String, Object> body, String secretKey) {
-		String jwt = getJwt(header, body, "", "", SignatureAlgorithm.HS256 , secretKey);
+	public static String getJwt(Map<String, Object> header, Map<String, Object> body, SignatureAlgorithm alg, String secretKey) {
+		String jwt = getJwt(header, body, "", "", alg , secretKey);
 		return jwt;
 	}
 
@@ -80,8 +69,8 @@ public class JwtUtil {
 	 * @param secretKey
 	 * @return
 	 */
-	public static String getJwt(Map<String, Object> header, Map<String, Object> body, Key secretKey) {
-		String jwt = getJwt(header, body, "", "", SignatureAlgorithm.HS256 , secretKey);
+	public static String getJwt(Map<String, Object> header, Map<String, Object> body, SignatureAlgorithm alg, Key secretKey) {
+		String jwt = getJwt(header, body, "", "", alg, secretKey);
 		return jwt;
 	}
 	
