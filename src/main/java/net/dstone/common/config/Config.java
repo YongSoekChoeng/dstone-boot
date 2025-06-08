@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	ConfigMapper.class,
 	ConfigProperty.class,
 	ConfigSecurity.class,
-	ConfigTransaction.class
+	ConfigTransaction.class,
+	ConfigWebSocket.class
 })
 public class Config{
 	

@@ -9,7 +9,23 @@
 	
 		<!-- Header 영역 -->
 		<jsp:include page="../common/header.jsp" flush="true"/>
-				
+		
+		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+		<script>
+		    const socket = new SockJS('/wsocket-endpoint-1');
+		    const stompClient = Stomp.over(socket);
+		
+		    stompClient.connect({}, function (frame) {
+		        console.log('Connected: ' + frame);
+		
+		        stompClient.subscribe('/topic/messages', function (message) {
+		            console.log('Received:', message.body);
+		        });
+		
+		    });
+		</script>
+		
 		<script type="text/javascript">
 			
 			function doTestAjax(){ 
@@ -44,6 +60,12 @@
 			function doTestSubmit(){ 
 				document.SUBMIT_FORM.action="/test/doTestSubmit.do";
 				document.SUBMIT_FORM.submit();
+			} 
+
+			function doTest(){ 
+				alert('doTest');
+		        // 메시지 보내기 
+		        stompClient.send("/wsocket/chat.send", {}, "Hello from client!");
 			} 
 		 
 		</script>
@@ -90,6 +112,19 @@
 						<table border=1>
 							<tr>
 								<td colspan="2"> <input type="button" value="GO" onclick="javascript:doTestAjax();" > </td>
+							</tr>
+						</table>
+						</form>
+						        
+						<br>
+						<br>
+						
+						그냥 테스트<span id="SUCCESS_YN"></span><br>
+						<form name="DEFAULT_FORM" method="post" action="">
+						<br>
+						<table border=1>
+							<tr>
+								<td colspan="2"> <input type="button" value="GO" onclick="javascript:doTest();" > </td>
 							</tr>
 						</table>
 						</form>
