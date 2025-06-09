@@ -11,6 +11,7 @@ server:
         whitelabel: 
             enabled: true
     servlet: 
+        context-path: /
         jsp: 
             init-parameters: 
                 development: true

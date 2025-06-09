@@ -1,10 +1,10 @@
 package net.dstone.common.core;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.utils.LogUtil;
 
+@Component
 public class BaseObject {
 	
 	private LogUtil myLogger = null;

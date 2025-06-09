@@ -17,6 +17,7 @@
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=analyzer/index">분석툴</a></li>
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/google/maps/main">구글맵</a></li>
 				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=test/test">테스트1</a></li>
+				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=websocket/test">웹소켓테스트</a></li>
 				<!--  
 				<li>
 					<span class="opener">멤버관리</span>

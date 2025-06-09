@@ -1,5 +1,6 @@
 package net.dstone.common.config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,7 +54,7 @@ public class ConfigSecurity {
 	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";			// 로그아웃 처리 성공시 진행될 액션
 	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do"; 			// 접근권한이 없을 시 진행될 액션
 	public static String PROXY_ACTION 					= "/proxy.do"; 								// 프락시 액션
-	public static String WEBSOCKET_ACTION				= "/wsocket*/**/*.do"; 						// 웹소켓 액션
+	public static String WEBSOCKET_ACTION				= "/ws-stomp/**/*.do"; 						// 웹소켓 액션
 	public static String KAKAO_PAGE 					= "/kakao/*.do"; 							// 카카오 액션
 	public static String GOOGLE_PAGE 					= "/google/**/*.do"; 						// 구글맵 액션
 
