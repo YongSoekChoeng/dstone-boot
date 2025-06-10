@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
@@ -256,32 +257,6 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 		return output;
 	}
 	
-
-
-	/**
-	 * 기본링크 메소드
-	 * @param request
-	 * @param response
-	 * @param exception
-	 */
-    @RequestMapping(value = "/defaultLink.do") 
-	protected ModelAndView defaultLink(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
-
-    	/************************ 변수 선언 시작 ************************/
-   		net.dstone.common.utils.RequestUtil 					requestUtil;
-   		/************************ 변수 선언 끝 **************************/
-
-		/************************ 변수 정의 시작 ************************/
-		requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);
-		/************************ 변수 정의 끝 ************************/
-		
-		/************************ 컨트롤러 로직 시작 ************************/
-		mav.setViewName(requestUtil.getParameter("defaultLink", ""));
-		/************************ 컨트롤러 로직 끝 ************************/
-			
-   		return mav;
-	}
-    
     /**
      * Proxy 에서 허용할 Header 값.
      */
@@ -427,5 +402,50 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 			}
 		}
 	}
-	
+
+
+	/**
+	 * 기본링크 메소드(defaultLink)
+	 * @param request
+	 * @param response
+	 * @param exception
+	 */
+    @RequestMapping(value = "/defaultLink.do") 
+	protected ModelAndView defaultLink(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
+    	/************************ 변수 선언 시작 ************************/
+   		net.dstone.common.utils.RequestUtil 					requestUtil;
+   		/************************ 변수 선언 끝 **************************/
+
+		/************************ 변수 정의 시작 ************************/
+		requestUtil 			= new net.dstone.common.utils.RequestUtil(request, response);
+		/************************ 변수 정의 끝 ************************/
+		
+		/************************ 컨트롤러 로직 시작 ************************/
+		mav.setViewName(requestUtil.getParameter("defaultLink", ""));
+		/************************ 컨트롤러 로직 끝 ************************/
+   		return mav;
+	}
+	/**
+	 * 기본링크 메소드(페이지경로)
+	 * @param request
+	 * @param response
+	 * @param exception
+	 */
+	@RequestMapping("/views/{viewlevel1}")
+	public String view1(@PathVariable String viewlevel1) {
+		return viewlevel1;
+	}
+	@RequestMapping("/views/{viewlevel1}/{viewlevel2}")
+	public String view2(@PathVariable String viewlevel1, @PathVariable String viewlevel2) {
+		return viewlevel1 + "/" + viewlevel2;
+	}
+	@RequestMapping("/views/{viewlevel1}/{viewlevel2}/{viewlevel3}")
+	public String view3(@PathVariable String viewlevel1, @PathVariable String viewlevel2, @PathVariable String viewlevel3) {
+		return viewlevel1 + "/" + viewlevel2 + "/" + viewlevel3;
+	}
+	@RequestMapping("/views/{viewlevel1}/{viewlevel2}/{viewlevel3}/{viewlevel4}")
+	public String view4(@PathVariable String viewlevel1, @PathVariable String viewlevel2, @PathVariable String viewlevel3, @PathVariable String viewlevel4) {
+		return viewlevel1 + "/" + viewlevel2 + "/" + viewlevel3 + "/" + viewlevel4;
+	}
+
 }
