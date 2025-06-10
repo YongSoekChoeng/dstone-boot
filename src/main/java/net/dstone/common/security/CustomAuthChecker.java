@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import org.springframework.util.AntPathMatcher;
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.security.svc.CustomUserService;
 import net.dstone.common.utils.LogUtil;
+import net.dstone.common.web.SessionListener;
 
 @Component
 public class CustomAuthChecker {
@@ -32,33 +34,39 @@ public class CustomAuthChecker {
 		String requestUri = request.getRequestURI();
 		String progUrl = "";
 		boolean isMatched = false;
-		
-		/****************************************************/
-		Object principalObj = authentication.getPrincipal();
-		List<GrantedAuthority> roles = (List<GrantedAuthority>)authentication.getAuthorities();
-		if(roles != null) {
-			for(GrantedAuthority role : roles) {
-				Map<String, String> param = new HashMap<String, String>();
-				param.put(ConfigSecurity.ROLE_ID_PARAMETER, role.getAuthority());
-				List<Map<String, Object>> authList = customUserService.selectListUrlByRole(param);
-				if(authList != null) {
-					for(Map<String, Object> row : authList) {
-						progUrl = row.get("PROG_URL").toString();
-						isMatched = new AntPathMatcher().match(progUrl, requestUri);
-						//logger.debug(this.getClass().getName() + ".match() ===================>>>requestUri["+requestUri+"] progUrl["+progUrl+"] isMatched["+isMatched+"]" );
-						if (isMatched) {
-							isAuthorized = true;
-							break;
+
+		HttpSession session = request.getSession(false);
+		if( session.getAttribute(SessionListener.USER_LOGIN_SESSION_KEY) == null ) {
+			isAuthorized = false;
+			logger.sysout(this.getClass().getName() + ".check() ===================>>> requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
+		}else {
+			/****************************************************/
+			Object principalObj = authentication.getPrincipal();
+			List<GrantedAuthority> roles = (List<GrantedAuthority>)authentication.getAuthorities();
+			if(roles != null) {
+				for(GrantedAuthority role : roles) {
+					Map<String, String> param = new HashMap<String, String>();
+					param.put(ConfigSecurity.ROLE_ID_PARAMETER, role.getAuthority());
+					List<Map<String, Object>> authList = customUserService.selectListUrlByRole(param);
+					if(authList != null) {
+						for(Map<String, Object> row : authList) {
+							progUrl = row.get("PROG_URL").toString();
+							isMatched = new AntPathMatcher().match(progUrl, requestUri);
+							//logger.debug(this.getClass().getName() + ".match() ===================>>>requestUri["+requestUri+"] progUrl["+progUrl+"] isMatched["+isMatched+"]" );
+							if (isMatched) {
+								isAuthorized = true;
+								break;
+							}
 						}
 					}
-				}
-				if(isAuthorized) {
-					break;
+					if(isAuthorized) {
+						break;
+					}
 				}
 			}
+			logger.sysout(this.getClass().getName() + ".check() ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
+			/****************************************************/
 		}
-		logger.sysout(this.getClass().getName() + ".check() ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
-		/****************************************************/
 		
 		return isAuthorized;
 	}
