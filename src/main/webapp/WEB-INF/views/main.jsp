@@ -14,7 +14,7 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 			function goLoginCheckAjax(){ 
 				$.ajax({ 
 					type:"POST", 
-					url:"/com/login/loginCheck.do", 
+					url:"<%=net.dstone.common.config.ConfigSecurity.LOGIN_CHECK_ACTION%>", 
 					data:{}, 
 					dataType:"json", 
 					success:function(data, status, request){
@@ -33,7 +33,7 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 			function goLogoutAjax(){ 
 				$.ajax({ 
 					type:"POST", 
-					url:"/com/login/logout.do", 
+					url:"<%=net.dstone.common.config.ConfigSecurity.LOGOUT_ACTION%>", 
 					data:{}, 
 					dataType:"json", 
 					success:function(data, status, request){
@@ -51,7 +51,7 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 				}); 
 			} 
 			function doLogoutSubmit(){ 
-				document.SUBMIT_FORM.action="/com/login/logout.do";
+				document.SUBMIT_FORM.action="<%=net.dstone.common.config.ConfigSecurity.LOGOUT_ACTION%>";
 				document.SUBMIT_FORM.submit();
 			} 
 		</script>

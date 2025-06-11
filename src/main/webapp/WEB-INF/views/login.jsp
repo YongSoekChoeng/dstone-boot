@@ -12,7 +12,7 @@
 			function goLoginAjax(){ 
 				$.ajax({ 
 					type:"POST", 
-					url:"/com/login/loginProcess.do", 
+					url:"<%=net.dstone.common.config.ConfigSecurity.LOGIN_PROCESS_ACTION%>", 
 					data:encodeURIComponent(JSON.stringify($(document.AJAX_FORM).serializeObject())), 
 					dataType:"json", 
 					success:function(data, status, request){
@@ -38,7 +38,7 @@
 			} 
 		
 			function doLoginSubmit(){ 
-				document.SUBMIT_FORM.action="/com/login/loginProcess.do";
+				document.SUBMIT_FORM.action="<%=net.dstone.common.config.ConfigSecurity.LOGIN_PROCESS_ACTION%>";
 				document.SUBMIT_FORM.submit();
 			} 
 		 

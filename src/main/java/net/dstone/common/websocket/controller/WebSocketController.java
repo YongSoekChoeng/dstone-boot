@@ -20,11 +20,12 @@ public class WebSocketController {
 
     @Autowired
     public WebSocketController(SimpMessagingTemplate template) {
-        this.template = template;
+        this.template = template; 
     }
 	
     @MessageMapping("/messages")
     public BaseVo sendMessage(@RequestBody BaseVo baseVo) {
+    	logger.info("baseVo==>>" + baseVo);
     	template.convertAndSend("/sub/message", baseVo.getContent());       // 구독중인 모든 사용자에게 메시지를 전달합니다.
         return baseVo;
     }

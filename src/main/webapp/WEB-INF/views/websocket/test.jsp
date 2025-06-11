@@ -10,8 +10,8 @@
 		<!-- Header 영역 -->
 		<jsp:include page="../common/header.jsp" flush="true"/>
 		
-	    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-	    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 	    
 	</head>
 	<body class="is-preload">
@@ -41,10 +41,13 @@
 					        let stompClient = null;
 					
 					        function connect() {
-					            const socket = new SockJS("/ws-stomp");
+					            const socket = new SockJS("http://localhost:7081/ws-stomp");
+console.log("======================>>> line 45");					            
 					            stompClient = Stomp.over(socket);
+console.log("======================>>> line 47");					            
 					            stompClient.connect({}, function () {
-					                stompClient.subscribe("/sub/chat/messages", function (msg) {
+console.log("======================>>> line 49");					            
+					                stompClient.subscribe("/sub/message", function (msg) {
 					                    const msgObj = JSON.parse(msg.body);
 					                    const text = msgObj.sender + ": " + msgObj.content;
 					                    document.getElementById("chat-box").innerHTML += text + "<br/>";
@@ -55,7 +58,7 @@
 					        function sendMessage() {
 					            const sender = document.getElementById("sender").value;
 					            const content = document.getElementById("message").value;
-					            stompClient.send("/pub/chat/message", {}, JSON.stringify({
+					            stompClient.send("/pub/message", {}, JSON.stringify({
 					                sender: sender,
 					                content: content
 					            }));

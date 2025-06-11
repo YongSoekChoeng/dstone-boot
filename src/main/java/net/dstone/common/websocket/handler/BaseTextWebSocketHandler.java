@@ -46,4 +46,8 @@ public class BaseTextWebSocketHandler extends org.springframework.web.socket.han
         clientSession.remove(session);
         logger.info("[+] afterConnectionClosed - Session: " + session.getId() + ", CloseStatus: " + status);
     }
+	@Override
+	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+		exception.printStackTrace();
+	}
 }

@@ -10,20 +10,20 @@
 				<h2>Dstone</h2>
 			</header>
 			<ul>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=main">main</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=login">로그인</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/user/listUser">멤버조회</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/admin/manageUser">멤머입력</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=analyzer/index">분석툴</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/google/maps/main">구글맵</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=test/test">테스트1</a></li>
-				<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=websocket/test">웹소켓테스트</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/main">main</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/login">로그인</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/sample/user/listUser">멤버조회</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/sample/admin/manageUser">멤머입력</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/analyzer/index">분석툴</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/sample/google/maps/main">구글맵</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/test/test">테스트1</a></li>
+				<li><a href="<%=request.getContextPath()%>/views/websocket/test">웹소켓테스트</a></li>
 				<!--  
 				<li>
 					<span class="opener">멤버관리</span>
 					<ul>
-						<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/user/listUser">멤버조회</a></li>
-						<li><a href="<%=request.getContextPath()%>/defaultLink.do?defaultLink=sample/admin/manageUser">멤머입력</a></li>
+						<li><a href="<%=request.getContextPath()%>/views/sample/user/listUser">멤버조회</a></li>
+						<li><a href="<%=request.getContextPath()%>/views/sample/admin/manageUser">멤머입력</a></li>
 					</ul>
 				</li>
 				-->

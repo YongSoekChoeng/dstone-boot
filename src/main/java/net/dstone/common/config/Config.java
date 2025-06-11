@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	ConfigListener.class,
 	ConfigMapper.class,
 	ConfigProperty.class,
-	ConfigSecurity.class,
+//	ConfigSecurity.class,
 	ConfigTransaction.class,
 	ConfigWebSocket.class
 })
