@@ -42,11 +42,8 @@
 					
 					        function connect() {
 					            const socket = new SockJS("http://localhost:7081/ws-stomp");
-console.log("======================>>> line 45");					            
 					            stompClient = Stomp.over(socket);
-console.log("======================>>> line 47");					            
 					            stompClient.connect({}, function () {
-console.log("======================>>> line 49");					            
 					                stompClient.subscribe("/sub/message", function (msg) {
 					                    const msgObj = JSON.parse(msg.body);
 					                    const text = msgObj.sender + ": " + msgObj.content;
