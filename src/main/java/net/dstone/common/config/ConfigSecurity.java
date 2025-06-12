@@ -47,8 +47,7 @@ public class ConfigSecurity {
 	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";				// 로그아웃 처리 성공시 진행될 액션
 	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do"; 				// 접근권한이 없을 시 진행될 액션
 	public static String PROXY_ACTION 					= "/proxy.do"; 									// 프락시 액션
-	public static String WEBSOCKET_ACTION				= ConfigWebSocket.WEBSOCKET_END_POINT + "/**";	// 웹소켓 액션
-	public static String WEBSOCKET_IO_ACTION			= "/socket.io/*";								// 웹소켓(SOCKET.IO) 액션
+	public static String WEBSOCKET_ACTION				= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "*/**";	// 웹소켓 액션
 	public static String KAKAO_PAGE 					= "/kakao/*.do"; 								// 카카오 액션
 	public static String GOOGLE_PAGE 					= "/google/**/*.do"; 							// 구글맵 액션
 
@@ -176,7 +175,6 @@ public class ConfigSecurity {
 			, ERROR_URL_PATTERN
 			, PROXY_ACTION
 			, WEBSOCKET_ACTION
-			, WEBSOCKET_IO_ACTION
 			, KAKAO_PAGE
 			, GOOGLE_PAGE
 		).permitAll()

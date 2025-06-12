@@ -28,7 +28,6 @@ public class WebSocketController {
     	logger.info("baseVo==>>" + baseVo);
     	net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
     	ds.buildFromVo(baseVo, "");
-logger.sysout(ds.toJson());
     	template.convertAndSend("/sub/message", ds.toJson());       // 구독중인 모든 사용자에게 메시지를 전달합니다.
         return ;
     }

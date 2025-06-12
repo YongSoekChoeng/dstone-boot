@@ -1,55 +1,54 @@
 package net.dstone.common.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
+import net.dstone.common.websocket.handler.BaseTextWebSocketHandler;
 
 @Controller
-//@EnableWebSocket
+@EnableWebSocket
 @EnableWebSocketMessageBroker
-public class ConfigWebSocket implements /* WebSocketConfigurer */ WebSocketMessageBrokerConfigurer {
+public class ConfigWebSocket implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer {
 
 	private static LogUtil logger = new LogUtil(ConfigWebSocket.class);
 	
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 	
-	public static String WEBSOCKET_END_POINT				= "/ws-stomp";      // 웹소켓 엔드포인트
+	public static String WEBSOCKET_WS_END_POINT				= "/ws";      	// 웹소켓 엔드포인트
+	public static String WEBSOCKET_STOMP_END_POINT			= "/ws-stomp";  // 웹소켓(stomp) 엔드포인트
 	
-	private String getUrl() {
-    	String url = "";
-    	String protocol = "http";
-    	if( !StringUtil.isEmpty(configProperty.getProperty("server.ssl.enabled")) ) {
-    		if("true".equals(configProperty.getProperty("server.ssl.enabled"))) {
-    			protocol = "https";
-    		}
-    	}
-    	String port = configProperty.getProperty("server.port");
-    	String contextPath = configProperty.getProperty("server.servlet.context-path");
-    	url = protocol + "://localhost:" + port;
-    	if( !StringUtil.isEmpty(contextPath) && !"/".equals(contextPath) ) {
-    		url = url + contextPath;
-    	}
-    	logger.debug("url================>>>" + url);
-		url = url + WEBSOCKET_END_POINT;
-		return url;
-	}
-
 	/***************************** WebSocketConfigurer 설정 시작 *****************************/
-//    @Override
-//    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-//logger.sysout("net.dstone.common.config.ConfigWebSocket.registerWebSocketHandlers(WebSocketHandlerRegistry)================>>> line 53");
-//        registry.addHandler(new BaseTextWebSocketHandler(), WEBSOCKET_END_POINT )
-//                .setAllowedOriginPatterns("*")
-//                .withSockJS();
-//logger.sysout("net.dstone.common.config.ConfigWebSocket.registerWebSocketHandlers(WebSocketHandlerRegistry)================>>> line 58");
-//    }
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(new BaseTextWebSocketHandler(), WEBSOCKET_WS_END_POINT )
+        		.addInterceptors(new HttpSessionHandshakeInterceptor())
+                .setAllowedOriginPatterns("*")
+//                .withSockJS()
+                ;
+    }
+
+	@Bean
+	public ServletServerContainerFactoryBean createWebSocketContainer() {
+		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+		//Text Message의 최대 버퍼 크기 설정
+		container.setMaxTextMessageBufferSize(8192);
+		//Binary Message의 최대 버퍼 크기 설정
+		container.setMaxBinaryMessageBufferSize(8192);
+		return container;
+	}
 	/***************************** WebSocketConfigurer 설정 끝 *****************************/
 
 	/***************************** WebSocketMessageBrokerConfigurer 설정 시작 *****************************/
@@ -76,7 +75,7 @@ public class ConfigWebSocket implements /* WebSocketConfigurer */ WebSocketMessa
          */
     	
     	// 클라이언트가 WebSocket에 연결하기 위한 엔드포인트를 "/ws-stomp"로 설정합니다.
-        registry.addEndpoint(WEBSOCKET_END_POINT)
+        registry.addEndpoint(WEBSOCKET_STOMP_END_POINT)
 	        // 클라이언트의 origin을 명시적으로 지정
 	        .setAllowedOriginPatterns("*")
 	        // WebSocket을 지원하지 않는 브라우저에서도 SockJS를 통해 WebSocket 기능을 사용할 수 있게 합니다.

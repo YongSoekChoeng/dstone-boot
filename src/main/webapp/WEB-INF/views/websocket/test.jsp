@@ -30,18 +30,35 @@
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
 						   
-					    <h2>실시간 채팅</h2>
+					    <h2>서버와 통신교환</h2>
+					    <button onclick="sendWsMessage()">인사보내기</button>
+					    <hr>
 					    <input type="text" id="sender" placeholder="이름 입력" />
 					    <input type="text" id="message" placeholder="메시지 입력" />
-					    <button onclick="sendMessage()">보내기</button>
+					    <button onclick="sendStompMessage()">인풋값 보내기</button>
 					    <hr>
 					    <div id="chat-box"></div>
 					
 					    <script>
-					        let stompClient = null;
-					
-					        function connect() {
-					            const socket = new SockJS("http://localhost:7081/ws-stomp");
+					    	/***************** WebSocketConfigurer 사용시 ******************************/
+					    	
+					    	const socket = new WebSocket("ws://localhost:7081<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_WS_END_POINT%>");
+						    socket.onopen = function () {
+						        console.log("연결 성공");
+						    };
+						    socket.onmessage = function (event) {
+						        console.log("서버로부터 메시지: " + event.data);
+						        document.getElementById("chat-box").innerHTML += event.data + "<br/>";
+						    };
+						    function sendWsMessage() {
+						        socket.send("안녕하세요 서버!");
+						    }
+					    	/*************************************************************************/
+					    	
+					    	/***************** WebSocketMessageBrokerConfigurer 사용시 *****************/
+					    	let stompClient = null;
+					        function stompClientconnect() {
+					            const socket = new SockJS("http://localhost:7081<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_STOMP_END_POINT%>");
 					            stompClient = Stomp.over(socket);
 					            stompClient.connect({}, function () {
 					                stompClient.subscribe("/sub/message", function (msg) {
@@ -51,8 +68,7 @@
 					                });
 					            });
 					        }
-					
-					        function sendMessage() {
+					        function sendStompMessage() {
 					            const sender = document.getElementById("sender").value;
 					            const content = document.getElementById("message").value;
 					            stompClient.send("/pub/message", {}, JSON.stringify({
@@ -60,8 +76,10 @@
 					                content: content
 					            }));
 					        }
-					
-					        connect();
+					        stompClientconnect();
+					    	/*************************************************************************/
+					    	
+
 					    </script>
 						<!-- =============================================== Content 영역 End =============================================== -->
 					</section>
