@@ -1,7 +1,8 @@
 <%@page import="net.dstone.common.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%    
-	String SUCCESS_YN = StringUtil.nullCheck(response.getHeader("SUCCESS_YN"), "");
+	net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
+	String scheme = requestUtil.getScheme();
 %>   
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -42,7 +43,7 @@
 					
 					    <script>
 					    	/***************** WebSocketConfigurer 사용시 ******************************/
-					    	const socket = new WebSocket("ws://localhost:7081<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_WS_END_POINT%>");
+					    	const socket = new WebSocket("<%=scheme.equals("http")?"ws":"wss"%>://<%=requestUtil.getServerName()%>:<%=requestUtil.getServerPort()%><%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_WS_END_POINT%>");
 						    socket.onopen = function () {
 						        console.log("연결 성공");
 						    };
@@ -63,7 +64,7 @@
 					    	/***************** WebSocketMessageBrokerConfigurer 사용시 *****************/
 					    	let stompClient = null;
 					        function stompClientconnect() {
-					            const socket = new SockJS("http://localhost:7081<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_STOMP_END_POINT%>");
+					            const socket = new SockJS("<%=scheme%>://<%=requestUtil.getServerName()%>:<%=requestUtil.getServerPort()%><%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_STOMP_END_POINT%>");
 					            stompClient = Stomp.over(socket);
 					            stompClient.connect({}, function () {
 					                stompClient.subscribe("/sub/message", function (msg) {

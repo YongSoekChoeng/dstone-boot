@@ -29,11 +29,11 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
 
     @RequestMapping("/loginPage.do")
     @ConfigurationProperties("interface.kakao")
-    public String loginPage(Model model) {
-    	
+    public String loginPage(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
     	String clientId = configProperty.getProperty("interface.kakao.client-id");
     	String loginUri = configProperty.getProperty("interface.kakao.login-url");
-    	String loginRedirectUri = configProperty.getProperty("interface.kakao.login-redirect-uri");
+    	String loginRedirectUri = requestUtil.getScheme()+"://"+requestUtil.getServerName()+":"+requestUtil.getServerPort() + configProperty.getProperty("interface.kakao.login-redirect-uri");
     	loginUri = StringUtil.replace(loginUri, "@client_id@" , clientId);
     	loginUri = StringUtil.replace(loginUri, "@redirect_uri@" , loginRedirectUri);
     	
@@ -46,9 +46,10 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     }
     
     @RequestMapping("/loginCallback.do")
-    public String loginCallback(@RequestParam("code") String code, HttpServletRequest request) {
-    	
-        String accessToken = kakaoService.getAccessTokenFromKakao(code);
+    public String loginCallback(@RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
+    	String loginRedirectUri = requestUtil.getScheme()+"://"+requestUtil.getServerName()+":"+requestUtil.getServerPort() + configProperty.getProperty("interface.kakao.login-redirect-uri");
+        String accessToken = kakaoService.getAccessTokenFromKakao(code, loginRedirectUri);
         request.getSession().setAttribute("accessToken", accessToken);
 
         java.util.Map<String, String> userInfo = kakaoService.getUserInfo(accessToken);
@@ -60,11 +61,12 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     }
     
     @RequestMapping("/logout.do")
-    public void logout(Model model, HttpServletRequest request, HttpServletResponse response) {
+    public void logout(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception{
     	
+    	net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
     	String clientId = configProperty.getProperty("interface.kakao.client-id");
     	String logoutUri = configProperty.getProperty("interface.kakao.logout-url");
-    	String logoutRedirectUri = configProperty.getProperty("interface.kakao.logout-redirect-uri");
+    	String logoutRedirectUri = requestUtil.getScheme()+"://"+requestUtil.getServerName()+":"+requestUtil.getServerPort() + configProperty.getProperty("interface.kakao.logout-redirect-uri");
     	logoutUri = StringUtil.replace(logoutUri, "@client_id@" , clientId);
     	logoutUri = StringUtil.replace(logoutUri, "@logout_redirect_uri@" , logoutRedirectUri);
     	
@@ -81,11 +83,12 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
     }
     
     @RequestMapping("/logoutCallback.do")
-    public String logoutCallback(Model model, HttpServletRequest request, HttpServletResponse response) {
-
+    public String logoutCallback(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception{
+    	
+    	net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
     	String clientId = configProperty.getProperty("interface.kakao.client-id");
     	String loginUri = configProperty.getProperty("interface.kakao.login-url");
-    	String loginRedirectUri = configProperty.getProperty("interface.kakao.login-redirect-uri");
+    	String loginRedirectUri = requestUtil.getScheme()+"://"+requestUtil.getServerName()+":"+requestUtil.getServerPort() + configProperty.getProperty("interface.kakao.login-redirect-uri");
     	loginUri = StringUtil.replace(loginUri, "@client_id@" , clientId);
     	loginUri = StringUtil.replace(loginUri, "@redirect_uri@" , loginRedirectUri);
     	

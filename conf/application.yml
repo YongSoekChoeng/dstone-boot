@@ -112,7 +112,7 @@ interface:
       # 1. 로그인 URL
       login-url: https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=@client_id@&redirect_uri=@redirect_uri@
       # 2. 로그인 후 콜백 URL
-      login-redirect-uri: https://localhost:7081/kakao/loginCallback.do
+      login-redirect-uri: /kakao/loginCallback.do
       # 3. 사용자토큰 조회 URL
       access-token-url: https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=@client_id@&redirect_uri=@redirect_uri@&code=@code@
       # 4. 사용자정보 조회 URL
@@ -120,7 +120,7 @@ interface:
       # 5. 로그아웃 URL
       logout-url: https://kauth.kakao.com/oauth/logout?response_type=code&client_id=@client_id@&logout_redirect_uri=@logout_redirect_uri@
       # 6. 로그아웃 후 콜백 URL
-      logout-redirect-uri: https://localhost:7081/kakao/logoutCallback.do
+      logout-redirect-uri: /kakao/logoutCallback.do
     google: 
       # OAuth 클라이언트ID 인증정보파일경로
       credentials-filepath: ${APP_HOME}/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-2mvsrt8dme7lmbup6epcqee3adq8mhbg.apps.googleusercontent.com.json

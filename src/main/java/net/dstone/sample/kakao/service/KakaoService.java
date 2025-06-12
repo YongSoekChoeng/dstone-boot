@@ -31,14 +31,13 @@ public class KakaoService extends BaseService {
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 
-    public String getAccessTokenFromKakao(String code) {
+    public String getAccessTokenFromKakao(String code, String redirectUri) {
 
     	String accessToken 				= "";
     	String refreshToken 			= "";
     	
     	String accessTokenUrl 			= configProperty.getProperty("interface.kakao.access-token-url");
     	String clientId 				= configProperty.getProperty("interface.kakao.client-id");
-    	String redirectUri 				= configProperty.getProperty("interface.kakao.login-redirect-uri");
     	
     	Map<String, String> reqMap		= new HashMap<String, String>();
 		Map<String, String> header 		= new HashMap<String, String>();
