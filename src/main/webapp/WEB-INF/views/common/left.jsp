@@ -15,19 +15,12 @@
 				<li><a href="<%=request.getContextPath()%>/views/sample/user/listUser">멤버조회</a></li>
 				<li><a href="<%=request.getContextPath()%>/views/sample/admin/manageUser">멤머입력</a></li>
 				<li><a href="<%=request.getContextPath()%>/views/analyzer/index">분석툴</a></li>
-				<li><a href="<%=request.getContextPath()%>/views/sample/google/maps/main">구글맵</a></li>
 				<li><a href="<%=request.getContextPath()%>/views/test/test">테스트1</a></li>
+
+				<li><a href="<%=request.getContextPath()%>/views/sample/google/maps/main">구글맵</a></li>
 				<li><a href="<%=request.getContextPath()%>/views/websocket/test">웹소켓테스트</a></li>
 				<li><a href="<%=request.getContextPath()%>/kakao/loginPage.do">카카오로그인</a></li>
-				<!--  
-				<li>
-					<span class="opener">멤버관리</span>
-					<ul>
-						<li><a href="<%=request.getContextPath()%>/views/sample/user/listUser">멤버조회</a></li>
-						<li><a href="<%=request.getContextPath()%>/views/sample/admin/manageUser">멤머입력</a></li>
-					</ul>
-				</li>
-				-->
+				
 			</ul>
 		</nav>
 	</div>
