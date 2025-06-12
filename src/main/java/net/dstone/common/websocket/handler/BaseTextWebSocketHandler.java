@@ -6,7 +6,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import net.dstone.common.utils.BeanUtil;
+import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.LogUtil;
 
 public class BaseTextWebSocketHandler extends org.springframework.web.socket.handler.TextWebSocketHandler {
@@ -20,17 +20,17 @@ public class BaseTextWebSocketHandler extends org.springframework.web.socket.han
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         logger.info("[+] handleTextMessage :: " + session);
         logger.info("[+] handleTextMessage :: " + message.getPayload());
-
-        clientSession.forEach((key, value) -> {
-            logger.info("key :: " + key + "  value :: " + value);
-            if (!key.equals(session.getId())) {  //같은 아이디가 아니면 메시지를 전달합니다.
-                try {
-                    value.sendMessage(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        
+        java.util.Iterator<String> keys = clientSession.keySet().iterator();
+        while( keys.hasNext() ) {
+        	String key = keys.next();
+            try {
+            	WebSocketSession value = clientSession.get(key);
+                value.sendMessage(message);
+            } catch (Exception e) {
+                //e.printStackTrace();
             }
-        });
+        }
     }
 
     @Override

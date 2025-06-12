@@ -31,27 +31,32 @@
 						<!-- =============================================== Content 영역 Start =============================================== -->
 						   
 					    <h2>서버와 통신교환</h2>
-					    <button onclick="sendWsMessage()">인사보내기</button>
+					    <input type="text" id="greetingName" placeholder="인사할 사람" />
+					    <button onclick="sendWsMessage()">WebSocket으로 인사보내기</button>
 					    <hr>
 					    <input type="text" id="sender" placeholder="이름 입력" />
 					    <input type="text" id="message" placeholder="메시지 입력" />
-					    <button onclick="sendStompMessage()">인풋값 보내기</button>
+					    <button onclick="sendStompMessage()">WebSocket Message Broker로 인풋값 보내기</button>
 					    <hr>
 					    <div id="chat-box"></div>
 					
 					    <script>
 					    	/***************** WebSocketConfigurer 사용시 ******************************/
-					    	
 					    	const socket = new WebSocket("ws://localhost:7081<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_WS_END_POINT%>");
 						    socket.onopen = function () {
 						        console.log("연결 성공");
 						    };
 						    socket.onmessage = function (event) {
 						        console.log("서버로부터 메시지: " + event.data);
-						        document.getElementById("chat-box").innerHTML += event.data + "<br/>";
+						        var msgData = JSON.parse(event.data);
+						        document.getElementById("chat-box").innerHTML += msgData.greetingName + "<br/>";
 						    };
 						    function sendWsMessage() {
-						        socket.send("안녕하세요 서버!");
+					            const greetingName = document.getElementById("greetingName").value + "님 안녕하세요";
+					            var msgData = JSON.stringify({
+					                greetingName: greetingName
+					            });
+						        socket.send(msgData);
 						    }
 					    	/*************************************************************************/
 					    	
