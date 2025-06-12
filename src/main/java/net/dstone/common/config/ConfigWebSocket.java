@@ -57,7 +57,7 @@ public class ConfigWebSocket implements WebSocketConfigurer, WebSocketMessageBro
 	1. 전송루트 예(Example)
 		▶(발행자)화면 stompClient.send("/pub/message", ...)
 			▶ ConfigWebSocket.configureMessageBroker	
-				▶ config.setApplicationDestinationPrefixes("/pub + ")	
+				▶ config.setApplicationDestinationPrefixes("/pub")	
 					- 이 세팅으로 인해 /pub로 시작하는 발행자에게만 메세지를 전달받는다.
 					▶ WebSocketController.sendMessage() < @MessageMapping 어노테이션값 이 "/message" 인 메서드 >
 						- 내부작업(필요하다면)
