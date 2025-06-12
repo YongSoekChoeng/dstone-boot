@@ -62,9 +62,9 @@ public class ConfigWebSocket implements WebSocketConfigurer, WebSocketMessageBro
 					▶ WebSocketController.sendMessage() < @MessageMapping 어노테이션값 이 "/message" 인 메서드 >
 						- 내부작업(필요하다면)
 						- template.convertAndSend("/sub/message", ...) 로 구독자에서 메세지 전달	
-					◀ config.enableSimpleBroker("/sub")
-						- 이 세팅으로 인해 /sub로 시작하는 구독자에게만 메세지가 전달된다.
-				◀(구독자) 화면 stompClient.subscribe("/sub/message", ...)
+				◀ config.enableSimpleBroker("/sub")
+					- 이 세팅으로 인해 /sub로 시작하는 구독자에게만 메세지가 전달된다.
+			◀(구독자) 화면 stompClient.subscribe("/sub/message", ...)
 	***************************************************************************************************/
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
