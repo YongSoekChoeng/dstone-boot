@@ -55,10 +55,6 @@ public class BizGenerator extends BaseObject {
 
 	}
 
-	protected static void sysout(Object o) {
-		net.dstone.common.utils.LogUtil.sysout(o);
-	}
-
 	protected static String[] getPrimarykeys(String TABLE_NAME) {
 		net.dstone.common.utils.DbUtil db = null;
 		net.dstone.common.utils.DataSet ds = null; 
