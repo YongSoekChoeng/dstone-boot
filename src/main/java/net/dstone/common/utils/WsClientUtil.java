@@ -34,11 +34,16 @@ public class WsClientUtil extends net.dstone.common.core.BaseObject {
 			Request request = new Request.Builder()
 		    .url(url)
 		    .build();
-
+			
 	        WebSocket webSocket = client.newWebSocket(request, new WebSocketListener() {
 	            @Override
 	            public void onOpen(WebSocket webSocket, Response response) {
 	                webSocket.send(msg);
+	            }
+
+	            @Override
+	            public void onClosed(WebSocket webSocket, int code, String reason) {
+	            	net.dstone.common.utils.LogUtil.sysout("연결 종료됨 → 코드: " + code + ", 이유: " + reason);
 	            }
 
 	            @Override
@@ -55,7 +60,8 @@ public class WsClientUtil extends net.dstone.common.core.BaseObject {
 	                t.printStackTrace();
 	            }
 	        });
-
+	        
+	        client.dispatcher().executorService().shutdown();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
