@@ -6,9 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.dstone.common.biz.BaseController;
 import net.dstone.common.utils.LogUtil;
-import net.dstone.common.websocket.handler.BaseTextWebSocketHandler;
 import net.dstone.common.websocket.vo.BaseVo;
 
 @RestController
@@ -24,11 +22,8 @@ public class WebSocketController {
     }
 	
     @MessageMapping("/message")
-    public void sendMessage(@RequestBody BaseVo baseVo) {
-    	logger.info("baseVo==>>" + baseVo);
-    	net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
-    	ds.buildFromVo(baseVo, "");
-    	template.convertAndSend("/sub/message", ds.toJson());       // 구독중인 모든 사용자에게 메시지를 전달합니다.
+    public void sendMessage(@RequestBody String payload) {
+    	template.convertAndSend("/sub/message", payload);       // 구독중인 모든 사용자에게 메시지를 전달합니다.
         return ;
     }
 }

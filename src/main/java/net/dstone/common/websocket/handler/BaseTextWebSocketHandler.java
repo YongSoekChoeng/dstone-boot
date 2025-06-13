@@ -2,6 +2,7 @@ package net.dstone.common.websocket.handler;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -9,6 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.LogUtil;
 
+@Component
 public class BaseTextWebSocketHandler extends org.springframework.web.socket.handler.TextWebSocketHandler {
 
 	private static LogUtil logger = new LogUtil(BaseTextWebSocketHandler.class);

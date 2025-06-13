@@ -71,7 +71,7 @@
 					            const socket = new SockJS("<%=scheme%>://<%=requestUtil.getServerName()%>:<%=requestUtil.getServerPort()%><%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_STOMP_END_POINT%>");
 					            stompClient = Stomp.over(socket);
 					            stompClient.connect({}, function () {
-					                stompClient.subscribe("/sub/message", function (msg) {
+					                stompClient.subscribe("<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_STOMP_SUB_PREFIX%>/message", function (msg) {
 					                    const msgObj = JSON.parse(msg.body);
 					                    const text = msgObj.sender + ": " + msgObj.content;
 					                    document.getElementById("chat-box").innerHTML += text + "<br/>";
@@ -81,7 +81,7 @@
 					        function sendStompMessage() {
 					            const sender = document.getElementById("sender").value;
 					            const content = document.getElementById("message").value;
-					            stompClient.send("/pub/message", {}, JSON.stringify({
+					            stompClient.send("<%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_STOMP_PUB_PREFIX%>/message", {}, JSON.stringify({
 					                sender: sender,
 					                content: content
 					            }));
