@@ -98,7 +98,7 @@ mail:
 sftp: 
     host: 127.0.0.1
     username: jysn007
-    password: db2admin
+    password: db2admin!@
 
 app: 
     common: 

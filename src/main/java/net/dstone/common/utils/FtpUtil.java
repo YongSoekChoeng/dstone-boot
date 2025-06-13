@@ -1,16 +1,22 @@
 package net.dstone.common.utils;
 
+import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.Selectors;
 import org.apache.commons.vfs2.VFS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import net.dstone.common.config.ConfigProperty;
+import net.dstone.common.core.BaseObject;
 
 @Component
-public class FtpUtil {
+public class FtpUtil extends BaseObject {
 
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
@@ -41,6 +47,7 @@ public class FtpUtil {
 	    FileSystemManager manager = VFS.getManager();
 	    FileObject local = null;
 	    FileObject remote = null;
+	    boolean isSucceeded = false;
 	    try {
 	    	localFileFullName = StringUtil.replace(localFileFullName, "\\", "/");
 	    	String localFile = "";
@@ -53,9 +60,20 @@ public class FtpUtil {
 	    				remoteDir = remoteDir.substring(0, remoteDir.length()-1);
 	    			}
 	    		}
-	    		localFile = FileUtil.getFileName(localFileFullName, true);
-		    	remote = manager.resolveFile( "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDir + "/" + localFile);
-		    	remote.copyFrom(local, Selectors.SELECT_SELF);
+	    		// 업로드 대상 로컬 파일
+				local = manager.resolveFile(new File(localFileFullName).getAbsolutePath());
+				
+				// SFTP 경로 (파일명 URL 인코딩 처리 필수)
+	    		localFile = URLEncoder.encode(FileUtil.getFileName(localFileFullName, true), StandardCharsets.UTF_8.name());
+	    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + ":22/" + remoteDir + "/" + localFile;
+
+				//원격 SFTP 파일 객체 생성
+				remote = manager.resolveFile(cmd);
+
+	            // 업로드 수행 (로컬 → 원격)
+				remote.copyFrom(local, Selectors.SELECT_SELF);
+
+				isSucceeded = true;
 	    	}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -66,6 +84,7 @@ public class FtpUtil {
 			if( remote != null ) {
 				remote.close();
 			}
+			this.sysout("isSucceeded["+isSucceeded+"]");
 		}
 	}
 
@@ -105,6 +124,7 @@ public class FtpUtil {
     			}
     		}
     		localFileFullName = localDir + "/" + remoteFile;
+    		
     		if(FileUtil.isFileExist(localFileFullName)) {
     			localFileFullName = FileUtil.getNewFileName(localFileFullName);
     		}
@@ -114,7 +134,7 @@ public class FtpUtil {
 			if( remoteFileFullName.startsWith("/")) {
 				remoteFileFullName = remoteFileFullName.substring(1);
 			}
-	    	remote = manager.resolveFile( "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName );
+	    	remote = manager.resolveFile( "sftp://" + username + ":" + password + "@" + remoteHost + "/" + URLEncoder.encode(remoteFileFullName, StandardCharsets.ISO_8859_1.name()) );
 	    	local.copyFrom(remote, Selectors.SELECT_SELF);
 	    	
 		} catch (Exception e) {

@@ -42,5 +42,9 @@ public class BaseObject {
 	protected void error(Object o) {
 		getLogger().error(o);
 	}
+
+	protected void sysout(Object o) {
+		LogUtil.sysout(o);
+	}
 	
 }
