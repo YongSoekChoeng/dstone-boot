@@ -4327,10 +4327,10 @@ public class BizGenerator extends BaseObject {
 			tBuff.append("     */ ").append("\r\n");
 			tBuff.append("    public static void main(String[] args) { ").append("\r\n");
 			tBuff.append("        " + strWsVoPackageName + "." + strWsVoName + " bean = new " + strWsVoPackageName + "." + strWsVoName + "(); ").append("\r\n");
-			tBuff.append("        net.dstone.common.utils.WsUtil wsUtil = new net.dstone.common.utils.WsUtil(); ").append("\r\n");
+			tBuff.append("        net.dstone.common.utils.WcUtil wsUtil = new net.dstone.common.utils.WcUtil(); ").append("\r\n");
 			tBuff.append("        ").append("\r\n");
 			tBuff.append("        try {").append("\r\n");
-			tBuff.append("            wsUtil.bean = new net.dstone.common.utils.WsUtil.Bean(); ").append("\r\n");
+			tBuff.append("            wsUtil.bean = new net.dstone.common.utils.WcUtil.Bean(); ").append("\r\n");
 			tBuff.append("            wsUtil.bean.method = \"" + strMethodKind + "\"; ").append("\r\n");
 			tBuff.append("            wsUtil.bean.url = \"" + WS_WEB_URL + (WEB_CONTEXT_ROOT.equals("/")?"":WEB_CONTEXT_ROOT) + "" + WS_ROOT_PATH + "" + strWSPath + "/" + strMethodName + "\"; ").append("\r\n");
 			tBuff.append("            /*** bean 파라메터 세팅 시작 ***/ ").append("\r\n");

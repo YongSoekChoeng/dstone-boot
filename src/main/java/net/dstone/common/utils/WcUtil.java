@@ -33,7 +33,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 
-public class WsUtil {
+/**
+ * Web Client Util
+ * 웹호출을 담당한다.
+ * @author Default
+ */
+public class WcUtil {
 	
 	public static int HTTP_OK 			= 200;
 
@@ -42,7 +47,7 @@ public class WsUtil {
 	public static String CONT_TYPE_XML 	= "text/xml";
 	public static String CONT_TYPE_JSON = "application/json";
 
-	private static LogUtil logger = new LogUtil(WsUtil.class);
+	private static LogUtil logger = new LogUtil(WcUtil.class);
 	
 	public static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{
 		new X509TrustManager(){
@@ -125,9 +130,9 @@ public class WsUtil {
 			
 			// Bean.Body 값 세팅
 			if(StringUtil.isEmpty(this.bean.body)){
-				if( WsUtil.CONT_TYPE_XML.equals(this.bean.getContentType()) ){
+				if( WcUtil.CONT_TYPE_XML.equals(this.bean.getContentType()) ){
 					this.bean.body = this.bean.parameters.toXml();
-				}else if( WsUtil.CONT_TYPE_JSON.equals(this.bean.getContentType()) ){
+				}else if( WcUtil.CONT_TYPE_JSON.equals(this.bean.getContentType()) ){
 					this.bean.body = this.bean.parameters.toJson();
 				}
 			}
@@ -141,7 +146,7 @@ public class WsUtil {
 			}else if ("POST".equals(bean.method) || "PUT".equals(bean.method)) {
 
 				// XML/JSON 타입일 경우
-				if( WsUtil.CONT_TYPE_XML.equals(this.bean.getContentType()) ||  WsUtil.CONT_TYPE_JSON.equals(this.bean.getContentType()) ){
+				if( WcUtil.CONT_TYPE_XML.equals(this.bean.getContentType()) ||  WcUtil.CONT_TYPE_JSON.equals(this.bean.getContentType()) ){
 					if ("POST".equals(bean.method)) {
 						httpRequest = new HttpPost(this.bean.url);
 						if(StringUtil.isEmpty(charset)){
@@ -231,14 +236,14 @@ public class WsUtil {
 			if(debugInOutYn){
 				debugStr.append("\n");
 				debugStr.append("\n");
-				debugStr.append("/************************************* WsUtil 호출 START **************************************************************/").append("\n");
+				debugStr.append("/************************************* WcUtil 호출 START **************************************************************/").append("\n");
 				debugStr.append("URL ["+this.bean.url+"] Elapsed Time["+ Long.toString( ( eTime-sTime) ) +"] StatusCd["+ this.response.StatusCd +"]").append("\n");
-				debugStr.append("/************************************* WsUtil 호출 END ****************************************************************/").append("\n");
+				debugStr.append("/************************************* WcUtil 호출 END ****************************************************************/").append("\n");
 				debugStr.append("\n");
 				debugStr.append("\n");
-//				debugStr.append("/************************************* WsUtil 호출결과 START **************************************************************/").append("\n");
+//				debugStr.append("/************************************* WcUtil 호출결과 START **************************************************************/").append("\n");
 //				debugStr.append(responseReader.outputStr.toString()).append("\n");
-//				debugStr.append("/************************************* WsUtil 호출결과 END ****************************************************************/").append("\n");
+//				debugStr.append("/************************************* WcUtil 호출결과 END ****************************************************************/").append("\n");
 //				debugStr.append("\n");
 //				debugStr.append("\n");
 				logger.info(debugStr.toString());
@@ -281,7 +286,7 @@ public class WsUtil {
 
 		public void addHeader(String key, String value) {
 			if( StringUtil.isEmpty(this.contentType)){
-				this.contentType = WsUtil.CONT_TYPE_HTML;
+				this.contentType = WcUtil.CONT_TYPE_HTML;
 			}
 			headers.put(key, value);
 		}

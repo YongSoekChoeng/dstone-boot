@@ -4,22 +4,22 @@ import java.util.ArrayList;
 
 import net.dstone.common.task.TaskItem;
 
-public class WStressUtil extends net.dstone.common.core.BaseObject {
+public class WstressUtil extends net.dstone.common.core.BaseObject {
 
-	private static WStressUtil wStressUtil = null;
+	private static WstressUtil wStressUtil = null;
 	WStressUtilConfig config = new WStressUtilConfig();
 	private static long EXEC_NUM = 0l;
 	
 	/**
-	 * WStressUtil
+	 * WstressUtil
 	 */
-	private WStressUtil() {
+	private WstressUtil() {
 		initialize();
 	}
 	
-	public static WStressUtil getInstance() {
+	public static WstressUtil getInstance() {
 		if (wStressUtil == null) {
-			wStressUtil = new WStressUtil();
+			wStressUtil = new WstressUtil();
 		}
 		return wStressUtil;
 	}
@@ -78,7 +78,7 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 	}
 
 	public void fireStress(String url, DataSet ds){
-		this.fireStress(url, "POST", net.dstone.common.utils.WsUtil.CONT_TYPE_FORM, ds);
+		this.fireStress(url, "POST", net.dstone.common.utils.WcUtil.CONT_TYPE_FORM, ds);
 	}
 	
 	public void fireStress(String url, String method, String contentType, DataSet ds){
@@ -98,7 +98,7 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 				TaskItem taskItem = new TaskItem() {
 					@Override
 					public TaskItem doTheTask() {
-						net.dstone.common.utils.WsUtil ws = new net.dstone.common.utils.WsUtil();
+						net.dstone.common.utils.WcUtil ws = new net.dstone.common.utils.WcUtil();
 						try {
 							
 							for(int k=0; k<config.getFireNumByUser(); k++){
@@ -108,7 +108,7 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 								if( config.getThinkTimeByMillSec() > 0 ){
 									Thread.sleep(config.getThinkTimeByMillSec());
 								}
-								net.dstone.common.utils.WsUtil.Bean wsBean = new net.dstone.common.utils.WsUtil.Bean();
+								net.dstone.common.utils.WcUtil.Bean wsBean = new net.dstone.common.utils.WcUtil.Bean();
 								wsBean.setParameters(ds);
 								wsBean.url = url;
 								wsBean.method = method;			
@@ -130,7 +130,7 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 				}
 				taskList.add(taskItem);
 			}
-			net.dstone.common.task.TaskHandler.getInstance().addFixedExecutorService("WStressUtil", config.getConcurrentUserNum()).doTheSyncTasks("WStressUtil", taskList);
+			net.dstone.common.task.TaskHandler.getInstance().addFixedExecutorService("WstressUtil", config.getConcurrentUserNum()).doTheSyncTasks("WstressUtil", taskList);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -156,9 +156,9 @@ public class WStressUtil extends net.dstone.common.core.BaseObject {
 		
 		net.dstone.common.utils.DateUtil.stopWatchStart("01.웹스트레스테스트");
 		try {
-			net.dstone.common.utils.WStressUtil ws = net.dstone.common.utils.WStressUtil.getInstance();
+			net.dstone.common.utils.WstressUtil ws = net.dstone.common.utils.WstressUtil.getInstance();
 			
-			net.dstone.common.utils.WStressUtil.WStressUtilConfig config = ws.newConfig();
+			net.dstone.common.utils.WstressUtil.WStressUtilConfig config = ws.newConfig();
 			config.setConcurrentUserNum(concurrentUserNum);
 			config.setFireNumByUser(fireNumByUser);
 			config.setMaxNumLimit(maxNumLimit);

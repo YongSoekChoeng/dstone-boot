@@ -31,16 +31,10 @@
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
 						   
-					    <h2>서버와 통신교환</h2>
+					    <h2>클라이언트(WebSocket) 와 서버(WebSocket)의 통신교환</h2>
 					    <input type="text" id="greetingName" placeholder="인사할 사람" />
-					    <button onclick="sendWsMessage()">WebSocket으로 인사보내기</button>
-					    <hr>
-					    <input type="text" id="sender" placeholder="이름 입력" />
-					    <input type="text" id="message" placeholder="메시지 입력" />
-					    <button onclick="sendStompMessage()">WebSocket Message Broker로 인풋값 보내기</button>
-					    <hr>
-					    <div id="chat-box"></div>
-					
+					    <button onclick="sendWsMessage()">SEND</button>
+					    
 					    <script>
 					    	/***************** WebSocketConfigurer 사용시 ******************************/
 					    	const socket = new WebSocket("<%=scheme.equals("http")?"ws":"wss"%>://<%=requestUtil.getServerName()%>:<%=requestUtil.getServerPort()%><%=net.dstone.common.config.ConfigWebSocket.WEBSOCKET_WS_END_POINT%>");
@@ -60,7 +54,17 @@
 						        socket.send(msgData);
 						    }
 					    	/*************************************************************************/
-					    	
+					    </script>
+					    
+					    <br><br><br>
+					    
+					    <h2>클라이언트(SockJS) 와 서버(WebSocket Message Broker)의 통신교환</h2>
+					    
+					    <input type="text" id="sender" placeholder="이름 입력" />
+					    <input type="text" id="message" placeholder="메시지 입력" />
+					    <button onclick="sendStompMessage()">SEND</button>
+					    
+					    <script>
 					    	/***************** WebSocketMessageBrokerConfigurer 사용시 *****************/
 					    	let stompClient = null;
 					        function stompClientconnect() {
@@ -84,9 +88,13 @@
 					        }
 					        stompClientconnect();
 					    	/*************************************************************************/
-					    	
-
 					    </script>
+					    
+					    <br><br><br>
+					    
+					    <hr>
+					    <div id="chat-box"></div>
+					
 						<!-- =============================================== Content 영역 End =============================================== -->
 					</section>
 
