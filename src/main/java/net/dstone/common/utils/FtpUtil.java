@@ -66,7 +66,7 @@ public class FtpUtil extends BaseObject {
 				// SFTP 경로 (파일명 URL 인코딩 처리 필수)
 				localFile = FileUtil.getFileName(localFileFullName, true);
 	    		//localFile = URLEncoder.encode(localFile, StandardCharsets.UTF_8.name());
-	    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + ":22/" + remoteDir + "/" + localFile;
+	    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
 
 				//원격 SFTP 파일 객체 생성
 				remote = manager.resolveFile(cmd);
