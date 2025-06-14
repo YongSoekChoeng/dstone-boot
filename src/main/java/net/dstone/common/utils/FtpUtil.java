@@ -64,7 +64,8 @@ public class FtpUtil extends BaseObject {
 				local = manager.resolveFile(new File(localFileFullName).getAbsolutePath());
 				
 				// SFTP 경로 (파일명 URL 인코딩 처리 필수)
-	    		localFile = URLEncoder.encode(FileUtil.getFileName(localFileFullName, true), StandardCharsets.UTF_8.name());
+				localFile = FileUtil.getFileName(localFileFullName, true);
+	    		//localFile = URLEncoder.encode(localFile, StandardCharsets.UTF_8.name());
 	    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + ":22/" + remoteDir + "/" + localFile;
 
 				//원격 SFTP 파일 객체 생성
@@ -84,7 +85,7 @@ public class FtpUtil extends BaseObject {
 			if( remote != null ) {
 				remote.close();
 			}
-			this.sysout("isSucceeded["+isSucceeded+"]");
+			this.sysout("net.dstone.common.utils.FtpUtil.uploadFile() ::: isSucceeded["+isSucceeded+"]");
 		}
 	}
 
@@ -114,6 +115,7 @@ public class FtpUtil extends BaseObject {
 	    FileSystemManager manager = VFS.getManager();
 	    FileObject local = null;
 	    FileObject remote = null;
+	    boolean isSucceeded = false;
 	    try {
 	    	remoteFileFullName = StringUtil.replace(remoteFileFullName, "\\", "/");
 	    	String remoteFile = FileUtil.getFileName(remoteFileFullName, true);
@@ -134,9 +136,9 @@ public class FtpUtil extends BaseObject {
 			if( remoteFileFullName.startsWith("/")) {
 				remoteFileFullName = remoteFileFullName.substring(1);
 			}
-	    	remote = manager.resolveFile( "sftp://" + username + ":" + password + "@" + remoteHost + "/" + URLEncoder.encode(remoteFileFullName, StandardCharsets.ISO_8859_1.name()) );
+	    	remote = manager.resolveFile( "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName );
 	    	local.copyFrom(remote, Selectors.SELECT_SELF);
-	    	
+	    	isSucceeded = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -146,6 +148,7 @@ public class FtpUtil extends BaseObject {
 			if( remote != null ) {
 				remote.close();
 			}
+			this.sysout("net.dstone.common.utils.FtpUtil.downloadFile() ::: isSucceeded["+isSucceeded+"]");
 		}
 	}
 
