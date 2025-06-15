@@ -88,6 +88,7 @@ public class FtpUtil extends BaseObject {
 			this.sysout("net.dstone.common.utils.FtpUtil.uploadFile() ::: isSucceeded["+isSucceeded+"]");
 		}
 	}
+	
 
 	/**
 	 * SFTP 파일다운로드
@@ -154,6 +155,106 @@ public class FtpUtil extends BaseObject {
 				remote.close();
 			}
 			this.sysout("net.dstone.common.utils.FtpUtil.downloadFile() ::: isSucceeded["+isSucceeded+"]");
+		}
+	}
+	
+	/**
+	 * SFTP 파일삭제
+	 * @param remoteFileFullName
+	 * @throws Exception
+	 */
+	public void deleteFile(String remoteFileFullName) throws Exception {
+		String remoteHost = configProperty.getProperty("sftp.host");
+		String username = configProperty.getProperty("sftp.username");
+		String password = configProperty.getProperty("sftp.password");
+	    this.deleteFile(remoteHost, username, password, remoteFileFullName);
+	}
+	
+	/**
+	 * SFTP 파일삭제
+	 * @param remoteHost
+	 * @param username
+	 * @param password
+	 * @param remoteFileFullName
+	 * @throws Exception
+	 */
+	public void deleteFile(String remoteHost, String username, String password, String remoteFileFullName) throws Exception {
+	    FileSystemManager manager = VFS.getManager();
+	    FileObject remote = null;
+	    boolean isSucceeded = false;
+	    try {
+	    	if( !StringUtil.isEmpty(remoteFileFullName) ) {
+	    		
+	    		remoteFileFullName = StringUtil.replace(remoteFileFullName, "\\", "/");
+
+	    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName;
+	    		
+				// 원격 SFTP 파일 객체 생성
+				remote = manager.resolveFile(cmd);
+
+	            // 삭제 수행 (원격)
+				remote.delete( Selectors.SELECT_SELF );
+
+				isSucceeded = true;
+	    	}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if( remote != null ) {
+				remote.close();
+			}
+			this.sysout("net.dstone.common.utils.FtpUtil.deleteFile() ::: isSucceeded["+isSucceeded+"]");
+		}
+	}
+	
+	/**
+	 * SFTP 디렉토리삭제
+	 * @param remoteDirFullName
+	 * @throws Exception
+	 */
+	public void deleteDir(String remoteDirFullName) throws Exception {
+		String remoteHost = configProperty.getProperty("sftp.host");
+		String username = configProperty.getProperty("sftp.username");
+		String password = configProperty.getProperty("sftp.password");
+		this.deleteDir(remoteHost, username, password, remoteDirFullName);
+	}
+	
+	/**
+	 * SFTP 디렉토리삭제
+	 * @param remoteHost
+	 * @param username
+	 * @param password
+	 * @param remoteDirFullName
+	 * @throws Exception
+	 */
+	public void deleteDir(String remoteHost, String username, String password, String remoteDirFullName) throws Exception {
+	    FileSystemManager manager = VFS.getManager();
+	    FileObject remote = null;
+	    boolean isSucceeded = false;
+	    try {
+	    	if( !StringUtil.isEmpty(remoteDirFullName) ) {
+	    		
+	    		remoteDirFullName = StringUtil.replace(remoteDirFullName, "\\", "/");
+
+	    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDirFullName;
+	    		
+				// 원격 SFTP 파일 객체 생성
+				remote = manager.resolveFile(cmd);
+
+	            // 삭제 수행 (원격)
+				remote.delete( Selectors.SELECT_SELF_AND_CHILDREN );
+
+				isSucceeded = true;
+	    	}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if( remote != null ) {
+				remote.close();
+			}
+			this.sysout("net.dstone.common.utils.FtpUtil.deleteDir() ::: isSucceeded["+isSucceeded+"]");
 		}
 	}
 
