@@ -60,8 +60,6 @@ public class WsClientUtil extends net.dstone.common.core.BaseObject {
 	                t.printStackTrace();
 	            }
 	        });
-	        
-	        client.dispatcher().executorService().shutdown();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
