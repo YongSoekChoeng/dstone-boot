@@ -120,6 +120,7 @@ public class FtpUtil extends BaseObject {
 	    	remoteFileFullName = StringUtil.replace(remoteFileFullName, "\\", "/");
 	    	String remoteFile = FileUtil.getFileName(remoteFileFullName, true);
 	    	String localFileFullName = "";
+	    	
     		if( !StringUtil.isEmpty(localDir) ) {
     			if( localDir.endsWith("/")) {
     				localDir = localDir.substring(0, localDir.length()-1);
@@ -130,14 +131,18 @@ public class FtpUtil extends BaseObject {
     		if(FileUtil.isFileExist(localFileFullName)) {
     			localFileFullName = FileUtil.getNewFileName(localFileFullName);
     		}
-    		
+    		// 다운로드 로컬 파일
 	    	local = manager.resolveFile(localFileFullName);
-	    	
+
+    		// 다운로드 대상 원격 파일
 			if( remoteFileFullName.startsWith("/")) {
 				remoteFileFullName = remoteFileFullName.substring(1);
 			}
 	    	remote = manager.resolveFile( "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName );
+
+            // 업로드 수행 (원격 → 로컬)
 	    	local.copyFrom(remote, Selectors.SELECT_SELF);
+	    	
 	    	isSucceeded = true;
 		} catch (Exception e) {
 			e.printStackTrace();
