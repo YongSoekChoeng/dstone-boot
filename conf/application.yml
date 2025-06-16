@@ -99,6 +99,7 @@ sftp:
     host: 127.0.0.1
     username: jysn007
     password: db2admin!@
+    private-key-path: ${APP_HOME}/framework/dstone-boot/ssl/id_rsa
 
 app: 
     common: 
