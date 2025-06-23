@@ -91,7 +91,7 @@ public class FtpUtil extends BaseObject {
 				
 				//원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
-					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
+					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
 					remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
 				}else {
 		    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
@@ -170,7 +170,7 @@ public class FtpUtil extends BaseObject {
 				remoteFileFullName = remoteFileFullName.substring(1);
 			}
 			if( !StringUtil.isEmpty(privateKeyPath) ) {
-				String cmd =   "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName ;
+				String cmd =   "sftp://" + username + "@" + remoteHost + "/" + remoteFileFullName ;
 				remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
 			}else {
 	    		String cmd =   "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName ;
@@ -227,7 +227,7 @@ public class FtpUtil extends BaseObject {
 
 				// 원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
-					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName;
+					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteFileFullName;
 					remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
 				}else {
 					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName;
@@ -283,7 +283,7 @@ public class FtpUtil extends BaseObject {
 
 				// 원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
-					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDirFullName;
+					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteDirFullName;
 					remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
 				}else {
 					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDirFullName;
