@@ -25,7 +25,7 @@ public class LogUtil {
 		logger = getLogger(o);
 	}
 	
-	private Logger getLogger(Object o) {
+	protected Logger getLogger(Object o) {
 		if(o == null) {
 			this.logger = LoggerFactory.getLogger(LogUtil.class);
 		}else {
