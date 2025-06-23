@@ -50,15 +50,17 @@ public class FtpUtil extends BaseObject {
 	 */
 	public void uploadFile(String localFileFullName, String remoteDir) throws Exception {
 		String remoteHost = configProperty.getProperty("sftp.host");
+		String remotePort = configProperty.getProperty("sftp.port");
 		String username = configProperty.getProperty("sftp.username");
 		String password = configProperty.getProperty("sftp.password");
 		String privateKeyPath = configProperty.getProperty("sftp.private-key-path");
-	    this.uploadFile(remoteHost, username, password, privateKeyPath, localFileFullName, remoteDir);
+	    this.uploadFile(remoteHost, remotePort, username, password, privateKeyPath, localFileFullName, remoteDir);
 	}
 
 	/**
 	 * SFTP 파일업로드
 	 * @param remoteHost
+	 * @param remotePort
 	 * @param username
 	 * @param password
 	 * @param privateKeyPath
@@ -66,7 +68,7 @@ public class FtpUtil extends BaseObject {
 	 * @param remoteDir
 	 * @throws Exception
 	 */
-	public void uploadFile(String remoteHost, String username, String password, String privateKeyPath, String localFileFullName, String remoteDir) throws Exception {
+	public void uploadFile(String remoteHost, String remotePort, String username, String password, String privateKeyPath, String localFileFullName, String remoteDir) throws Exception {
 	    FileSystemManager manager = VFS.getManager();
 	    FileObject local = null;
 	    FileObject remote = null;
@@ -92,7 +94,7 @@ public class FtpUtil extends BaseObject {
 				//원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
 					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
-					remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
+					remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 				}else {
 		    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
 					this.sysout("cmd["+cmd+"]" );
@@ -126,15 +128,17 @@ public class FtpUtil extends BaseObject {
 	 */
 	public void downloadFile(String localDir, String remoteFileFullName) throws Exception {
 		String remoteHost = configProperty.getProperty("sftp.host");
+		String remotePort = configProperty.getProperty("sftp.port");
 		String username = configProperty.getProperty("sftp.username");
 		String password = configProperty.getProperty("sftp.password");
 		String privateKeyPath = configProperty.getProperty("sftp.private-key-path");
-	    this.downloadFile(remoteHost, username, password, privateKeyPath, localDir, remoteFileFullName);
+	    this.downloadFile(remoteHost, remotePort, username, password, privateKeyPath, localDir, remoteFileFullName);
 	}
 
 	/**
 	 * SFTP 파일다운로드
 	 * @param remoteHost
+	 * @param remotePort
 	 * @param username
 	 * @param password
 	 * @param privateKeyPath
@@ -142,7 +146,7 @@ public class FtpUtil extends BaseObject {
 	 * @param remoteFileFullName
 	 * @throws Exception
 	 */
-	public void downloadFile(String remoteHost, String username, String password, String privateKeyPath, String localDir, String remoteFileFullName) throws Exception {
+	public void downloadFile(String remoteHost, String remotePort, String username, String password, String privateKeyPath, String localDir, String remoteFileFullName) throws Exception {
 	    FileSystemManager manager = VFS.getManager();
 	    FileObject local = null;
 	    FileObject remote = null;
@@ -171,7 +175,7 @@ public class FtpUtil extends BaseObject {
 			}
 			if( !StringUtil.isEmpty(privateKeyPath) ) {
 				String cmd =   "sftp://" + username + "@" + remoteHost + "/" + remoteFileFullName ;
-				remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
+				remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 			}else {
 	    		String cmd =   "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName ;
 				remote = manager.resolveFile(cmd);
@@ -201,22 +205,24 @@ public class FtpUtil extends BaseObject {
 	 */
 	public void deleteFile(String remoteFileFullName) throws Exception {
 		String remoteHost = configProperty.getProperty("sftp.host");
+		String remotePort = configProperty.getProperty("sftp.port");
 		String username = configProperty.getProperty("sftp.username");
 		String password = configProperty.getProperty("sftp.password");
 		String privateKeyPath = configProperty.getProperty("sftp.private-key-path");
-	    this.deleteFile(remoteHost, username, password, privateKeyPath, remoteFileFullName);
+	    this.deleteFile(remoteHost, remotePort, username, password, privateKeyPath, remoteFileFullName);
 	}
 	
 	/**
 	 * SFTP 파일삭제
 	 * @param remoteHost
+	 * @param remotePort
 	 * @param username
 	 * @param password
 	 * @param privateKeyPath
 	 * @param remoteFileFullName
 	 * @throws Exception
 	 */
-	public void deleteFile(String remoteHost, String username, String password, String privateKeyPath, String remoteFileFullName) throws Exception {
+	public void deleteFile(String remoteHost, String remotePort, String username, String password, String privateKeyPath, String remoteFileFullName) throws Exception {
 	    FileSystemManager manager = VFS.getManager();
 	    FileObject remote = null;
 	    boolean isSucceeded = false;
@@ -228,7 +234,7 @@ public class FtpUtil extends BaseObject {
 				// 원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
 					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteFileFullName;
-					remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
+					remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 				}else {
 					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName;
 					remote = manager.resolveFile(cmd);
@@ -257,22 +263,24 @@ public class FtpUtil extends BaseObject {
 	 */
 	public void deleteDir(String remoteDirFullName) throws Exception {
 		String remoteHost = configProperty.getProperty("sftp.host");
+		String remotePort = configProperty.getProperty("sftp.port");
 		String username = configProperty.getProperty("sftp.username");
 		String password = configProperty.getProperty("sftp.password");
 		String privateKeyPath = configProperty.getProperty("sftp.private-key-path");
-		this.deleteDir(remoteHost, username, password, privateKeyPath, remoteDirFullName);
+		this.deleteDir(remoteHost, remotePort, username, password, privateKeyPath, remoteDirFullName);
 	}
 	
 	/**
 	 * SFTP 디렉토리삭제
 	 * @param remoteHost
+	 * @param remotePort
 	 * @param username
 	 * @param password
 	 * @param privateKeyPath
 	 * @param remoteDirFullName
 	 * @throws Exception
 	 */
-	public void deleteDir(String remoteHost, String username, String password, String privateKeyPath, String remoteDirFullName) throws Exception {
+	public void deleteDir(String remoteHost, String remotePort, String username, String password, String privateKeyPath, String remoteDirFullName) throws Exception {
 	    FileSystemManager manager = VFS.getManager();
 	    FileObject remote = null;
 	    boolean isSucceeded = false;
@@ -284,7 +292,7 @@ public class FtpUtil extends BaseObject {
 				// 원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
 					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteDirFullName;
-					remote = manager.resolveFile(cmd, getAuthOption(privateKeyPath));
+					remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 				}else {
 					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDirFullName;
 					remote = manager.resolveFile(cmd);
