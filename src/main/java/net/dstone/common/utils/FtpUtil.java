@@ -34,7 +34,6 @@ public class FtpUtil extends BaseObject {
             builder.setIdentities(opts, new File[] {privateKeyFile});
             builder.setStrictHostKeyChecking(opts, "no"); // 주의: 운영에서는 'yes'
             builder.setUserDirIsRoot(opts, false);
-
             
 		} catch (Exception e) {
 			throw e;
@@ -93,10 +92,10 @@ public class FtpUtil extends BaseObject {
 				
 				//원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
-					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
+					String cmd =  "sftp://" + username + "@" + remoteHost + ":" + remotePort + "/" + remoteDir + "/" + localFile;
 					remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 				}else {
-		    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDir + "/" + localFile;
+		    		String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + ":" + remotePort + "/" + remoteDir + "/" + localFile;
 					this.sysout("cmd["+cmd+"]" );
 					remote = manager.resolveFile(cmd);
 				}
@@ -174,10 +173,10 @@ public class FtpUtil extends BaseObject {
 				remoteFileFullName = remoteFileFullName.substring(1);
 			}
 			if( !StringUtil.isEmpty(privateKeyPath) ) {
-				String cmd =   "sftp://" + username + "@" + remoteHost + "/" + remoteFileFullName ;
+				String cmd =   "sftp://" + username + "@" + remoteHost + ":" + remotePort + "/" + remoteFileFullName ;
 				remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 			}else {
-	    		String cmd =   "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName ;
+	    		String cmd =   "sftp://" + username + ":" + password + "@" + remoteHost + ":" + remotePort + "/" + remoteFileFullName ;
 				remote = manager.resolveFile(cmd);
 			}
 
@@ -233,10 +232,10 @@ public class FtpUtil extends BaseObject {
 
 				// 원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
-					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteFileFullName;
+					String cmd =  "sftp://" + username + "@" + remoteHost + ":" + remotePort + "/" + remoteFileFullName;
 					remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 				}else {
-					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteFileFullName;
+					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + ":" + remotePort + "/" + remoteFileFullName;
 					remote = manager.resolveFile(cmd);
 				}
 				
@@ -291,10 +290,10 @@ public class FtpUtil extends BaseObject {
 
 				// 원격 SFTP 파일 객체 생성
 				if( !StringUtil.isEmpty(privateKeyPath) ) {
-					String cmd =  "sftp://" + username + "@" + remoteHost + "/" + remoteDirFullName;
+					String cmd =  "sftp://" + username + "@" + remoteHost + ":" + remotePort + "/" + remoteDirFullName;
 					remote = manager.resolveFile(cmd, this.getAuthOption(privateKeyPath));
 				}else {
-					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + "/" + remoteDirFullName;
+					String cmd =  "sftp://" + username + ":" + password + "@" + remoteHost + ":" + remotePort + "/" + remoteDirFullName;
 					remote = manager.resolveFile(cmd);
 				}
 
