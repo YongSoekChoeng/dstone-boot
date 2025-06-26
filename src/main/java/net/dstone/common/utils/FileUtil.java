@@ -147,22 +147,15 @@ public class FileUtil {
 	}
 	
 	public static String[] readFileByLines(String filePath, String charSet) {
-		
 		String[] lines = null;
 		String line = null;
 		ArrayList<String> lineArray = new ArrayList<String>();
 		
-		java.io.FileInputStream fi = null;
-		java.io.InputStreamReader ir = null;
-		java.io.BufferedReader buf = null;
-		try {
-			fi = new java.io.FileInputStream(filePath);
-			if(StringUtil.isEmpty(charSet)){
-				ir = new java.io.InputStreamReader(fi);
-			}else{
-				ir = new java.io.InputStreamReader(fi, charSet);
-			}
-			buf = new java.io.BufferedReader(ir);
+		try (
+			BufferedReader buf = new BufferedReader( 
+				(StringUtil.isEmpty(charSet)?new InputStreamReader(new FileInputStream(filePath)):new InputStreamReader(new FileInputStream(filePath), charSet)) 
+			)
+		) {
 			while ((line = buf.readLine()) != null) {
 				lineArray.add(line);
 			}
@@ -170,29 +163,9 @@ public class FileUtil {
 			lineArray.toArray(lines);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
-		} finally {
-			if (buf != null){
-				try {
-					buf.close();
-				} catch (Exception e) {
-				}
-			}
-			if (ir != null){
-				try {
-					ir.close();
-				} catch (Exception e) {
-				}
-			}
-			if (fi != null){
-				try {
-					fi.close();
-				} catch (Exception e) {
-				}
-			}
-			lineArray.clear();
-			lineArray = null;
 		}
+		lineArray.clear();
+		lineArray = null;
 		return lines;
 	}
 	
