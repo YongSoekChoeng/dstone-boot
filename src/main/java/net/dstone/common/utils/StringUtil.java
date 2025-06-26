@@ -6,6 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +21,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.omg.CORBA.NVList;
 import org.springframework.util.Base64Utils;
 
 public class StringUtil {
@@ -421,6 +424,103 @@ public class StringUtil {
 		System.arraycopy(srcByteArr, 0, message, 0, srcByteArr.length);
 		System.arraycopy(tgtByteArr, 0, message, srcByteArr.length, tgtByteArr.length);
 		return message;
+	}
+	
+	/**
+	 * <code>appendFld</code> 설명:스트링을 바이트단위 고정길이로 더하는 메소드.
+	 * @param base 소스스트링
+	 * @param append 더해질스트링
+	 * @param fixedByteLength 길이
+	 * @return 소스스트링+더해질스트링(바이트길이만큼 고정하여) 의 순서로 합쳐진  스트링
+	 */
+	public static String appendFld(String base, String append, int fixedByteLength) throws Exception {
+        return appendFld(base, append, fixedByteLength, java.nio.charset.Charset.defaultCharset().name());
+	}
+	
+	/**
+	 * <code>appendFld</code> 설명:스트링을 바이트단위 고정길이로 더하는 메소드.
+	 * @param base 소스스트링
+	 * @param append 더해질스트링
+	 * @param fixedByteLength 길이
+	 * @param charSet 캐릭터셋
+	 * @return 소스스트링+더해질스트링(바이트길이만큼 고정하여) 의 순서로 합쳐진  스트링
+	 */
+	public static String appendFld(String base, String append, int fixedByteLength, String charSet) throws Exception {
+        int currentBytes = 0;
+        int cutIndex = 0;
+        if(StringUtil.isEmpty(base)){ base = ""; }
+        if(StringUtil.isEmpty(append)){ append = ""; }
+        
+        StringBuilder result = new StringBuilder(base);
+        try {
+            // 바이트 길이 맞춰서 절삭
+            for (int i = 0; i < append.length(); i++) {
+                String ch = append.substring(i, i + 1);
+                int chBytes = ch.getBytes(charSet).length;
+                if (currentBytes + chBytes > fixedByteLength) break;
+                currentBytes += chBytes;
+                cutIndex = i + 1;
+            }
+            String trimmed = append.substring(0, cutIndex);
+            int paddingBytes = fixedByteLength - trimmed.getBytes(charSet).length;
+
+            // 부족하면 공백 채움
+            result.append(trimmed);
+            for (int i = 0; i < paddingBytes; i++) {
+                result.append(" ");
+            }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        return result.toString();
+	}
+	
+
+	/**
+	 * <code>substrFld</code> 설명:스트링을 바이트단위로 자르는 메소드.
+	 * @param base 소스스트링
+	 * @param offSet 시작위치
+	 * @param length 길이
+	 * @return 바이트단위로 절삭된  스트링
+	 */
+	public static String substrFld(String base, int offSet, int length) throws Exception {
+        return substrFld(base, offSet, length, java.nio.charset.Charset.defaultCharset().name());
+	}
+	
+	/**
+	 * <code>substrFld</code> 설명:스트링을 바이트단위로 자르는 메소드.
+	 * @param base 소스스트링
+	 * @param offSet 시작위치
+	 * @param length 길이
+	 * @param charSet 캐릭터셋
+	 * @return 바이트단위로 절삭된  스트링
+	 */
+	public static String substrFld(String base, int offSet, int length, String charSet) throws Exception {
+        int currentByte = 0;
+        int startIdx = -1;
+        int endIdx = -1;
+
+        if(StringUtil.isEmpty(base)){ base = ""; }
+        
+        for (int i = 0; i < base.length(); i++) {
+            String ch = base.substring(i, i + 1);
+            int chByteLen = ch.getBytes(charSet).length;
+            if (startIdx == -1 && currentByte + chByteLen > offSet) {
+                startIdx = i;
+            }
+            if (startIdx != -1 && currentByte >= offSet + length) {
+                endIdx = i;
+                break;
+            }
+            currentByte += chByteLen;
+        }
+        // 마지막까지 잘리지 않은 경우
+        if (startIdx != -1 && endIdx == -1) {
+            endIdx = base.length();
+        }
+        if (startIdx == -1 || endIdx == -1) return "";
+
+        return base.substring(startIdx, endIdx);
 	}
 	
 
