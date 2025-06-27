@@ -1,11 +1,13 @@
 package net.dstone.common.config;
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import com.sun.xml.bind.v2.schemagen.xmlschema.List;
 
 import net.dstone.common.utils.LogUtil;
 
@@ -27,6 +29,14 @@ public class ConfigProperty {
 	
 	public String getProperty(String key) {
 		String val = env.getProperty(key);
+		return val;
+	}
+
+	public List getListProperty(String key) {
+		List val = env.getProperty(key, List.class);
+		if(val == null) {
+			val = (List)new ArrayList();
+		}
 		return val;
 	}
 	

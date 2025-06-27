@@ -14,7 +14,6 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import net.dstone.common.utils.LogUtil;
-import net.dstone.common.utils.StringUtil;
 import net.dstone.common.websocket.handler.BaseTextWebSocketHandler;
 
 @Controller

@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	ConfigEnc.class,
 	ConfigListener.class,
 	ConfigMapper.class,
+	ConfigMq.class,
 	ConfigProperty.class,
 	ConfigSecurity.class,
 	ConfigTransaction.class,

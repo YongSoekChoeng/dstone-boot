@@ -22,9 +22,9 @@ server:
         enabled: false
         protocol: TLS
         enabled-protocols: 
-        - TLSv1
-        - TLSv1.1
-        - TLSv1.2
+            - TLSv1
+            - TLSv1.1
+            - TLSv1.2
         key-store: ${APP_HOME}/framework/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
@@ -78,12 +78,21 @@ spring:
                 jndi-lookup-name: java:comp/env/analyze
             networks: 
                 - backend
-
-rabbitmq: 
-    host: localhost
-    port: 5672
-    username: jysn007
-    password: db2admin
+    rabbitmq: 
+        host: localhost
+        port: 5672
+        virtual-host: dstone-mq
+        username: ENC(IIOITvsB1izl1mH7iw/A3eM5QUQ0z7HHj7sJqS9rrWI=)
+        password: ENC(uMDcjuJKHG6Kgp/HT5MJuNSnBXlcM516gYosPOqqlPQ=)
+        bindings: 
+            binding-main: 
+                exchange-id: amq.direct
+                queue-id: notifications
+                routing-key: notifications
+            binding-sub: 
+                exchange-id: amq.topic
+                queue-id: notifications
+                routing-key: notifications
 
 resources: 
     fileUp: 

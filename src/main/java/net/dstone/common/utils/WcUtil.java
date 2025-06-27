@@ -225,7 +225,7 @@ public class WcUtil {
 			httpClientBuilder.setDefaultHeaders(this.getHeaders());
 			// 2. HttpClient 생성.
 			client = httpClientBuilder.build();
-			// 3. Body 값 세팅 및 호출.
+			// 3. Body 값 세팅 및 호출.		
 			httpRequest = this.getBody();
 			// 4. Http 호출
 			httpResponse = client.execute(httpRequest);
