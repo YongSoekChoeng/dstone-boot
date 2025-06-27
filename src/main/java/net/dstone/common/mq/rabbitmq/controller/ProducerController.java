@@ -1,6 +1,7 @@
 package net.dstone.common.mq.rabbitmq.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,6 +12,7 @@ import net.dstone.common.utils.DataSet;
 import net.dstone.common.utils.StringUtil;
 
 @Controller
+@ConditionalOnProperty(name = "spring.rabbitmq.enabled", havingValue = "true")
 @RequestMapping(value = "/dstone-mq/rabbitmq/producer/*")
 public class ProducerController extends BaseController {
 

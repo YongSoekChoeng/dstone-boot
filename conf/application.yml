@@ -79,6 +79,7 @@ spring:
             networks: 
                 - backend
     rabbitmq: 
+        enabled: false
         host: localhost
         port: 5672
         virtual-host: dstone-mq
