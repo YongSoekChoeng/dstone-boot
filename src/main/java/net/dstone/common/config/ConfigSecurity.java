@@ -8,7 +8,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,6 +30,8 @@ import net.dstone.common.security.svc.CustomUserService;
 import net.dstone.common.utils.LogUtil;
 import net.dstone.common.web.SessionListener;
 
+@Configuration
+@ConditionalOnProperty(name = "spring.security.enabled", havingValue = "true" )
 @EnableWebSecurity
 public class ConfigSecurity {
 
@@ -70,7 +74,6 @@ public class ConfigSecurity {
 	
 	@Bean
 	public SecurityFilterChain filterChan(HttpSecurity http) throws Exception {
-		
 		// 1. 크로스 사이트 요청 위조(CSRF) 방지설정
 		http.csrf().disable();
 		// 2. 로그인처리 필터 필터체인에 삽입

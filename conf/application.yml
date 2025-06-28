@@ -31,6 +31,12 @@ server:
         key-store-alias: dstone-ssl
 
 spring: 
+    # 스프링부트-자동설정기능(스프링시큐리티는 비활성화시켜도 클래스패스에 있으면 자동으로 동작함)
+    autoconfigure: 
+        # 제외할 설정.
+        exclude: 
+            # 스프링시큐리티 자동설정
+            - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
     main: 
         allow-bean-definition-overriding: true
     datasource: 
@@ -78,8 +84,10 @@ spring:
                 jndi-lookup-name: java:comp/env/analyze
             networks: 
                 - backend
+    security: 
+        enabled: true
     rabbitmq: 
-        enabled: false
+        enabled: true
         host: localhost
         port: 5672
         virtual-host: dstone-mq
