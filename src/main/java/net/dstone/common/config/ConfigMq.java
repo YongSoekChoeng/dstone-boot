@@ -3,7 +3,9 @@ package net.dstone.common.config;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,6 +27,23 @@ public class ConfigMq extends BaseObject {
 
 	/***************************** Rabbit MQ 설정 시작 *****************************/
 	
+	/****************************************************************************
+	1. Exchange(교환기)
+		* 특정설정값에 기반해서 큐에 전달.
+		* 내구성 (Durability): durable로 설정하면 RabbitMQ 서버가 재시작되어도 Exchange가 유지됩니다. transient는 서버 재시작 시 사라집니다.		
+		1-1. Fanout Exchange(브로드캐스트 교환기)	
+			라우팅 키는 무시하고 메시지를 모든 바운드된 큐에 전달.
+		1-2. Direct Exchange(직접 교환기)
+			라우팅 키가 정확하게 일치하는 큐에 전달.
+		1-3. Topic Exchange(패턴기반 교환기)
+			라우팅 키가 특정패턴에 일치하는 큐에 전달.(패턴은 *, # 와일드카드 사용).
+		1-4. Headers Exchange(헤더기반 교환기)
+			헤더값이 특정패턴에 일치하는 큐에 전달.
+	2. Queue (큐)
+		* Queue는 메시지를 최종적으로 저장하고 소비자가 메시지를 가져갈 때까지 대기시키는 곳. 
+		* First-In-First-Out (FIFO) 방식으로 메시지를 처리.
+	****************************************************************************/
+	
 	/*** 바인딩 갯수만큼 세팅 시작 ***/
 	// binding-main
     /** 1. Exchange 구성합니다. */
@@ -40,7 +59,11 @@ public class ConfigMq extends BaseObject {
     /** 3. 큐와 DirectExchange를 바인딩합니다. */
     @Bean
     public Binding bindingMain() {
-        return BindingBuilder.bind(queueRabbitMain()).to(directExchangeMain()).with(configProperty.getProperty("spring.rabbitmq.bindings.binding-main.queue-id"));
+    	String queueId = configProperty.getProperty("spring.rabbitmq.bindings.binding-main.queue-id");
+        return BindingBuilder
+        	.bind(queueRabbitMain())	// 이 큐(queue)를
+        	.to(directExchangeMain())	// 이 교환기(exchange)방식으로 
+        	.with(queueId);				// 이 매개변수로 비교하여 바인딩.
     }
     // binding-sub
     /** 1. Exchange 구성합니다. */
@@ -56,7 +79,11 @@ public class ConfigMq extends BaseObject {
     /** 3. 큐와 DirectExchange를 바인딩합니다. */
     @Bean
     public Binding bindingSub() {
-        return BindingBuilder.bind(queueRabbitSub()).to(directExchangeSub()).with(configProperty.getProperty("spring.rabbitmq.bindings.binding-sub.queue-id"));
+    	String queueId = configProperty.getProperty("spring.rabbitmq.bindings.binding-sub.queue-id");
+        return BindingBuilder
+        	.bind(queueRabbitSub())	// 이 큐(queue)를
+        	.to(directExchangeSub())	// 이 교환기(exchange)방식으로 
+        	.with(queueId);				// 이 매개변수로 비교하여 바인딩.
     }
 
     /*** 바인딩 갯수만큼 세팅 끝 ***/
