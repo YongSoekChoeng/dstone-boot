@@ -5,13 +5,10 @@ import org.springframework.context.annotation.Bean;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 
 @EnableEncryptableProperties
-public class ConfigEnc {
-
-	@SuppressWarnings("unused")
-	private static final LogUtil logger = new LogUtil(ConfigEnc.class);
+public class ConfigEnc extends BaseObject{
 
 	// 1-1. 암복호화 설정.
 	@Bean("jasyptStringEncryptor") 

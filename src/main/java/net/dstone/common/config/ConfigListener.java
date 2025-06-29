@@ -4,14 +4,11 @@ import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.web.SessionListener;
 
 @Component
-public class ConfigListener {
-
-	@SuppressWarnings("unused")
-	private static final LogUtil logger = new LogUtil(ConfigListener.class);
+public class ConfigListener extends BaseObject{
 
 	@Bean
 	public ServletListenerRegistrationBean<SessionListener> getSessionListener() {

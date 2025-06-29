@@ -18,9 +18,6 @@ import net.dstone.common.utils.XmlUtil;
 @Service 
 public class ConfigurationService extends BaseService { 
      
-    LogUtil logger = getLogger(); 
-     
-
     /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/
     @Autowired 
     private net.dstone.analyzer.cud.AnalyzerCudDao analyzerCudDao; 
@@ -76,7 +73,7 @@ public class ConfigurationService extends BaseService {
             /************************ 비즈니스로직 끝 **************************/ 
         } catch (Exception e) { 
             String errDetailMsg = this.getClass().getName() + ".listSys 수행중 예외발생. 상세사항:" + e.toString(); 
-            logger.error(errDetailMsg); 
+            this.error(errDetailMsg); 
             throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
         } 
         return returnMap; 
@@ -122,7 +119,7 @@ public class ConfigurationService extends BaseService {
             /************************ 비즈니스로직 끝 **************************/  
         } catch (Exception e) { 
             String errDetailMsg = this.getClass().getName() + ".insertSys("+paramVo+") 수행중 예외발생. 상세사항:" + e.toString(); 
-            logger.error(errDetailMsg); 
+            this.error(errDetailMsg); 
             throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
         }  
         return isSuccess;  
@@ -234,7 +231,7 @@ public class ConfigurationService extends BaseService {
     			
     		}
 		} catch (Exception e) {
-			logger.error(e); 
+			this.error(e); 
 		}
     }
 
@@ -263,7 +260,7 @@ public class ConfigurationService extends BaseService {
             /************************ 비즈니스로직 끝 **************************/ 
         } catch (Exception e) { 
             String errDetailMsg = this.getClass().getName() + ".getSys 수행중 예외발생. 상세사항:" + e.toString(); 
-            logger.error(errDetailMsg); 
+            this.error(errDetailMsg); 
             throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
         } 
         return returnObj; 
@@ -293,7 +290,7 @@ public class ConfigurationService extends BaseService {
             /************************ 비즈니스로직 끝 **************************/  
         } catch (Exception e) { 
             String errDetailMsg = this.getClass().getName() + ".deleteSys("+paramVo+") 수행중 예외발생. 상세사항:" + e.toString(); 
-            logger.error(errDetailMsg); 
+            this.error(errDetailMsg); 
             throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
         }  
         return isSuccess;  

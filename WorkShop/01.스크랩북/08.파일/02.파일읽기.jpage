@@ -2,7 +2,7 @@
 net.dstone.common.utils.DateUtil.stopWatchStart("02.파일읽기");
 
 String filePath = "";
-filePath = "C:/WorkShop/C/Temp/연습장.rb";
+filePath = "D:/Temp/rabbitmq2.json";
 StringBuffer buff = new StringBuffer();
 try {
 	String[] lines = net.dstone.common.utils.FileUtil.readFileByLines(filePath);

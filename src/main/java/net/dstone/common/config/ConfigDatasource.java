@@ -11,16 +11,13 @@ import org.springframework.stereotype.Component;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 
 @Component
-public class ConfigDatasource {
+public class ConfigDatasource extends BaseObject{
 
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
-
-	@SuppressWarnings("unused")
-	private static final LogUtil logger = new LogUtil(ConfigDatasource.class);
 
     @Bean(name = "dataSourceCommon")
     @ConfigurationProperties("spring.datasource.common.hikari")

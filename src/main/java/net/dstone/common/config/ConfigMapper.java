@@ -10,13 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 
 @Component
-public class ConfigMapper {
-
-	@SuppressWarnings("unused")
-	private static final LogUtil logger = new LogUtil(ConfigMapper.class);
+public class ConfigMapper extends BaseObject{
 
 	@Bean(name = "sqlSessionFactoryCommon")
 	public SqlSessionFactory sqlSessionFactoryCommon(@Qualifier("dataSourceCommon") DataSource dataSourceCommon) throws Exception {

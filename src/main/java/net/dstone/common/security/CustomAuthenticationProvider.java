@@ -18,15 +18,13 @@ import org.springframework.stereotype.Component;
 
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.consts.ErrCd;
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.exception.SecException;
 import net.dstone.common.security.svc.CustomUserService;
 import net.dstone.common.security.vo.CustomUserDetails;
-import net.dstone.common.utils.LogUtil;
 
 @Component("customAuthenticationProvider")
-public class CustomAuthenticationProvider implements AuthenticationProvider { 
-
-	private static final LogUtil logger = new LogUtil(CustomAuthenticationProvider.class);
+public class CustomAuthenticationProvider extends BaseObject implements AuthenticationProvider { 
 
     /********* SVC 정의부분 시작 *********/ 
 	@Resource(name = "customUserService")
@@ -42,7 +40,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String user_id = (String)authentication.getPrincipal();    
         String user_pw = (String)authentication.getCredentials();
-        logger.info("사용자가 입력한 로그인정보입니다. {" + user_id + "/" + user_pw +"}");
+        this.info("사용자가 입력한 로그인정보입니다. {" + user_id + "/" + user_pw +"}");
         
         Map<String, String> param = new HashMap<String, String>();
         param.put(ConfigSecurity.USERNAME_PARAMETER, user_id);
@@ -80,7 +78,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             buff.append(customUserDetails.toString()).append("\n");
             buff.append("/********************** 로그인정보 끝 **********************/");
             
-            logger.info(buff.toString());
+            this.info(buff.toString());
             
             return auth;      
 		} catch (SecException e) {  

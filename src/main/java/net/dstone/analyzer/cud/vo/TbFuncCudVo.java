@@ -2,7 +2,7 @@
 package net.dstone.analyzer.cud.vo;  
                       
 import javax.xml.bind.annotation.XmlRootElement;
-                      
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement( name="TbFuncCudVo" ) 

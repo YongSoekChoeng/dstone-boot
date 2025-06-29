@@ -46,9 +46,11 @@ public class ProducerController extends BaseController {
    		if( StringUtil.isEmpty(exchangeId) ) {
    			throw new Exception("exchange아이디가 null 혹은 빈 값입니다. exchangeId["+exchangeId+"]");
    		}
+   		/*
    		if( StringUtil.isEmpty(routingKey) ) {
    			throw new Exception("라우팅키가 null 혹은 빈 값입니다. routingKey["+routingKey+"]");
    		}
+   		*/
    		// 1. 파라메터 바인딩
    		messageDs.setDatum("message", requestUtil.getParameter("message", ""));
    		// 2. 서비스 호출

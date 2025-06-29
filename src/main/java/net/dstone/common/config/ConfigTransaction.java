@@ -19,12 +19,10 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 
 @Component
-public class ConfigTransaction {
-
-	private static final LogUtil logger = new LogUtil(ConfigTransaction.class);
+public class ConfigTransaction extends BaseObject{
 
 	/********************************************************************************
 	Datasource/Transaction 설정

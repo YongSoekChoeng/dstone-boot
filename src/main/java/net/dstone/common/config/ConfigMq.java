@@ -43,44 +43,44 @@ public class ConfigMq extends BaseObject {
 	****************************************************************************/
 	
 	/*** 바인딩 갯수만큼 세팅 시작 ***/
-	// binding-main
+	// binding-notifications
     /** 1. Exchange 구성합니다. */
     @Bean
-    public DirectExchange directExchangeMain() {
-        return new DirectExchange(configProperty.getProperty("spring.rabbitmq.bindings.binding-main.exchange-id"));
+    public DirectExchange directExchangeNotifications() {
+        return new DirectExchange(configProperty.getProperty("spring.rabbitmq.bindings.binding-notifications.exchange-id"));
     }
     /** 2. 큐를 구성합니다. */
     @Bean
-    public Queue queueRabbitMain() {
-        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-main.queue-id"), false);
+    public Queue queueRabbitNotifications() {
+        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-notifications.queue-id"), false);
     }
     /** 3. 큐와 DirectExchange를 바인딩합니다. */
     @Bean
-    public Binding bindingMain() {
-    	String queueId = configProperty.getProperty("spring.rabbitmq.bindings.binding-main.queue-id");
+    public Binding bindingNotifications() {
+    	String queueId = configProperty.getProperty("spring.rabbitmq.bindings.binding-notifications.queue-id");
         return BindingBuilder
-        	.bind(queueRabbitMain())	// 이 큐(queue)를
-        	.to(directExchangeMain())	// 이 교환기(exchange)방식으로 
+        	.bind(queueRabbitNotifications())	// 이 큐(queue)를
+        	.to(directExchangeNotifications())	// 이 교환기(exchange)방식으로 
         	.with(queueId);				// 이 매개변수로 비교하여 바인딩.
     }
-    // binding-sub
+    // binding-orders
     /** 1. Exchange 구성합니다. */
     @Bean
-    public DirectExchange directExchangeSub() {
-        return new DirectExchange(configProperty.getProperty("spring.rabbitmq.bindings.binding-sub.exchange-id"));
+    public DirectExchange directExchangeOrders() {
+        return new DirectExchange(configProperty.getProperty("spring.rabbitmq.bindings.binding-orders.exchange-id"));
     }
     /** 2. 큐를 구성합니다. */
     @Bean
-    public Queue queueRabbitSub() {
-        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-sub.queue-id"), false);
+    public Queue queueRabbitOrders() {
+        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-orders.queue-id"), false);
     }
     /** 3. 큐와 DirectExchange를 바인딩합니다. */
     @Bean
-    public Binding bindingSub() {
-    	String queueId = configProperty.getProperty("spring.rabbitmq.bindings.binding-sub.queue-id");
+    public Binding bindingOrders() {
+    	String queueId = configProperty.getProperty("spring.rabbitmq.bindings.binding-orders.queue-id");
         return BindingBuilder
-        	.bind(queueRabbitSub())	// 이 큐(queue)를
-        	.to(directExchangeSub())	// 이 교환기(exchange)방식으로 
+        	.bind(queueRabbitOrders())	// 이 큐(queue)를
+        	.to(directExchangeOrders())	// 이 교환기(exchange)방식으로 
         	.with(queueId);				// 이 매개변수로 비교하여 바인딩.
     }
 

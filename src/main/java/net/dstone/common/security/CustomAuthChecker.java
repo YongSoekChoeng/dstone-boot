@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,15 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import net.dstone.common.config.ConfigSecurity;
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.security.svc.CustomUserService;
-import net.dstone.common.utils.LogUtil;
-import net.dstone.common.web.SessionListener;
 
 @Component
-public class CustomAuthChecker {
+public class CustomAuthChecker extends BaseObject {
 
-	private static final LogUtil logger = new LogUtil(CustomAuthChecker.class);
-	
     /********* SVC 정의부분 시작 *********/
 	@Resource(name = "customUserService")
     private CustomUserService customUserService; 
@@ -59,7 +55,7 @@ public class CustomAuthChecker {
 				}
 			}
 		}
-		logger.sysout(this.getClass().getName() + ".check() ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
+		this.sysout(this.getClass().getName() + ".check() ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
 		/****************************************************/
 		
 		return isAuthorized;

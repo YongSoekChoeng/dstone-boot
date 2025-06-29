@@ -90,18 +90,18 @@ spring:
         enabled: true
         host: localhost
         port: 5672
-        virtual-host: dstone-mq
+        virtual-host: /dstone-mq
         username: ENC(IIOITvsB1izl1mH7iw/A3eM5QUQ0z7HHj7sJqS9rrWI=)
         password: ENC(uMDcjuJKHG6Kgp/HT5MJuNSnBXlcM516gYosPOqqlPQ=)
         bindings: 
-            binding-main: 
-                exchange-id: amq.direct
-                queue-id: notifications
-                routing-key: notifications
-            binding-sub: 
-                exchange-id: amq.topic
-                queue-id: notifications
-                routing-key: notifications
+            binding-notifications: 
+                exchange-id: app.fanout.exchange
+                queue-id: app.notifications.queue
+                routing-key: 
+            binding-orders: 
+                exchange-id: app.direct.exchange
+                queue-id: app.orders.queue
+                routing-key: orders.process
 
 resources: 
     fileUp: 

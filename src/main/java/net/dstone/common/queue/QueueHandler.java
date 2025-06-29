@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueueHandler {
+import net.dstone.common.core.BaseObject;
+
+public class QueueHandler extends BaseObject{
 	
 	/****************************  설정 시작 ****************************/
 	/**
@@ -52,9 +54,6 @@ public class QueueHandler {
 		init();
 	}
 
-	private void debug(Object o){
-		net.dstone.common.utils.LogUtil.sysout(o);
-	}
 	protected void init(){
 		// 큐 초기화
 		queue = new Queue();

@@ -14,13 +14,10 @@ import net.dstone.common.biz.BaseController;
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.SecException;
-import net.dstone.common.utils.LogUtil;
 
 @Component
 public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-	private static final LogUtil logger = new LogUtil(CustomAuthFailureHandler.class);
-	
 	public CustomAuthFailureHandler() {
 	}
 

@@ -12,15 +12,13 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import net.dstone.common.biz.BaseController;
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.consts.ErrCd;
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 
-public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+public class CustomAccessDeniedHandler extends BaseObject implements AccessDeniedHandler {
 
-	private static final LogUtil logger = new LogUtil(CustomAccessDeniedHandler.class);
-	
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
-    	logger.info(this.getClass().getName() + ".handle() =================>>>> has been called !!!");
+    	this.info(this.getClass().getName() + ".handle() =================>>>> has been called !!!");
     	BaseController.setErrCd(request, response, ErrCd.ACCESS_DENIED);
     	String deniedUrl = ConfigSecurity.ACCESS_DENIED_ACTION;
     	request.getRequestDispatcher(deniedUrl).forward(request, response);

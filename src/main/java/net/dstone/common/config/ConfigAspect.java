@@ -11,22 +11,19 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.StringUtil;
 
 @Aspect
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableEncryptableProperties
-public class ConfigAspect {
-
-	private static final LogUtil logger = new LogUtil(ConfigAspect.class);
+public class ConfigAspect extends BaseObject {
 
 	/**************************************** 1. Logging 관련 AOP ****************************************/
-	@SuppressWarnings("static-access")
 	@Around("execution(* net.dstone.*..*Controller.*(..))")
 	public Object doControllerProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
-		logger.sysout("\n\n||===================================== [" + joinPoint.getTarget().getClass().getName() + "] START ======================================||");
-		logger.info("+->[CONTROLLER] {"+buildSimpleExecutionInfo(joinPoint, "")+"}");
+		this.sysout("\n\n||===================================== [" + joinPoint.getTarget().getClass().getName() + "] START ======================================||");
+		this.info("+->[CONTROLLER] {"+buildSimpleExecutionInfo(joinPoint, "")+"}");
 		
 		/*****************************************************************************************************
 		컨트롤러 호출 시 응답헤더에 기본값 세팅
@@ -46,19 +43,19 @@ public class ConfigAspect {
 		객체 실행
 		*****************************************************************************************************/
 		Object retObj = joinPoint.proceed();
-		logger.sysout("||===================================== [" + joinPoint.getTarget().getClass().getName() + "] END ======================================||\n");
+		this.sysout("||===================================== [" + joinPoint.getTarget().getClass().getName() + "] END ======================================||\n");
 		return retObj;
 	}
 
 	@Around("execution(* net.dstone.*..*Service*.*(..))")
 	public Object doServiceProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
-		logger.info("+--->[SERVICE ] {"+buildSimpleExecutionInfo(joinPoint, "")+"}");
+		this.info("+--->[SERVICE ] {"+buildSimpleExecutionInfo(joinPoint, "")+"}");
 		return joinPoint.proceed();
 	}
 
 	@Around("execution(* net.dstone.*..*Dao.*(..))")
 	public Object doDaoProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
-		logger.info("+----->[DAO   ] {"+buildSimpleExecutionInfo(joinPoint, "")+"}");
+		this.info("+----->[DAO   ] {"+buildSimpleExecutionInfo(joinPoint, "")+"}");
 		return joinPoint.proceed();
 	}
 

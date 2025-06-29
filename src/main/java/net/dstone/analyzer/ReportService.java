@@ -1,6 +1,5 @@
 package net.dstone.analyzer; 
  
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,19 +10,11 @@ import org.springframework.stereotype.Service;
 import net.dstone.common.biz.BaseService;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.BizException;
-import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil; 
  
 @Service 
 public class ReportService extends BaseService { 
      
-    LogUtil logger = getLogger(); 
-     
-
-    /********* 공통 입력/수정/삭제 DAO 정의부분 시작 *********/
-    @Autowired 
-    private net.dstone.analyzer.cud.AnalyzerCudDao analyzerCudDao; 
-    /********* 공통 입력/수정/삭제 DAO 정의부분 끝 *********/
     /********* DAO 정의부분 시작 *********/
     @Autowired 
     private net.dstone.analyzer.ReportDao reportDao; 
@@ -88,7 +79,7 @@ public class ReportService extends BaseService {
             /************************ 비즈니스로직 끝 **************************/ 
         } catch (Exception e) { 
             String errDetailMsg = this.getClass().getName() + ".listOverAll 수행중 예외발생. 상세사항:" + e.toString(); 
-            logger.error(errDetailMsg); 
+            this.error(errDetailMsg); 
             throw new BizException(ErrCd.SYS_ERR, errDetailMsg);
         } 
         return returnMap; 

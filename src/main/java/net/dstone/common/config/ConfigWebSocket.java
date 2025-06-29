@@ -13,16 +13,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.websocket.handler.BaseTextWebSocketHandler;
 
 @Controller
 @EnableWebSocket
 @EnableWebSocketMessageBroker
-public class ConfigWebSocket implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer {
+public class ConfigWebSocket extends BaseObject implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer {
 
-	private static LogUtil logger = new LogUtil(ConfigWebSocket.class);
-	
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 	
@@ -69,7 +67,7 @@ public class ConfigWebSocket implements WebSocketConfigurer, WebSocketMessageBro
 	***************************************************************************************************/
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-    	logger.info("registerStompEndpoints("+registry+") has been called !!!");
+    	this.info("registerStompEndpoints("+registry+") has been called !!!");
         /*
          * addEndpoint : 클라이언트가 WebSocket에 연결하기 위한 엔드포인트를 "/ws-stomp"로 설정합니다.
          * withSockJS : WebSocket을 지원하지 않는 브라우저에서도 SockJS를 통해 WebSocket 기능을 사용할 수 있게 합니다.
@@ -85,7 +83,7 @@ public class ConfigWebSocket implements WebSocketConfigurer, WebSocketMessageBro
     
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-    	logger.info("configureMessageBroker("+config+") has been called !!!");
+    	this.info("configureMessageBroker("+config+") has been called !!!");
     	
     	config.setCacheLimit(1024 * 4);
 

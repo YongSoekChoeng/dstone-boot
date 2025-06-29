@@ -9,16 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.sun.xml.bind.v2.schemagen.xmlschema.List;
 
-import net.dstone.common.utils.LogUtil;
+import net.dstone.common.core.BaseObject;
 
 @Component("configProperty")
 @PropertySources({
     @PropertySource("classpath:env.properties")
 })
-public class ConfigProperty { 
-
-	@SuppressWarnings("unused")
-	private static final LogUtil logger = new LogUtil(ConfigProperty.class);
+public class ConfigProperty extends BaseObject{ 
 
 	/**
 	 * Environment는 기본적으로 application.yml의 프로퍼티정보를 로딩한다. @PropertySource 가 세팅되어 있으면 해당 프로퍼티의 정보도 시스템프로퍼티로 로딩한다. 
@@ -32,6 +29,7 @@ public class ConfigProperty {
 		return val;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List getListProperty(String key) {
 		List val = env.getProperty(key, List.class);
 		if(val == null) {

@@ -21,22 +21,19 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import net.dstone.common.core.BaseObject;
 import net.dstone.common.security.CustomAccessDeniedHandler;
 import net.dstone.common.security.CustomAuthFailureHandler;
 import net.dstone.common.security.CustomAuthSucessHandler;
 import net.dstone.common.security.CustomAuthenticationProvider;
 import net.dstone.common.security.CustomUsernamePasswordAuthenticationFilter;
 import net.dstone.common.security.svc.CustomUserService;
-import net.dstone.common.utils.LogUtil;
 import net.dstone.common.web.SessionListener;
 
 @Configuration
 @ConditionalOnProperty(name = "spring.security.enabled", havingValue = "true" )
 @EnableWebSecurity
-public class ConfigSecurity {
-
-	@SuppressWarnings("unused")
-	private static final LogUtil logger = new LogUtil(ConfigSecurity.class);
+public class ConfigSecurity extends BaseObject{
 
 	/* 화면으로 연결되는 경우 _PAGE로 끝나고 서버통신으로 연결되는 경우 _ACTION으로 끝난다. 화면은 확장자를 생략한다. */
 	public static String MAIN_PAGE 						= "main";											// 메인 페이지

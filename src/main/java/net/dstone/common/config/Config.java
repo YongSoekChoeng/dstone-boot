@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import net.dstone.common.core.BaseObject;
+
 @EnableAsync
 @Configuration
 @Import({ 
@@ -18,6 +20,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	ConfigTransaction.class,
 	ConfigWebSocket.class
 })
-public class Config{
+public class Config extends BaseObject{
 	
 }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.dstone.common.utils.LogUtil;
-import net.dstone.common.websocket.vo.BaseVo;
 
 @RestController
 public class WebSocketController {
