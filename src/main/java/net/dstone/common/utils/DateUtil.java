@@ -589,7 +589,7 @@ public class DateUtil {
 		Calendar before = Calendar.getInstance();
 		SimpleDateFormat hhmmssSSS = new SimpleDateFormat("HH:mm:ss.SSS");
 		STOPWATCH_MAP.put(stopWatchId, before);
-		logger.info( "||====================================== ["+stopWatchId+"]START [시작시간 "+hhmmssSSS.format(before.getTime())+"] ======================================||\n" );
+		logger.sysout( "||====================================== ["+stopWatchId+"]START [시작시간 "+hhmmssSSS.format(before.getTime())+"] ======================================||\n" );
 	}
 	public static void stopWatchEnd(String stopWatchId) {
 		if(!STOPWATCH_MAP.containsKey(stopWatchId)){
@@ -622,7 +622,7 @@ public class DateUtil {
 			}
 			
 			String elapsedTime = StringUtil.filler(String.valueOf(hh), 2, "0")+"시간  "+StringUtil.filler(String.valueOf(mm), 2, "0")+"분 "+StringUtil.filler(String.valueOf(ss), 2, "0")+"."+StringUtil.filler(String.valueOf(SSS), 3, "0")+"초";
-			logger.info( "||====================================== ["+stopWatchId+"]END   [종료시간 "+hhmmssSSS.format(after.getTime())+" 소요시간 "+elapsedTime+"] ======================================||" );
+			logger.sysout( "||====================================== ["+stopWatchId+"]END   [종료시간 "+hhmmssSSS.format(after.getTime())+" 소요시간 "+elapsedTime+"] ======================================||" );
 			
 		} catch (Exception e) {
 			e.printStackTrace();
