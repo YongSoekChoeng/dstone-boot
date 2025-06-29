@@ -61,7 +61,7 @@ public class ConfigMq extends BaseObject {
     	// FanoutExchange 방식은 모든 큐에 메세지를 전달하므로 큐ID를 매개변수로 받을 필요가 없음.
         return BindingBuilder
         	.bind(queueNotifications())		// 이 큐(queue)를
-        	.to(exchangeNotifications());	// 이 교환기(exchange)방식으로 
+        	.to(exchangeNotifications());	// 이 교환기(exchange)방식으로 바인딩. 큐ID가 필요없는 이유는 이 교환기(exchange)방식이 Fanout 이므로 특정큐가 아닌 모든 큐에 메세지를 전달하기 때문임.
     }
     // binding-orders
     /** 1. Exchange 구성합니다. */

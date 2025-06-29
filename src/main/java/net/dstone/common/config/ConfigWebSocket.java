@@ -1,7 +1,9 @@
 package net.dstone.common.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -16,7 +18,8 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.websocket.handler.BaseTextWebSocketHandler;
 
-@Controller
+@Configuration
+@ConditionalOnProperty(name = "spring.websocket.enabled", havingValue = "true")
 @EnableWebSocket
 @EnableWebSocketMessageBroker
 public class ConfigWebSocket extends BaseObject implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer {

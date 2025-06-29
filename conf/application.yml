@@ -86,8 +86,10 @@ spring:
                 - backend
     security: 
         enabled: true
+    websocket: 
+        enabled: false
     rabbitmq: 
-        enabled: true
+        enabled: false
         host: localhost
         port: 5672
         virtual-host: /dstone-mq
