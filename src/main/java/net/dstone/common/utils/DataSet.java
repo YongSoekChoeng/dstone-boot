@@ -199,6 +199,10 @@ public class DataSet implements java.io.Serializable {
 			}
 			return propVal;
 		}
+		@Override
+		public String toString() {
+			return toString("", "");
+		}
 		
 	}
 
