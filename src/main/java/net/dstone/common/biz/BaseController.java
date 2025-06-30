@@ -1,16 +1,20 @@
 package net.dstone.common.biz;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,9 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
@@ -311,26 +318,19 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 			/* 2. Body 및 HttpEntity 생성 */
 			// METHOD - POST, PUT 방식
 			if( request.getMethod().toUpperCase().equals("POST") || request.getMethod().toUpperCase().equals("PUT") ) {
-				// Json 방식
-				if( httpHeaders.getContentType().equals(MediaType.APPLICATION_JSON) ||  httpHeaders.getContentType().equals(MediaType.APPLICATION_JSON_UTF8) ) {
-					String body = IOUtils.toString(request.getInputStream(), Charset.forName(request.getCharacterEncoding()));
-					requestEntity = new HttpEntity<String>(body, httpHeaders);					
+				// Multi Part 방식
+				if( httpHeaders.getContentType().equals(MediaType.MULTIPART_FORM_DATA) ) {
+					requestEntity = this.createMultipartHttpEntity((MultipartHttpServletRequest)request);
+				// Json 방식	
+				}else if( httpHeaders.getContentType().equals(MediaType.APPLICATION_JSON) ||  httpHeaders.getContentType().equals(MediaType.APPLICATION_JSON_UTF8) ) {
+					String encoding = request.getCharacterEncoding();
+					Charset charset = (encoding != null) ? Charset.forName(encoding) : StandardCharsets.UTF_8;
+					requestEntity = this.createJsonHttpEntity(request, charset);
 				// Form	방식
 				}else {
-					MultiValueMap<String, Object> reqParam = new LinkedMultiValueMap<>();
-					java.util.Enumeration<String> keys = request.getParameterNames();
-					while( keys.hasMoreElements() ) {
-						String key = keys.nextElement();
-						if( request.getParameterValues(key).length > 1) {
-							String[] valArr = request.getParameterValues(key);
-							for( String val : valArr ) {
-								reqParam.add(key, val);
-							}
-						}else {
-							reqParam.add(key, request.getParameter(key));
-						}
-					}
-					requestEntity = new HttpEntity<MultiValueMap>(reqParam, httpHeaders);		
+					String encoding = request.getCharacterEncoding();
+					Charset charset = (encoding != null) ? Charset.forName(encoding) : StandardCharsets.UTF_8;
+					requestEntity = this.createHttpEntityFromRequest(request, charset);
 				}
 			// METHOD - 나머지 방식
 			}else{
@@ -357,6 +357,61 @@ public class BaseController extends net.dstone.common.core.BaseObject {
  
 		return responseEntity;
 	}
+    
+    private HttpEntity<String> createHttpEntityFromRequest(HttpServletRequest request, Charset charset) throws IOException {
+        // 1. 헤더 복사
+        HttpHeaders headers = new HttpHeaders();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            headers.add(headerName, request.getHeader(headerName));
+        }
+
+        // 2. Body 읽기
+        String body = StreamUtils.copyToString(request.getInputStream(), charset);
+
+        // 3. HttpEntity 생성
+        return new HttpEntity<>(body, headers);
+    }
+    
+    private HttpEntity<String> createJsonHttpEntity(HttpServletRequest request, Charset charset) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            headers.add(headerName, request.getHeader(headerName));
+        }
+
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String body = StreamUtils.copyToString(request.getInputStream(), charset);
+        return new HttpEntity<>(body, headers);
+    }
+    
+    private HttpEntity<MultiValueMap<String, Object>> createMultipartHttpEntity(MultipartHttpServletRequest request) throws Exception {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // 일반 파라미터
+        request.getParameterMap().forEach((key, values) -> {
+            for (String value : values) {
+                body.add(key, value);
+            }
+        });
+
+        // 파일 파라미터
+        for (Map.Entry<String, MultipartFile> entry : request.getFileMap().entrySet()) {
+            MultipartFile multipartFile = entry.getValue();
+            body.add(entry.getKey(), new ByteArrayResource(multipartFile.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return multipartFile.getOriginalFilename();
+                }
+            });
+        }
+        return new HttpEntity<>(body, headers);
+    }
 
 	protected boolean isAjax(HttpServletRequest request) {
 		boolean isAjax = false;
