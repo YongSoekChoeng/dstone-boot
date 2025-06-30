@@ -125,6 +125,11 @@ public abstract class TaskItem extends BaseObject implements Callable<TaskItem>,
 	public void setExecutorServiceId(String executorServiceId) {
 		this.executorServiceId = executorServiceId;
 	}
+	
+	public String getExecutorTheadId() {
+        String executorTheadId = String.valueOf(Thread.currentThread().getId());
+		return executorTheadId;
+	}
 
 	@Override
 	public String toString() {
