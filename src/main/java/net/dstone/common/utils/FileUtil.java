@@ -356,6 +356,16 @@ public class FileUtil {
 			logger.info(e.toString());
 			return null;
 		}
+		List<String> fileList = new ArrayList<String>();
+		if(result != null) {
+			for(String file : result) {
+				if( !FileUtil.isDirectory(filePath + "/" + file ) ) {
+					fileList.add(file);
+				}
+			}
+		}
+		result = fileList.toArray(new String[0]);
+		fileList.clear();
 		return result;
 	}
 	
