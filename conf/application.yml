@@ -88,6 +88,8 @@ spring:
         enabled: true
     websocket: 
         enabled: false
+    swagger-gen: 
+        enabled: false
     rabbitmq: 
         enabled: false
         host: localhost
