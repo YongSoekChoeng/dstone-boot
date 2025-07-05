@@ -85,11 +85,9 @@ spring:
             networks: 
                 - backend
     security: 
-        enabled: true
+        enabled: false
     websocket: 
         enabled: true
-    swagger-gen: 
-        enabled: false
     rabbitmq: 
         enabled: false
         host: localhost
@@ -106,6 +104,9 @@ spring:
                 exchange-id: app.direct.exchange
                 queue-id: app.orders.queue
                 routing-key: orders.process
+    swagger-gen: 
+		# swagger 제너레이팅 할 때 spring.security.enabled 를 false 로 해주고 제너레이팅 해야 함.
+        enabled: false
 
 resources: 
     fileUp: 
