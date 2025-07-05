@@ -87,7 +87,7 @@ spring:
     security: 
         enabled: true
     websocket: 
-        enabled: false
+        enabled: true
     swagger-gen: 
         enabled: false
     rabbitmq: 
