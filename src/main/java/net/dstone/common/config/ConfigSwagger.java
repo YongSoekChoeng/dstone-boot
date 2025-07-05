@@ -14,6 +14,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ConditionalOnProperty(name = "spring.swagger-gen.enabled", havingValue = "true" )
 @EnableSwagger2
 public class ConfigSwagger {
+    /**
+     * Swagger 제너레이팅 메소드
+     * 제너레이팅 할 때 spring.security.enabled 를 false 로 해주고 제너레이팅. 
+     * http://{localhost}:{포트}/swagger-ui/index.html 로 접근
+     * @return
+     */
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
