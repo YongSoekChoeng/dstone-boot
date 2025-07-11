@@ -85,7 +85,7 @@ spring:
             networks: 
                 - backend
     security: 
-        enabled: false
+        enabled: true
     # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)
     swagger: 
         enabled: false

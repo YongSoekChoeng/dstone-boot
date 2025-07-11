@@ -93,6 +93,20 @@ public class StringUtil {
 		}
 	}
 
+	/**
+	 * 연속공백 치환하는 메소드
+	 * @param input - 공백이 존재하는 스트링
+	 * @param replacement - 연속공백을 치환값
+	 * @return String
+	 */
+	public static String replacMultiSpace(String input, String replacement) {
+		String replaced = "";
+		if( !isEmpty(input) ) {
+			replaced = input.replaceAll("\\s{2,}", replacement);
+		}
+		return replaced;
+	}
+
 	public static String ltrim(String input) {
 		StringBuffer outStr = new StringBuffer();
 		char[] incharArr = null;
