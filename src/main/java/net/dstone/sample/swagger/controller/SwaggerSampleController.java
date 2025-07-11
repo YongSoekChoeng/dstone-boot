@@ -1,4 +1,4 @@
-package net.dstone.sample.swagger.web;
+package net.dstone.sample.swagger.controller;
 
 import java.util.ArrayList;
 import java.util.List;
