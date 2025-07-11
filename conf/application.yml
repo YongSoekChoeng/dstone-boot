@@ -85,7 +85,7 @@ spring:
             networks: 
                 - backend
     security: 
-        enabled: true
+        enabled: false
     websocket: 
         enabled: false
     rabbitmq: 
