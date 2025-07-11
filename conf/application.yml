@@ -88,7 +88,7 @@ spring:
         enabled: false
     # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)
     swagger: 
-        enabled: true
+        enabled: false
     websocket: 
         enabled: false
     rabbitmq: 
