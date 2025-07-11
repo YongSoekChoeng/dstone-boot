@@ -38,9 +38,10 @@ import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.utils.RequestUtil;
 import net.dstone.common.utils.StringUtil;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
-public class BaseController extends net.dstone.common.core.BaseObject {
+public abstract class BaseController extends net.dstone.common.core.BaseObject {
 
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
@@ -465,6 +466,7 @@ public class BaseController extends net.dstone.common.core.BaseObject {
 	 * @param exception
 	 */
     @RequestMapping(value = "/defaultLink.do") 
+    @ApiIgnore
 	protected ModelAndView defaultLink(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
     	/************************ 변수 선언 시작 ************************/
    		net.dstone.common.utils.RequestUtil 					requestUtil;

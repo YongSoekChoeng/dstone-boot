@@ -52,6 +52,12 @@ public class ConfigSecurity extends BaseObject{
 	public static String WEBSOCKET_ACTION				= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "*/**";	// 웹소켓 액션
 	public static String KAKAO_PAGE 					= "/kakao/*.do"; 									// 카카오 액션
 	public static String GOOGLE_PAGE 					= "/google/**/*.do"; 								// 구글맵 액션
+	public static String REST_API	 					= "/restapi/**"; 									// Rest Api 수신
+	
+	public static String SWAGGER_UI	 					= "/swagger-ui.html/**"; 							// Swagger Ui
+	public static String SWAGGER_RS	 					= "/swagger-resources/**"; 							// Swagger Resources
+	public static String SWAGGER_WJ	 					= "/webjars/**"; 									// Swagger webjars
+	public static String SWAGGER_VA	 					= "/v2/api-docs/**"; 								// Swagger api-docs
 
 	public static String ERROR_URL_PATTERN				= "/error/**"; 										// 에러 URL패턴.(스프링 내부적으로 호출되는 에러 URL패턴 존재. Permit All로 설정)
 	
@@ -159,6 +165,8 @@ public class ConfigSecurity extends BaseObject{
 			, "/**/*.htm"
 			// JSON
 			, "/**/*.json"
+			// Others
+			, "/csrf/**"
 
 			/*** 동적자원중 권한체크가 필요없는 자원들 ***/	
 			, "/views/login"
@@ -179,6 +187,13 @@ public class ConfigSecurity extends BaseObject{
 			, WEBSOCKET_ACTION
 			, KAKAO_PAGE
 			, GOOGLE_PAGE
+			, REST_API
+			
+			, SWAGGER_UI
+			, SWAGGER_RS
+			, SWAGGER_WJ
+			, SWAGGER_VA
+
 		).permitAll()
 		.mvcMatchers("/", "/index.html") // antMatchers 는 슬래쉬(/)로 끝나는 경우 제대로 검증하지 못하므로 루트(/)는 mvcMatchers를 사용한다.
 		.permitAll(); 

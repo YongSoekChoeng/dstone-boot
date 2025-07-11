@@ -17,6 +17,7 @@ import net.dstone.common.core.BaseObject;
 	ConfigMq.class,
 	ConfigProperty.class,
 	ConfigSecurity.class,
+	ConfigSwagger.class,
 	ConfigTransaction.class,
 	ConfigWebSocket.class
 })
