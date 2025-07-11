@@ -63,7 +63,6 @@ public class QueueHandler extends BaseObject{
 		queueThread.start();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void addQueue(QueueItem queueItem) {
 		try {
 			synchronized(queue) {
@@ -77,7 +76,6 @@ public class QueueHandler extends BaseObject{
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void removeQueueById(String queueItemId) {
 		try {
 			synchronized(queue) {
@@ -108,7 +106,7 @@ public class QueueHandler extends BaseObject{
 		net.dstone.common.utils.LogUtil.sysout(queue);
 	}
 	
-	@SuppressWarnings({ "serial", "rawtypes" })
+	@SuppressWarnings({ "serial" })
 	class Queue extends ArrayList<QueueItem>{
 		
 		public boolean isEmpty(){
@@ -151,7 +149,6 @@ public class QueueHandler extends BaseObject{
 			}
 		}
 		
-		@SuppressWarnings("unchecked")
 		private Queue fetchFromQueue(){
 			Queue queueToBeWorked = new Queue();
 			try {

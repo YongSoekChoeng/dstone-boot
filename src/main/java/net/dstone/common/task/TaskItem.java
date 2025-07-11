@@ -1,10 +1,7 @@
 package net.dstone.common.task;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-
-import org.springframework.security.access.intercept.RunAsManager;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.StringUtil;
