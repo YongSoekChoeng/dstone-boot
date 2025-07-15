@@ -151,22 +151,32 @@ public class JwtUtil {
 	 * @param itemKey
 	 * @return
 	 */
+	public static String getJwtDec(String jwt, String itemKey) throws Exception {
+		return getJwtDec(jwt, itemKey, SignatureAlgorithm.HS256, SECRETE_KEY_FOR_HS256);
+	}
+	
+	/**
+	 * Jwt(Json Web Token)복호화 메서드
+	 * @param jwt
+	 * @param itemKey
+	 * @return
+	 */
 	public static String getJwtDec(String jwt, SignatureAlgorithm alg, String itemKey) throws Exception {
-		String keyStr = "";
+		String secretKey = "";
 		if( alg.getValue().startsWith("HS") ) {
     		if( "HS256".equals(alg.getValue()) ) {
-    			keyStr = SECRETE_KEY_FOR_HS256;
+    			secretKey = SECRETE_KEY_FOR_HS256;
     		}else if( "HS384".equals(alg.getValue()) ) {
-    			keyStr = SECRETE_KEY_FOR_HS384;
+    			secretKey = SECRETE_KEY_FOR_HS384;
     		}else if( "HS512".equals(alg.getValue()) ) {
-    			keyStr = SECRETE_KEY_FOR_HS512;
+    			secretKey = SECRETE_KEY_FOR_HS512;
     		}else {
     			throw new Exception("Algorithm과 키타입을 확인하세요.");
     		}
 		}else {
 			throw new Exception("Algorithm과 키타입을 확인하세요. 대칭키 (HMAC)알고리즘이 아닙니다.");
 		}
-		return getJwtDec(jwt, itemKey, alg, keyStr);
+		return getJwtDec(jwt, itemKey, alg, secretKey);
 	}
 	
 	/**
