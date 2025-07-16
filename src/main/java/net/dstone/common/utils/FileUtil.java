@@ -671,6 +671,27 @@ public class FileUtil {
 		}
 		return filePath;
 	}
+	
+	public static long getFileSize(String fileFullPath) {
+		long size = 0;
+		if( isFileExist(fileFullPath) ) {
+			size = FileUtils.getFile(fileFullPath).length();
+		}
+		return size;
+	}
+
+	public static String getFileLastModiDate(String fileFullPath, String format) {
+		String dateStr = "";
+		if( isFileExist(fileFullPath) ) {
+			java.io.File f = new java.io.File(fileFullPath);
+			java.util.Calendar cal = java.util.Calendar.getInstance();
+			cal.setTimeInMillis(f.lastModified());
+			java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(format);
+			dateStr = dateFormat.format(cal.getTime());
+		}
+		return dateStr;
+	}
+	
 
 	public static String getFileExt(String fileFullPath) {
 		String fileExt = "";
