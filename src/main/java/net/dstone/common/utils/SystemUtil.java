@@ -3,6 +3,9 @@ package net.dstone.common.utils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class SystemUtil {
 	
@@ -226,6 +229,73 @@ public class SystemUtil {
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.command(cli);
 			Process proc = pb.start();
+
+			stdIn = proc.getInputStream();
+			isr = new InputStreamReader(stdIn, charSet);
+			br = new BufferedReader(isr);
+
+			String line = null;
+
+			while ((line = br.readLine()) != null) {
+				output.append(line).append("\n");
+			}
+
+			proc.waitFor();
+
+		} catch (Throwable t) {
+			t.printStackTrace();
+		} finally {
+			try {
+				if (stdIn != null) {
+					stdIn.close();
+				}
+				if (isr != null) {
+					isr.close();
+				}
+				if (br != null) {
+					br.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return output.toString();
+	}
+	
+	/**
+	 * 컴맨드라인 시스템명령 실행 메서드. <br>
+	 * 파라메터에 개행문자등이 들어갈 경우 별도로 처리할 필요 있음.
+	 * 예)<br>
+	 * List<String> command = Arrays.asList("svn");
+	 * String[] args = new String[]{"log", "http://220.95.212.225:6080/scm/repo/scmadmin/hen/hen", "--search", "dh.shin", "-v", "-r", "BASIC:HEAD"};<br>
+	 * String output = net.dstone.common.utils.SystemUtil.executeCli(command, args, "EUC-KR");<br>
+	 * System.out.println("output:" + output);<br>
+	 * 
+	 * @param cli
+	 * @param charSet
+	 * @return
+	 */
+	public static String executeCli(List<String> command, String[] args, String charSet) {
+
+		InputStream stdIn = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+
+		StringBuffer output = new StringBuffer();
+
+		try {
+
+			ProcessBuilder pb = new ProcessBuilder(command);
+			Process proc = pb.start();
+			
+	        // 프로세스의 표준 입력 스트림을 가져와 데이터 전송
+			if(args != null) {
+				try (OutputStream stdin = proc.getOutputStream()) {
+					for(String arg : args) {
+			            stdin.write(arg.getBytes(charSet));
+			        }
+				}
+			}
 
 			stdIn = proc.getInputStream();
 			isr = new InputStreamReader(stdIn, charSet);
