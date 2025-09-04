@@ -1,7 +1,9 @@
 package net.dstone.common.utils;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -12,13 +14,19 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 public class RestFulUtil {
 	
@@ -144,6 +152,65 @@ public class RestFulUtil {
 	public HttpEntity<MultiValueMap<String, Object>> getEntity(HttpHeaders headers, LinkedMultiValueMap input) {
 		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(input, headers);
 		return entity;
+	}
+	
+
+	class RestResponseErrorHandler extends DefaultResponseErrorHandler {
+		
+		private boolean isOk = true;
+		private Map<String, Object> msgMap = new HashMap<String, Object>();
+		private boolean isThrowExceptionOnError = true;
+		
+		@Override
+		public void handleError(ClientHttpResponse response) throws IOException {
+			//logger.info( "handleError :: response.getRawStatusCode()================>>>" + response.getRawStatusCode() );
+			if (response.getRawStatusCode() != 520) {
+				HttpStatus statusCode = getHttpStatusCode(response);
+				switch (statusCode.series()) {
+					case CLIENT_ERROR:
+						if( this.isThrowExceptionOnError ) {
+							throw new HttpClientErrorException(statusCode, response.getStatusText(), response.getHeaders(), getResponseBody(response), getCharset(response));
+						}
+					case SERVER_ERROR:
+						if( this.isThrowExceptionOnError ) {
+							throw new HttpServerErrorException(statusCode, response.getStatusText(), response.getHeaders(), getResponseBody(response), getCharset(response));
+						}
+					default:
+						if( this.isThrowExceptionOnError ) {
+							throw new UnknownHttpStatusCodeException(statusCode.value(), response.getStatusText(), response.getHeaders(), getResponseBody(response), getCharset(response));
+						}
+				}
+			}else {
+				if( this.isThrowExceptionOnError ) {
+					throw new UnknownHttpStatusCodeException(520, response.getStatusText(), response.getHeaders(), getResponseBody(response), getCharset(response));
+				}
+			}
+		}
+
+		public boolean isOk() {
+			return isOk;
+		}
+
+		public void setOk(boolean isOk) {
+			this.isOk = isOk;
+		}
+
+		public Map<String, Object> getMsgMap() {
+			return msgMap;
+		}
+
+		public void setMsgMap(Map<String, Object> msgMap) {
+			this.msgMap = msgMap;
+		}
+
+		public boolean isThrowExceptionOnError() {
+			return isThrowExceptionOnError;
+		}
+
+		public void setThrowExceptionOnError(boolean isThrowExceptionOnError) {
+			this.isThrowExceptionOnError = isThrowExceptionOnError;
+		}
+		
 	}
 	
 }
