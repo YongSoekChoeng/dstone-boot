@@ -55,7 +55,7 @@ public class RestFulUtil {
 					.setMaxConnPerRoute(60) // (IP + PORT) 당 커넥션 쓰레드 수
 					.evictIdleConnections(60L, TimeUnit.SECONDS) // 최대 연결 유효시간을 지정한다
 					.evictExpiredConnections() // 설정한 최대 연결 유효시간이 만료되면 커넥션을 해제한다
-					.setConnectionTimeToLive(5, TimeUnit.SECONDS) // 커넥션 만료시간을 설정한다
+					.setConnectionTimeToLive(5, TimeUnit.MINUTES) // 커넥션 만료시간을 설정한다
 					.build();
 			
 			HTTP_CLIENT_FACTORY = new HttpComponentsClientHttpRequestFactory();
