@@ -1,7 +1,7 @@
 <%@page import="net.dstone.common.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%    
-	String SUCCESS_YN = StringUtil.nullCheck(response.getHeader("SUCCESS_YN"), "");
+	String successYn = StringUtil.nullCheck(response.getHeader("successYn"), "");
 %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -16,23 +16,23 @@
 					data:encodeURIComponent(JSON.stringify($(document.AJAX_FORM).serializeObject())), 
 					dataType:"json", 
 					success:function(data, status, request){
-						var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-						var ERR_CD = request.getResponseHeader('ERR_CD');
-						var ERR_MSG = request.getResponseHeader('ERR_MSG');
-						if( 'Y' == SUCCESS_YN ){
+						var successYn = request.getResponseHeader('successYn');
+						var errCd = request.getResponseHeader('errCd');
+						var errMsg = decodeURIComponent(request.getResponseHeader('errMsg'));
+						if( 'Y' == successYn ){
 							console.log('success ===>>> data:' + (JSON.stringify(data)));
-							$("#SUCCESS_YN").text("성공");
+							$("#successYn").text("성공");
 						}else{
 							console.log('failure ===>>> data:' + (JSON.stringify(data)));
-							$("#SUCCESS_YN").text("실패");
-							alert(ERR_MSG);
+							$("#successYn").text("실패");
+							alert(errMsg);
 						}
 						
 					}, 
 					error : function(data, status, e) { 
 						console.log('system error ===>>> data:' + (JSON.stringify(data))); 
-						$("#SUCCESS_YN").text("에러]");
-						alert(ERR_MSG);
+						$("#successYn").text("에러");
+						alert(errMsg);
 					} 
 				}); 
 			} 
@@ -60,7 +60,7 @@
 					<section>
 						<!-- Content Start  -->
 						
-						AJAX 로그인<span id="SUCCESS_YN"></span><br>
+						AJAX 로그인<span id="successYn"></span><br>
 						<form name="AJAX_FORM" method="post" action="">
 						<table border=1>
 							<tr>

@@ -58,10 +58,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	            data:"{}",  
 	            dataType:"json",  
 	            success:function(data, status, request){ 
-	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
-	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
-	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
-	                if( 'Y' == SUCCESS_YN ){ 
+	                var successYn = request.getResponseHeader('successYn'); 
+	                var errCd = request.getResponseHeader('errCd'); 
+	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
+	                if( 'Y' == successYn ){ 
 	                    var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
 	                    if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
 	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
@@ -80,7 +80,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                    } 
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
-	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                    alert("failure errMsg:" + errMsg); 
 	                } 
 	            }, 
 				error : function(data, status, e) { 
@@ -113,10 +113,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	            data:encodeURIComponent(JSON.stringify($(document.FORM_ANALYSIS).serializeObject())), 
 	            dataType:"json", 
 	            success:function(data, status, request){ 
-	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
-	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
-	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
-	                if( 'Y' == SUCCESS_YN ){ 
+	                var successYn = request.getResponseHeader('successYn'); 
+	                var errCd = request.getResponseHeader('errCd'); 
+	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
+	                if( 'Y' == successYn ){ 
 	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
 	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
 	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
@@ -124,7 +124,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	startMonitoring();
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
-	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                    alert("failure errMsg:" + errMsg); 
 	                }
 	                
 	            }, 
@@ -152,10 +152,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	            data:encodeURIComponent(JSON.stringify($(document.FORM_ANALYSIS).serializeObject())), 
 	            dataType:"json", 
 	            success:function(data, status, request){ 
-	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
-	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
-	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
-	                if( 'Y' == SUCCESS_YN ){ 
+	                var successYn = request.getResponseHeader('successYn'); 
+	                var errCd = request.getResponseHeader('errCd'); 
+	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
+	                if( 'Y' == successYn ){ 
 	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
 	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
 	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
@@ -180,7 +180,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	}
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
-	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                    alert("failure errMsg:" + errMsg); 
 	                }
 	    			$("#btnAnalyze").attr("disabled", false); 
 	    			$("#btnSave").attr("disabled", false); 
@@ -203,10 +203,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	            data:encodeURIComponent(JSON.stringify($(document.FORM_ANALYSIS).serializeObject())), 
 	            dataType:"json", 
 	            success:function(data, status, request){ 
-	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
-	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
-	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
-	                if( 'Y' == SUCCESS_YN ){ 
+	                var successYn = request.getResponseHeader('successYn'); 
+	                var errCd = request.getResponseHeader('errCd'); 
+	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
+	                if( 'Y' == successYn ){ 
 	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
 	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
 	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
@@ -236,7 +236,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	}
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
-	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                    alert("failure errMsg:" + errMsg); 
 	                }
 	            }, 
 	            error : function(data, status, e) { 
@@ -275,10 +275,10 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	            data:encodeURIComponent(JSON.stringify($(document.FORM_ANALYSIS).serializeObject())), 
 	            dataType:"json", 
 	            success:function(data, status, request){ 
-	                var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN'); 
-	                var ERR_CD = request.getResponseHeader('ERR_CD'); 
-	                var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG')); 
-	                if( 'Y' == SUCCESS_YN ){ 
+	                var successYn = request.getResponseHeader('successYn'); 
+	                var errCd = request.getResponseHeader('errCd'); 
+	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
+	                if( 'Y' == successYn ){ 
 	                	console.log('isCompleted ===>>> ' + isCompleted); 
 	                	alert('success'); 
 	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
@@ -290,7 +290,7 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                	isCompleted = data.isCompleted;
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
-	                    alert("failure ERR_MSG:" + ERR_MSG); 
+	                    alert("failure errMsg:" + errMsg); 
 	                }
 	    			$("#btnAnalyze").attr("disabled", false); 
 	    			$("#btnSave").attr("disabled", false); 

@@ -25,8 +25,8 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 		String viewName = this.determineViewName(ex, request);
 		if( viewName != null ) {
 			mav = this.getModelAndView(viewName, ex, request);
-			mav.addObject("ERR_CD", response.getHeader("ERR_CD"));
-			mav.addObject("ERR_MSG", response.getHeader("ERR_MSG"));
+			mav.addObject("errCd", response.getHeader("errCd"));
+			mav.addObject("errMsg", response.getHeader("errMsg"));
 			StringBuffer errMsgDetail = new StringBuffer();
 			StackTraceElement[] stackTraceElementList = ex.getStackTrace();
 			if(stackTraceElementList != null) {
@@ -34,7 +34,7 @@ public class DsExceptionResolver extends SimpleMappingExceptionResolver {
 					errMsgDetail.append(item.toString()).append("\n");
 				}
 			}
-			mav.addObject("ERR_MSG_DETAIL", errMsgDetail.toString());
+			mav.addObject("errMsgDetail", errMsgDetail.toString());
 			if(RequestUtil.isAjax(request) || RequestUtil.isJson(request)) {
 				Integer statusCode = this.determineStatusCode(request, viewName);
 				if( statusCode != null ) {

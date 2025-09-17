@@ -1,7 +1,7 @@
 <%@page import="net.dstone.common.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%    
-	String SUCCESS_YN = StringUtil.nullCheck(response.getHeader("SUCCESS_YN"), "");
+	String successYn = StringUtil.nullCheck(response.getHeader("successYn"), "");
 %>   
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -19,24 +19,24 @@
 					data:encodeURIComponent(JSON.stringify($(document.AJAX_FORM).serializeObject())), 
 					dataType:"json", 
 					success:function(data, status, request){
-						var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-						var ERR_CD = data['ERR_CD'];
-						var ERR_MSG = data['ERR_MSG'];
-						if( 'Y' == SUCCESS_YN ){
+						var successYn = request.getResponseHeader('successYn');
+						var errCd = data['errCd'];
+						var errMsg = data['errMsg'];
+						if( 'Y' == successYn ){
 							console.log('success ===>>> data:' + (JSON.stringify(data)));
 							alert("success");
-							$("#SUCCESS_YN").text("성공");
+							$("#successYn").text("성공");
 						}else{
 							console.log('failure ===>>> data:' + (JSON.stringify(data)));
 							alert("failure");
-							$("#SUCCESS_YN").text("실패");
+							$("#successYn").text("실패");
 						}
 						
 					}, 
 					error : function(data, status, e) { 
 						console.log('system error ===>>> data:' + (JSON.stringify(data))); 
 						alert("system error");
-						$("#SUCCESS_YN").text("에러]");
+						$("#successYn").text("에러]");
 					} 
 				}); 
 			} 
@@ -69,7 +69,7 @@
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
 						   
-						폼서밋 테스트<%=("Y".equals(SUCCESS_YN)?"성공":("N".equals(SUCCESS_YN)?"실패":"")) %><br>
+						폼서밋 테스트<%=("Y".equals(successYn)?"성공":("N".equals(successYn)?"실패":"")) %><br>
 						<form name="SUBMIT_FORM" method="post" action="">
 						TEST_PARAM1:<input type="text" name="MY_NAME" value="TEST..." >
 						<br>
@@ -85,7 +85,7 @@
 						<br>
 						<br>
 						
-						AJAX 테스트<span id="SUCCESS_YN"></span><br>
+						AJAX 테스트<span id="successYn"></span><br>
 						<form name="AJAX_FORM" method="post" action="">
 						TEST_PARAM1:<input type="text" name="MY_NAME" value="TEST..." >
 						<br>

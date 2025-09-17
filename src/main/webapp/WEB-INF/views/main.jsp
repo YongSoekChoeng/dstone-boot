@@ -37,10 +37,10 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 					data:{}, 
 					dataType:"json", 
 					success:function(data, status, request){
-						var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-						var ERR_CD = data['ERR_CD'];
-						var ERR_MSG = data['ERR_MSG'];
-						if( 'Y' == SUCCESS_YN ){
+						var successYn = request.getResponseHeader('successYn');
+						var errCd = data['errCd'];
+						var errMsg = data['errMsg'];
+						if( 'Y' == successYn ){
 							alert("로그아웃되었습니다.");
 							location.href = "/index.html";
 						}

@@ -2,7 +2,7 @@
 <%                                                                                                              
 /******************************************* 변수 선언 시작 *******************************************/        	  
 net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
-String                                           	SUCCESS_YN;                                       
+String                                           	successYn;                                       
 java.util.HashMap                                	returnObj;                                       
 java.util.List<net.dstone.sample.vo.UserVo>     	returnVoList;                       
 net.dstone.sample.vo.UserVo                  		userVo;                
@@ -10,7 +10,7 @@ net.dstone.common.utils.PageUtil               		pageUtil;
 /******************************************* 변수 선언 끝 *********************************************/           
                                                                                                                 
 /******************************************* 변수 정의 시작 *******************************************/           
-SUCCESS_YN           	= net.dstone.common.utils.StringUtil.nullCheck(response.getHeader("SUCCESS_YN"), "");			
+successYn           	= net.dstone.common.utils.StringUtil.nullCheck(response.getHeader("successYn"), "");			
 returnObj           	= (java.util.HashMap)requestUtil.getAttribute("returnObj");                                   
 userVo            		= null;                                                                          
 returnVoList        	= null;                                                                          
@@ -38,10 +38,10 @@ System.out.println( "========================================================>>>
 					data:encodeURIComponent(JSON.stringify($(document.AJAX_FORM).serializeObject())), 
 					dataType:"json", 
 					success:function(data, status, request){
-						var SUCCESS_YN = request.getResponseHeader('SUCCESS_YN');
-						var ERR_CD = request.getResponseHeader('ERR_CD');
-						var ERR_MSG = decodeURIComponent(request.getResponseHeader('ERR_MSG'));
-						if( 'Y' == SUCCESS_YN ){
+						var successYn = request.getResponseHeader('successYn');
+						var errCd = request.getResponseHeader('errCd');
+						var errMsg = decodeURIComponent(request.getResponseHeader('errMsg'));
+						if( 'Y' == successYn ){
 							var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL');
 							if(FORCED_TO_URL && "" != FORCED_TO_URL){
 								location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL;
@@ -77,7 +77,7 @@ System.out.println( "========================================================>>>
 							}
 						}else{
 							console.log('failure ===>>> data:' + (JSON.stringify(data)));
-							alert("failure ERR_MSG:" + ERR_MSG);
+							alert("failure errMsg:" + errMsg);
 						}
 						
 					}, 

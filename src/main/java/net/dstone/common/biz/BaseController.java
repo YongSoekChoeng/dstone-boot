@@ -435,25 +435,25 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 	
 	@SuppressWarnings("deprecation")
 	public static void setErrCd(HttpServletRequest request, HttpServletResponse response, ErrCd errCd) {
-		response.setHeader("SUCCESS_YN", "N");
-		response.setHeader("ERR_CD", errCd.getErrCd());
+		response.setHeader("successYn", "N");
+		response.setHeader("errCd", errCd.getErrCd());
 		if( RequestUtil.isAjax(request) ) {
-			response.setHeader("ERR_MSG", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
+			response.setHeader("errMsg", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
 		}else {
-			response.setHeader("ERR_MSG", errCd.getErrMsg());
+			response.setHeader("errMsg", errCd.getErrMsg());
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
 	public static void setErrCd(HttpServletRequest request, HttpServletResponse response, String strErrCd) {
-		response.setHeader("SUCCESS_YN", "N");
+		response.setHeader("successYn", "N");
 		ErrCd errCd = ErrCd.getErrCdByCd(strErrCd);
 		if( errCd != null ) {
-			response.setHeader("ERR_CD", errCd.getErrCd());
+			response.setHeader("errCd", errCd.getErrCd());
 			if( RequestUtil.isAjax(request) ) {
-				response.setHeader("ERR_MSG", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
+				response.setHeader("errMsg", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
 			}else {
-				response.setHeader("ERR_MSG", errCd.getErrMsg());
+				response.setHeader("errMsg", errCd.getErrMsg());
 			}
 		}
 	}
