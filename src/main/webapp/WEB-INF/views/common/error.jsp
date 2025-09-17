@@ -1,9 +1,11 @@
+<%@page import="net.dstone.common.utils.Base64Util"%>
 <%@page import="net.dstone.common.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	String errCd 			= StringUtil.nullCheck(request.getAttribute("errCd"), "");
 	String errMsg 			= StringUtil.nullCheck(request.getAttribute("errMsg"), "");
-	String errMsgDetail 	= StringUtil.nullCheck(request.getAttribute("errMsgDetail"), "");
+	String errMsgDetail 	= StringUtil.nullCheck(request.getAttribute("errMsgDetail"), ""); 
+	errMsg					= Base64Util.decodeString(errMsg);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

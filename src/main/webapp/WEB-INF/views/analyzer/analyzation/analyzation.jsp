@@ -62,9 +62,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errCd = request.getResponseHeader('errCd'); 
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
-	                    var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                    if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                    var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                    if(forcedToUrl && "" != forcedToUrl){ 
+	                        location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                    }else{ 
 	                        //console.log('success ===>>> data:' + (JSON.stringify(data))); 
 	                        var appSel = $("#SYS_ID"); 
@@ -117,9 +117,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errCd = request.getResponseHeader('errCd'); 
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                	}
 	                	startMonitoring();
 	                }else{ 
@@ -156,9 +156,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errCd = request.getResponseHeader('errCd'); 
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                		return;
 	                	}
 	                	var returnList = data.returnObj;
@@ -207,9 +207,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errCd = request.getResponseHeader('errCd'); 
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                		return;
 	                	}
 	                	//console.log('success ===>>> data:' + (JSON.stringify(data))); 
@@ -281,9 +281,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                if( 'Y' == successYn ){ 
 	                	console.log('isCompleted ===>>> ' + isCompleted); 
 	                	alert('success'); 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                		return;
 	                	}
 	                	//console.log('success ===>>> data:' + (JSON.stringify(data))); 

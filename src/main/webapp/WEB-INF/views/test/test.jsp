@@ -8,7 +8,7 @@
 	<head>
 	
 		<!-- Header 영역 -->
-		<jsp:include page="../common/header.jsp" flush="true"/>
+		<%@ include file="/WEB-INF/views/common/header.jsp" %>
 		
 		<script type="text/javascript">
 			
@@ -64,7 +64,7 @@
 				<div class="inner">
 
 					<!-- Top 영역 -->
-					<jsp:include page="../common/top.jsp" flush="true"/>
+					<%@ include file="/WEB-INF/views/common/top.jsp" %>
 					
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
@@ -109,7 +109,7 @@
 			</div>
 
 			<!-- Menu 영역 -->
-			<jsp:include page="../common/left.jsp" flush="true"/>
+			<%@ include file="/WEB-INF/views/common/left.jsp" %>
 
 		</div>
 

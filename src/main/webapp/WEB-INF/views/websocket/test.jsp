@@ -9,7 +9,7 @@
 	<head>
 	
 		<!-- Header 영역 -->
-		<jsp:include page="../common/header.jsp" flush="true"/>
+		<%@ include file="/WEB-INF/views/common/header.jsp" %>
 		
 		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
@@ -26,7 +26,7 @@
 				<div class="inner">
 
 					<!-- Top 영역 -->
-					<jsp:include page="../common/top.jsp" flush="true"/>
+					<%@ include file="/WEB-INF/views/common/top.jsp" %>
 					
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
@@ -103,7 +103,7 @@
 			</div>
 
 			<!-- Menu 영역 -->
-			<jsp:include page="../common/left.jsp" flush="true"/>
+			<%@ include file="/WEB-INF/views/common/left.jsp" %>
 
 		</div>
 

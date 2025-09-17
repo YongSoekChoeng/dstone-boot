@@ -1,12 +1,15 @@
 <%@page import="net.dstone.common.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%    
-	String successYn = StringUtil.nullCheck(response.getHeader("successYn"), "");
+	String successYn = StringUtil.nullCheck(response.getHeader("successYn"), ""); 
 %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<jsp:include page="common/header.jsp" flush="true"/>
+		
+		<!-- Header 영역 -->
+		<%@ include file="/WEB-INF/views/common/header.jsp" %>
+		
 		<script type="text/javascript">
 
 			function goLoginAjax(){ 
@@ -36,7 +39,7 @@
 					} 
 				}); 
 			} 
-		
+
 			function doLoginSubmit(){ 
 				document.SUBMIT_FORM.action="<%=net.dstone.common.config.ConfigSecurity.LOGIN_PROCESS_ACTION%>";
 				document.SUBMIT_FORM.submit();
@@ -54,8 +57,8 @@
 			
 				<div class="inner">
 
-					<!-- Top -->
-					<jsp:include page="common/top.jsp" flush="true"/>
+					<!-- Top 영역 -->
+					<%@ include file="/WEB-INF/views/common/top.jsp" %>
 
 					<section>
 						<!-- Content Start  -->
@@ -100,8 +103,8 @@
 			
 			</div>
 
-			<!-- Menu -->
-			<jsp:include page="common/left.jsp" flush="true"/>
+			<!-- Menu 영역 -->
+			<%@ include file="/WEB-INF/views/common/left.jsp" %>
 
 		</div>
 

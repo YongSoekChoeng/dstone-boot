@@ -6,9 +6,9 @@ String                                           	successYn;
 java.util.HashMap                                	returnObj;                                       
 java.util.List<net.dstone.sample.vo.UserVo>     	returnVoList;                       
 net.dstone.sample.vo.UserVo                  		userVo;                
-net.dstone.common.utils.PageUtil               		pageUtil;                                        
+net.dstone.common.utils.PageUtil               		pageUtil;                                       
 /******************************************* 변수 선언 끝 *********************************************/           
-                                                                                                                
+                                                                                                       
 /******************************************* 변수 정의 시작 *******************************************/           
 successYn           	= net.dstone.common.utils.StringUtil.nullCheck(response.getHeader("successYn"), "");			
 returnObj           	= (java.util.HashMap)requestUtil.getAttribute("returnObj");                                   
@@ -20,14 +20,14 @@ if(returnObj != null){
     pageUtil        	= (net.dstone.common.utils.PageUtil)returnObj.get("pageUtil");                                   
 }                                                                                                             
 /******************************************* 변수 정의 끝 *********************************************/   
-System.out.println( "========================================================>>> line 231 " );
+
 %>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
 	
 		<!-- Header 영역 -->
-		<jsp:include page="../../common/header.jsp" flush="true"/>
+		<%@ include file="/WEB-INF/views/common/header.jsp" %>
 		
 		<script type="text/javascript">
 
@@ -42,9 +42,9 @@ System.out.println( "========================================================>>>
 						var errCd = request.getResponseHeader('errCd');
 						var errMsg = decodeURIComponent(request.getResponseHeader('errMsg'));
 						if( 'Y' == successYn ){
-							var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL');
-							if(FORCED_TO_URL && "" != FORCED_TO_URL){
-								location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL;
+							var forcedToUrl = request.getResponseHeader('forcedToUrl');
+							if(forcedToUrl && "" != forcedToUrl){
+								location.href = "/defaultLink.do?defaultLink=" + forcedToUrl;
 							}else{
 								console.log('success ===>>> data:' + (JSON.stringify(data)));
 								var tbody = $("#AJAX_TBL"); 
@@ -111,7 +111,7 @@ System.out.println( "========================================================>>>
 				<div class="inner">
 
 					<!-- Top 영역 -->
-					<jsp:include page="../../common/top.jsp" flush="true"/>
+					<%@ include file="/WEB-INF/views/common/top.jsp" %>
 					
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
@@ -185,7 +185,7 @@ System.out.println( "========================================================>>>
 			</div>
 
 			<!-- Menu 영역 -->
-			<jsp:include page="../../common/left.jsp" flush="true"/>
+			<%@ include file="/WEB-INF/views/common/left.jsp" %>
 
 		</div>
 

@@ -221,15 +221,6 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 	}
 	
 	/**
-     * Ajax 방식일 때 사용 할 View를 생성.
-     * @return
-     */
-    @Bean
-    protected MappingJackson2JsonView jsonView(){
-        return new MappingJackson2JsonView();
-    }
-    
-	/**
      * 간단 암호화 메소드.
      * @return
      */

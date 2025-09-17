@@ -39,9 +39,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errCd = request.getResponseHeader('errCd'); 
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
-	                    var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                    if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                    var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                    if(forcedToUrl && "" != forcedToUrl){ 
+	                        location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                    }else{ 
 	                        //console.log('success ===>>> data:' + (JSON.stringify(data))); 
 	                        var tbody = $("#out_tbody"); 
@@ -95,9 +95,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errCd = request.getResponseHeader('errCd'); 
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                	}else{ 
 	                		var returnObj = data.returnObj;
 	                		var formObj = document.FORM_APP_DETAIL; 
@@ -238,9 +238,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
 	                	alert('success'); 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                	} 
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 
@@ -276,9 +276,9 @@ net.dstone.common.utils.RequestUtil requestUtil = new net.dstone.common.utils.Re
 	                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg')); 
 	                if( 'Y' == successYn ){ 
 	                	alert('success'); 
-	                	var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL'); 
-	                	if(FORCED_TO_URL && "" != FORCED_TO_URL){ 
-	                		location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL; 
+	                	var forcedToUrl = request.getResponseHeader('forcedToUrl'); 
+	                	if(forcedToUrl && "" != forcedToUrl){ 
+	                		location.href = "/defaultLink.do?defaultLink=" + forcedToUrl; 
 	                	} 
 	                }else{ 
 	                    console.log('failure ===>>> data:' + (JSON.stringify(data))); 

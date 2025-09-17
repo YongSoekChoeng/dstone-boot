@@ -4,7 +4,7 @@
 net.dstone.common.utils.RequestUtil                 requestUtil = new net.dstone.common.utils.RequestUtil(request, response);
 String                                                successYn;                                       
 java.util.HashMap                                     returnObj;                                       
-java.util.List<net.dstone.sample.vo.UserVo>           returnVoList;                       
+java.util.List<net.dstone.sample.vo.UserVo>           returnVoList;                        
 net.dstone.sample.vo.UserVo                           userVo;                
 net.dstone.common.utils.PageUtil                     pageUtil;                                        
 /******************************************* 변수 선언 끝 *********************************************/           
@@ -28,7 +28,7 @@ if(returnObj != null){
 	<head>
 	
 		<!-- Header 영역 -->
-		<jsp:include page="../../common/header.jsp" flush="true"/>
+		<%@ include file="/WEB-INF/views/common/header.jsp" %>
 				                                                                             
 		<script type="text/javascript">                                                                               
 		    
@@ -51,9 +51,9 @@ if(returnObj != null){
 		                var errCd = request.getResponseHeader('errCd');
 		                var errMsg = decodeURIComponent(request.getResponseHeader('errMsg'));
 		                if( 'Y' == successYn ){
-		                    var FORCED_TO_URL = request.getResponseHeader('FORCED_TO_URL');
-		                    if(FORCED_TO_URL && "" != FORCED_TO_URL){
-		                        location.href = "/defaultLink.do?defaultLink=" + FORCED_TO_URL;
+		                    var forcedToUrl = request.getResponseHeader('forcedToUrl');
+		                    if(forcedToUrl && "" != forcedToUrl){
+		                        location.href = "/defaultLink.do?defaultLink=" + forcedToUrl;
 		                    }else{
 		                        console.log('success ===>>> data:' + (JSON.stringify(data)));
 		                        var tbody = $("#AJAX_TBL"); 
@@ -145,7 +145,7 @@ if(returnObj != null){
 				<div class="inner">
 
 					<!-- Top 영역 -->
-					<jsp:include page="../../common/top.jsp" flush="true"/>
+					<%@ include file="/WEB-INF/views/common/top.jsp" %>
 					
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
@@ -275,7 +275,7 @@ if(returnObj != null){
 			</div>
 
 			<!-- Menu 영역 -->
-			<jsp:include page="../../common/left.jsp" flush="true"/>
+			<%@ include file="/WEB-INF/views/common/left.jsp" %>
 
 		</div>
 

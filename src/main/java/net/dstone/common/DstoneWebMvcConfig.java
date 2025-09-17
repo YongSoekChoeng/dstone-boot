@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -18,8 +20,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.exception.resolver.DsExceptionResolver;
@@ -83,6 +89,18 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 	}
 
 	/**
+     * Ajax 방식일 때 사용 할 View를 생성.
+     * @return
+     */
+	@Bean
+	public MappingJackson2JsonView jsonView(ObjectMapper objectMapper) {
+	    MappingJackson2JsonView view = new MappingJackson2JsonView(objectMapper);
+	    //view.setExtractValueFromSingleKeyModel(true);
+	    view.setPrettyPrint(true);
+	    return view;
+	}
+    
+	/**
 	 * 뷰의 이름과 동일한 이름 가지는 빈을 view객체로 사용하도록 설정.
 	 * 예)
 	 * 1. 다운로드 View 세팅.
@@ -105,7 +123,7 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 	@Bean
 	public BeanNameViewResolver beanNameViewResolver() {
 		BeanNameViewResolver beanNameViewResolver = new BeanNameViewResolver();
-		beanNameViewResolver.setOrder(0);
+		//beanNameViewResolver.setOrder(0);
 		return beanNameViewResolver; 
 	}
 
@@ -117,11 +135,34 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 	@Bean
 	public UrlBasedViewResolver urlBasedViewResolver() {
 		UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
-		urlBasedViewResolver.setOrder(1);
+		//urlBasedViewResolver.setOrder(1);
 		urlBasedViewResolver.setViewClass(JstlView.class);
 		urlBasedViewResolver.setPrefix("/WEB-INF/views/");
 		urlBasedViewResolver.setSuffix(".jsp");
 		return urlBasedViewResolver;
+	}
+
+	/**
+	 * 여러개의 ViewResolver를 사용할 때 Resolver등록 및 우선순위 세팅.
+	 * @return
+	 */
+	@Bean
+	public ContentNegotiatingViewResolver contentNegotiatingViewResolver(MappingJackson2JsonView jsonView, UrlBasedViewResolver jspResolver) {
+	    ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
+	    // 우선순위
+	    resolver.setOrder(0);
+	    // 후보 뷰 등록
+	    List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>();
+	    viewResolvers.add(beanNameViewResolver());
+	    viewResolvers.add(urlBasedViewResolver());
+	    // 리졸버 등록
+	    resolver.setViewResolvers(viewResolvers);
+
+	    List<View> defaultViews = new ArrayList<View>();
+	    defaultViews.add(jsonView);
+	    resolver.setDefaultViews(defaultViews);
+	    
+	    return resolver;
 	}
 
 

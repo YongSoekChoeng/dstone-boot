@@ -3,13 +3,14 @@
 <%    
 
 String memoryInfo = SystemUtil.getMemoryInfo("\r\n");
-String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
+String sysInfo = SystemUtil.getAllSystemProperties("\r\n"); 
 
 %>   
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<jsp:include page="common/header.jsp" flush="true"/>
+		<%@ include file="/WEB-INF/views/common/header.jsp" %>
+		
 		<script type="text/javascript">
 			function goLoginCheckAjax(){ 
 				$.ajax({ 
@@ -67,7 +68,7 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 				<div class="inner">
 
 					<!-- Top -->
-					<jsp:include page="common/top.jsp" flush="true"/>
+					<%@ include file="/WEB-INF/views/common/top.jsp" %>
 
 					<section>
 						<!-- Content Start  -->
@@ -91,7 +92,7 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 						<textarea rows="10" cols="20" readonly ><%=memoryInfo %></textarea>
 						
 						<h3 style="color: blue">◈환경변수정보</h3>
-						<textarea rows="10" cols="20" readonly ><%=sysInfo %></textarea>
+						<textarea rows="10" cols="20" readonly ><%=sysInfo%></textarea>
 						
 						<!-- Content End  -->
 					</section>
@@ -101,7 +102,7 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 			</div>
 
 			<!-- Menu -->
-			<jsp:include page="common/left.jsp" flush="true"/>
+			<%@ include file="/WEB-INF/views/common/left.jsp" %>
 
 		</div>
 
