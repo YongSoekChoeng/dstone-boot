@@ -77,27 +77,31 @@ public class ConfigSecurity extends BaseObject{
 	
 	@Bean
 	public SecurityFilterChain filterChan(HttpSecurity http) throws Exception {
+		
 		// 1. 크로스 사이트 요청 위조(CSRF) 방지설정
-		http.csrf().disable();
+		http.csrf(csrf -> csrf.disable());
 		// 2. 로그인처리 필터 필터체인에 삽입
 		http.addFilterAt(customUsernamePasswordAuthenticationFilter(authManager(http)), UsernamePasswordAuthenticationFilter.class);
 		// 3. URL별 권한설정
 		this.setAntMatchers(http);
 		http
 		// 4. 로그인 설정
-			.formLogin()
-				.loginPage(LOGIN_GO_ACTION)	// 로그인 페이지 URL 지정
-				.and()
+        .formLogin(form -> form
+        	.loginPage(LOGIN_GO_ACTION)
+        	.permitAll() // 커스텀 로그인 페이지 설정
+        )
 		// 5. 로그아웃 설정	
-			.logout()
-				.logoutUrl(LOGOUT_ACTION) // 로그아웃 URL
-	        	.logoutSuccessUrl(LOGOUT_SUCCS_ACTION) // 성공 리턴 URL
-	        	.invalidateHttpSession(true) // 인증정보를 지우하고 세션을 무효화
-	        	.deleteCookies("JSESSIONID", "remember-me") // JSESSIONID, remember-me 쿠키 삭제
-			;
-		
+        .logout(logout -> logout
+			.logoutUrl(LOGOUT_ACTION) // 로그아웃 URL
+	        .logoutSuccessUrl(LOGOUT_SUCCS_ACTION) // 성공 리턴 URL
+	        .invalidateHttpSession(true) // 인증정보를 지우하고 세션을 무효화
+	        .deleteCookies("JSESSIONID", "remember-me") // JSESSIONID, remember-me 쿠키 삭제
+	        .permitAll()
+		);
 	    // 6. 접근제한처리 설정	
-		http.exceptionHandling().accessDeniedHandler(acessDeniedHandler());
+		http.exceptionHandling(exceptionHandling -> exceptionHandling
+			.accessDeniedHandler(acessDeniedHandler())
+        );
 		// 7. 세션 설정
 		SessionListener.USER_LOGIN_PRIVILEGE_KIND = SessionListener.USER_LOGIN_PRIVILEGE_KIND_LATER;
 

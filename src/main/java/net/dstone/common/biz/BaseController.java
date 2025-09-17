@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,12 +29,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.consts.ErrCd;
+import net.dstone.common.utils.Base64Util;
 import net.dstone.common.utils.RequestUtil;
 import net.dstone.common.utils.StringUtil;
 import springfox.documentation.annotations.ApiIgnore;
@@ -428,11 +427,25 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 	public static void setErrCd(HttpServletRequest request, HttpServletResponse response, ErrCd errCd) {
 		response.setHeader("successYn", "N");
 		response.setHeader("errCd", errCd.getErrCd());
-		if( RequestUtil.isAjax(request) ) {
-			response.setHeader("errMsg", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
-		}else {
-			response.setHeader("errMsg", errCd.getErrMsg());
+		try {
+			if( RequestUtil.isAjax(request) ) {
+				//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
+				//encodedStr = encodedStr.replaceAll("\\+", "%20");
+				String encodedStr = errCd.getErrMsg();
+				encodedStr = URLEncoder.encode(encodedStr, StandardCharsets.UTF_8.name()); 
+				encodedStr = encodedStr.replaceAll("\\+", "%20");
+				response.setHeader("errMsg", encodedStr);
+			}else {			
+				//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
+				String encodedStr = errCd.getErrMsg();
+				encodedStr = Base64Util.encodeString(encodedStr);
+				encodedStr = encodedStr.replaceAll("\\+", "%20");
+				response.setHeader("errMsg", encodedStr);
+			}
+		} catch (Exception e) {
+			//e.printStackTrace();
 		}
+
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -441,10 +454,23 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 		ErrCd errCd = ErrCd.getErrCdByCd(strErrCd);
 		if( errCd != null ) {
 			response.setHeader("errCd", errCd.getErrCd());
-			if( RequestUtil.isAjax(request) ) {
-				response.setHeader("errMsg", URLEncoder.encode(errCd.getErrMsg()).replaceAll("\\+", "%20"));
-			}else {
-				response.setHeader("errMsg", errCd.getErrMsg());
+			try {
+				if( RequestUtil.isAjax(request) ) {
+					//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
+					//encodedStr = encodedStr.replaceAll("\\+", "%20");
+					String encodedStr = errCd.getErrMsg();
+					encodedStr = URLEncoder.encode(encodedStr, StandardCharsets.UTF_8.name()); 
+					encodedStr = encodedStr.replaceAll("\\+", "%20");
+					response.setHeader("errMsg", encodedStr);
+				}else {			
+					//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
+					String encodedStr = errCd.getErrMsg();
+					encodedStr = Base64Util.encodeString(encodedStr);
+					encodedStr = encodedStr.replaceAll("\\+", "%20");
+					response.setHeader("errMsg", encodedStr);
+				}
+			} catch (Exception e) {
+				//e.printStackTrace();
 			}
 		}
 	}
