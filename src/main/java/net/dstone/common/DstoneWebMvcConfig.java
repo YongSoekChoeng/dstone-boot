@@ -123,6 +123,7 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 	@Bean
 	public BeanNameViewResolver beanNameViewResolver() {
 		BeanNameViewResolver beanNameViewResolver = new BeanNameViewResolver();
+		// 순서는 contentNegotiatingViewResolver 에서 세팅
 		//beanNameViewResolver.setOrder(0);
 		return beanNameViewResolver; 
 	}
@@ -135,6 +136,7 @@ public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
 	@Bean
 	public UrlBasedViewResolver urlBasedViewResolver() {
 		UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
+		// 순서는 contentNegotiatingViewResolver 에서 세팅
 		//urlBasedViewResolver.setOrder(1);
 		urlBasedViewResolver.setViewClass(JstlView.class);
 		urlBasedViewResolver.setPrefix("/WEB-INF/views/");
