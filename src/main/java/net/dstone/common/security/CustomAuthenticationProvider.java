@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import net.dstone.common.config.ConfigSecurity;
@@ -71,6 +72,8 @@ public class CustomAuthenticationProvider extends BaseObject implements Authenti
             // 4. 인증토큰반환
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user_id, user_pw, roles);
             auth.setDetails(customUserDetails);
+            // 5. 인증정보 저장
+            SecurityContextHolder.getContext().setAuthentication(auth);
             
             StringBuffer buff = new StringBuffer();
             buff.append("\n");

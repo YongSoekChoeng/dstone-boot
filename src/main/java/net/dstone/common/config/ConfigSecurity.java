@@ -7,22 +7,30 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.security.CustomAccessDeniedHandler;
+import net.dstone.common.security.CustomAccessEntryDeniedHandler;
+import net.dstone.common.security.CustomAuthChecker;
 import net.dstone.common.security.CustomAuthFailureHandler;
 import net.dstone.common.security.CustomAuthSucessHandler;
 import net.dstone.common.security.CustomAuthenticationProvider;
@@ -34,6 +42,11 @@ import net.dstone.common.web.SessionListener;
 @ConditionalOnProperty(name = "spring.security.enabled", havingValue = "true" )
 @EnableWebSecurity
 public class ConfigSecurity extends BaseObject{
+
+    /********* SVC 정의부분 시작 *********/
+    @Autowired 
+    private CustomAuthChecker customAuthChecker;
+    /********* SVC 정의부분 끝 *********/
 
 	/* 화면으로 연결되는 경우 _PAGE로 끝나고 서버통신으로 연결되는 경우 _ACTION으로 끝난다. 화면은 확장자를 생략한다. */
 	public static String MAIN_PAGE 						= "main";											// 메인 페이지
@@ -50,8 +63,8 @@ public class ConfigSecurity extends BaseObject{
 	public static String PROXY_ACTION 					= "/proxy.do"; 										// 프락시 액션
 	public static String MQ_ACTION 						= "/dstone-mq/rabbitmq/**/*.do"; 					// RabbitMQ 액션
 	public static String WEBSOCKET_ACTION				= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "*/**";	// 웹소켓 액션
-	public static String KAKAO_PAGE 					= "/kakao/*.do"; 									// 카카오 액션
-	public static String GOOGLE_PAGE 					= "/google/**/*.do"; 								// 구글맵 액션
+	public static String KAKAO_ACTION 					= "/kakao/*.do"; 									// 카카오 액션
+	public static String GOOGLE_ACTION 					= "/google/**/*.do"; 								// 구글맵 액션
 	public static String REST_API	 					= "/restapi/**"; 									// Rest Api 수신
 	
 	public static String SWAGGER_UI	 					= "/swagger-ui.html/**"; 							// Swagger Ui
@@ -80,6 +93,9 @@ public class ConfigSecurity extends BaseObject{
 		
 		// 1. 크로스 사이트 요청 위조(CSRF) 방지설정
 		http.csrf(csrf -> csrf.disable());
+		http.securityContext(context -> 
+		    context.requireExplicitSave(false) // 자동 저장 활성화
+		);
 		// 2. 로그인처리 필터 필터체인에 삽입
 		http.addFilterAt(customUsernamePasswordAuthenticationFilter(authManager(http)), UsernamePasswordAuthenticationFilter.class);
 		// 3. URL별 권한설정
@@ -98,8 +114,11 @@ public class ConfigSecurity extends BaseObject{
 	        .deleteCookies("JSESSIONID", "remember-me") // JSESSIONID, remember-me 쿠키 삭제
 	        .permitAll()
 		);
-	    // 6. 접근제한처리 설정	
+	    // 6. 접근제한처리 설정
 		http.exceptionHandling(exceptionHandling -> exceptionHandling
+			// (Login)인증이 안 된 사용자가 보호된 자원에 접근할 때 호출됨.
+			.authenticationEntryPoint(acessEntryDeniedHandler())
+			// (Login)인증은 됐지만 권한이 부족한 경우 호출됨.
 			.accessDeniedHandler(acessDeniedHandler())
         );
 		// 7. 세션 설정
@@ -137,98 +156,108 @@ public class ConfigSecurity extends BaseObject{
 	public CustomAccessDeniedHandler acessDeniedHandler() {
 		return new CustomAccessDeniedHandler();
 	}
+	
+	@Bean
+	public CustomAccessEntryDeniedHandler acessEntryDeniedHandler() {
+		return new CustomAccessEntryDeniedHandler();
+	}
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
     }
 
 	protected void setAntMatchers(HttpSecurity http) throws Exception {
-		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authReq = http.authorizeRequests();
-		/*** 기본설정-권한허용자원 ***/
-		authReq.antMatchers(
-				
-			/*** 정적자원 ***/	
-			// CSS	
-			"/css/**"
-			, "/**/*.css"
-			, "/**/*.woff2"
-			// IMAGE
-			, "/images/**"
-			, "/**/*.bmp"
-			, "/**/*.jpg"
-			, "/**/*.gif"
-			, "/**/*.ico"
-			, "/**/*.png"
-			, "/**/*.tif"
-			// JS
-			, "/js/**"
-			, "/**/*.js"
-			// HTML
-			, "/html/**"
-			, "/**/*.html"
-			, "/**/*.htm"
-			// JSON
-			, "/**/*.json"
-			// Others
-			, "/csrf/**"
 
-			/*** 동적자원중 권한체크가 필요없는 자원들 ***/	
-			, "/views/login"
-			, "/test/**"
-			, "/analyzer/**"
-			, MAIN_PAGE
-			, LOGIN_PAGE
-			, LOGIN_GO_ACTION
-			, LOGIN_PROCESS_ACTION
-			, LOGIN_PROCESS_SUCCESS_ACTION
-			, LOGIN_PROCESS_FAILURE_ACTION
-			, LOGIN_CHECK_ACTION
-			, LOGOUT_ACTION
-			, LOGOUT_SUCCS_ACTION
-			, ERROR_URL_PATTERN
-			, PROXY_ACTION
-			, MQ_ACTION
-			, WEBSOCKET_ACTION
-			, KAKAO_PAGE
-			, GOOGLE_PAGE
-			, REST_API
-			
-			, SWAGGER_UI
-			, SWAGGER_RS
-			, SWAGGER_WJ
-			, SWAGGER_VA
+		http.authorizeHttpRequests(auth -> auth
+			.requestMatchers(
+				/*** 정적자원 ***/
+				new AntPathRequestMatcher("/*")	
+				,new AntPathRequestMatcher("/analyzer/**")	
+				,new AntPathRequestMatcher("/assets/**")	
+				,new AntPathRequestMatcher("/images/**")	
+				,new AntPathRequestMatcher("/js/**")
+				/*** 동적자원중 권한체크가 필요없는 자원들 ***/
+				,new AntPathRequestMatcher("/views/"+ MAIN_PAGE )
+				,new AntPathRequestMatcher("/views/"+ LOGIN_PAGE )
+				,new AntPathRequestMatcher("/views/common/**")
+				,new AntPathRequestMatcher("/views/test/**")
+				,new AntPathRequestMatcher("/views/analyzer/**")
+				,new AntPathRequestMatcher(LOGIN_GO_ACTION)
+				,new AntPathRequestMatcher(LOGIN_PROCESS_ACTION)
+				,new AntPathRequestMatcher(LOGIN_PROCESS_SUCCESS_ACTION)
+				,new AntPathRequestMatcher(LOGIN_PROCESS_FAILURE_ACTION)
+				,new AntPathRequestMatcher(LOGIN_CHECK_ACTION)
+				,new AntPathRequestMatcher(LOGOUT_ACTION)
+				,new AntPathRequestMatcher(LOGOUT_SUCCS_ACTION)
+				,new AntPathRequestMatcher(ACCESS_DENIED_ACTION)
+				,new AntPathRequestMatcher(ERROR_URL_PATTERN)
+				,new AntPathRequestMatcher(PROXY_ACTION)
+				,new AntPathRequestMatcher(MQ_ACTION)
+				,new AntPathRequestMatcher(WEBSOCKET_ACTION)
+				,new AntPathRequestMatcher(KAKAO_ACTION)
+				,new AntPathRequestMatcher(GOOGLE_ACTION)
+				,new AntPathRequestMatcher(REST_API)
+				,new AntPathRequestMatcher(SWAGGER_UI)
+				,new AntPathRequestMatcher(SWAGGER_RS)
+				,new AntPathRequestMatcher(SWAGGER_WJ)
+				,new AntPathRequestMatcher(SWAGGER_VA)
+			).permitAll()
+		);
 
-		).permitAll()
-		.mvcMatchers("/", "/index.html") // antMatchers 는 슬래쉬(/)로 끝나는 경우 제대로 검증하지 못하므로 루트(/)는 mvcMatchers를 사용한다.
-		.permitAll(); 
-		
-		/*** 기본설정-역할별URL DB설정(정적체크-Application기동시 한번만 전체설청 받아오는 경우) ***/
-		if(!IS_DYNAMIC_AUTH_CHECK) {
+		/*** 기본설정-역할별URL DB설정(정적체크-Application기동시 한번만 전체설정 받아오는 경우) ***/
+		if (!IS_DYNAMIC_AUTH_CHECK) {
 			List<Map<String, Object>> list = customUserService.selectListUrlAndRole(null);
 			HashMap<String, ArrayList<String>> urlRolesMap = new HashMap<String, ArrayList<String>>();
+
 			for (Map<String, Object> m : list) {
 				String url = m.get("PROG_URL").toString();
 				String role = m.get("ROLE_ID").toString();
-				if(!urlRolesMap.containsKey(url)) {
+				if (!urlRolesMap.containsKey(url)) {
 					urlRolesMap.put(url, new ArrayList<String>());
 				}
 				ArrayList<String> roleList = urlRolesMap.get(url);
-				if(!roleList.contains(role)) {
+				if (!roleList.contains(role)) {
 					roleList.add(role);
 				}
 			}
+
 			Iterator<String> keyUrl = urlRolesMap.keySet().iterator();
-			while(keyUrl.hasNext()) {
+			while (keyUrl.hasNext()) {
 				String url = keyUrl.next();
 				ArrayList<String> roleList = urlRolesMap.get(url);
 				String[] roles = new String[roleList.size()];
 				roleList.toArray(roles);
-				authReq.antMatchers(url).hasAnyAuthority(roles);
+				// hasAnyAuthority 대신 hasAnyRole 사용 (동일하게 유지 가능)
+				http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher(url)).hasAnyRole(roles));
 			}
-			authReq.anyRequest().authenticated();
+			http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+
 		/*** 기본설정-역할별URL DB설정(동적체크-URL호출시마다 DB체크하는 경우) ***/
-		}else {
-			authReq.anyRequest().access("@customAuthChecker.check(request, authentication)");
+		} else {
+			
+//			http.authorizeHttpRequests(auth -> auth.anyRequest().access(new WebExpressionAuthorizationManager("@customAuthChecker.check(request, authentication)")));
+			
+			http.authorizeHttpRequests(auth -> auth.anyRequest().access((authentication, context) -> {
+	        	HttpServletRequest request = context.getRequest();
+	        	boolean result = false;
+	            try {
+	            	
+	            	if( request.getSession() != null && request.getSession().getAttribute(SessionListener.USER_LOGIN_SESSION_KEY) != null ) {
+	            		result = customAuthChecker.check(request, authentication.get());
+	            		if( result ) {
+	            			return new AuthorizationDecision(result);
+	            		}else {
+	            			throw new AccessDeniedException("권한이 없습니다.");
+	            		}
+	            	}else {
+	            		// (Login)인증이 안 된 경우
+	            		return new AuthorizationDecision(false);
+	            	}
+	            } catch (Exception e) {
+	            	// (Login)인증이 안 된 경우
+	            	return new AuthorizationDecision(false);
+	            }
+	        }));
 		}
 	}
 }
