@@ -235,26 +235,29 @@ public class ConfigSecurity extends BaseObject{
 		/*** 기본설정-역할별URL DB설정(동적체크-URL호출시마다 DB체크하는 경우) ***/
 		} else {
 			
-//			http.authorizeHttpRequests(auth -> auth.anyRequest().access(new WebExpressionAuthorizationManager("@customAuthChecker.check(request, authentication)")));
-			
 			http.authorizeHttpRequests(auth -> auth.anyRequest().access((authentication, context) -> {
 	        	HttpServletRequest request = context.getRequest();
 	        	boolean result = false;
 	            try {
-	            	
+	            	// (Login)인증 체크
 	            	if( request.getSession() != null && request.getSession().getAttribute(SessionListener.USER_LOGIN_SESSION_KEY) != null ) {
+	            		// (Login)인증 된 경우 자원에 대한 권한 체크
 	            		result = customAuthChecker.check(request, authentication.get());
+	            		// (Login)인증 되었고 자원 권한이 있는 경우
 	            		if( result ) {
-	            			return new AuthorizationDecision(result);
+	            			// 권한인증 통과
+	            			return new AuthorizationDecision(true);
+	            		// (Login)인증 되었으나 자원 권한이 없는 경우	
 	            		}else {
+	            			// 권한인증 미통과 acessDeniedHandler(에러페이지) 를 호출하도록 유도
 	            			throw new AccessDeniedException("권한이 없습니다.");
 	            		}
 	            	}else {
-	            		// (Login)인증이 안 된 경우
+	            		// (Login)인증이 안 된 경우 acessEntryDeniedHandler(로그인페이지) 를 호출하도록 유도
 	            		return new AuthorizationDecision(false);
 	            	}
 	            } catch (Exception e) {
-	            	// (Login)인증이 안 된 경우
+	            	// 디폴트 페이지  acessEntryDeniedHandler(로그인페이지) 를 호출하도록 유도
 	            	return new AuthorizationDecision(false);
 	            }
 	        }));
