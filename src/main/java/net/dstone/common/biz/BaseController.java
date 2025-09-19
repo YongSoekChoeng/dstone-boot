@@ -429,17 +429,13 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 		response.setHeader("errCd", errCd.getErrCd());
 		try {
 			if( RequestUtil.isAjax(request) ) {
-				//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
-				//encodedStr = encodedStr.replaceAll("\\+", "%20");
 				String encodedStr = errCd.getErrMsg();
 				encodedStr = URLEncoder.encode(encodedStr, StandardCharsets.UTF_8.name()); 
 				encodedStr = encodedStr.replaceAll("\\+", "%20");
 				response.setHeader("errMsg", encodedStr);
 			}else {			
-				//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
 				String encodedStr = errCd.getErrMsg();
 				encodedStr = Base64Util.encodeString(encodedStr);
-				encodedStr = encodedStr.replaceAll("\\+", "%20");
 				response.setHeader("errMsg", encodedStr);
 			}
 		} catch (Exception e) {
@@ -456,17 +452,13 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 			response.setHeader("errCd", errCd.getErrCd());
 			try {
 				if( RequestUtil.isAjax(request) ) {
-					//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
-					//encodedStr = encodedStr.replaceAll("\\+", "%20");
 					String encodedStr = errCd.getErrMsg();
 					encodedStr = URLEncoder.encode(encodedStr, StandardCharsets.UTF_8.name()); 
 					encodedStr = encodedStr.replaceAll("\\+", "%20");
 					response.setHeader("errMsg", encodedStr);
 				}else {			
-					//String encodedStr = Base64.getEncoder().encodeToString(errCd.getErrMsg().getBytes(StandardCharsets.UTF_8));
 					String encodedStr = errCd.getErrMsg();
 					encodedStr = Base64Util.encodeString(encodedStr);
-					encodedStr = encodedStr.replaceAll("\\+", "%20");
 					response.setHeader("errMsg", encodedStr);
 				}
 			} catch (Exception e) {
