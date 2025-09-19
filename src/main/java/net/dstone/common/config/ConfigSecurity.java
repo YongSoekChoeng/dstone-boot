@@ -249,15 +249,15 @@ public class ConfigSecurity extends BaseObject{
 	            			return new AuthorizationDecision(true);
 	            		// (Login)인증 되었으나 자원 권한이 없는 경우	
 	            		}else {
-	            			// 권한인증 미통과 acessDeniedHandler(에러페이지) 를 호출하도록 유도
+	            			// 권한인증 미통과 ExceptionHandlingConfigurer.accessDeniedHandler()-에러페이지 를 호출하도록 유도
 	            			throw new AccessDeniedException("권한이 없습니다.");
 	            		}
 	            	}else {
-	            		// (Login)인증이 안 된 경우 acessEntryDeniedHandler(로그인페이지) 를 호출하도록 유도
+	            		// (Login)인증이 안 된 경우 ExceptionHandlingConfigurer.authenticationEntryPoint()-로그인페이지 를 호출하도록 유도
 	            		return new AuthorizationDecision(false);
 	            	}
 	            } catch (Exception e) {
-	            	// 디폴트 페이지  acessEntryDeniedHandler(로그인페이지) 를 호출하도록 유도
+	            	// 디폴트 페이지  ExceptionHandlingConfigurer.authenticationEntryPoint()-로그인페이지 를 호출하도록 유도
 	            	return new AuthorizationDecision(false);
 	            }
 	        }));
