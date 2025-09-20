@@ -25,6 +25,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -513,4 +514,15 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 		return viewlevel1 + "/" + viewlevel2 + "/" + viewlevel3 + "/" + viewlevel4;
 	}
 
+	/**
+	 * 브라우져 더미요청 처리
+	 * 크롬, 사파리, 엣지 등 대부분의 브라우저는 사이트를 방문하면 자동으로 /favicon.ico 요청을 보냅니다.(특별히 설정하지 않아도 무조건 요청합니다.)
+	 * 예전에는 단순히 404 Not Found 로 내려갔는데, Spring Boot 3.x부터는 NoResourceFoundException 을 발생시켜 로그에 찍히도록 바뀌었습니다.
+	 */
+    @RequestMapping("favicon.ico")
+    @ResponseBody
+    void favicon() {
+        // 아무것도 반환하지 않음 -> 에러로그 발생 안 함
+    }
+    
 }
