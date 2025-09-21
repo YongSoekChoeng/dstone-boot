@@ -43,7 +43,7 @@ public class CustomAuthChecker extends BaseObject {
 					for(Map<String, Object> row : authList) {
 						progUrl = row.get("PROG_URL").toString();
 						isMatched = new AntPathMatcher().match(progUrl, requestUri);
-						//logger.debug(this.getClass().getName() + ".match() ===================>>>requestUri["+requestUri+"] progUrl["+progUrl+"] isMatched["+isMatched+"]" );
+						this.sysout(this.getClass().getName() + ".match() ===================>>>requestUri["+requestUri+"] progUrl["+progUrl+"] isMatched["+isMatched+"]" );
 						if (isMatched) {
 							isAuthorized = true;
 							break;
