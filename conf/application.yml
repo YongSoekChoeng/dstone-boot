@@ -73,6 +73,17 @@ spring:
                 jndi-lookup-name: java:comp/env/xe
             networks: 
                 - backend
+        sample-postgresql: 
+            hikari: 
+                driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+                jdbc-url: jdbc:log4jdbc:postgresql://localhost:5432/postgres
+                username: ENC(RnMQjHJ0qA/1SU6Z9qbcgB8sKFgs2jLQem/M+1+yhY8=)
+                password: ENC(Xo2vTpA77ch03obc64y7cBQQT90e37qG5qHOZCkyDmc=)
+                maximum-pool-size: 50
+                use-jndi-lookup: N
+                jndi-lookup-name: java:comp/env/postgres
+            networks: 
+                - backend
         analyzer:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy

@@ -164,7 +164,51 @@ public class ConfigTransaction extends BaseObject{
 	}
 
 	/********************************************************************************
-	4. Analyzer 관련 설정
+	4. Sample-Postgresql 관련 설정
+	********************************************************************************/
+	@Bean(name = "txManagerSamplePostgresql")
+	public DataSourceTransactionManager txManagerSamplePostgresql(@Qualifier("dataSourceSamplePostgresql") DataSource dataSourceSamplePostgresql) {
+		DataSourceTransactionManager txManagerSamplePostgresql = new DataSourceTransactionManager(dataSourceSamplePostgresql);
+		return txManagerSamplePostgresql;
+	}
+
+	@Bean(name = "txAdviceSamplePostgresql")
+	public TransactionInterceptor txAdviceSamplePostgresql(DataSourceTransactionManager txManagerSamplePostgresql) {
+	    TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+		Properties txAttributes = new Properties();
+		List<RollbackRuleAttribute> rollbackRules = new ArrayList<RollbackRuleAttribute>();
+		/** If need to add additionall exception, add here **/
+		rollbackRules.add(new RollbackRuleAttribute(Exception.class));
+		// read-only
+		DefaultTransactionAttribute readOnlyAttribute = new DefaultTransactionAttribute( TransactionDefinition.PROPAGATION_SUPPORTS);
+		readOnlyAttribute.setReadOnly(true);
+		readOnlyAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String readOnlyTransactionAttributesDefinition = readOnlyAttribute.toString();
+		txAttributes.setProperty("get*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("select*", readOnlyTransactionAttributesDefinition);
+		txAttributes.setProperty("list*", readOnlyTransactionAttributesDefinition);
+		// write rollback-rule
+		RuleBasedTransactionAttribute writeAttribute = new RuleBasedTransactionAttribute( TransactionDefinition.PROPAGATION_REQUIRED, rollbackRules);
+		writeAttribute.setTimeout(TX_METHOD_TIMEOUT);
+		String writeTransactionAttributesDefinition = writeAttribute.toString();
+		txAttributes.setProperty("insert*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("update*", writeTransactionAttributesDefinition);
+		txAttributes.setProperty("delete*", writeTransactionAttributesDefinition);
+		
+		transactionInterceptor.setTransactionAttributes(txAttributes);
+		transactionInterceptor.setTransactionManager(txManagerSamplePostgresql);
+	    return transactionInterceptor;
+	}
+
+	@Bean(name = "txAdvisorSamplePostgresql")
+	public Advisor txAdvisorSamplePostgresql(@Qualifier("txManagerSamplePostgresql") DataSourceTransactionManager txManagerSamplePostgresql) {
+		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
+		return new DefaultPointcutAdvisor(pointcut, txAdviceSample(txManagerSamplePostgresql));
+	}
+
+	/********************************************************************************
+	5. Analyzer 관련 설정
 	********************************************************************************/
 	@Bean(name = "txManagerAnalyzer")
 	public DataSourceTransactionManager txManagerAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) {

@@ -144,6 +144,11 @@
             <scope>system</scope>
             <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc8-12.2.0.1.jar</systemPath>
         </dependency>	
+        <dependency>
+		    <groupId>org.postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+		    <version>42.7.7</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId><!-- JNDI설정을 위한 dbcp -->

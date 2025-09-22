@@ -1,4 +1,4 @@
-package net.dstone.common;
+package net.dstone.common.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +27,13 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.exception.resolver.DsExceptionResolver;
 import net.dstone.common.utils.LogUtil;
 
 @Configuration
-public class DstoneWebMvcConfig extends WebMvcConfigurationSupport {
+public class ConfigWebMvc  extends WebMvcConfigurationSupport {
 
-	private static final LogUtil logger = new LogUtil(DstoneWebMvcConfig.class);
+	private static final LogUtil logger = new LogUtil(ConfigWebMvc.class);
 	
 	@Autowired 
 	ConfigProperty configProperty; // 프로퍼티 가져오는 bean

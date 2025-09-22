@@ -49,6 +49,16 @@ public class ConfigDatasource extends BaseObject{
     	}
     }
 
+    @Bean(name = "dataSourceSamplePostgresql")
+    @ConfigurationProperties("spring.datasource.sample-postgresql.hikari")
+    public DataSource dataSourceSamplePostgresql() {
+    	if( "Y".equals(configProperty.getProperty("use-jndi-lookup")) ) {
+    		return (new JndiDataSourceLookup()).getDataSource(configProperty.getProperty("jndi-lookup-name"));
+    	}else {
+    		return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    	}
+    }
+
     @Bean(name = "dataSourceAnalyzer")
     @ConfigurationProperties("spring.datasource.analyzer.hikari")
     public DataSource dataSourceAnalyzer() {
