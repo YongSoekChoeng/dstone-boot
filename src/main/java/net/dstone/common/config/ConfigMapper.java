@@ -57,6 +57,20 @@ public class ConfigMapper extends BaseObject{
 		return new SqlSessionTemplate(sqlSessionFactorySampleOracle);
 	}
 
+	@Bean(name = "sqlSessionFactorySamplePostgresql")
+	public SqlSessionFactory sqlSessionFactorySamplePostgresql(@Qualifier("dataSourceSamplePostgresql") DataSource dataSourceSamplePostgresql) throws Exception {
+		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();
+		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+		bean.setDataSource(dataSourceSamplePostgresql);
+		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
+		return bean.getObject();
+	}
+	@Bean(name = "sqlSessionSamplePostgresql")
+	public SqlSessionTemplate sqlSessionSamplePostgresql(@Qualifier("sqlSessionFactorySamplePostgresql") SqlSessionFactory sqlSessionFactorySamplePostgresql) {
+		return new SqlSessionTemplate(sqlSessionFactorySamplePostgresql);
+	}
+
 	@Bean(name = "sqlSessionFactoryAnalyzer")
 	public SqlSessionFactory sqlSessionFactoryAnalyzer(@Qualifier("dataSourceAnalyzer") DataSource dataSourceAnalyzer) throws Exception {
 		PathMatchingResourcePatternResolver pmrpr = new PathMatchingResourcePatternResolver();

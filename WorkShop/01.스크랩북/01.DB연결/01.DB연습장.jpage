@@ -1,17 +1,17 @@
 
-String DBID = "DBID_3";
+String DBID = "DBID_0";
 net.dstone.common.utils.DbUtil db = null;
 net.dstone.common.utils.DataSet ds = new net.dstone.common.utils.DataSet();
 
 StringBuffer sql = new StringBuffer();
-String TABLE_NAME = "TB_RP_REL_PRSN_M";
+String TABLE_NAME = "SAMPLE_MEMBER";
 net.dstone.common.utils.DateUtil.stopWatchStart("연습장");
 try {
 	sql.append("SELECT ").append("\n"); 
 	sql.append("	* ").append("\n");
 	sql.append("FROM  ").append("\n");
 	sql.append("	" + TABLE_NAME + "  ").append("\n");
-	sql.append("WHERE 1=1 ").append("\n");	sql.append("AND ROWNUM < 10 ").append("\n");	
+	sql.append("WHERE 1=1 ").append("\n");	//sql.append("AND ROWNUM < 10 ").append("\n");	
 	db = new net.dstone.common.utils.DbUtil(DBID);
 	db.getConnection();
 	db.setQuery(sql.toString());
