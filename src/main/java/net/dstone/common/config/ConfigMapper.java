@@ -1,7 +1,13 @@
 package net.dstone.common.config;
 
+import java.util.Map;
+
 import javax.sql.DataSource;
 
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.wrapper.MapWrapper;
+import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
+import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -21,7 +27,8 @@ public class ConfigMapper extends BaseObject{
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
 		bean.setDataSource(dataSourceCommon);
 		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
-		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/common/**/*Dao.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/**/*Dao.xml"));
+		bean.setObjectWrapperFactory(upperCaseObjectWrapperFactory());
 		return bean.getObject();
 	}
 	@Bean(name = "sqlSessionCommon")
@@ -35,7 +42,8 @@ public class ConfigMapper extends BaseObject{
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
 		bean.setDataSource(dataSourceSample);
 		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
-		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/**/*Dao.xml"));
+		bean.setObjectWrapperFactory(upperCaseObjectWrapperFactory());
 		return bean.getObject();
 	}
 	@Bean(name = "sqlSessionSample")
@@ -49,7 +57,8 @@ public class ConfigMapper extends BaseObject{
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
 		bean.setDataSource(dataSourceSampleOracle);
 		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
-		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/**/*Dao.xml"));
+		bean.setObjectWrapperFactory(upperCaseObjectWrapperFactory());
 		return bean.getObject();
 	}
 	@Bean(name = "sqlSessionSampleOracle")
@@ -63,7 +72,8 @@ public class ConfigMapper extends BaseObject{
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
 		bean.setDataSource(dataSourceSamplePostgresql);
 		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
-		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/sample/**/*Dao.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/**/*Dao.xml"));
+		bean.setObjectWrapperFactory(upperCaseObjectWrapperFactory());
 		return bean.getObject();
 	}
 	@Bean(name = "sqlSessionSamplePostgresql")
@@ -77,7 +87,8 @@ public class ConfigMapper extends BaseObject{
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
 		bean.setDataSource(dataSourceAnalyzer);
 		bean.setConfigLocation(pmrpr.getResource("classpath:/sqlmap/sql-mapper-config.xml"));
-		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/analyzer/**/*Dao.xml"));
+		bean.setMapperLocations(pmrpr.getResources("classpath:/sqlmap/**/*Dao.xml"));
+		bean.setObjectWrapperFactory(upperCaseObjectWrapperFactory());
 		return bean.getObject();
 	}
 	@Bean(name = "sqlSessionAnalyzer")
@@ -85,4 +96,28 @@ public class ConfigMapper extends BaseObject{
 		return new SqlSessionTemplate(sqlSessionFactoryAnalyzer);
 	}
 
+	@Bean
+	public ObjectWrapperFactory upperCaseObjectWrapperFactory() {
+		ObjectWrapperFactory wrrapper = new ObjectWrapperFactory() {
+			@Override
+			public boolean hasWrapperFor(Object object) {
+				boolean hasWrappe = false;
+				if( object instanceof Map ) {
+					hasWrappe = true;
+				}
+				return hasWrappe;
+			}
+			@Override
+			public ObjectWrapper getWrapperFor(MetaObject metaObject, Object object) {
+				return new MapWrapper(metaObject, (Map)object) {
+					@Override
+					public String findProperty(String name, boolean useCamelCaseMapping) {
+						return name.toUpperCase();
+					}
+				};
+			}
+		};
+		return wrrapper;
+	}
+	
 }
