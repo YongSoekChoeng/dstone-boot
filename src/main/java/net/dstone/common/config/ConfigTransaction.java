@@ -160,7 +160,7 @@ public class ConfigTransaction extends BaseObject{
 	public Advisor txAdvisorSampleOracle(@Qualifier("txManagerSampleOracle") DataSourceTransactionManager txManagerSampleOracle) {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
-		return new DefaultPointcutAdvisor(pointcut, txAdviceSample(txManagerSampleOracle));
+		return new DefaultPointcutAdvisor(pointcut, txAdviceSampleOracle(txManagerSampleOracle));
 	}
 
 	/********************************************************************************
@@ -204,7 +204,7 @@ public class ConfigTransaction extends BaseObject{
 	public Advisor txAdvisorSamplePostgresql(@Qualifier("txManagerSamplePostgresql") DataSourceTransactionManager txManagerSamplePostgresql) {
 		AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 		pointcut.setExpression(AOP_POINTCUT_EXPRESSION);
-		return new DefaultPointcutAdvisor(pointcut, txAdviceSample(txManagerSamplePostgresql));
+		return new DefaultPointcutAdvisor(pointcut, txAdviceSamplePostgresql(txManagerSamplePostgresql));
 	}
 
 	/********************************************************************************
