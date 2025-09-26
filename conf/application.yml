@@ -1,12 +1,12 @@
 server: 
-    port: 7081
-    connection-timeout: 10s
+    port: 7081    
     tomcat: 
         accept-count: 100
         max-connections: 10000
         max-threads: 200
         min-spare-threads: 10
         max-swallow-size: 2MB
+        connection-timeout: 15s
     error: 
         whitelabel: 
             enabled: true
@@ -95,13 +95,6 @@ spring:
                 jndi-lookup-name: java:comp/env/analyze
             networks: 
                 - backend
-    security: 
-        enabled: true
-    # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)
-    swagger: 
-        enabled: false
-    websocket: 
-        enabled: false
     rabbitmq: 
         enabled: false
         host: localhost
@@ -118,7 +111,18 @@ spring:
                 exchange-id: app.direct.exchange
                 queue-id: app.orders.queue
                 routing-key: orders.process
-
+    redis: 
+        host: localhost
+        port: 6379
+        timeout: 10000
+    security: 
+        enabled: true
+    # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)
+    swagger: 
+        enabled: false
+    websocket: 
+        enabled: false
+        
 resources: 
     fileUp: 
         path: D:/Temp

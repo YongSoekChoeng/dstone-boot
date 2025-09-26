@@ -16,6 +16,7 @@ import net.dstone.common.core.BaseObject;
 	ConfigMapper.class,
 	ConfigMq.class,
 	ConfigProperty.class,
+	ConfigRedis.class,
 	ConfigSecurity.class,
 	ConfigSwagger.class,
 	ConfigTransaction.class,
