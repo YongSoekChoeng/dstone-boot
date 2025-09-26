@@ -41,7 +41,7 @@ public class CustomAuthenticationProvider extends BaseObject implements Authenti
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String user_id = (String)authentication.getPrincipal();    
         String user_pw = (String)authentication.getCredentials();
-        this.info("사용자가 입력한 로그인정보입니다. {" + user_id + "/" + user_pw +"}");
+        this.debug("사용자가 입력한 로그인정보입니다. {" + user_id + "/" + user_pw +"}");
         
         Map<String, String> param = new HashMap<String, String>();
         param.put(ConfigSecurity.USERNAME_PARAMETER, user_id);

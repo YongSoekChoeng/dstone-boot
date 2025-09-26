@@ -18,7 +18,7 @@ public class CustomAccessDeniedHandler extends BaseObject implements AccessDenie
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
-    	this.info(this.getClass().getName() + ".handle() =================>>>> has been called !!!");
+    	this.debug(this.getClass().getName() + ".handle() =================>>>> has been called !!!");
     	BaseController.setErrCd(request, response, ErrCd.ACCESS_DENIED);
     	String deniedUrl = ConfigSecurity.ACCESS_DENIED_ACTION;
     	request.getRequestDispatcher(deniedUrl).forward(request, response);

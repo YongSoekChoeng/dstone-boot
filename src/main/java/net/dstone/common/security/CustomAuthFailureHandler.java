@@ -23,6 +23,7 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    	logger.debug(this.getClass().getName() + ".onAuthenticationFailure() =================>>>> has been called !!!");
         SecException secException = null;
         if(exception instanceof SecException){
         	secException = (SecException)exception;

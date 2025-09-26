@@ -17,7 +17,7 @@ public class CustomAccessEntryDeniedHandler extends BaseObject implements Authen
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 		String requestUri = request.getRequestURI();
-    	this.info(this.getClass().getName() + ".commence(requestUri["+requestUri+"]) =================>>>> has been called !!!");
+    	this.debug(this.getClass().getName() + ".commence(requestUri["+requestUri+"]) =================>>>> has been called !!!");
     	//request.getRequestDispatcher(ConfigSecurity.LOGIN_GO_ACTION).forward(request, response);
     	response.sendRedirect(ConfigSecurity.LOGIN_GO_ACTION);
 	}

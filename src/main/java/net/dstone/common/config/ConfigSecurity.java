@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -59,12 +60,13 @@ public class ConfigSecurity extends BaseObject{
 	public static String LOGIN_PROCESS_FAILURE_ACTION 	= "/com/login/loginProcessFailure.do";				// 로그인 처리 실패시 진행될 액션
 	public static String LOGOUT_ACTION 					= "/com/login/logout.do";							// 로그아웃 처리 액션
 	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";					// 로그아웃 처리 성공시 진행될 액션
-	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do"; 					// 접근권한이 없을 시 진행될 액션
+	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do";						// 접근권한이 없을 시 진행될 액션
 	public static String PROXY_ACTION 					= "/proxy.do"; 										// 프락시 액션
 	public static String MQ_ACTION 						= "/dstone-mq/rabbitmq/**/*.do"; 					// RabbitMQ 액션
 	public static String WEBSOCKET_ACTION				= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "*/**";	// 웹소켓 액션
-	public static String KAKAO_ACTION 					= "/kakao/*.do"; 									// 카카오 액션
-	public static String GOOGLE_ACTION 					= "/google/**/*.do"; 								// 구글맵 액션
+	public static String KAKAO_ACTION 					= "/kakao/*.do";									// 카카오 액션
+	public static String GOOGLE_ACTION 					= "/google/**/*.do";								// 구글맵 액션
+	public static String TEST_ACTION 					= "/test/**/*.do";									// 테스트 액션
 	public static String REST_API	 					= "/restapi/**"; 									// Rest Api 수신
 	
 	public static String SWAGGER_UI	 					= "/swagger-ui.html/**"; 							// Swagger Ui
@@ -182,6 +184,7 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher("/views/common/**")
 				,new AntPathRequestMatcher("/views/test/**")
 				,new AntPathRequestMatcher("/views/analyzer/**")
+				
 				,new AntPathRequestMatcher(LOGIN_GO_ACTION)
 				,new AntPathRequestMatcher(LOGIN_PROCESS_ACTION)
 				,new AntPathRequestMatcher(LOGIN_PROCESS_SUCCESS_ACTION)
@@ -196,6 +199,7 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher(WEBSOCKET_ACTION)
 				,new AntPathRequestMatcher(KAKAO_ACTION)
 				,new AntPathRequestMatcher(GOOGLE_ACTION)
+				,new AntPathRequestMatcher(TEST_ACTION)
 				,new AntPathRequestMatcher(REST_API)
 				,new AntPathRequestMatcher(SWAGGER_UI)
 				,new AntPathRequestMatcher(SWAGGER_RS)
@@ -240,7 +244,9 @@ public class ConfigSecurity extends BaseObject{
 	        	boolean result = false;
 	            try {
 	            	// (Login)인증 체크
-	            	if( request.getSession() != null && request.getSession().getAttribute(SessionListener.USER_LOGIN_SESSION_KEY) != null ) {
+	            	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	            	// (Login)인증 되었을 경우
+	            	if(principal !="anonymousUser" ) {
 	            		// (Login)인증 된 경우 자원에 대한 권한 체크
 	            		result = customAuthChecker.check(request, authentication.get());
 	            		// (Login)인증 되었고 자원 권한이 있는 경우
@@ -252,6 +258,7 @@ public class ConfigSecurity extends BaseObject{
 	            			// 권한인증 미통과 ExceptionHandlingConfigurer.accessDeniedHandler()-에러페이지 를 호출하도록 유도
 	            			throw new AccessDeniedException("권한이 없습니다.");
 	            		}
+		            // (Login)인증이 안 된 경우
 	            	}else {
 	            		// (Login)인증이 안 된 경우 ExceptionHandlingConfigurer.authenticationEntryPoint()-로그인페이지 를 호출하도록 유도
 	            		return new AuthorizationDecision(false);

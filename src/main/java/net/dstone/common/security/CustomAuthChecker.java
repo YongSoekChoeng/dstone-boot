@@ -43,7 +43,7 @@ public class CustomAuthChecker extends BaseObject {
 					for(Map<String, Object> row : authList) {
 						progUrl = row.get("PROG_URL").toString();
 						isMatched = new AntPathMatcher().match(progUrl, requestUri);
-						this.sysout(this.getClass().getName() + ".match() ===================>>>requestUri["+requestUri+"] progUrl["+progUrl+"] isMatched["+isMatched+"]" );
+						//this.debug(this.getClass().getName() + ".match() ===================>>>requestUri["+requestUri+"] progUrl["+progUrl+"] isMatched["+isMatched+"]" );
 						if (isMatched) {
 							isAuthorized = true;
 							break;
@@ -55,7 +55,12 @@ public class CustomAuthChecker extends BaseObject {
 				}
 			}
 		}
-		this.sysout(this.getClass().getName() + ".check() ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
+		if(isAuthorized) {
+			this.debug(this.getClass().getName() + ".check() is authorized !!! ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
+		}else {
+			this.info(this.getClass().getName() + ".check() not authorized !!! ===================>>> principalObj["+principalObj+"] roles["+roles+"] requestUri["+requestUri+"]  isAuthorized["+isAuthorized+"]" );
+		}
+		
 		/****************************************************/
 		
 		return isAuthorized;

@@ -27,11 +27,11 @@ public class CustomAuthSucessHandler extends SimpleUrlAuthenticationSuccessHandl
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException, SecException {
-        logger.info(this.getClass().getName() + ".onAuthenticationSuccess() =================>>>> has been called !!!");
+        logger.debug(this.getClass().getName() + ".onAuthenticationSuccess() =================>>>> has been called !!!");
         
     	// Do Something here !
         CustomUserDetails userDetails = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getDetails();
-        logger.info("Welcome login_success! session.getId() : " + request.getSession().getId() + " userDetails.getUsername():" + userDetails.getUsername() + " userDetails.getPassword():" + userDetails.getPassword());
+        logger.debug("Welcome login_success! session.getId() : " + request.getSession().getId() + " userDetails.getUsername():" + userDetails.getUsername() + " userDetails.getPassword():" + userDetails.getPassword());
         
         // 중복로그인 방지(먼저 로그인 한 세션을 삭제)
         SessionListener.getSessionidCheck(userDetails.getUsername());
