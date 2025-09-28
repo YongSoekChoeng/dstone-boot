@@ -184,6 +184,8 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher("/views/common/**")
 				,new AntPathRequestMatcher("/views/test/**")
 				,new AntPathRequestMatcher("/views/analyzer/**")
+				,new AntPathRequestMatcher("/views/sample/google/**")
+				,new AntPathRequestMatcher("/views/websocket/**")
 				
 				,new AntPathRequestMatcher(LOGIN_GO_ACTION)
 				,new AntPathRequestMatcher(LOGIN_PROCESS_ACTION)
