@@ -315,8 +315,6 @@
 		    <groupId>org.bouncycastle</groupId>
 		    <artifactId>bcprov-jdk18on</artifactId>
 		    <version>1.75</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/bcprov-ext-jdk18on-175.jar</systemPath>
 		</dependency>
 		
 		<!-- Mail -->
