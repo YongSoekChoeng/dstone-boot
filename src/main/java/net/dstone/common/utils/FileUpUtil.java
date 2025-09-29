@@ -1,93 +1,134 @@
 package net.dstone.common.utils;
 
 import java.io.File;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import com.oreilly.servlet.MultipartRequest;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import net.dstone.common.config.ConfigProperty;
+
+
+@Component
 public class FileUpUtil {
 
-	class FileRenamePolicy implements com.oreilly.servlet.multipart.FileRenamePolicy {
-		public java.io.File rename(java.io.File f) {
-			String path = "";
-			String fileName = "";
-			String fileNewName = "";
-			String fileExt = "";
-			java.io.File reFile = null;
-			try {
-				path = f.getParent();
-				fileName = f.getName();
-				fileExt = FileUtil.getFileExt(fileName);
-				fileNewName = (new net.dstone.common.utils.GuidUtil()).getNewGuid() + "." + fileExt;
-				reFile = new java.io.File(path + "/" + fileNewName);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			return reFile;
-		}
-	}
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 
-	private MultipartRequest multiRequest;
-	private java.util.Properties uploadInfo = new java.util.Properties();
+	private Map<String, List<String>> parameters = new HashMap<>();
+	private Map<String, FileItem> fileItems = new HashMap<>();
+	private Properties uploadInfo = new Properties();
 	private boolean isMultiPart = false;
 	private HttpServletRequest request;
-	private String encoding = "utf-8"; // utf-8 euc-kr 환경에 맞게 수정.
+	private String encoding = "utf-8";
 
 	public FileUpUtil(HttpServletRequest request) throws Exception {
-		java.util.ArrayList<java.util.Properties> uploadList = new java.util.ArrayList<java.util.Properties>();
-		String FILEUP_WEB_DIR = net.dstone.common.utils.PropUtil.getInstance().getProp("app", "FILEUP_WEB_DIR");
+		this.request = request;
+		ArrayList<Properties> uploadList = new ArrayList<>();
+		String FILEUP_WEB_DIR = configProperty.getProperty("resources.fileUp.path");
+		
 		try {
-
-			if ((request.getHeader("Content-Type") != null) && (request.getHeader("Content-Type").toUpperCase().indexOf("MULTIPART") != -1)) {
-				isMultiPart = true;
-			}
+			// Multipart 요청 체크
+			isMultiPart = ServletFileUpload.isMultipartContent(request);
+			
 			int maxPostSize = 15 * 1024 * 1024; // 15MB
 			String saveDirectory = FILEUP_WEB_DIR;
 			net.dstone.common.utils.FileUtil.makeDir(saveDirectory);
+			
 			uploadInfo.put("SAVE_DIRECTORY", saveDirectory);
 			uploadInfo.put("MAX_POST_SIZE", String.valueOf(maxPostSize));
 			uploadInfo.put("UPLOAD_LIST", uploadList);
-
+			
 			request.setAttribute("uploadInfo", uploadInfo);
-
+			
 			if (isMultiPart) {
-
-				multiRequest = new MultipartRequest(request, saveDirectory, maxPostSize, encoding, new net.dstone.common.utils.FileUpUtil.FileRenamePolicy());
-				Enumeration formNames = multiRequest.getFileNames(); // 폼의 이름 반환
-				String fileInput = "";
-				String fileName = "";
-				String type = "";
-				File fileObj = null;
-				String originFileName = "";
-				String fileExtend = "";
-				String fileSize = "";
-				while (formNames.hasMoreElements()) {
-					java.util.Properties uploadFileRow = new java.util.Properties();
-					fileInput = (String) formNames.nextElement(); // 파일인풋 이름
-					fileName = multiRequest.getFilesystemName(fileInput); // 파일명
-					if (fileName == null) {
-						continue;
+				// DiskFileItemFactory 설정
+				DiskFileItemFactory factory = new DiskFileItemFactory();
+				// 메모리에 저장할 최대 크기 (이를 초과하면 임시 파일로 저장)
+				factory.setSizeThreshold(1024 * 1024); // 1MB
+				// 임시 파일 저장 디렉토리
+				String tmpDri = System.getProperty("java.io.tmpdir") + "/" + DateUtil.getToDate("yyyyMMddHHmmss");
+				factory.setRepository(new File(tmpDri));
+				
+				// ServletFileUpload 설정
+				ServletFileUpload upload = new ServletFileUpload(factory);
+				upload.setFileSizeMax(maxPostSize); // 개별 파일 최대 크기
+				upload.setSizeMax(maxPostSize); // 전체 요청 최대 크기
+				upload.setHeaderEncoding(encoding);
+				
+				// 파일 업로드 파싱
+				List<FileItem> items = upload.parseRequest(request);
+				
+				for (FileItem item : items) {
+					if (item.isFormField()) {
+						// 일반 폼 필드 처리
+						String fieldName = item.getFieldName();
+						String fieldValue = item.getString(encoding);
+						
+						if (!parameters.containsKey(fieldName)) {
+							parameters.put(fieldName, new ArrayList<>());
+						}
+						parameters.get(fieldName).add(fieldValue);
+					} else {
+						// 파일 필드 처리
+						String fieldName = item.getFieldName();
+						String fileName = item.getName();
+						
+						if (fileName == null || fileName.trim().isEmpty()) {
+							continue;
+						}
+						
+						File tmpFile = null;
+						try {
+							tmpFile = new File(fileName);
+							// 파일명에서 경로 제거 (IE 대응)
+							fileName = tmpFile.getName();
+							
+							// 새로운 파일명 생성
+							String fileExt = FileUtil.getFileExt(fileName);
+							String newFileName = UUID.randomUUID().toString().replace("-", "") + "." + fileExt;
+							
+							// 파일 저장
+							File savedFile = new File(saveDirectory, newFileName);
+							item.write(savedFile);
+							
+							// 파일 정보 저장
+							fileItems.put(fieldName, item);
+							
+							Properties uploadFileRow = new Properties();
+							uploadFileRow.setProperty("SAVED_FILE_NAME", newFileName);
+							uploadFileRow.setProperty("CONTENTS_TYPE", item.getContentType());
+							uploadFileRow.setProperty("ORIGINAL_FILE_NAME", fileName);
+							uploadFileRow.setProperty("FILE_EXTEND", fileExt);
+							uploadFileRow.setProperty("FILE_SIZE", String.valueOf(savedFile.length()));
+							uploadList.add(uploadFileRow);
+						} catch (Exception e) {
+							// TODO: handle exception
+						} finally {
+							if( tmpFile != null ) {
+								try {
+									tmpFile.delete();
+								} catch (Exception e2) {
+									// TODO: handle exception
+								}
+							}
+						}
 					}
-					if (fileName != null) {
-						type = multiRequest.getContentType(fileInput); // 콘텐트타입
-						fileObj = multiRequest.getFile(fileInput); // 파일객체
-						originFileName = multiRequest.getOriginalFileName(fileInput); // 초기파일명
-						fileExtend = fileName.substring(fileName.lastIndexOf(".") + 1); // 파일 확장자
-						fileSize = String.valueOf(fileObj.length()); // 파일크기
-					}
-					uploadFileRow.setProperty("SAVED_FILE_NAME", fileName);
-					uploadFileRow.setProperty("CONTENTS_TYPE", type);
-					uploadFileRow.setProperty("ORIGINAL_FILE_NAME", originFileName);
-					uploadFileRow.setProperty("FILE_EXTEND", fileExtend);
-					uploadFileRow.setProperty("FILE_SIZE", fileSize);
-					uploadList.add(uploadFileRow);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw e;
 		}
 	}
 
@@ -95,12 +136,15 @@ public class FileUpUtil {
 		String val = null;
 		try {
 			if (isMultiPart) {
-				val = getMultiRequest().getParameter(key);
+				List<String> values = parameters.get(key);
+				if (values != null && !values.isEmpty()) {
+					val = values.get(0);
+				}
 			} else {
 				val = request.getParameter(key);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return val;
 	}
@@ -109,57 +153,86 @@ public class FileUpUtil {
 		String[] val = null;
 		try {
 			if (isMultiPart) {
-				val = getMultiRequest().getParameterValues(key);
+				List<String> values = parameters.get(key);
+				if (values != null) {
+					val = values.toArray(new String[0]);
+				}
 			} else {
 				val = request.getParameterValues(key);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return val;
 	}
 
-	public java.util.Enumeration getParameterNames() {
-		java.util.Enumeration val = null;
+	public java.util.Enumeration<String> getParameterNames() {
+		java.util.Enumeration<String> val = null;
 		try {
 			if (isMultiPart) {
-				val = getMultiRequest().getParameterNames();
+				val = java.util.Collections.enumeration(parameters.keySet());
 			} else {
 				val = request.getParameterNames();
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return val;
 	}
 
-	public java.util.Properties getUploadInfo() {
+	public Properties getUploadInfo() {
 		return uploadInfo;
 	}
 
-	public void setUploadInfo(java.util.Properties uploadInfo) {
+	public void setUploadInfo(Properties uploadInfo) {
 		this.uploadInfo = uploadInfo;
 	}
 
-	public MultipartRequest getMultiRequest() {
-		return multiRequest;
-	}
-
-	public void setMultiRequest(MultipartRequest multiRequest) {
-		this.multiRequest = multiRequest;
-	}
-
-	public void deleteFile(String filePath) {
-		String result = "";
-
-		try {
-			java.io.File f = new java.io.File(filePath);
-			if (f.exists()) {
-				f.delete();
+	/**
+	 * 파일명 가져오기
+	 */
+	public String getFilesystemName(String fieldName) {
+		FileItem item = fileItems.get(fieldName);
+		if (item != null) {
+			// 저장된 파일명은 uploadInfo에서 가져와야 함
+			@SuppressWarnings("unchecked")
+			ArrayList<Properties> uploadList = (ArrayList<Properties>) uploadInfo.get("UPLOAD_LIST");
+			for (Properties prop : uploadList) {
+				return prop.getProperty("SAVED_FILE_NAME");
 			}
-		} catch (Exception e) {
-
 		}
+		return null;
 	}
 
+	/**
+	 * 원본 파일명 가져오기
+	 */
+	public String getOriginalFileName(String fieldName) {
+		FileItem item = fileItems.get(fieldName);
+		if (item != null) {
+			String fileName = item.getName();
+			return new File(fileName).getName();
+		}
+		return null;
+	}
+
+	/**
+	 * Content Type 가져오기
+	 */
+	public String getContentType(String fieldName) {
+		FileItem item = fileItems.get(fieldName);
+		return item != null ? item.getContentType() : null;
+	}
+
+	/**
+	 * 파일 객체 가져오기
+	 */
+	public File getFile(String fieldName) {
+		String saveDirectory = uploadInfo.getProperty("SAVE_DIRECTORY");
+		String fileName = getFilesystemName(fieldName);
+		if (fileName != null) {
+			return new File(saveDirectory, fileName);
+		}
+		return null;
+	}
 }
