@@ -7,17 +7,18 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import net.dstone.common.biz.BaseService;
 import net.dstone.common.security.dao.CustomUserDao;
 import net.dstone.common.security.svc.CustomUserService;
 
 @Service("customUserService")
-public class CustomUserServiceImpl implements CustomUserService {
+public class CustomUserServiceImpl extends BaseService implements CustomUserService {
 
     /********* DAO 정의부분 시작 *********/
 	@Resource(name = "customUserDao")
     private CustomUserDao customUserDao; 
     /********* DAO 정의부분 끝 *********/
-    
+	
 	@Override
 	public Map<String, Object> loginProcess(Map<String, String> param) throws Exception {
 		Map<String, Object> userInfo = customUserDao.selectUser(param);

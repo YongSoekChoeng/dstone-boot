@@ -15,8 +15,8 @@ public class RequestUtil {
 	/** 로그출력 */
 	private static LogUtil logger = new LogUtil(RequestUtil.class);
 	
-	private boolean boolRequestParseYn = true;
-	private boolean boolRequestDetailParseYn = true;
+	private boolean boolRequestParseYn = false;
+	private boolean boolRequestDetailParseYn = false;
 
 	@SuppressWarnings("unused")
 	private static final String MAST_BAR_1 = "*****************************************";

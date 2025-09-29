@@ -8,7 +8,7 @@ import net.dstone.common.utils.LogUtil;
 public class BaseObject {
 	
 	private LogUtil myLogger = null;
-
+	
 	protected LogUtil getLogger() {
 		if(myLogger == null) {
 			myLogger = new LogUtil(this);
@@ -46,5 +46,5 @@ public class BaseObject {
 	protected void sysout(Object o) {
 		LogUtil.sysout(o);
 	}
-	
+
 }
