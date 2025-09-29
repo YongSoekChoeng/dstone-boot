@@ -17,10 +17,21 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+import net.dstone.common.config.ConfigProperty;
+
 /**
  * @author db2admin ORIGINAL_FILE_NAME, SAVED_FILE_NAME 을 파라메터로 호출한다.
  */
+
+@Controller
 public class FileDownUtil extends javax.servlet.http.HttpServlet {
+
+	@Autowired 
+	ConfigProperty configProperty;
+
 	/**
 	 * <code>doGet</code> Process incoming HTTP doGet requests
 	 * 
@@ -71,7 +82,7 @@ public class FileDownUtil extends javax.servlet.http.HttpServlet {
 	
 	private void singleFileDown(String oriFileName, String saveFileName, HttpServletRequest req, HttpServletResponse res) {
 
-		String FILEUP_WEB_DIR = net.dstone.common.utils.PropUtil.getInstance().getProp("app", "FILEUP_WEB_DIR");
+		String FILEUP_WEB_DIR = configProperty.getProperty("resources.fileUp.path");
 		
 		String path = "";
 
