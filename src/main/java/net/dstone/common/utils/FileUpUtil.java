@@ -58,6 +58,7 @@ public class FileUpUtil {
 				factory.setSizeThreshold(1024 * 1024); // 1MB
 				// 임시 파일 저장 디렉토리
 				String tmpDri = System.getProperty("java.io.tmpdir") + "/" + DateUtil.getToDate("yyyyMMddHHmmss");
+				FileUtil.makeDir(tmpDri);
 				factory.setRepository(new File(tmpDri));
 				
 				// ServletFileUpload 설정
@@ -125,6 +126,8 @@ public class FileUpUtil {
 						}
 					}
 				}
+				
+				FileUtil.deleteDir(tmpDri);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
