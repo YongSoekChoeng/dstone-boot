@@ -216,7 +216,8 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher(SWAGGER_VA)
 
 				/*** 기타 ***/
-				,new AntPathRequestMatcher("/.well-known/**") // 크롬 개발자모드에서 보내지는 요청
+				,new AntPathRequestMatcher("/favicon.ico")	// 크롬에서 보내지는 요청
+				,new AntPathRequestMatcher(".well-known/**") // 크롬 개발자모드에서 보내지는 요청
 				
 			).permitAll()
 		);
