@@ -41,8 +41,8 @@ spring:
             # 스프링시큐리티 자동설정
             - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
             # Redis 를 Spring Session 으로 사용하기 위해 설정(2) - 사용할 경우 주석처리.
-            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+#            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+#            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
     data:  # Redis 를 Spring Session 으로 사용하기 위해 설정(2)
         redis: 
             host: localhost
@@ -117,12 +117,14 @@ spring:
         password: ENC(uMDcjuJKHG6Kgp/HT5MJuNSnBXlcM516gYosPOqqlPQ=)
         bindings: 
             binding-notifications: 
-                exchange-id: app.fanout.exchange
+                exchange-id: app.fanout.exchange # (fanout)라우팅 키와 상관없이 바인딩된 모든 큐로 메시지를 전달
                 queue-id: app.notifications.queue
+                queue-durable: false # queue 내용 영구 저장 여부(실제 큐의 Durability와 동일해야 함. 운영모드에서는 true로 하는게 좋음.)
                 routing-key: 
             binding-orders: 
-                exchange-id: app.direct.exchange
+                exchange-id: app.direct.exchange # (direct)라우팅 키가 정확히 일치하는 큐로 메시지를 전달
                 queue-id: app.orders.queue
+                queue-durable: false # queue 내용 영구 저장 여부(실제 큐의 Durability와 동일해야 함. 운영모드에서는 true로 하는게 좋음.)
                 routing-key: orders.process
     redis: 
         host: localhost
@@ -131,7 +133,7 @@ spring:
     security: 
         enabled: true
     session:  # Redis 를 Spring Session 으로 사용하기 위해 설정(3). 사용할 경우 store-type 를 redis 로 세팅.
-        store-type: none # 세션 저장소(none/redis)
+        store-type: redis # 세션 저장소(none/redis)
         redis: 
             namespace: dstone:session # 세션을 저장하는 데 사용되는 키의 네임스페이스
     # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)

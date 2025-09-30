@@ -50,37 +50,40 @@ public class ConfigSecurity extends BaseObject{
     /********* SVC 정의부분 끝 *********/
 
 	/* 화면으로 연결되는 경우 _PAGE로 끝나고 서버통신으로 연결되는 경우 _ACTION으로 끝난다. 화면은 확장자를 생략한다. */
-	public static String MAIN_PAGE 						= "main";											// 메인 페이지
-	public static String LOGIN_PAGE 					= "login";											// 로그인 페이지
+	public static String MAIN_PAGE 						= "main";												// 메인 페이지
+	public static String LOGIN_PAGE 					= "login";												// 로그인 페이지
 	
-	public static String LOGIN_CHECK_ACTION 			= "/com/login/loginCheck.do";						// 사용자가 로그인된 상태인지 체크하는 액션
-	public static String LOGIN_GO_ACTION				= "/com/login/loginGo.do"; 							// 로그인 가기 액션(통과 후 로그인 페이지에 도달)
-	public static String LOGIN_PROCESS_ACTION 			= "/com/login/loginProcess.do";						// 로그인 처리 액션
-	public static String LOGIN_PROCESS_SUCCESS_ACTION 	= "/com/login/loginProcessSuccess.do";				// 로그인 처리 성공시 진행될 액션
-	public static String LOGIN_PROCESS_FAILURE_ACTION 	= "/com/login/loginProcessFailure.do";				// 로그인 처리 실패시 진행될 액션
-	public static String LOGOUT_ACTION 					= "/com/login/logout.do";							// 로그아웃 처리 액션
-	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";					// 로그아웃 처리 성공시 진행될 액션
-	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do";						// 접근권한이 없을 시 진행될 액션
-	public static String PROXY_ACTION 					= "/proxy.do"; 										// 프락시 액션
-	public static String MQ_ACTION 						= "/dstone-mq/rabbitmq/**/*.do"; 					// RabbitMQ 액션
-	public static String WEBSOCKET_ACTION				= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "*/**";	// 웹소켓 액션
-	public static String KAKAO_ACTION 					= "/kakao/*.do";									// 카카오 액션
-	public static String GOOGLE_ACTION 					= "/google/**/*.do";								// 구글맵 액션
-	public static String TEST_ACTION 					= "/test/**/*.do";									// 테스트 액션
-	public static String REST_API	 					= "/restapi/**"; 									// Rest Api 수신
+	public static String LOGIN_CHECK_ACTION 			= "/com/login/loginCheck.do";							// 사용자가 로그인된 상태인지 체크하는 액션
+	public static String LOGIN_GO_ACTION				= "/com/login/loginGo.do"; 								// 로그인 가기 액션(통과 후 로그인 페이지에 도달)
+	public static String LOGIN_PROCESS_ACTION 			= "/com/login/loginProcess.do";							// 로그인 처리 액션
+	public static String LOGIN_PROCESS_SUCCESS_ACTION 	= "/com/login/loginProcessSuccess.do";					// 로그인 처리 성공시 진행될 액션
+	public static String LOGIN_PROCESS_FAILURE_ACTION 	= "/com/login/loginProcessFailure.do";					// 로그인 처리 실패시 진행될 액션
+	public static String LOGOUT_ACTION 					= "/com/login/logout.do";								// 로그아웃 처리 액션
+	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";						// 로그아웃 처리 성공시 진행될 액션
+	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do";							// 접근권한이 없을 시 진행될 액션
+	public static String PROXY_ACTION 					= "/proxy.do"; 											// 프락시 액션
+	public static String MQ_ACTION 						= "/dstone-mq/rabbitmq/**/*.do"; 						// RabbitMQ 액션
+	public static String WEBSOCKET_WS_ACTION			= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "/**";		// 웹소켓 액션
+	public static String WEBSOCKET_STOMP_ACTION			= ConfigWebSocket.WEBSOCKET_STOMP_END_POINT + "/**";	// 웹소켓(stomp) 액션
+	public static String WEBSOCKET_STOMP_PUB_ACTION		= ConfigWebSocket.WEBSOCKET_STOMP_PUB_PREFIX + "/**";	// 웹소켓(stomp) 발행프리픽스
+	public static String WEBSOCKET_STOMP_SUB_ACTION		= ConfigWebSocket.WEBSOCKET_STOMP_SUB_PREFIX + "/**";	// 웹소켓(stomp) 구독프리픽스
+	public static String KAKAO_ACTION 					= "/kakao/*.do";										// 카카오 액션
+	public static String GOOGLE_ACTION 					= "/google/**/*.do";									// 구글맵 액션
+	public static String TEST_ACTION 					= "/test/**/*.do";										// 테스트 액션
+	public static String REST_API	 					= "/restapi/**"; 										// Rest Api 수신
 	
-	public static String SWAGGER_UI	 					= "/swagger-ui.html/**"; 							// Swagger Ui
-	public static String SWAGGER_RS	 					= "/swagger-resources/**"; 							// Swagger Resources
-	public static String SWAGGER_WJ	 					= "/webjars/**"; 									// Swagger webjars
-	public static String SWAGGER_VA	 					= "/v2/api-docs/**"; 								// Swagger api-docs
+	public static String SWAGGER_UI	 					= "/swagger-ui.html/**"; 								// Swagger Ui
+	public static String SWAGGER_RS	 					= "/swagger-resources/**"; 								// Swagger Resources
+	public static String SWAGGER_WJ	 					= "/webjars/**"; 										// Swagger webjars
+	public static String SWAGGER_VA	 					= "/v2/api-docs/**"; 									// Swagger api-docs
 
-	public static String ERROR_URL_PATTERN				= "/error/**"; 										// 에러 URL패턴.(스프링 내부적으로 호출되는 에러 URL패턴 존재. Permit All로 설정)
+	public static String ERROR_URL_PATTERN				= "/error/**"; 											// 에러 URL패턴.(스프링 내부적으로 호출되는 에러 URL패턴 존재. Permit All로 설정)
 	
 	public static String USERNAME_PARAMETER 			= "USER_ID";
 	public static String PASSWORD_PARAMETER 			= "USER_PW";
 	public static String ROLE_ID_PARAMETER 				= "ROLE_ID";
 	
-	public static boolean IS_DYNAMIC_AUTH_CHECK			= true;												// 권한체크 동적모드여부(true 일 경우 URL이 호출될 때마다 DB를 조회하여 체크한다.)
+	public static boolean IS_DYNAMIC_AUTH_CHECK			= true;													// 권한체크 동적모드여부(true 일 경우 URL이 호출될 때마다 DB를 조회하여 체크한다.)
 	
 	@Resource(name = "customAuthenticationProvider")
     private CustomAuthenticationProvider authProvider;
@@ -199,7 +202,10 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher(ERROR_URL_PATTERN)
 				,new AntPathRequestMatcher(PROXY_ACTION)
 				,new AntPathRequestMatcher(MQ_ACTION)
-				,new AntPathRequestMatcher(WEBSOCKET_ACTION)
+				,new AntPathRequestMatcher(WEBSOCKET_WS_ACTION)
+				,new AntPathRequestMatcher(WEBSOCKET_STOMP_ACTION)
+				,new AntPathRequestMatcher(WEBSOCKET_STOMP_PUB_ACTION)
+				,new AntPathRequestMatcher(WEBSOCKET_STOMP_SUB_ACTION)
 				,new AntPathRequestMatcher(KAKAO_ACTION)
 				,new AntPathRequestMatcher(GOOGLE_ACTION)
 				,new AntPathRequestMatcher(TEST_ACTION)

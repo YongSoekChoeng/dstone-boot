@@ -37,7 +37,6 @@ public class ConfigWebSocket extends BaseObject implements WebSocketConfigurer, 
         registry.addHandler(new BaseTextWebSocketHandler(), WEBSOCKET_WS_END_POINT )
         		.addInterceptors(new HttpSessionHandshakeInterceptor())
                 .setAllowedOriginPatterns("*")
-//                .withSockJS()
                 ;
     }
 

@@ -41,6 +41,7 @@ public class ConfigMq extends BaseObject {
 	2. Queue (큐)
 		* Queue는 메시지를 최종적으로 저장하고 소비자가 메시지를 가져갈 때까지 대기시키는 곳. 
 		* First-In-First-Out (FIFO) 방식으로 메시지를 처리.
+		* Queue영구저장여부. RabbitMq가 재 실행되더라도 내용을 유지할지 여부. 실제 큐의 Durability와 동일해야 함. 운영모드에서는 true로 하는게 좋음.
 	****************************************************************************/
 	
 	/*** 바인딩 갯수만큼 세팅 시작 ***/
@@ -53,7 +54,7 @@ public class ConfigMq extends BaseObject {
     /** 2. 큐를 구성합니다. */
     @Bean
     public Queue queueNotifications() {
-        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-notifications.queue-id"), false);
+        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-notifications.queue-id"), Boolean.valueOf(configProperty.getProperty("spring.rabbitmq.bindings.binding-notifications.queue-durable")));
     }
     /** 3. 큐와 Exchange를 바인딩합니다. */
     @Bean
@@ -72,7 +73,7 @@ public class ConfigMq extends BaseObject {
     /** 2. 큐를 구성합니다. */
     @Bean
     public Queue queueOrders() {
-        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-orders.queue-id"), false);
+        return new Queue(configProperty.getProperty("spring.rabbitmq.bindings.binding-orders.queue-id"), Boolean.valueOf(configProperty.getProperty("spring.rabbitmq.bindings.binding-orders.queue-durable")));
     }
     /** 3. 큐와 Exchange를 바인딩합니다. */
     @Bean
