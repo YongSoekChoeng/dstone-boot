@@ -19,7 +19,7 @@ import net.dstone.common.config.ConfigProperty;
 
 public class FileUpUtil {
 
-	ConfigProperty configProperty; // 프로퍼티 가져오는 bean. 스프링빈 호출하는 방법으로 수정해야 함.
+	private static ConfigProperty CONFIG = null; // 프로퍼티 가져오는 bean. 스프링빈 호출하는 방법으로 수정해야 함.
 
 	private Map<String, List<String>> parameters = new HashMap<>();
 	private Map<String, FileItem> fileItems = new HashMap<>();
@@ -29,9 +29,12 @@ public class FileUpUtil {
 	private String encoding = "utf-8";
 
 	public FileUpUtil(HttpServletRequest request) throws Exception {
+		if( CONFIG == null) {
+			CONFIG = SpringUtil.getBean(ConfigProperty.class);
+		}
 		this.request = request;
 		ArrayList<Properties> uploadList = new ArrayList<>();
-		String FILEUP_WEB_DIR = configProperty.getProperty("resources.fileUp.path");
+		String FILEUP_WEB_DIR = CONFIG.getProperty("resources.fileUp.path");
 		
 		try {
 			// Multipart 요청 체크
