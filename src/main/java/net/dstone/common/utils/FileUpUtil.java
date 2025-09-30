@@ -13,17 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import net.dstone.common.config.ConfigProperty;
 
 
-@Component
 public class FileUpUtil {
 
-	@Autowired 
-	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean. 스프링빈 호출하는 방법으로 수정해야 함.
 
 	private Map<String, List<String>> parameters = new HashMap<>();
 	private Map<String, FileItem> fileItems = new HashMap<>();
