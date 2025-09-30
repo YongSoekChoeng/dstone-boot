@@ -172,6 +172,7 @@ public class ConfigSecurity extends BaseObject{
 
 		http.authorizeHttpRequests(auth -> auth
 			.requestMatchers(
+					
 				/*** 정적자원 ***/
 				new AntPathRequestMatcher("/*")	
 				,new AntPathRequestMatcher("/analyzer/**")	
@@ -207,6 +208,10 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher(SWAGGER_RS)
 				,new AntPathRequestMatcher(SWAGGER_WJ)
 				,new AntPathRequestMatcher(SWAGGER_VA)
+
+				/*** 기타 ***/
+				,new AntPathRequestMatcher("/.well-known/**") // 크롬 개발자모드에서 보내지는 요청
+				
 			).permitAll()
 		);
 
