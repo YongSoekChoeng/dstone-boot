@@ -1,7 +1,7 @@
 
 package net.dstone.analyzer.cud.vo;  
                       
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
                       
 import com.fasterxml.jackson.annotation.JsonProperty;
 

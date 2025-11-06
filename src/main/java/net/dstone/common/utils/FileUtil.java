@@ -8,9 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
@@ -38,8 +36,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
@@ -48,7 +44,6 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class FileUtil {
 
@@ -1509,26 +1504,7 @@ public class FileUtil {
 		try {
 			if( isFileExist(filePath) ) {
 				File file = new File(filePath);
-				FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
-				InputStream input = null;
-				OutputStream os = null;
-				try {
-				    input = new FileInputStream(file);
-				    os = fileItem.getOutputStream();
-				    IOUtils.copy(input, os);
-				    // Or faster..
-				    // IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
-				} catch (IOException ex) {
-				    throw ex;
-				} finally {
-					if( input != null) {
-						input.close();
-					}
-					if( os != null) {
-						os.close();
-					}
-				} 
-				multipartFile = new CommonsMultipartFile(fileItem); 
+				multipartFile = new org.springframework.mock.web.MockMultipartFile("file", file.getName(), Files.probeContentType(file.toPath()), new FileInputStream(file)); 
 			}
 			
 		} catch (Exception e) {

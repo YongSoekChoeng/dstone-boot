@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ClassUtils;
@@ -1207,11 +1207,11 @@ public class BeanUtil {
 		StringWriter sw = new StringWriter();
 
 		try {
-			javax.xml.bind.JAXBContext context = javax.xml.bind.JAXBContext.newInstance(new Class[] { bean.getClass() });
-			javax.xml.bind.Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
-			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_SCHEMA_LOCATION, "" );
+			jakarta.xml.bind.JAXBContext context = jakarta.xml.bind.JAXBContext.newInstance(new Class[] { bean.getClass() });
+			jakarta.xml.bind.Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(jakarta.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
+			marshaller.setProperty(jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			marshaller.setProperty(jakarta.xml.bind.Marshaller.JAXB_SCHEMA_LOCATION, "" );
 			
 			marshaller.marshal( bean , sw);
 			sw.flush();
@@ -1234,8 +1234,8 @@ public class BeanUtil {
 		Object bean = null;
 		
 		try {		
-			javax.xml.bind.JAXBContext context = javax.xml.bind.JAXBContext.newInstance(new Class[] { clzz });
-			javax.xml.bind.Unmarshaller unmarshaller = context.createUnmarshaller();
+			jakarta.xml.bind.JAXBContext context = jakarta.xml.bind.JAXBContext.newInstance(new Class[] { clzz });
+			jakarta.xml.bind.Unmarshaller unmarshaller = context.createUnmarshaller();
 			reader = new java.io.StringReader(xml);
 			
 			bean = unmarshaller.unmarshal(reader);

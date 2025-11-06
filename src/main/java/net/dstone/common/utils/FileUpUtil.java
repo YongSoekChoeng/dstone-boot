@@ -1,6 +1,7 @@
 package net.dstone.common.utils;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,21 +9,19 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
+import jakarta.servlet.http.HttpServletRequest;
 import net.dstone.common.config.ConfigProperty;
-
 
 public class FileUpUtil {
 
 	private static ConfigProperty CONFIG = null; // 프로퍼티 가져오는 bean. 스프링빈 호출하는 방법으로 수정해야 함.
 
 	private Map<String, List<String>> parameters = new HashMap<>();
-	private Map<String, FileItem> fileItems = new HashMap<>();
+	private Map<String, FileItem<?>> fileItems = new HashMap<>();
 	private Properties uploadInfo = new Properties();
 	private boolean isMultiPart = false;
 	private HttpServletRequest request;
@@ -38,9 +37,9 @@ public class FileUpUtil {
 		
 		try {
 			// Multipart 요청 체크
-			isMultiPart = ServletFileUpload.isMultipartContent(request);
+			isMultiPart = JakartaServletFileUpload.isMultipartContent(request);
 			
-			int maxPostSize = 15 * 1024 * 1024; // 15MB
+			long maxPostSize = 15L * 1024 * 1024; // 15MB
 			String saveDirectory = FILEUP_WEB_DIR;
 			net.dstone.common.utils.FileUtil.makeDir(saveDirectory);
 			
@@ -51,29 +50,32 @@ public class FileUpUtil {
 			request.setAttribute("uploadInfo", uploadInfo);
 			
 			if (isMultiPart) {
-				// DiskFileItemFactory 설정
-				DiskFileItemFactory factory = new DiskFileItemFactory();
-				// 메모리에 저장할 최대 크기 (이를 초과하면 임시 파일로 저장)
-				factory.setSizeThreshold(1024 * 1024); // 1MB
 				// 임시 파일 저장 디렉토리
-				String tmpDri = System.getProperty("java.io.tmpdir") + "/" + DateUtil.getToDate("yyyyMMddHHmmss");
-				FileUtil.makeDir(tmpDri);
-				factory.setRepository(new File(tmpDri));
+				String tmpDir = System.getProperty("java.io.tmpdir") + "/" + DateUtil.getToDate("yyyyMMddHHmmss");
+				File tmpDirFile = new File(tmpDir);
+				if (!tmpDirFile.exists()) {
+					tmpDirFile.mkdirs();
+				}
 				
-				// ServletFileUpload 설정
-				ServletFileUpload upload = new ServletFileUpload(factory);
+				// DiskFileItemFactory 설정
+				DiskFileItemFactory factory = DiskFileItemFactory.builder()
+					.setBufferSize(1024 * 1024) // 1MB
+					.setPath(tmpDir)
+					.get();
+				
+				// JakartaServletFileUpload 설정
+				JakartaServletFileUpload upload = new JakartaServletFileUpload(factory);
 				upload.setFileSizeMax(maxPostSize); // 개별 파일 최대 크기
 				upload.setSizeMax(maxPostSize); // 전체 요청 최대 크기
-				upload.setHeaderEncoding(encoding);
 				
 				// 파일 업로드 파싱
-				List<FileItem> items = upload.parseRequest(request);
+				List<FileItem<?>> items = upload.parseRequest(request);
 				
-				for (FileItem item : items) {
+				for (FileItem<?> item : items) {
 					if (item.isFormField()) {
 						// 일반 폼 필드 처리
 						String fieldName = item.getFieldName();
-						String fieldValue = item.getString(encoding);
+						String fieldValue = item.getString(Charset.forName(encoding));
 						
 						if (!parameters.containsKey(fieldName)) {
 							parameters.put(fieldName, new ArrayList<>());
@@ -100,7 +102,7 @@ public class FileUpUtil {
 							
 							// 파일 저장
 							File savedFile = new File(saveDirectory, newFileName);
-							item.write(savedFile);
+							item.write(savedFile.toPath());
 							
 							// 파일 정보 저장
 							fileItems.put(fieldName, item);
@@ -113,20 +115,20 @@ public class FileUpUtil {
 							uploadFileRow.setProperty("FILE_SIZE", String.valueOf(savedFile.length()));
 							uploadList.add(uploadFileRow);
 						} catch (Exception e) {
-							// TODO: handle exception
+							e.printStackTrace();
 						} finally {
-							if( tmpFile != null ) {
+							if (tmpFile != null) {
 								try {
 									tmpFile.delete();
 								} catch (Exception e2) {
-									// TODO: handle exception
+									e2.printStackTrace();
 								}
 							}
 						}
 					}
 				}
-				
-				FileUtil.deleteDir(tmpDri);
+
+				FileUtil.deleteDir(tmpDir);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -194,7 +196,7 @@ public class FileUpUtil {
 	 * 파일명 가져오기
 	 */
 	public String getFilesystemName(String fieldName) {
-		FileItem item = fileItems.get(fieldName);
+		FileItem<?> item = fileItems.get(fieldName);
 		if (item != null) {
 			// 저장된 파일명은 uploadInfo에서 가져와야 함
 			@SuppressWarnings("unchecked")
@@ -210,7 +212,7 @@ public class FileUpUtil {
 	 * 원본 파일명 가져오기
 	 */
 	public String getOriginalFileName(String fieldName) {
-		FileItem item = fileItems.get(fieldName);
+		FileItem<?> item = fileItems.get(fieldName);
 		if (item != null) {
 			String fileName = item.getName();
 			return new File(fileName).getName();
@@ -222,7 +224,7 @@ public class FileUpUtil {
 	 * Content Type 가져오기
 	 */
 	public String getContentType(String fieldName) {
-		FileItem item = fileItems.get(fieldName);
+		FileItem<?> item = fileItems.get(fieldName);
 		return item != null ? item.getContentType() : null;
 	}
 
@@ -236,5 +238,19 @@ public class FileUpUtil {
 			return new File(saveDirectory, fileName);
 		}
 		return null;
+	}
+
+	/**
+	 * 파일 삭제
+	 */
+	public void deleteFile(String filePath) {
+		try {
+			File f = new File(filePath);
+			if (f.exists()) {
+				f.delete();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

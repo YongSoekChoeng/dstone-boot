@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +27,7 @@ import net.dstone.common.config.ConfigProperty;
  */
 
 @Controller
-public class FileDownUtil extends javax.servlet.http.HttpServlet {
+public class FileDownUtil extends jakarta.servlet.http.HttpServlet {
 
 	@Autowired 
 	ConfigProperty configProperty;
@@ -38,7 +38,7 @@ public class FileDownUtil extends javax.servlet.http.HttpServlet {
 	 * @param request
 	 * @param response
 	 */
-	public void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, java.io.IOException {
+	public void doGet(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
 
 		performTask(request, response);
 
@@ -50,7 +50,7 @@ public class FileDownUtil extends javax.servlet.http.HttpServlet {
 	 * @param request
 	 * @param response
 	 */
-	public void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, java.io.IOException {
+	public void doPost(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
 
 		performTask(request, response);
 

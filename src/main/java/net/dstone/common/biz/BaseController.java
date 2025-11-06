@@ -8,8 +8,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,7 +282,7 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 	 */
     @SuppressWarnings({ "rawtypes", "deprecation" })
 	@RequestMapping(value = "/proxy.do") 
-	protected ResponseEntity proxy(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception{
+	protected ResponseEntity proxy(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws Exception{
 
     	info( this.getClass().getName() + ".proxy has been called !!!" );
 
@@ -477,7 +477,7 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 	 */
     @RequestMapping(value = "/defaultLink.do") 
     @ApiIgnore
-	protected ModelAndView defaultLink(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
+	protected ModelAndView defaultLink(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
     	/************************ 변수 선언 시작 ************************/
    		net.dstone.common.utils.RequestUtil 					requestUtil;
    		/************************ 변수 선언 끝 **************************/
@@ -513,5 +513,16 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 	public String view4(@PathVariable String viewlevel1, @PathVariable String viewlevel2, @PathVariable String viewlevel3, @PathVariable String viewlevel4) {
 		return viewlevel1 + "/" + viewlevel2 + "/" + viewlevel3 + "/" + viewlevel4;
 	}
+
+	/**
+	 * 브라우져 더미요청 처리
+	 * 크롬, 사파리, 엣지 등 대부분의 브라우저는 사이트를 방문하면 자동으로 /favicon.ico 요청을 보냅니다.(특별히 설정하지 않아도 무조건 요청합니다.)
+	 * 예전에는 단순히 404 Not Found 로 내려갔는데, Spring Boot 3.x부터는 NoResourceFoundException 을 발생시켜 로그에 찍히도록 바뀌었습니다.
+	 */
+    @RequestMapping("favicon.ico")
+    @ResponseBody
+    void favicon() {
+        // 아무것도 반환하지 않음 -> 에러로그 발생 안 함
+    }
 
 }

@@ -21,7 +21,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
-import org.omg.CORBA.NVList;
 import org.springframework.util.Base64Utils;
 
 public class StringUtil {

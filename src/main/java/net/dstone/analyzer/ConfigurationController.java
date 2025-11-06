@@ -28,7 +28,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
      * @return 
      */ 
     @RequestMapping(value = "/listSys.do") 
-    public ModelAndView listSys(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView listSys(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -84,7 +84,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
      * @return 
      */ 
     @RequestMapping(value = "/insertSys.do") 
-    public ModelAndView insertSys(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView insertSys(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -130,7 +130,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
      * @return 
      */ 
     @RequestMapping(value = "/getSys.do") 
-    public ModelAndView getSys(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView getSys(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -179,7 +179,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
      * @return 
      */ 
     @RequestMapping(value = "/deleteSys.do") 
-    public ModelAndView deleteSys(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView deleteSys(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -224,7 +224,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
      * @return 
      */ 
     @RequestMapping(value = "/getAppOption.do") 
-    public ModelAndView getAppOption(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView getAppOption(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -289,7 +289,7 @@ public class ConfigurationController extends net.dstone.common.biz.BaseControlle
      * @return 
      */ 
     @RequestMapping(value = "/saveAppOption.do") 
-    public ModelAndView saveAppOption(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView saveAppOption(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }

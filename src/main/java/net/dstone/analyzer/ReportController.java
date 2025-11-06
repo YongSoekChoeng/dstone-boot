@@ -29,7 +29,7 @@ public class ReportController extends net.dstone.common.biz.BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/listOverAll.do") 
-    public ModelAndView listOverAll(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView listOverAll(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -73,7 +73,7 @@ public class ReportController extends net.dstone.common.biz.BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/selectOverAll.do") 
-    public ModelAndView selectOverAll(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView selectOverAll(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }

@@ -3,7 +3,7 @@ package net.dstone.analyzer.vo;
                       
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

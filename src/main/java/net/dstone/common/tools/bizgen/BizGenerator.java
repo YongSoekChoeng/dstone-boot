@@ -598,7 +598,7 @@ public class BizGenerator extends BaseObject {
 					vo.append("\n");
 					vo.append("package " + strVoPackageName + ";  ").append("\n");
 					vo.append("                      ").append("\n");
-					vo.append("import javax.xml.bind.annotation.XmlRootElement;").append("\n");
+					vo.append("import jakarta.xml.bind.annotation.XmlRootElement;").append("\n");
 					vo.append("                      ").append("\n");
 					vo.append("import com.fasterxml.jackson.annotation.JsonProperty;").append("\n");
 					vo.append("").append("\n");
@@ -715,7 +715,7 @@ public class BizGenerator extends BaseObject {
 					vo.append("\n");
 					vo.append("package " + strVoPackageName + ";  ").append("\n");
 					vo.append("                      ").append("\n");
-					vo.append("import javax.xml.bind.annotation.XmlRootElement;").append("\n");
+					vo.append("import jakarta.xml.bind.annotation.XmlRootElement;").append("\n");
 					vo.append("                      ").append("\n");
 					vo.append("import com.fasterxml.jackson.annotation.JsonProperty;").append("\n");
 					vo.append("").append("\n");
@@ -2090,7 +2090,7 @@ public class BizGenerator extends BaseObject {
 			ctrlH.append("import java.util.Map;").append("\n");
 			ctrlH.append("import java.util.List;").append("\n");
 			ctrlH.append("").append("\n");
-			ctrlH.append("import javax.servlet.http.HttpSession;").append("\n");
+			ctrlH.append("import jakarta.servlet.http.HttpSession;").append("\n");
 			ctrlH.append("").append("\n");
 			ctrlH.append("import org.springframework.beans.factory.annotation.Autowired;").append("\n");
 			ctrlH.append("import org.springframework.stereotype.Controller;").append("\n");
@@ -2142,7 +2142,7 @@ public class BizGenerator extends BaseObject {
 			ctrlConts.append("     * @return ").append("\n");
 			ctrlConts.append("     */ ").append("\n");
 			ctrlConts.append("    @RequestMapping(value = \"" + strUri + "\") ").append("\n");
-			ctrlConts.append("    public ModelAndView " + strMethodName + "(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {").append("\n");
+			ctrlConts.append("    public ModelAndView " + strMethodName + "(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {").append("\n");
 			ctrlConts.append("   		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.").append("\n");
 			ctrlConts.append("   		/************************ 뷰생성 시작 ************************/").append("\n");
 			ctrlConts.append("   		if(isAjax(request)) { mav = new ModelAndView(\"jsonView\"); }").append("\n");
@@ -2362,7 +2362,7 @@ public class BizGenerator extends BaseObject {
 			ctrlH.append("import java.util.Map;").append("\n");
 			ctrlH.append("import java.util.List;").append("\n");
 			ctrlH.append("").append("\n");
-			ctrlH.append("import javax.servlet.http.HttpSession;").append("\n");
+			ctrlH.append("import jakarta.servlet.http.HttpSession;").append("\n");
 			ctrlH.append("").append("\n");
 			ctrlH.append("import org.springframework.beans.factory.annotation.Autowired;").append("\n");
 			ctrlH.append("import org.springframework.stereotype.Controller;").append("\n");
@@ -2414,7 +2414,7 @@ public class BizGenerator extends BaseObject {
 			ctrlConts.append("     * @return ").append("\n");
 			ctrlConts.append("     */ ").append("\n");
 			ctrlConts.append("    @RequestMapping(value = \"" + strUri + "\") ").append("\n");
-			ctrlConts.append("    public ModelAndView " + strMethodName + "(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {").append("\n");
+			ctrlConts.append("    public ModelAndView " + strMethodName + "(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {").append("\n");
 			ctrlConts.append("   		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.").append("\n");
 			ctrlConts.append("   		/************************ 뷰생성 시작 ************************/").append("\n");
 			ctrlConts.append("   		if(isAjax(request)) { mav = new ModelAndView(\"jsonView\"); }").append("\n");
@@ -2884,7 +2884,7 @@ public class BizGenerator extends BaseObject {
 			voH.append("import java.util.Arrays; ").append("\n");
 			voH.append(" ").append("\n");
 			voH.append("import javax.ws.rs.Consumes; ").append("\n");
-			voH.append("import javax.xml.bind.annotation.XmlRootElement; ").append("\n");
+			voH.append("import jakarta.xml.bind.annotation.XmlRootElement; ").append("\n");
 			voH.append("@XmlRootElement( name=\"" + strWsVoName.substring(0, 1).toLowerCase() + strWsVoName.substring(1) + "\" )  ").append("\n");
 			voH.append("public class " + strWsVoName + " implements java.io.Serializable { ").append("\n");
 			voH.append("	 ").append("\n");
@@ -4650,7 +4650,7 @@ public class BizGenerator extends BaseObject {
 			ctrlBuff.append("     * @return ").append("\n");
 			ctrlBuff.append("     */ ").append("\n");
 			ctrlBuff.append("    @RequestMapping(value = \"/fileUpJson.do\") ").append("\n");
-			ctrlBuff.append("    public ModelAndView fileUpJson(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) { ").append("\n");
+			ctrlBuff.append("    public ModelAndView fileUpJson(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) { ").append("\n");
 			ctrlBuff.append(" ").append("\n");
 			ctrlBuff.append("   		/************************ 세션체크 시작 ************************/ ").append("\n");
 			ctrlBuff.append(" ").append("\n");

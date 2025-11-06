@@ -27,7 +27,7 @@ public class MarketController extends net.dstone.common.biz.BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/fruitMarket/test.do") 
-    public ModelAndView fruitMarketTest(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView fruitMarketTest(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { 

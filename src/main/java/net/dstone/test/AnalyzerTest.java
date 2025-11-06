@@ -142,9 +142,9 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
     		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/org/mybatis/mybatis-spring/1.3.0/mybatis-spring-1.3.0.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/org/mybatis/mybatis/3.4.1/mybatis-3.4.1.jar")));
-    		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar")));
-    		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/javax/servlet/jsp/javax.servlet.jsp-api/2.2.1/javax.servlet.jsp-api-2.2.1.jar")));
-    		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/javax/servlet/jsp/jstl/javax.servlet.jsp.jstl-api/1.2.1/javax.servlet.jsp.jstl-api-1.2.1.jar")));
+    		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/javax/servlet/jakarta.servlet-api/4.0.1/jakarta.servlet-api-4.0.1.jar")));
+    		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/javax/servlet/jsp/jakarta.servlet.jsp-api/2.2.1/jakarta.servlet.jsp-api-2.2.1.jar")));
+    		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/javax/servlet/jsp/jstl/jakarta.servlet.jsp.jstl-api/1.2.1/jakarta.servlet.jsp.jstl-api-1.2.1.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/org/apache/tomcat/embed/tomcat-embed-jasper/9.0.63/tomcat-embed-jasper-9.0.63.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/org/eclipse/jdt/ecj/3.18.0/ecj-3.18.0.jar")));
     		combinedTypeSolver.add(new JarTypeSolver(new File(mavenRepHome + "/taglibs/standard/1.1.2/standard-1.1.2.jar")));
@@ -434,7 +434,7 @@ public class AnalyzerTest extends VoidVisitorAdapter<Void> {
 
 			ArrayList<String> mtdCallList = new ArrayList<String>(); 
 			
-			String method = "kr.co.gnx.contract.contract.ContractController.exceptAdditionalContract(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, kr.co.gnx.contract.contract.ContractVO)";
+			String method = "kr.co.gnx.contract.contract.ContractController.exceptAdditionalContract(jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse, kr.co.gnx.contract.contract.ContractVO)";
 
 			
 			d( "method["+method+"]"  );

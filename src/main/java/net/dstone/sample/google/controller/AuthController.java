@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController extends net.dstone.common.biz.BaseController { 
 
     @RequestMapping("/token.do")
-    public void initPage(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
+    public void initPage(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception{
     	
 
     	/************************ 변수 선언 시작 ************************/

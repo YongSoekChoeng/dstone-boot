@@ -6,15 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,6 +24,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.security.CustomAccessDeniedHandler;
 import net.dstone.common.security.CustomAccessEntryDeniedHandler;
@@ -60,22 +59,14 @@ public class ConfigSecurity extends BaseObject{
 	public static String LOGIN_PROCESS_FAILURE_ACTION 	= "/com/login/loginProcessFailure.do";					// 로그인 처리 실패시 진행될 액션
 	public static String LOGOUT_ACTION 					= "/com/login/logout.do";								// 로그아웃 처리 액션
 	public static String LOGOUT_SUCCS_ACTION 			= "/com/login/logoutSuccess.do";						// 로그아웃 처리 성공시 진행될 액션
-	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do";							// 접근권한이 없을 시 진행될 액션
+	public static String ACCESS_DENIED_ACTION 			= "/com/login/accessDenied.do"; 						// 접근권한이 없을 시 진행될 액션
 	public static String PROXY_ACTION 					= "/proxy.do"; 											// 프락시 액션
 	public static String MQ_ACTION 						= "/dstone-mq/rabbitmq/**/*.do"; 						// RabbitMQ 액션
 	public static String WEBSOCKET_WS_ACTION			= ConfigWebSocket.WEBSOCKET_WS_END_POINT + "/**";		// 웹소켓 액션
 	public static String WEBSOCKET_STOMP_ACTION			= ConfigWebSocket.WEBSOCKET_STOMP_END_POINT + "/**";	// 웹소켓(stomp) 액션
 	public static String WEBSOCKET_STOMP_PUB_ACTION		= ConfigWebSocket.WEBSOCKET_STOMP_PUB_PREFIX + "/**";	// 웹소켓(stomp) 발행프리픽스
 	public static String WEBSOCKET_STOMP_SUB_ACTION		= ConfigWebSocket.WEBSOCKET_STOMP_SUB_PREFIX + "/**";	// 웹소켓(stomp) 구독프리픽스
-	public static String KAKAO_ACTION 					= "/kakao/*.do";										// 카카오 액션
-	public static String GOOGLE_ACTION 					= "/google/**/*.do";									// 구글맵 액션
 	public static String TEST_ACTION 					= "/test/**/*.do";										// 테스트 액션
-	public static String REST_API	 					= "/restapi/**"; 										// Rest Api 수신
-	
-	public static String SWAGGER_UI	 					= "/swagger-ui.html/**"; 								// Swagger Ui
-	public static String SWAGGER_RS	 					= "/swagger-resources/**"; 								// Swagger Resources
-	public static String SWAGGER_WJ	 					= "/webjars/**"; 										// Swagger webjars
-	public static String SWAGGER_VA	 					= "/v2/api-docs/**"; 									// Swagger api-docs
 
 	public static String ERROR_URL_PATTERN				= "/error/**"; 											// 에러 URL패턴.(스프링 내부적으로 호출되는 에러 URL패턴 존재. Permit All로 설정)
 	
@@ -91,9 +82,7 @@ public class ConfigSecurity extends BaseObject{
     /********* SVC 정의부분 시작 *********/
 	@Resource(name = "customUserService")
     private CustomUserService customUserService; 
-    /********* SVC 정의부분 끝 *********/
-	
-	@Bean
+    @Bean
 	public SecurityFilterChain filterChan(HttpSecurity http) throws Exception {
 		
 		// 1. 크로스 사이트 요청 위조(CSRF) 방지설정
@@ -131,7 +120,7 @@ public class ConfigSecurity extends BaseObject{
 
 		return http.build();
 	}
-
+    
 	@Bean
 	public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
 		CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter = new CustomUsernamePasswordAuthenticationFilter(authenticationManager);
@@ -174,8 +163,7 @@ public class ConfigSecurity extends BaseObject{
 	protected void setAntMatchers(HttpSecurity http) throws Exception {
 
 		http.authorizeHttpRequests(auth -> auth
-			.requestMatchers(
-					
+			.requestMatchers(	
 				/*** 정적자원 ***/
 				new AntPathRequestMatcher("/*")	
 				,new AntPathRequestMatcher("/analyzer/**")	
@@ -183,14 +171,11 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher("/images/**")	
 				,new AntPathRequestMatcher("/js/**")
 				/*** 동적자원중 권한체크가 필요없는 자원들 ***/
-				,new AntPathRequestMatcher("/views/"+ MAIN_PAGE )
-				,new AntPathRequestMatcher("/views/"+ LOGIN_PAGE )
-				,new AntPathRequestMatcher("/views/common/**")
-				,new AntPathRequestMatcher("/views/test/**")
-				,new AntPathRequestMatcher("/views/analyzer/**")
-				,new AntPathRequestMatcher("/views/sample/google/**")
-				,new AntPathRequestMatcher("/views/websocket/**")
-				
+				,new AntPathRequestMatcher("/ui/" + MAIN_PAGE)
+				,new AntPathRequestMatcher("/ui/" + LOGIN_PAGE)
+				,new AntPathRequestMatcher("/ui/common/**")
+				,new AntPathRequestMatcher("/ui/test/**")
+				,new AntPathRequestMatcher("/ui/websocket/**")
 				,new AntPathRequestMatcher(LOGIN_GO_ACTION)
 				,new AntPathRequestMatcher(LOGIN_PROCESS_ACTION)
 				,new AntPathRequestMatcher(LOGIN_PROCESS_SUCCESS_ACTION)
@@ -202,24 +187,18 @@ public class ConfigSecurity extends BaseObject{
 				,new AntPathRequestMatcher(ERROR_URL_PATTERN)
 				,new AntPathRequestMatcher(PROXY_ACTION)
 				,new AntPathRequestMatcher(MQ_ACTION)
+				,new AntPathRequestMatcher(TEST_ACTION)
 				,new AntPathRequestMatcher(WEBSOCKET_WS_ACTION)
 				,new AntPathRequestMatcher(WEBSOCKET_STOMP_ACTION)
 				,new AntPathRequestMatcher(WEBSOCKET_STOMP_PUB_ACTION)
 				,new AntPathRequestMatcher(WEBSOCKET_STOMP_SUB_ACTION)
-				,new AntPathRequestMatcher(KAKAO_ACTION)
-				,new AntPathRequestMatcher(GOOGLE_ACTION)
-				,new AntPathRequestMatcher(TEST_ACTION)
-				,new AntPathRequestMatcher(REST_API)
-				,new AntPathRequestMatcher(SWAGGER_UI)
-				,new AntPathRequestMatcher(SWAGGER_RS)
-				,new AntPathRequestMatcher(SWAGGER_WJ)
-				,new AntPathRequestMatcher(SWAGGER_VA)
 
 				/*** 기타 ***/
 				,new AntPathRequestMatcher("/favicon.ico")	// 크롬에서 보내지는 요청
 				,new AntPathRequestMatcher(".well-known/**") // 크롬 개발자모드에서 보내지는 요청
-				
 			).permitAll()
+			/*** 페이지마다 include/forward 되는 자원은 모두 허용 ***/
+			.dispatcherTypeMatchers(DispatcherType.INCLUDE, DispatcherType.FORWARD).permitAll() 
 		);
 
 		/*** 기본설정-역할별URL DB설정(정적체크-Application기동시 한번만 전체설정 받아오는 경우) ***/
@@ -258,9 +237,7 @@ public class ConfigSecurity extends BaseObject{
 	        	boolean result = false;
 	            try {
 	            	// (Login)인증 체크
-	            	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	            	// (Login)인증 되었을 경우
-	            	if(principal !="anonymousUser" ) {
+	            	if( request.getSession() != null && request.getSession().getAttribute(SessionListener.USER_LOGIN_SESSION_KEY) != null ) {
 	            		// (Login)인증 된 경우 자원에 대한 권한 체크
 	            		result = customAuthChecker.check(request, authentication.get());
 	            		// (Login)인증 되었고 자원 권한이 있는 경우
@@ -272,7 +249,6 @@ public class ConfigSecurity extends BaseObject{
 	            			// 권한인증 미통과 ExceptionHandlingConfigurer.accessDeniedHandler()-에러페이지 를 호출하도록 유도
 	            			throw new AccessDeniedException("권한이 없습니다.");
 	            		}
-		            // (Login)인증이 안 된 경우
 	            	}else {
 	            		// (Login)인증이 안 된 경우 ExceptionHandlingConfigurer.authenticationEntryPoint()-로그인페이지 를 호출하도록 유도
 	            		return new AuthorizationDecision(false);
@@ -284,4 +260,6 @@ public class ConfigSecurity extends BaseObject{
 	        }));
 		}
 	}
+	
+
 }

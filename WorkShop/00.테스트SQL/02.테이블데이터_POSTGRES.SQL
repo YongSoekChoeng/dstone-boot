@@ -78,17 +78,12 @@ INSERT INTO SAMPLE_ROLE_PROG (
 INSERT INTO SAMPLE_ROLE_PROG (
   ROLE_ID, PROG_ID, PROG_NAME, PROG_URL, INPUT_DT
 ) VALUES (
-  'ROLE_USER', 'VIEWS',  '뷰',  '/views/**', NOW()
+  'ROLE_USER', 'VIEWS',  '뷰',  '/views/sample/user/**', NOW()
 );
 INSERT INTO SAMPLE_ROLE_PROG (
   ROLE_ID, PROG_ID, PROG_NAME, PROG_URL, INPUT_DT
 ) VALUES (
-  'ROLE_ADMIN', 'MENU_ADMIN',  '관리자메뉴',  '/sample/admin/**', NOW()
-);
-INSERT INTO SAMPLE_ROLE_PROG (
-  ROLE_ID, PROG_ID, PROG_NAME, PROG_URL, INPUT_DT
-) VALUES (
-  'ROLE_ADMIN', 'VIEWS',  '뷰',  '/views/**', NOW()
+  'ROLE_ADMIN', 'ADMIN',  '관리자',  '/**', NOW()
 );
 
 COMMIT;

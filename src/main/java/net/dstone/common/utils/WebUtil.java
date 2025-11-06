@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
 
@@ -342,10 +342,10 @@ public class WebUtil {
 		}
 	}
 
-	public static void setCookie(javax.servlet.http.HttpServletResponse resp, String sName, String sValue) {
+	public static void setCookie(jakarta.servlet.http.HttpServletResponse resp, String sName, String sValue) {
 		try {
-			javax.servlet.http.Cookie c = null;
-			c = new javax.servlet.http.Cookie(sName, sValue);
+			jakarta.servlet.http.Cookie c = null;
+			c = new jakarta.servlet.http.Cookie(sName, sValue);
 			c.setPath("/");
 			resp.addCookie(c);
 		} catch (Exception e) {
@@ -354,10 +354,10 @@ public class WebUtil {
 		return;
 	}
 	
-	public static void setCookie(javax.servlet.http.HttpServletResponse resp, String sName, String sValue, int activeSpanDays) {
+	public static void setCookie(jakarta.servlet.http.HttpServletResponse resp, String sName, String sValue, int activeSpanDays) {
 		try {
-			javax.servlet.http.Cookie c = null;
-			c = new javax.servlet.http.Cookie(sName, sValue);
+			jakarta.servlet.http.Cookie c = null;
+			c = new jakarta.servlet.http.Cookie(sName, sValue);
 			c.setPath("/");
 			c.setMaxAge(60*60*24*activeSpanDays); 
 			resp.addCookie(c);
@@ -367,7 +367,7 @@ public class WebUtil {
 		return;
 	}
 
-	public static javax.servlet.http.Cookie getCookie(javax.servlet.http.Cookie[] cookies, String name) {
+	public static jakarta.servlet.http.Cookie getCookie(jakarta.servlet.http.Cookie[] cookies, String name) {
 		if (cookies == null)
 			return null;
 

@@ -34,7 +34,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/doAnalyzing.do") 
-    public ModelAndView doAnalyzing(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView doAnalyzing(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -115,7 +115,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/stopAnalyzing.do") 
-    public ModelAndView stopAnalyzing(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView stopAnalyzing(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -192,7 +192,7 @@ public class AnalysisController extends net.dstone.common.biz.BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/doMonitoring.do") 
-    public ModelAndView doMonitoring(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView doMonitoring(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }
@@ -258,7 +258,7 @@ debug("isCompleted["+isCompleted+"]" + " analyzeJobKindNum["+analyzeJobKindNum+"
      * @return 
      */ 
     @RequestMapping(value = "/saveToDB.do") 
-    public ModelAndView saveToDB(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView saveToDB(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		// 필요없는 주석들은 제거하시고 사용하시면 됩니다.
    		/************************ 뷰생성 시작 ************************/
    		if(isAjax(request)) { mav = new ModelAndView("jsonView"); }

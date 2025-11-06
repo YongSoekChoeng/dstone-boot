@@ -134,7 +134,7 @@ public class PageUtil {
 	 * @param sFunctionName
 	 * @return
 	 */
-	public String htmlPostPage(javax.servlet.http.HttpServletRequest request, String formName, String targetPageParamName) {
+	public String htmlPostPage(jakarta.servlet.http.HttpServletRequest request, String formName, String targetPageParamName) {
 
 		StringBuffer html = new StringBuffer("");
 		String contxtRoot = request.getContextPath();
@@ -178,7 +178,7 @@ public class PageUtil {
 	 * @param sFunctionName
 	 * @return
 	 */
-	public String htmlPostPage(javax.servlet.http.HttpServletRequest request, String formName, String targetPageParamName, String sFunctionName) {
+	public String htmlPostPage(jakarta.servlet.http.HttpServletRequest request, String formName, String targetPageParamName, String sFunctionName) {
 
 		StringBuffer html = new StringBuffer("");
 		String contxtRoot = request.getContextPath();

@@ -26,7 +26,7 @@ public class ProducerController extends BaseController {
      * @return 
      */ 
     @RequestMapping(value = "/sendMessage.do") 
-    public ModelAndView send(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
+    public ModelAndView send(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, ModelAndView mav) throws Exception {
    		
    		/************************ 변수 선언 시작 ************************/
    		net.dstone.common.utils.RequestUtil requestUtil;

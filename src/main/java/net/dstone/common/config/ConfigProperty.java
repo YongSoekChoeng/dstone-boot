@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.sun.xml.bind.v2.schemagen.xmlschema.List;
+import java.util.List;
 
 import net.dstone.common.core.BaseObject;
 

@@ -1,7 +1,7 @@
 
 package net.dstone.sample.cud.vo;  
                       
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement( name="SampleGroupRoleCudVo" ) 
 public class SampleGroupRoleCudVo extends net.dstone.common.biz.BaseVo implements java.io.Serializable { 

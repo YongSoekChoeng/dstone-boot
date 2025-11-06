@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,9 +25,9 @@ public class RequestUtil {
 	@SuppressWarnings("unused")
 	private static final String MAST_BAR_3 = "#########################################";
 
-	private javax.servlet.http.HttpServletRequest request;
-	private javax.servlet.http.HttpServletResponse response;
-	private javax.servlet.http.HttpSession session;
+	private jakarta.servlet.http.HttpServletRequest request;
+	private jakarta.servlet.http.HttpServletResponse response;
+	private jakarta.servlet.http.HttpSession session;
 	private net.dstone.common.utils.FileUpUtil fileup;
 
 	private String scheme = "";
@@ -48,16 +48,16 @@ public class RequestUtil {
 	java.util.ArrayList<java.util.Properties> uploadList = new java.util.ArrayList<java.util.Properties>();
 	java.util.HashMap<String, String[]> jsonMap = new java.util.HashMap<String, String[]>();
 
-	public RequestUtil(javax.servlet.http.HttpServletRequest request) throws Exception {
+	public RequestUtil(jakarta.servlet.http.HttpServletRequest request) throws Exception {
 		this.init(request, null);
 	}
 	
-	public RequestUtil(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
+	public RequestUtil(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws Exception {
 		this.init(request, response);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void init(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws Exception {
+	private void init(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws Exception {
 		this.request = request;
 		if(response != null) {
 			this.response = response;
@@ -460,27 +460,27 @@ public class RequestUtil {
 		this.strRealPath = strRealPath;
 	}
 
-	public javax.servlet.http.HttpServletRequest getRequest() {
+	public jakarta.servlet.http.HttpServletRequest getRequest() {
 		return request;
 	}
 
-	public void setRequest(javax.servlet.http.HttpServletRequest request) {
+	public void setRequest(jakarta.servlet.http.HttpServletRequest request) {
 		this.request = request;
 	}
 
-	public javax.servlet.http.HttpServletResponse getResponse() {
+	public jakarta.servlet.http.HttpServletResponse getResponse() {
 		return response;
 	}
 
-	public void setResponse(javax.servlet.http.HttpServletResponse response) {
+	public void setResponse(jakarta.servlet.http.HttpServletResponse response) {
 		this.response = response;
 	}
 
-	public javax.servlet.http.HttpSession getSession() {
+	public jakarta.servlet.http.HttpSession getSession() {
 		return session;
 	}
 
-	public void setSession(javax.servlet.http.HttpSession session) {
+	public void setSession(jakarta.servlet.http.HttpSession session) {
 		this.session = session;
 	}
 
