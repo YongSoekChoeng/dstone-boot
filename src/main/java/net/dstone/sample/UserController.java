@@ -31,7 +31,7 @@ public class UserController extends net.dstone.common.biz.BaseController {
    		if(isAjax(request)) { 
    			mav = new ModelAndView("jsonView"); 
    		}else{
-   			mav = new ModelAndView("/sample/user/listUser"); 
+   			mav = new ModelAndView("sample/user/listUser"); 
    		}
    		/************************ 뷰생성 끝 **************************/
    		

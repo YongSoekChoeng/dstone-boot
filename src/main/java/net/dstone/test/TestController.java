@@ -41,7 +41,7 @@ public class TestController extends BaseController {
 		}
 
 		mav.addObject("TEST_NAME", "doTestSubmit Test....");
-		mav.setViewName("/test/test");
+		mav.setViewName("test/test");
 		return mav;
 	}
 

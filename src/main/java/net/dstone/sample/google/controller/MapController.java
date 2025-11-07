@@ -25,7 +25,7 @@ public class MapController extends net.dstone.common.biz.BaseController {
     	
         model.addAttribute("mapsPlatformKey", mapsPlatformKey);
         
-        return "/sample/google/maps/map";
+        return "sample/google/maps/map";
     }
     
 }

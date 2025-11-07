@@ -34,7 +34,7 @@ public class AdminController extends net.dstone.common.biz.BaseController {
    		if(isAjax(request)) { 
    			mav = new ModelAndView("jsonView"); 
    		}else{
-   			mav = new ModelAndView("/sample/admin/manageUser"); 
+   			mav = new ModelAndView("sample/admin/manageUser"); 
    		}
    		/************************ 뷰생성 끝 **************************/
    		
@@ -84,7 +84,7 @@ public class AdminController extends net.dstone.common.biz.BaseController {
    		if(isAjax(request)) { 
    			mav = new ModelAndView("jsonView"); 
    		}else{
-   			mav = new ModelAndView("/sample/admin/manageUser"); 
+   			mav = new ModelAndView("sample/admin/manageUser"); 
    		}
    		/************************ 뷰생성 끝 **************************/
    		
@@ -133,7 +133,7 @@ public class AdminController extends net.dstone.common.biz.BaseController {
    		if(isAjax(request)) { 
    			mav = new ModelAndView("jsonView"); 
    		}else{
-   			mav = new ModelAndView("/sample/admin/manageUser"); 
+   			mav = new ModelAndView("sample/admin/manageUser"); 
    		}
    		/************************ 뷰생성 끝 **************************/
    		
@@ -185,7 +185,7 @@ public class AdminController extends net.dstone.common.biz.BaseController {
    		if(isAjax(request)) { 
    			mav = new ModelAndView("jsonView"); 
    		}else{
-   			mav = new ModelAndView("/sample/admin/manageUser"); 
+   			mav = new ModelAndView("sample/admin/manageUser"); 
    		}
    		/************************ 뷰생성 끝 **************************/
    		

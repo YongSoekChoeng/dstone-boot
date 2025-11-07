@@ -120,11 +120,13 @@ spring:
                 exchange-id: app.fanout.exchange # (fanout)라우팅 키와 상관없이 바인딩된 모든 큐로 메시지를 전달
                 queue-id: app.notifications.queue
                 queue-durable: false # queue 내용 영구 저장 여부(실제 큐의 Durability와 동일해야 함. 운영모드에서는 true로 하는게 좋음.)
+                exchange-durable: true
                 routing-key: 
             binding-orders: 
                 exchange-id: app.direct.exchange # (direct)라우팅 키가 정확히 일치하는 큐로 메시지를 전달
                 queue-id: app.orders.queue
                 queue-durable: false # queue 내용 영구 저장 여부(실제 큐의 Durability와 동일해야 함. 운영모드에서는 true로 하는게 좋음.)
+                exchange-durable: true
                 routing-key: orders.process
     redis: 
         host: localhost

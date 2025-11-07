@@ -42,7 +42,7 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
         String location = loginUri;
         model.addAttribute("location", location);
         
-        return "/sample/kakao/login";
+        return "sample/kakao/login";
     }
     
     @RequestMapping("/loginCallback.do")
@@ -57,7 +57,7 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
 
         // User 로그인, 또는 회원가입 로직 추가
         
-        return "/sample/kakao/loginCallback";
+        return "sample/kakao/loginCallback";
     }
     
     @RequestMapping("/logout.do")
@@ -97,7 +97,7 @@ public class KakaoLoginController extends net.dstone.common.biz.BaseController {
         String location = loginUri;
         model.addAttribute("location", location);
         
-        return "/sample/kakao/login";
+        return "sample/kakao/login";
         
     }
 }

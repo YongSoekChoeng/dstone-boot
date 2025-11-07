@@ -410,6 +410,7 @@ public abstract class BaseController extends net.dstone.common.core.BaseObject {
 		if(RequestUtil.isAjax(request)) {
 			isAjax = true;
 		}
+info("isAjax=================>>>" + isAjax);
 		return isAjax;
 	}
 	protected boolean isJson(HttpServletRequest request) {
