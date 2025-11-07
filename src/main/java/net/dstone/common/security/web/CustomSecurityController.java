@@ -3,16 +3,18 @@ package net.dstone.common.security.web;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import net.dstone.common.biz.BaseController;
+import net.dstone.common.config.ConfigProperty;
 import net.dstone.common.config.ConfigSecurity;
 import net.dstone.common.consts.ErrCd;
 import net.dstone.common.exception.SecException;
@@ -28,6 +30,9 @@ public class CustomSecurityController extends BaseController {
 	@Resource(name = "customUserService")
     private CustomUserService customUserService; 
     /********* SVC 정의부분 끝 *********/
+
+	@Autowired 
+	ConfigProperty configProperty; // 프로퍼티 가져오는 bean
 
 	/**
 	 * 사용자가 로그인된 상태인지 체크하는 액션
