@@ -167,6 +167,23 @@ app:
             simple-encrypt-key: jysn007db2admin!
 
 interface: 
+    naver: 
+      # 발급받은 클라이언트ID
+      client-id: WCdNwqKh3uohtkernz7O
+      # 발급받은 클라이언트패스워드
+      client-secret: Q3D0dt9YNU
+      # 1. 로그인 URL
+      login-url: https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=@client_id@&redirect_uri=@redirect_uri@&state=@state@&scope=@scope@
+      # 2. 로그인 후 콜백 URL
+      login-redirect-uri: /naver/loginCallback.do
+      # 3. 사용자토큰 조회 URL
+      access-token-url: https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=@client_id@&client_secret=@client_secret@&redirect_uri=@redirect_uri@&code=@code@&state=@state@
+      # 4. 사용자정보 조회 URL
+      userinfo-url: https://openapi.naver.com/v1/nid/me
+      # 5. 로그아웃 URL
+      logout-url: https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=@client_id@&client_secret=@client_secret@&access_token=@access_token@&service_provider=@service_provider@
+      # 6. 로그아웃 후 콜백 URL
+      logout-redirect-uri: /naver/logoutCallback.do
     kakao: 
       # 발급받은 클라이언트ID
       client-id: 6f89f3f82713133646791acf04bb78c7

@@ -9,7 +9,7 @@
 	String nickname = "";
 	
 	if( userInfo != null ){
-
+	
 		id = StringUtil.nullCheck(userInfo.get("id"), "");
 		email = StringUtil.nullCheck(userInfo.get("email"), "");
 		nickname = StringUtil.nullCheck(userInfo.get("nickname"), "");
@@ -32,14 +32,14 @@
 </head>
 <body>
 <div class="container" style="display: flex; justify-content: center; align-content: center; align-items: center; flex-direction: column; margin: 200px auto; ">
-    <h1>카카오 로그인</h1>
+    <h1>Naver 로그인</h1>
        로그인 되었습니다.
     <br>
     <br>
     id:<%=id %> email:<%=email %> nickname:<%=nickname %> 
     <br>
     <br>
-    <a href="/kakao/logout.do" >로그아웃</a>
+    <a href="/naver/logout.do" >로그아웃</a>
 </div>
 </body>
 </html>
