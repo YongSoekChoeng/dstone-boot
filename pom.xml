@@ -582,7 +582,7 @@
 	                        <classifier>batch-utils</classifier>
 	                        <classesDirectory>${project.build.outputDirectory}</classesDirectory>
 	                        <includes>
-	                            <include>**/*.class</include>
+	                            <include>net/dstone/common/**/*.class</include>
 	                        </includes>
 	                        <excludes>
 	                            <exclude>**/*.properties</exclude>
