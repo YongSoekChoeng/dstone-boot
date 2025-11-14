@@ -11,32 +11,39 @@ public class TestBean {
 	
 	public static void test() {
 
-		/*****************************************************/
-		java.util.Map<String,Object> initValMap = new java.util.HashMap<String,Object>();
-		initValMap.put("spring.redis.host", "localhost");
-		initValMap.put("spring.redis.port", "6379");
-		
-		java.util.Map<String,Object> valMap = new java.util.HashMap<String,Object>();
-		valMap.put("NAME", "정용석");
-		valMap.put("AGE", "55");
-		/*****************************************************/
-		
-		net.dstone.common.utils.DateUtil.stopWatchStart("01.저장테스트");
-		
-		try {
-			org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate = net.dstone.common.utils.RedisUtil.getInstance(initValMap).getRedisTemplate();
-			
-			org.springframework.data.redis.core.HashOperations<String, String, Object> setValueOperations = redisTemplate.opsForHash();
-			setValueOperations.put("jysn007", "NAME", "정용석");
-		
-			org.springframework.data.redis.core.HashOperations<String, String, Object> getValueOperations = redisTemplate.opsForHash();
-			System.out.println( "NAME:" +  getValueOperations.get("jysn007", "NAME") );
-		    
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally{
-			net.dstone.common.utils.DateUtil.stopWatchEnd("01.저장테스트");
-		}
+
+
+/*****************************************************/
+
+
+
+/*****************************************************/
+
+net.dstone.common.utils.DateUtil.stopWatchStart("01.암복호화");
+
+try {
+	
+	String plainStr = "dataflow";
+	String encStr = "";
+	String decStr = "";
+	
+	if(!net.dstone.common.utils.StringUtil.isEmpty(plainStr)){
+		encStr = net.dstone.common.utils.EncUtil.encrypt(plainStr);
+		System.out.println( "plainStr["+plainStr+"] ==>> encStr["+encStr+"]" );
+	}
+	
+	if(!net.dstone.common.utils.StringUtil.isEmpty(encStr)){
+		decStr = net.dstone.common.utils.EncUtil.decrypt(encStr);
+		System.out.println( "encStr["+encStr+"] ==>> decStr["+decStr+"]" );
+	}
+
+    
+} catch (Exception e) {
+	e.printStackTrace();
+} finally{
+	net.dstone.common.utils.DateUtil.stopWatchEnd("01.암복호화");
+}
+
 
 	}
 }
