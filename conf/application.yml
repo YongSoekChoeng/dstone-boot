@@ -55,6 +55,9 @@ spring:
                 username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 maximum-pool-size: 30
+                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
+                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
+                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
                 #initialization-fail-timeout: 0 
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/sampleDB
@@ -67,6 +70,9 @@ spring:
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 30
+                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
+                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
+                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
                 #initialization-fail-timeout: 0 
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/sampleDB
@@ -79,6 +85,9 @@ spring:
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 50
+                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
+                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
+                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
                 #initialization-fail-timeout: 0 
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/xe
@@ -91,6 +100,9 @@ spring:
                 username: ENC(RnMQjHJ0qA/1SU6Z9qbcgB8sKFgs2jLQem/M+1+yhY8=)
                 password: ENC(Xo2vTpA77ch03obc64y7cBQQT90e37qG5qHOZCkyDmc=)
                 maximum-pool-size: 50
+                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
+                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
+                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
                 #initialization-fail-timeout: 0 
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/postgres
@@ -103,6 +115,9 @@ spring:
                 username: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
                 password: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
                 maximum-pool-size: 30
+                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
+                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
+                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
                 #initialization-fail-timeout: 0 
                 use-jndi-lookup: N
                 jndi-lookup-name: java:comp/env/analyze
