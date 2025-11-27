@@ -13,7 +13,7 @@ public class TestBean {
 	public static void 암복호화() {
 
 		/*****************************************************/
-
+    
 		/*****************************************************/
 
 		net.dstone.common.utils.DateUtil.stopWatchStart("01.암복호화");
