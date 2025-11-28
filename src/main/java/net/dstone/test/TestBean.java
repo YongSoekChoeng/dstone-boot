@@ -6,7 +6,8 @@ public class TestBean {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		TestBean.DB테스트();
+		//TestBean.DB테스트();
+		TestBean.파일분리();
 	}
 
 	
@@ -38,6 +39,34 @@ public class TestBean {
 			e.printStackTrace();
 		} finally {
 			net.dstone.common.utils.DateUtil.stopWatchEnd("01.암복호화");
+		}
+
+	}
+	
+	public static void 파일분리() {
+
+		/*****************************************************/
+    
+		/*****************************************************/
+
+		net.dstone.common.utils.DateUtil.stopWatchStart("01.파일분리");
+
+		try {
+
+			String inputFileFullPath = "C:/Temp/SAMFILE_TEST/SAMFILE01.sam";
+			String outputDir = "C:/Temp/SAMFILE_TEST/split";
+			int fileSizeByMB = 1;
+
+			java.util.List<String> splitTextFileList = net.dstone.common.utils.FileUtil.splitTextFile(inputFileFullPath, outputDir, fileSizeByMB);
+
+			for(String splitTextFile : splitTextFileList) {
+				System.out.println("splitTextFile[" + splitTextFile + "]");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			net.dstone.common.utils.DateUtil.stopWatchEnd("01.파일분리");
 		}
 
 	}

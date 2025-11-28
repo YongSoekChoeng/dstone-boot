@@ -1727,4 +1727,18 @@ public class FileUtil {
 	        }
 		}
 	}
+	
+	/**
+	 * 파일의 라인을 카운트하는 메소드
+	 * @param zipFilePath
+	 * @param destDir
+	 * @return
+	 */
+	public static long countLines(String filePath) {
+        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+            return stream.count();
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
