@@ -1017,6 +1017,16 @@ public class StringUtil {
 		}
 		return empty;
 	}
+	
+	public static String ifEmpty(Object input, String defaultVal) {
+		String val = "";
+		if( isEmpty(input) ) {
+			val = defaultVal;
+		}else {
+			val = input.toString();
+		}
+		return val;
+	}
 
 	/**
 	 * 문자열이 포함되어 있는지 체크하는 메소드
