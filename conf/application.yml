@@ -134,7 +134,7 @@ spring:
         port: 5672
         virtual-host: /dstone-mq
         username: ENC(IIOITvsB1izl1mH7iw/A3eM5QUQ0z7HHj7sJqS9rrWI=)
-        password: ENC(uMDcjuJKHG6Kgp/HT5MJuNSnBXlcM516gYosPOqqlPQ=)
+        password: ENC(XIXzzg4U/6LYCwsQagqLSeGJt80UdT1bZcI0Msf0nh8=)
         bindings: 
             binding-notifications: 
                 queue-id: app.notifications.queue
