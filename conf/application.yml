@@ -130,8 +130,8 @@ spring:
         allow-bean-definition-overriding: true
     rabbitmq: 
         enabled: true
-        host: localhost
-        port: 5672
+        host: ${RABBITMQ_HOST}
+        port: ${RABBITMQ_POST}
         virtual-host: /dstone-mq
         username: ENC(IIOITvsB1izl1mH7iw/A3eM5QUQ0z7HHj7sJqS9rrWI=)
         password: ENC(XIXzzg4U/6LYCwsQagqLSeGJt80UdT1bZcI0Msf0nh8=)
