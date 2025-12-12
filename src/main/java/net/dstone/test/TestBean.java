@@ -7,7 +7,8 @@ public class TestBean {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//TestBean.DB테스트();
-		TestBean.파일분리();
+		TestBean.암복호화();
+		//TestBean.파일분리();
 	}
 
 	
@@ -21,8 +22,8 @@ public class TestBean {
 
 		try {
 
-			String plainStr = "";
-			String encStr = "VElaOj1pF3IdRCrKXHIQFVRCQv4hE6Oniig5ohsQ1wY=";
+			String plainStr = "db2admin!@";
+			String encStr = "";
 			String decStr = "";
 
 			if (!net.dstone.common.utils.StringUtil.isEmpty(plainStr)) {
