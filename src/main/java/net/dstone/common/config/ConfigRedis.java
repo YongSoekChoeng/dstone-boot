@@ -13,6 +13,7 @@ import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.RedisUtil;
 
 @Configuration
+@ConditionalOnProperty(name = "spring.redis.enabled", havingValue = "true")
 public class ConfigRedis extends BaseObject {
 	
     @Value("${spring.redis.host}")
