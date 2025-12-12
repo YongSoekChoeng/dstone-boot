@@ -22,8 +22,8 @@ public class TestBean {
 
 		try {
 
-			String plainStr = "db2admin!@";
-			String encStr = "";
+			String plainStr = "";
+			String encStr = "XIXzzg4U/6LYCwsQagqLSeGJt80UdT1bZcI0Msf0nh8=";
 			String decStr = "";
 
 			if (!net.dstone.common.utils.StringUtil.isEmpty(plainStr)) {
