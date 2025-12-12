@@ -1,0 +1,33 @@
+services:
+  dstone-rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: dstone-rabbitmq
+    hostname: dstone-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP 프로토콜 포트
+      - "15672:15672" # Management UI 포트
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    networks:
+      - dstone-network
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  rabbitmq_log:
+    driver: local
+
+networks:
+  dstone-network:
+    driver: bridge
