@@ -149,6 +149,7 @@ spring:
                 #exchange-durable: false
                 routing-key: orders.process
     redis: 
+        enabled: false
         host: localhost
         port: 6379
         timeout: 10000
