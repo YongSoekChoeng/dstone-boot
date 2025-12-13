@@ -4,11 +4,11 @@
 #   /workshop/docker/dstone-redis
 # <작업명령>
 # 1. Docker Compose 실행
-#   - docker-compose -f dstone-redis-docker.yml up -d
+#   - docker-compose -f 01.dstone-redis-docker.yml up -d
 # 2. 로그 확인
-#   - docker-compose -f dstone-redis-docker.yml logs -f dstone-redis
+#   - docker-compose -f 01.dstone-redis-docker.yml logs -f dstone-redis
 # 3. 중지 및 삭제
-#   - docker-compose -f dstone-redis-docker.yml down -v
+#   - docker-compose -f 01.dstone-redis-docker.yml down -v
 ########################################################################################
 services:
 
