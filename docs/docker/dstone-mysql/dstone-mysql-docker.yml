@@ -35,9 +35,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      
 networks:
   dstone-network:
     driver: bridge
 
 volumes:
+  # MySQL 볼륨
   mysql-data:
