@@ -1,0 +1,48 @@
+########################################################################################
+# <사전작업>
+# 1. 작업디렉토리 결정 후 템플릿 복사.
+#   /workshop/docker/dstone-rabbitmq
+# <작업명령>
+# 1. Docker Compose 실행
+#   - docker-compose -f dstone-rabbitmq-docker.yml up -d
+# 2. 로그 확인
+#   - docker-compose -f dstone-rabbitmq-docker.yml logs -f dstone-rabbitmq
+# 3. 중지 및 삭제
+#   - docker-compose -f dstone-rabbitmq-docker.yml down -v
+########################################################################################
+services:
+
+  # RabbitMQ 서버
+  dstone-rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: dstone-rabbitmq
+    hostname: dstone-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP 프로토콜 포트
+      - "15672:15672" # Management UI 포트
+    environment:
+      RABBITMQ_DEFAULT_USER: jysn007
+      RABBITMQ_DEFAULT_PASS: db2admin!@
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    networks:
+      - dstone-network
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      
+networks:
+  dstone-network:
+    driver: bridge
+    
+volumes:
+  # RabbitMQ 볼륨
+  rabbitmq_data:
+    driver: local
+  rabbitmq_log:
+    driver: local
