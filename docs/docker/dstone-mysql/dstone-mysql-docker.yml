@@ -1,0 +1,43 @@
+########################################################################################
+# <사전작업>
+# 1. 작업디렉토리 결정 후 템플릿 복사.
+#   /workshop/docker/dstone-mysql
+# <작업명령>
+# 1. Docker Compose 실행
+#   - docker-compose -f dstone-mysql-docker.yml up -d
+# 2. 로그 확인
+#   - docker-compose -f dstone-mysql-docker.yml logs -f dstone-mysql
+# 3. 중지 및 삭제
+#   - docker-compose -f dstone-mysql-docker.yml down -v
+########################################################################################
+services:
+
+  # MySQL 데이터베이스 서버
+  dstone-mysql:
+    image: mysql:8.0
+    container_name: dstone-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: db2admin!@
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_0900_ai_ci
+    ports:
+      - "33060:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    networks:
+      - dstone-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  dstone-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
