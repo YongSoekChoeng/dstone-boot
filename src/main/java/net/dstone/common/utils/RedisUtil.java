@@ -2,6 +2,7 @@ package net.dstone.common.utils;
 
 import java.util.Map;
 
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -33,9 +34,13 @@ public class RedisUtil {
 	
     public RedisTemplate<String, Object> getRedisTemplate() {
     	
-    	LettuceConnectionFactory factory  = new LettuceConnectionFactory(initValMap.get("spring.redis.host").toString(), Integer.parseInt(initValMap.get("spring.redis.port").toString()));
-    	factory.afterPropertiesSet();
+    	RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
+    	redisConfiguration.setHostName(initValMap.get("spring.redis.host").toString());
+    	redisConfiguration.setPort(Integer.parseInt(initValMap.get("spring.redis.port").toString()));
+    	redisConfiguration.setPassword(initValMap.get("spring.redis.password").toString());
+    	LettuceConnectionFactory factory  = new LettuceConnectionFactory(redisConfiguration);
     	
+    	factory.afterPropertiesSet();
     	RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());

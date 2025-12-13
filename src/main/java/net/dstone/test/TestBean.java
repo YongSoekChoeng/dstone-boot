@@ -6,10 +6,20 @@ public class TestBean {
 
 	public static void main(String[] args) {
 		
+		//TestBean.테스트();
+		
 		//TestBean.암복호화();
 		//TestBean.파일분리();
 		//TestBean.DB테스트();
-		TestBean.레빗엠큐테스트();
+		//TestBean.레빗엠큐테스트();
+		TestBean.레디스테스트();
+		
+	}
+	
+
+	public static void 테스트() {
+		
+		System.out.println( net.dstone.common.tools.analyzer.util.DbGen.getDdlQuery("MYSQL", "CREATE"));
 		
 	}
 
@@ -24,8 +34,8 @@ public class TestBean {
 
 		try {
 
-			String plainStr = "";
-			String encStr = "XIXzzg4U/6LYCwsQagqLSeGJt80UdT1bZcI0Msf0nh8=";
+			String plainStr = "db2admin!@";
+			String encStr = "";
 			String decStr = "";
 
 			if (!net.dstone.common.utils.StringUtil.isEmpty(plainStr)) {
@@ -161,6 +171,39 @@ public class TestBean {
 			net.dstone.common.utils.DateUtil.stopWatchEnd("01.레빗엠큐테스트");
 		}
 		
+
+	}
+	
+
+	public static void 레디스테스트() {
+		
+		/*****************************************************/
+		java.util.Map<String,Object> initValMap = new java.util.HashMap<String,Object>();
+		initValMap.put("spring.redis.host", "localhost");
+		initValMap.put("spring.redis.port", "6379");
+		initValMap.put("spring.redis.password", "db2admin!@");
+		
+		java.util.Map<String,Object> valMap = new java.util.HashMap<String,Object>();
+		valMap.put("NAME", "정용석");
+		valMap.put("AGE", "55");
+		/*****************************************************/
+		
+		net.dstone.common.utils.DateUtil.stopWatchStart("01.레디스테스트");
+		
+		try {
+			org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate = net.dstone.common.utils.RedisUtil.getInstance(initValMap).getRedisTemplate();
+			
+			org.springframework.data.redis.core.HashOperations<String, String, Object> setValueOperations = redisTemplate.opsForHash();
+			setValueOperations.put("jysn007", "NAME", "정용석");
+		
+			org.springframework.data.redis.core.HashOperations<String, String, Object> getValueOperations = redisTemplate.opsForHash();
+			System.out.println( "NAME:" +  getValueOperations.get("jysn007", "NAME") );
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			net.dstone.common.utils.DateUtil.stopWatchEnd("01.레디스테스트");
+		}
 
 	}
 	

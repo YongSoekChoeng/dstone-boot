@@ -26,7 +26,7 @@ services:
     command: >
       redis-server
       --appendonly yes
-      --requirepass db2admin!@
+      --requirepass "db2admin!@"
     volumes:
       - redis_data:/data
     networks:

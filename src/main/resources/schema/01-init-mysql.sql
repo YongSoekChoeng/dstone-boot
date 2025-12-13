@@ -1,9 +1,19 @@
--- 서버용 데이터베이스 생성
+-- 서버용 Sample 데이터베이스 생성
 CREATE DATABASE IF NOT EXISTS sampleDB CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
--- 서버용 사용자 생성 및 권한 부여
+-- 서버용 Sample 사용자 생성 및 권한 부여
 CREATE USER IF NOT EXISTS 'sampleuser'@'%' IDENTIFIED BY 'sampleuser';
 GRANT ALL PRIVILEGES ON sampleDB.* TO 'sampleuser'@'%';
+
+-- 권한 적용
+FLUSH PRIVILEGES;
+
+-- 서버용 Analyze 데이터베이스 생성
+CREATE DATABASE IF NOT EXISTS analyzeDB CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+-- 서버용 Analyze 사용자 생성 및 권한 부여
+CREATE USER IF NOT EXISTS 'analyzeuser'@'%' IDENTIFIED BY 'analyzeuser';
+GRANT ALL PRIVILEGES ON analyzeDB.* TO 'analyzeuser'@'%';
 
 -- 권한 적용
 FLUSH PRIVILEGES;

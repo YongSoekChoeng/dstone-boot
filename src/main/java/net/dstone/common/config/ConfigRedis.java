@@ -20,6 +20,8 @@ public class ConfigRedis extends BaseObject {
     private String redisHost;
     @Value("${spring.redis.port}")
     private int redisPort;
+    @Value("${spring.redis.password}")
+    private String redisPassword;
     
     @Bean
     public RedisTemplate<String,Object> redisTemplate() {
@@ -27,6 +29,7 @@ public class ConfigRedis extends BaseObject {
     	Map<String,Object> initValMap = new HashMap<String,Object>();
     	initValMap.put("spring.redis.host", redisHost);
     	initValMap.put("spring.redis.port", redisPort);
+    	initValMap.put("spring.redis.password", redisPassword);
 
         return RedisUtil.getInstance(initValMap).getRedisTemplate();
     }
