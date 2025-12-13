@@ -1,0 +1,49 @@
+########################################################################################
+# <사전작업>
+# 1. 작업디렉토리 결정 후 템플릿 복사.
+#   /workshop/docker/dstone-redis
+# <작업명령>
+# 1. Docker Compose 실행
+#   - docker-compose -f dstone-redis-docker.yml up -d
+# 2. 로그 확인
+#   - docker-compose -f dstone-redis-docker.yml logs -f dstone-redis
+# 3. 중지 및 삭제
+#   - docker-compose -f dstone-redis-docker.yml down -v
+########################################################################################
+services:
+
+  # Redis 서버
+  dstone-redis:
+    image: redis:7.2
+    container_name: dstone-redis
+    hostname: dstone-redis
+    ports:
+      - "6379:6379"   # Redis 기본 포트
+    ulimits:
+      nofile:
+        soft: 10032
+        hard: 10032
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass db2admin!@
+    volumes:
+      - redis_data:/data
+    networks:
+      - dstone-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "db2admin!@", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  dstone-network:
+    driver: bridge
+
+volumes:
+  # Redis 볼륨
+  redis_data:
+    driver: local
+    
