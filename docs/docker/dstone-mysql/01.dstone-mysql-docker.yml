@@ -14,7 +14,8 @@ services:
 
   # MySQL 데이터베이스 서버
   dstone-mysql:
-    image: mysql:8.0
+    # image: mysql:8.0
+    image: jysn007/dstone-mysql:v0.8
     container_name: dstone-mysql
     environment:
       MYSQL_ROOT_PASSWORD: db2admin!@
