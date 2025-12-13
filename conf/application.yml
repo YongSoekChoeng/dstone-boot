@@ -45,13 +45,15 @@ spring:
 #            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
     data:  # Redis 를 Spring Session 으로 사용하기 위해 설정(3)
         redis: 
-            host: localhost
-            port: 6379
+            host: ${REDIS_HOST}
+            port: ${REDIS_PORT}
+            password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
+            timeout: 10000
     datasource: 
         common: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/sampleDB
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB
                 username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 maximum-pool-size: 30
@@ -66,7 +68,7 @@ spring:
         sample:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/sampleDB
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 30
@@ -81,7 +83,7 @@ spring:
         sample-oracle: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/sampleDB
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 50
@@ -96,7 +98,7 @@ spring:
         sample-postgresql: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:postgresql://${DB_HOST}:${DB_POST}/postgres
+                jdbc-url: jdbc:log4jdbc:postgresql://${DB_HOST}:${DB_PORT}/postgres
                 username: ENC(RnMQjHJ0qA/1SU6Z9qbcgB8sKFgs2jLQem/M+1+yhY8=)
                 password: ENC(Xo2vTpA77ch03obc64y7cBQQT90e37qG5qHOZCkyDmc=)
                 maximum-pool-size: 50
@@ -111,9 +113,9 @@ spring:
         analyzer:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/analyze
-                username: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
-                password: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/analyzeDB
+                username: ENC(/V7LzByd6FKQ2uPexJOOaY8E6gCVnRc9TcoPT/pu1y8=)
+                password: ENC(/V7LzByd6FKQ2uPexJOOaY8E6gCVnRc9TcoPT/pu1y8=)
                 maximum-pool-size: 30
                 connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
                 max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
@@ -131,7 +133,7 @@ spring:
     rabbitmq: 
         enabled: true
         host: ${RABBITMQ_HOST}
-        port: ${RABBITMQ_POST}
+        port: ${RABBITMQ_PORT}
         virtual-host: /dstone-mq
         username: ENC(IIOITvsB1izl1mH7iw/A3eM5QUQ0z7HHj7sJqS9rrWI=)
         password: ENC(XIXzzg4U/6LYCwsQagqLSeGJt80UdT1bZcI0Msf0nh8=)
@@ -149,25 +151,32 @@ spring:
                 #exchange-durable: false
                 routing-key: orders.process
     redis: 
-        enabled: false
-        host: localhost
-        port: 6379
+        enabled: true
+        client-type: lettuce
+        lettuce: 
+            pool:
+                max-active: 5
+                max-idle: 5
+                min-idle: 2			
+        host: ${REDIS_HOST}
+        port: ${REDIS_PORT}
+        password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
         timeout: 10000
     security: 
         enabled: true
     session:  # Redis 를 Spring Session 으로 사용하기 위해 설정(4). 사용할 경우 store-type 를 redis 로 세팅.
-        store-type: none # 세션 저장소(none/redis)
+        store-type: redis # 세션 저장소(none/redis)
         redis: 
             namespace: dstone:session # 세션을 저장하는 데 사용되는 키의 네임스페이스
     # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)
     swagger: 
         enabled: false
     websocket: 
-        enabled: false
+        enabled: true
         
 resources: 
     fileUp: 
-        path: D:/Temp
+        path: ${FILE_UPLOAD_ROOT}
 
 mail: 
     host: 127.0.0.1
