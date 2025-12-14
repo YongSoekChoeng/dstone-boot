@@ -1,0 +1,47 @@
+########################################################################################
+# <사전작업>
+# 1. 작업디렉토리 결정 후 템플릿 복사.
+#   /workshop/docker/dstone-boot
+# <작업명령>
+# 1. Docker Compose 실행
+#   - docker-compose -f 01.dstone-boot-docker.yml up -d
+# 2. 로그 확인
+#   - docker-compose -f 01.dstone-boot-docker.yml logs -f dstone-boot
+# 3. 중지 및 삭제
+#   - docker-compose -f 01.dstone-boot-docker.yml down -v
+########################################################################################
+services:
+
+  # 프레임웍 Application
+  dstone-boot:
+    
+    # ---------- 최초작업일 때 ---------------------- #
+    image: eclipse-temurin:21-jdk
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    # image: jysn007/dstone-boot:v0.8
+    # --------------------------------------------- #
+    
+    container_name: dstone-boot
+    volumes:
+      - /workshop/docker/dstone-boot/target/dstone-boot.war:/workshop/dstone-boot/target/dstone-boot.war
+      - /workshop/docker/dstone-boot/bin:/workshop/dstone-boot/bin
+      - /workshop/docker/dstone-boot/conf:/workshop/dstone-boot/conf
+    ports:
+      - "6081:6081"
+    networks:
+      - dstone-network
+    command:
+      - /bin/bash
+      - -c
+      - |
+        echo "Starting Spring Batch Application..."
+        chmod +x /workshop/dstone-boot/bin/startApp.sh
+        cd /workshop/dstone-boot/bin
+        ./startApp.sh
+#    restart: unless-stopped
+    restart: "no"
+
+networks:
+  dstone-network:
+    driver: bridge
