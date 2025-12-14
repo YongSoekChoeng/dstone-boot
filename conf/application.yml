@@ -53,7 +53,7 @@ spring:
         common: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true	  
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
                 username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 maximum-pool-size: 30
@@ -68,7 +68,7 @@ spring:
         sample:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true	  
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 30
@@ -83,7 +83,7 @@ spring:
         analyzer:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/analyzeDB
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/analyzeDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
                 username: ENC(/V7LzByd6FKQ2uPexJOOaY8E6gCVnRc9TcoPT/pu1y8=)
                 password: ENC(/V7LzByd6FKQ2uPexJOOaY8E6gCVnRc9TcoPT/pu1y8=)
                 maximum-pool-size: 30
