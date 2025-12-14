@@ -14,7 +14,14 @@ services:
 
   # RabbitMQ 서버
   dstone-rabbitmq:
-    image: rabbitmq:3.13-management
+    
+    # ---------- 최초작업일 때 ---------------------- #
+    # image: rabbitmq:3.13-management
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    image: jysn007/dstone-rabbitmq:v0.8
+    # --------------------------------------------- #
+    
     container_name: dstone-rabbitmq
     hostname: dstone-rabbitmq
     ports:

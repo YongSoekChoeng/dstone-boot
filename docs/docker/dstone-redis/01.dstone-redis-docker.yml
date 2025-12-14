@@ -14,7 +14,14 @@ services:
 
   # Redis 서버
   dstone-redis:
-    image: redis:7.2
+    
+    # ---------- 최초작업일 때 ---------------------- #
+    # image: redis:7.2
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    image: jysn007/dstone-redis:v0.8
+    # --------------------------------------------- #
+    
     container_name: dstone-redis
     hostname: dstone-redis
     ports:
