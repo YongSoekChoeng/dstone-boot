@@ -45,13 +45,15 @@ spring:
 #            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
     data:  # Redis 를 Spring Session 으로 사용하기 위해 설정(3)
         redis: 
-            host: localhost
-            port: 6379
+            host: ${REDIS_HOST}
+            port: ${REDIS_PORT}
+            password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
+            timeout: 10000
     datasource: 
         common: 
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/sampleDB
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
                 username: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 password: ENC(ydLjxrknr8dD59e6E+HvxdxRaGiFa9jOCpJJDtb0uak=)
                 maximum-pool-size: 30
@@ -66,7 +68,7 @@ spring:
         sample:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/sampleDB
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/sampleDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
                 username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
                 maximum-pool-size: 30
@@ -78,42 +80,12 @@ spring:
                 jndi-lookup-name: java:comp/env/sampleDB
             networks: 
                 - backend
-        sample-oracle: 
-            hikari: 
-                driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/sampleDB
-                username: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
-                password: ENC(RxKuJmDmzNwlIYKQOUjUlAC4mm4RPraeCDJWbUh99w0=)
-                maximum-pool-size: 50
-                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
-                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
-                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
-                #initialization-fail-timeout: 0 
-                use-jndi-lookup: N
-                jndi-lookup-name: java:comp/env/xe
-            networks: 
-                - backend
-        sample-postgresql: 
-            hikari: 
-                driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:postgresql://${DB_HOST}:${DB_POST}/postgres
-                username: ENC(RnMQjHJ0qA/1SU6Z9qbcgB8sKFgs2jLQem/M+1+yhY8=)
-                password: ENC(Xo2vTpA77ch03obc64y7cBQQT90e37qG5qHOZCkyDmc=)
-                maximum-pool-size: 50
-                connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
-                max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
-                idle-timeout: 600000       # Idle 상태 커넥션의 최대 유지시간. 기본값 10분.
-                #initialization-fail-timeout: 0 
-                use-jndi-lookup: N
-                jndi-lookup-name: java:comp/env/postgres
-            networks: 
-                - backend
         analyzer:
             hikari: 
                 driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_POST}/analyze
-                username: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
-                password: ENC(tbOV8vzCOtfGOBgpBX/We1kvA0ueyPydKMOYGOaarCI=)
+                jdbc-url: jdbc:log4jdbc:mysql://${DB_HOST}:${DB_PORT}/analyzeDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+                username: ENC(/V7LzByd6FKQ2uPexJOOaY8E6gCVnRc9TcoPT/pu1y8=)
+                password: ENC(/V7LzByd6FKQ2uPexJOOaY8E6gCVnRc9TcoPT/pu1y8=)
                 maximum-pool-size: 30
                 connection-timeout: 30000  # 커넥션 풀에서 커넥션을 얻기 위한 최대 대기시간(ms). 기본값 30초.
                 max-lifetime: 1700000      # 커넥션의 최대 생존시간 (DB timeout 보다 짧게 설정 필요). 기본값 30분.
@@ -131,7 +103,7 @@ spring:
     rabbitmq: 
         enabled: true
         host: ${RABBITMQ_HOST}
-        port: ${RABBITMQ_POST}
+        port: ${RABBITMQ_PORT}
         virtual-host: /dstone-mq
         username: ENC(IIOITvsB1izl1mH7iw/A3eM5QUQ0z7HHj7sJqS9rrWI=)
         password: ENC(XIXzzg4U/6LYCwsQagqLSeGJt80UdT1bZcI0Msf0nh8=)
@@ -149,8 +121,16 @@ spring:
                 #exchange-durable: false
                 routing-key: orders.process
     redis: 
-        host: localhost
-        port: 6379
+        enabled: false
+        client-type: lettuce
+        lettuce: 
+            pool:
+                max-active: 5
+                max-idle: 5
+                min-idle: 2			
+        host: ${REDIS_HOST}
+        port: ${REDIS_PORT}
+        password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
         timeout: 10000
     security: 
         enabled: true
@@ -162,11 +142,11 @@ spring:
     swagger: 
         enabled: false
     websocket: 
-        enabled: false
+        enabled: true
         
 resources: 
     fileUp: 
-        path: D:/Temp
+        path: ${FILE_UPLOAD_ROOT}
 
 mail: 
     host: 127.0.0.1
