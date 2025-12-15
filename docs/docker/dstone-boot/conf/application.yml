@@ -18,7 +18,7 @@ server:
         encoding: 
             force-response: true
             charset: UTF-8
-        session: # Redis 를 Spring Session 으로 사용하기 위해 설정(1)
+        session:
             cookie: 
                 name: JSESSIONID
     ssl: 
@@ -28,22 +28,25 @@ server:
             - TLSv1
             - TLSv1.1
             - TLSv1.2
-        key-store: ${APP_HOME}/framework/dstone-boot/ssl/dstone-keystore.p12
+        key-store: ${APP_HOME}/dstone-boot/ssl/dstone-keystore.p12
         key-store-type: PKCS12
         key-store-password: ENC(vZbjr2NF87hEmiRHka9fUVIay5zvZeNtIRlNGHxvid8=)
         key-store-alias: dstone-ssl
 
 spring: 
-    # 스프링부트-자동설정기능(스프링시큐리티는 설정의도와 다르게 비활성화시켜도 클래스패스에 있으면 스프링부트-자동설정기능에 의해 자동으로 동작함)
+    # 스프링부트-자동설정기능
     autoconfigure: 
-        # 제외할 설정.
+        # 제외할 설정.(사용할 경우 제외설정을 주석처리 해준다.)
         exclude: 
-            # 스프링시큐리티 자동설정
+            # 스프링시큐리티 자동설정(스프링시큐리티는 설정의도와 다르게 비활성화시켜도 클래스패스에 있으면 스프링부트-자동설정기능에 의해 자동으로 동작함)
             - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-            # Redis 를 Spring Session 으로 사용하기 위해 설정(2) - 사용할 경우 주석처리.
-#            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-#            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
-    data:  # Redis 를 Spring Session 으로 사용하기 위해 설정(3)
+            # Redis 자동설정(아래의 설정을 생략한 채 spring.data.redis.~ 가 존재할 경우 Spring Boot는 무조건 Redis 연결을 시도)
+            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+            # RabbitMq 자동설정(아래의 설정을 생략한 채 spring.rabbitmq.~ 가 존재할 경우 Spring Boot는 무조건 RabbitMq 연결을 시도)
+            - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+    data:  
+        # Redis 를 Spring Session 으로 사용하기 위해 설정(3). 
         redis: 
             host: ${REDIS_HOST}
             port: ${REDIS_PORT}
@@ -134,7 +137,7 @@ spring:
         timeout: 10000
     security: 
         enabled: true
-    session:  # Redis 를 Spring Session 으로 사용하기 위해 설정(4). 사용할 경우 store-type 를 redis 로 세팅.
+    session:  # Redis 를 Spring Session 으로 사용하기 위해 설정. 사용할 경우 store-type 를 redis 로 세팅.
         store-type: none # 세션 저장소(none/redis)
         redis: 
             namespace: dstone:session # 세션을 저장하는 데 사용되는 키의 네임스페이스
@@ -159,7 +162,7 @@ sftp:
     port: 22
     username: jysn007
     password: db2admin!@
-    private-key-path: ${APP_HOME}/framework/dstone-boot/ssl/id_rsa
+    private-key-path: ${APP_HOME}/dstone-boot/ssl/id_rsa
 
 app: 
     common: 
@@ -201,7 +204,7 @@ interface:
       logout-redirect-uri: /kakao/logoutCallback.do
     google: 
       # OAuth 클라이언트ID 인증정보파일경로
-      credentials-filepath: ${APP_HOME}/framework/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-2mvsrt8dme7lmbup6epcqee3adq8mhbg.apps.googleusercontent.com.json
+      credentials-filepath: ${APP_HOME}/dstone-boot/src/main/resources/keys/google/client_secret_318736365485-2mvsrt8dme7lmbup6epcqee3adq8mhbg.apps.googleusercontent.com.json
       # Maps Platform 키
       maps-platform-key: AIzaSyDu-nIXG2yLg-Y2HgiRWKuupadjMXjnRT8
       

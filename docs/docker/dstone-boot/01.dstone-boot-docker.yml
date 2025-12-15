@@ -1,14 +1,14 @@
 ########################################################################################
 # <사전작업>
 # 1. 작업디렉토리 결정 후 템플릿 복사.
-#   /workshop/docker/dstone-boot
+#   /workshop/dstone-boot
 # <작업명령>
 # 1. Docker Compose 실행
-#   - docker-compose -f 01.dstone-boot-docker.yml up -d
+#   - docker-compose -f /workshop/dstone-boot/01.dstone-boot-docker.yml up -d
 # 2. 로그 확인
-#   - docker-compose -f 01.dstone-boot-docker.yml logs -f dstone-boot
+#   - docker-compose -f /workshop/dstone-boot/01.dstone-boot-docker.yml logs -f dstone-boot
 # 3. 중지 및 삭제
-#   - docker-compose -f 01.dstone-boot-docker.yml down -v
+#   - docker-compose -f /workshop/dstone-boot/01.dstone-boot-docker.yml down -v
 ########################################################################################
 services:
 
@@ -24,11 +24,11 @@ services:
     
     container_name: dstone-boot
     volumes:
-      - /workshop/docker/dstone-boot/target/dstone-boot.war:/workshop/dstone-boot/target/dstone-boot.war
-      - /workshop/docker/dstone-boot/bin:/workshop/dstone-boot/bin
-      - /workshop/docker/dstone-boot/conf:/workshop/dstone-boot/conf
+      - /workshop/dstone-boot/target/dstone-boot.war:/workshop/dstone-boot/target/dstone-boot.war
+      - /workshop/dstone-boot/conf:/workshop/dstone-boot/conf
+      - /workshop/dstone-boot/bin:/workshop/dstone-boot/bin
     ports:
-      - "6081:6081"
+      - "7081:7081"
     networks:
       - dstone-network
     command:
