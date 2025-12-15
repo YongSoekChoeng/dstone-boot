@@ -13,6 +13,7 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 
+import net.dstone.common.utils.ConvertUtil;
 import net.dstone.common.utils.StringUtil;
 
 @SpringBootApplication
@@ -37,22 +38,18 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 		/*** SSL/TLS 설정 체크 ***/
 	    checkSecurity();
 	    
-
 	    String appFullPath = System.getProperty("APP_HOME") + "/" + "dstone-boot";
 	    SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(DstoneBootApplication.class);
 	    Map<String,Object> prop = new HashMap<String,Object>();
 	    prop.put("spring.config.location", appFullPath + "/conf/application.yml" );
 	    prop.put("logging.config", appFullPath + "/conf/log4j2.xml" );
+	    System.out.println("/******************************* 설정파일 로딩 시작 *********************************/");
+	    System.out.println( ConvertUtil.convertToJson(prop) );
+	    System.out.println("/******************************* 설정파일 로딩 끝 *********************************/");
 	    springApplicationBuilder.properties(prop);
 	    springApplicationBuilder.listeners(new ApplicationPidFileWriter());
 	    springApplicationBuilder.run(args);
 
-	    /*
-		SpringApplication app = new SpringApplication(DstoneBootApplication.class);
-		app.addListeners(new ApplicationPidFileWriter()); // ApplicationPidFileWriter 설정
-	    app.run(args);
-	    */
-	    
 	}
 	
 	private static void setSecurity() {

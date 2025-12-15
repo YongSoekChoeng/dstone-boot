@@ -257,7 +257,7 @@ public class StringUtil {
 	 * @return String
 	 */
 	public static String subStringAfter(String str, String separator) {
-		return org.apache.commons.lang.StringUtils.substringAfter(str, separator);
+		return org.apache.commons.lang3.StringUtils.substringAfter(str, separator);
 	}
 	
 	/**
@@ -267,7 +267,7 @@ public class StringUtil {
 	 * @return String
 	 */
 	public static String subStringBefore(String str, String separator) {
-		return org.apache.commons.lang.StringUtils.substringBefore(str, separator);
+		return org.apache.commons.lang3.StringUtils.substringBefore(str, separator);
 	}
 	
 	/**
@@ -278,7 +278,7 @@ public class StringUtil {
 	 * @return String
 	 */
 	public static String subByteString(String str, int offSet, int length) {
-		return new String(org.apache.commons.lang.ArrayUtils.subarray(str.getBytes(), offSet, length));
+		return new String(org.apache.commons.lang3.ArrayUtils.subarray(str.getBytes(), offSet, length));
 	}
 	/**
 	 * <code>subByteString</code> 설명:바이트절삭 메소드.
@@ -290,7 +290,7 @@ public class StringUtil {
 	public static String subByteString(String str, int offSet, int length, String encoding) {
 		String data = "";
 		try {
-			data = new String(org.apache.commons.lang.ArrayUtils.subarray(str.getBytes(encoding), offSet, length), encoding);
+			data = new String(org.apache.commons.lang3.ArrayUtils.subarray(str.getBytes(encoding), offSet, length), encoding);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -304,7 +304,7 @@ public class StringUtil {
 	 * @return String
 	 */
 	public static String subByteString(String str, int offSet) {
-		return new String(org.apache.commons.lang.ArrayUtils.subarray(str.getBytes(), offSet, str.getBytes().length));
+		return new String(org.apache.commons.lang3.ArrayUtils.subarray(str.getBytes(), offSet, str.getBytes().length));
 	}
 	
 	/**
@@ -316,7 +316,7 @@ public class StringUtil {
 	public static String subByteString(String str, int offSet, String encoding) {
 		String data = "";
 		try {
-			data = new String(org.apache.commons.lang.ArrayUtils.subarray(str.getBytes(encoding), offSet, str.getBytes().length), encoding);
+			data = new String(org.apache.commons.lang3.ArrayUtils.subarray(str.getBytes(encoding), offSet, str.getBytes().length), encoding);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -333,7 +333,7 @@ public class StringUtil {
 	public static byte[] subByte(byte[] str, int offSet, int length) {
 		byte[] data = null;
 		try {
-			data = org.apache.commons.lang.ArrayUtils.subarray(str, offSet, length);
+			data = org.apache.commons.lang3.ArrayUtils.subarray(str, offSet, length);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -348,7 +348,7 @@ public class StringUtil {
 	public static byte[] subByte(byte[] str, int offSet) {
 		byte[] data = null;
 		try {
-			data = org.apache.commons.lang.ArrayUtils.subarray(str, offSet, str.length);
+			data = org.apache.commons.lang3.ArrayUtils.subarray(str, offSet, str.length);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -366,7 +366,7 @@ public class StringUtil {
 	public static byte[] subByteFilterBadChar(byte[] str, int offSet, int length, boolean isLenghhHold) {
 		byte[] data = null;
 		try {
-			data = org.apache.commons.lang.ArrayUtils.subarray(str, offSet, length);
+			data = org.apache.commons.lang3.ArrayUtils.subarray(str, offSet, length);
 			data = removeBadChar(data, isLenghhHold);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -384,7 +384,7 @@ public class StringUtil {
 	public static byte[] subByteFilterBadChar(byte[] str, int offSet, boolean isLenghhHold) {
 		byte[] data = null;
 		try {
-			data = org.apache.commons.lang.ArrayUtils.subarray(str, offSet, str.length);
+			data = org.apache.commons.lang3.ArrayUtils.subarray(str, offSet, str.length);
 			data = removeBadChar(data, isLenghhHold);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -587,11 +587,11 @@ public class StringUtil {
 	}
 
 	public static String escapHTML(String html) {
-		return org.apache.commons.lang.StringEscapeUtils.escapeHtml(html);
+		return org.apache.commons.lang3.StringEscapeUtils.escapeHtml3(html);
 	}
 
 	public static String unEscapHTML(String html) {
-		return org.apache.commons.lang.StringEscapeUtils.unescapeHtml(html);
+		return org.apache.commons.lang3.StringEscapeUtils.unescapeHtml3(html);
 	}
 
 	/**

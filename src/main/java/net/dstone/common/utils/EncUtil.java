@@ -1,5 +1,7 @@
 package net.dstone.common.utils;
 
+import java.security.Security;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EncUtil {
 	private static final String ENC_KEY = "jysn007db2admin";
-	
+
 	public static StringEncryptor getEncryptor() { 
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();

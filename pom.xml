@@ -314,11 +314,13 @@
 		</dependency>
 		
 		<!-- Docker -->
+		<!--
 		<dependency>
 			<groupId>com.spotify</groupId>
 			<artifactId>docker-client</artifactId>
 			<version>8.15.1</version>
 		</dependency>
+		-->
 		
 		<!-- Test -->
 		<dependency>
@@ -607,6 +609,13 @@
 				<configuration>
 					<includeSystemScope>false</includeSystemScope>
 					<mainClass>net.dstone.common.DstoneBootApplication</mainClass>
+					<!-- Nested jar 문제 발생하는 Library에 대해서 jar를 Unpacking 하여 class로 취급.(Nested jar 문제 해소)  -->
+					<requiresUnpack>
+			            <dependency>
+			                <groupId>org.bouncycastle</groupId>
+			                <artifactId>bcprov-jdk18on</artifactId>
+			            </dependency>
+			        </requiresUnpack>
 				</configuration>
 			</plugin>
 

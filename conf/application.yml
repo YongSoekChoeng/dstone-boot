@@ -135,7 +135,7 @@ spring:
         password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
         timeout: 10000
     security: 
-        enabled: false
+        enabled: true
     session:  # Redis 를 Spring Session 으로 사용하기 위해 설정(4). 사용할 경우 store-type 를 redis 로 세팅.
         store-type: none # 세션 저장소(none/redis)
         redis: 
