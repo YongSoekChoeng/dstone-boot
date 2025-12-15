@@ -3,9 +3,10 @@ package net.dstone.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
@@ -36,9 +37,22 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 		/*** SSL/TLS 설정 체크 ***/
 	    checkSecurity();
 	    
+
+	    String appFullPath = System.getProperty("APP_HOME") + "/" + "dstone-boot";
+	    SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(DstoneBootApplication.class);
+	    Map<String,Object> prop = new HashMap<String,Object>();
+	    prop.put("spring.config.location", appFullPath + "/conf/application.yml" );
+	    prop.put("logging.config", appFullPath + "/conf/log4j2.xml" );
+	    springApplicationBuilder.properties(prop);
+	    springApplicationBuilder.listeners(new ApplicationPidFileWriter());
+	    springApplicationBuilder.run(args);
+
+	    /*
 		SpringApplication app = new SpringApplication(DstoneBootApplication.class);
 		app.addListeners(new ApplicationPidFileWriter()); // ApplicationPidFileWriter 설정
 	    app.run(args);
+	    */
+	    
 	}
 	
 	private static void setSecurity() {

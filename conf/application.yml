@@ -38,11 +38,13 @@ spring:
     autoconfigure: 
         # 제외할 설정.
         exclude: 
-            # 스프링시큐리티 자동설정
+            # 스프링시큐리티 자동설정(스프링시큐리티는 설정의도와 다르게 비활성화시켜도 클래스패스에 있으면 스프링부트-자동설정기능에 의해 자동으로 동작함)
             - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-            # Redis 를 Spring Session 으로 사용하기 위해 설정(2) - 사용할 경우 주석처리.
-#            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-#            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+            # Redis 자동설정(아래의 설정을 생략한 채 spring.data.redis.~ 가 존재할 경우 Spring Boot는 무조건 Redis 연결을 시도)
+            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+            # RabbitMq 자동설정(아래의 설정을 생략한 채 spring.rabbitmq.~ 가 존재할 경우 Spring Boot는 무조건 RabbitMq 연결을 시도)
+            - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
     data:  # Redis 를 Spring Session 으로 사용하기 위해 설정(3)
         redis: 
             host: ${REDIS_HOST}
