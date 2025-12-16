@@ -8,11 +8,11 @@ public class TestBean {
 		
 		//TestBean.테스트();
 		
-		//TestBean.암복호화();
+		TestBean.암복호화();
 		//TestBean.파일분리();
 		//TestBean.DB테스트();
 		//TestBean.레빗엠큐테스트();
-		TestBean.레디스테스트();
+		//TestBean.레디스테스트();
 		
 	}
 	
@@ -34,8 +34,8 @@ public class TestBean {
 
 		try {
 
-			String plainStr = "db2admin!@";
-			String encStr = "";
+			String plainStr = "";
+			String encStr = "NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=";
 			String decStr = "";
 
 			if (!net.dstone.common.utils.StringUtil.isEmpty(plainStr)) {
@@ -179,9 +179,9 @@ public class TestBean {
 		
 		/*****************************************************/
 		java.util.Map<String,Object> initValMap = new java.util.HashMap<String,Object>();
-		initValMap.put("spring.redis.host", "localhost");
-		initValMap.put("spring.redis.port", "6379");
-		initValMap.put("spring.redis.password", "db2admin!@");
+		initValMap.put("spring.data.redis.host", "localhost");
+		initValMap.put("spring.data.redis.port", "6379");
+		initValMap.put("spring.data.redis.password", "db2admin!@");
 		
 		java.util.Map<String,Object> valMap = new java.util.HashMap<String,Object>();
 		valMap.put("NAME", "정용석");

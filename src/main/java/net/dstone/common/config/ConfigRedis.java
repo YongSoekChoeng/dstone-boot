@@ -13,23 +13,23 @@ import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.RedisUtil;
 
 @Configuration
-@ConditionalOnProperty(name = "spring.redis.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "spring.data.redis.enabled", havingValue = "true")
 public class ConfigRedis extends BaseObject {
 	
-    @Value("${spring.redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
-    @Value("${spring.redis.port}")
+    @Value("${spring.data.redis.port}")
     private int redisPort;
-    @Value("${spring.redis.password}")
+    @Value("${spring.data.redis.password}")
     private String redisPassword;
     
     @Bean
     public RedisTemplate<String,Object> redisTemplate() {
     	
     	Map<String,Object> initValMap = new HashMap<String,Object>();
-    	initValMap.put("spring.redis.host", redisHost);
-    	initValMap.put("spring.redis.port", redisPort);
-    	initValMap.put("spring.redis.password", redisPassword);
+    	initValMap.put("spring.data.redis.host", redisHost);
+    	initValMap.put("spring.data.redis.port", redisPort);
+    	initValMap.put("spring.data.redis.password", redisPassword);
 
         return RedisUtil.getInstance(initValMap).getRedisTemplate();
     }

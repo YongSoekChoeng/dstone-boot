@@ -35,9 +35,9 @@ public class RedisUtil {
     public RedisTemplate<String, Object> getRedisTemplate() {
     	
     	RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-    	redisConfiguration.setHostName(initValMap.get("spring.redis.host").toString());
-    	redisConfiguration.setPort(Integer.parseInt(initValMap.get("spring.redis.port").toString()));
-    	redisConfiguration.setPassword(initValMap.get("spring.redis.password").toString());
+    	redisConfiguration.setHostName(initValMap.get("spring.data.redis.host").toString());
+    	redisConfiguration.setPort(Integer.parseInt(initValMap.get("spring.data.redis.port").toString()));
+    	redisConfiguration.setPassword(initValMap.get("spring.data.redis.password").toString());
     	LettuceConnectionFactory factory  = new LettuceConnectionFactory(redisConfiguration);
     	
     	factory.afterPropertiesSet();

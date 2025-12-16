@@ -609,7 +609,7 @@
 				<configuration>
 					<includeSystemScope>false</includeSystemScope>
 					<mainClass>net.dstone.common.DstoneBootApplication</mainClass>
-					<!-- Nested jar 문제 발생하는 Library에 대해서 jar를 Unpacking 하여 class로 취급.(Nested jar 문제 해소)  -->
+					<!-- JDK17 이후 보안강화로 발생하는 Nested jar 문제에 대한 처리. 서명이 필요한 Library에 대해서 jar를 Unpacking 하여 class로 취급 하도록 처리하는 기능.(Nested jar 문제 해소)  -->
 					<requiresUnpack>
 			            <dependency>
 			                <groupId>org.bouncycastle</groupId>
