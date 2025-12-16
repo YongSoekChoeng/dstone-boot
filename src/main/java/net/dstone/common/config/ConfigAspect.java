@@ -1,7 +1,5 @@
 package net.dstone.common.config;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import net.dstone.common.core.BaseObject;
 import net.dstone.common.utils.ConvertUtil;
 import net.dstone.common.utils.StringUtil;
@@ -68,12 +68,16 @@ public class ConfigAspect extends BaseObject {
 		String methodName = joinPoint.getSignature().getName();
 		StringBuffer paramListInfo = new StringBuffer();
 		int args = joinPoint.getArgs().length;
+		int setNum = 0;
 		for (int i = 0; i < args; i++) {
 			Object param = joinPoint.getArgs()[i];
-
-			if (param instanceof String) {
+			if (param instanceof HttpServletRequest) {
+				continue;
+			}else if (param instanceof HttpServletResponse) {
+				continue;
+			}else if (param instanceof String) {
 				paramListInfo.append("String" + "[" + param + "]");
-			} else {
+			}else{
 				String result = "";
 				try {
 					result = ToStringBuilder.reflectionToString(param, ToStringStyle.SHORT_PREFIX_STYLE);
@@ -83,10 +87,10 @@ public class ConfigAspect extends BaseObject {
 				}
 				paramListInfo.append(result);
 			}
-
-			if (i < joinPoint.getArgs().length - 1) {
+			if (setNum > 0) {
 				paramListInfo.append(", ");
 			}
+			setNum++;
 		}
 		buffer.append(className + "." + methodName + "(" + paramListInfo + ")");
 		return splitToLines(buffer.toString(),  tabSpace);
