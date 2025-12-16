@@ -131,7 +131,7 @@
             "name": "app.fanout.exchange",
             "vhost": "/dstone-mq",
             "type": "fanout",
-            "durable": false,
+            "durable": true,
             "auto_delete": false,
             "internal": false,
             "arguments": {}
@@ -140,7 +140,7 @@
             "name": "app.direct.exchange",
             "vhost": "/dstone-mq",
             "type": "direct",
-            "durable": false,
+            "durable": true,
             "auto_delete": false,
             "internal": false,
             "arguments": {}

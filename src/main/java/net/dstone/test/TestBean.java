@@ -1,5 +1,6 @@
 package net.dstone.test;
 
+import net.dstone.common.utils.DateUtil;
 import net.dstone.common.utils.StringUtil;
 
 public class TestBean {
@@ -8,10 +9,10 @@ public class TestBean {
 		
 		//TestBean.테스트();
 		
-		TestBean.암복호화();
+		//TestBean.암복호화();
 		//TestBean.파일분리();
 		//TestBean.DB테스트();
-		//TestBean.레빗엠큐테스트();
+		TestBean.레빗엠큐테스트();
 		//TestBean.레디스테스트();
 		
 	}
@@ -141,7 +142,7 @@ public class TestBean {
 		
 		paramDs.setDatum("exchangeId", "app.direct.exchange");
 		paramDs.setDatum("routingKey", "orders.process");
-		paramDs.setDatum("message", "direct 메세지... 헐헐헐~");
+		paramDs.setDatum("message", "direct 메세지... 헐헐헐~ 보낸시간:" + DateUtil.getToDate("yyyyMMdd-HH:mm:ss"));
 		
 		/*****************************************************/
 		
