@@ -2,6 +2,11 @@
 Sample 데이터베이스[Application용] 데이터
 **********************************************/
 
+SET NAMES utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+
 USE sampleDB;
 
 TRUNCATE TABLE SAMPLE_MEMBER;
