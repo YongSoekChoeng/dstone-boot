@@ -4,11 +4,11 @@
 #   /workshop/dstone-redis
 # <작업명령>
 # 1. Docker Compose 실행
-#   - docker-compose -f /workshop/dstone-redis/01.dstone-redis-docker.yml up -d
+#   - docker-compose -p dstone -f /workshop/dstone-redis/01.dstone-redis-docker.yml up -d
 # 2. 로그 확인
-#   - docker-compose -f /workshop/dstone-redis/01.dstone-redis-docker.yml logs -f dstone-redis
+#   - docker-compose -p dstone -f /workshop/dstone-redis/01.dstone-redis-docker.yml logs -f dstone-redis
 # 3. 중지 및 삭제
-#   - docker-compose -f /workshop/dstone-redis/01.dstone-redis-docker.yml down -v
+#   - docker-compose -p dstone -f /workshop/dstone-redis/01.dstone-redis-docker.yml down -v
 ########################################################################################
 services:
 
@@ -30,10 +30,7 @@ services:
       nofile:
         soft: 10032
         hard: 10032
-    command: >
-      redis-server
-      --appendonly yes
-      --requirepass "db2admin!@"
+    command: ["redis-server", "--protected-mode", "no"]
       
     ###########################################################  
     # 서비스 내부 Volumes (바인드 마운트 vs 볼륨 참조)
@@ -58,11 +55,6 @@ services:
     networks:
       - dstone-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "db2admin!@", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 networks:
   dstone-network:
