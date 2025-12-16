@@ -18,7 +18,7 @@ server:
         encoding: 
             force-response: true
             charset: UTF-8
-        session:
+        session: 
             cookie: 
                 name: JSESSIONID
     ssl: 
@@ -34,24 +34,43 @@ server:
         key-store-alias: dstone-ssl
 
 spring: 
-    # 스프링부트-자동설정기능
+    main: 
+        allow-bean-definition-overriding: true
+    ##########################################################################################
+    # <자동설정기능>
+    # 설정의도와 다르게 비활성화시켜도 클래스패스에 있으면 스프링부트-자동설정기능에 의해 자동으로 동작하는 기능들이 있음. 
+    # 따라서 설정의도가 OFF라고 할 때 설정의도대로 하려면 부가적으로 아래의 설정을 해주어야 함.
+    ##########################################################################################
     autoconfigure: 
-        # 제외할 설정.(사용할 경우 제외설정을 주석처리 해준다.)
+        # 제외할 설정.
         exclude: 
-            # 스프링시큐리티 자동설정(스프링시큐리티는 설정의도와 다르게 비활성화시켜도 클래스패스에 있으면 스프링부트-자동설정기능에 의해 자동으로 동작함)
-            - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-            # Redis 자동설정(아래의 설정을 생략한 채 spring.data.redis.~ 가 존재할 경우 Spring Boot는 무조건 Redis 연결을 시도)
-            - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-            - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
-            # RabbitMq 자동설정(아래의 설정을 생략한 채 spring.rabbitmq.~ 가 존재할 경우 Spring Boot는 무조건 RabbitMq 연결을 시도)
-            - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-    data:  
-        # Redis 를 Spring Session 으로 사용하기 위해 설정(3). 
+            # 스프링시큐리티 사용시 주석처리. 비사용시 주석제거.(스프링시큐리티는 설정의도와 다르게 비활성화시켜도 클래스패스에 있으면 스프링부트-자동설정기능에 의해 자동으로 동작함)
+            #- org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+            # Redis 사용시 주석처리. 비사용시 주석제거.(아래의 설정을 생략한 채 spring.data.redis.~ 가 존재할 경우 Spring Boot는 무조건 Redis 연결을 시도)
+            #- org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+            #- org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+            # RabbitMq 사용시 주석처리. 비사용시 주석제거.(아래의 설정을 생략한 채 spring.rabbitmq.~ 가 존재할 경우 Spring Boot는 무조건 RabbitMq 연결을 시도)
+            #- org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+    security: 
+        enabled: true
+    session:  # Redis 를 Spring Session 으로 사용할 경우 store-type 를 redis 로 세팅.
+        store-type: redis # 세션 저장소(none/redis)
         redis: 
+            namespace: dstone:session # 세션을 저장하는 데 사용되는 키의 네임스페이스					
+    data:  
+        # Redis 설정
+        redis: 
+            enabled: true
+            client-type: lettuce
+            lettuce: 
+                pool:
+                    max-active: 5
+                    max-idle: 5
+                    min-idle: 2			
             host: ${REDIS_HOST}
             port: ${REDIS_PORT}
-            password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
-            timeout: 10000
+            password: 
+            timeout: 10000			
     datasource: 
         common: 
             hikari: 
@@ -101,8 +120,7 @@ spring:
     devtools: 
         restart: 
             enabled: true
-    main: 
-        allow-bean-definition-overriding: true
+    # RabbitMq 설정		
     rabbitmq: 
         enabled: true
         host: ${RABBITMQ_HOST}
@@ -123,24 +141,6 @@ spring:
                 exchange-id: app.direct.exchange # (direct)라우팅 키가 정확히 일치하는 큐로 메시지를 전달
                 #exchange-durable: false
                 routing-key: orders.process
-    redis: 
-        enabled: false
-        client-type: lettuce
-        lettuce: 
-            pool:
-                max-active: 5
-                max-idle: 5
-                min-idle: 2			
-        host: ${REDIS_HOST}
-        port: ${REDIS_PORT}
-        password: ENC(NY+sJtk3ncS4BARnhaHgJKF/oAbqpjdILYPvFhyShAc=)
-        timeout: 10000
-    security: 
-        enabled: true
-    session:  # Redis 를 Spring Session 으로 사용하기 위해 설정. 사용할 경우 store-type 를 redis 로 세팅.
-        store-type: none # 세션 저장소(none/redis)
-        redis: 
-            namespace: dstone:session # 세션을 저장하는 데 사용되는 키의 네임스페이스
     # 스웨거 생성기능(http://xxxxx:xxxx/swagger-ui.html 로 접근)
     swagger: 
         enabled: false

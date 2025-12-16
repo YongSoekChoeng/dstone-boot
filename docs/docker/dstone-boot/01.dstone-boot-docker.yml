@@ -39,8 +39,8 @@ services:
         chmod +x /workshop/dstone-boot/bin/startApp.sh
         cd /workshop/dstone-boot/bin
         ./startApp.sh
-#    restart: unless-stopped
-    restart: "no"
+    restart: unless-stopped
+    #restart: "no"
 
 networks:
   dstone-network:
