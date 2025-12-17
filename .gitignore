@@ -28,3 +28,4 @@ HELP.md
 ### VS Code ###
 .vscode/
 /.apt_generated_tests/
+/docs/docker/dstone-boot/target
