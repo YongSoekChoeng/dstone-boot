@@ -132,9 +132,9 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 			try {
 				String profile = "local";
 				if( !StringUtil.isEmpty(System.getProperty("spring.profiles.active")) ) {
-					profile = System.getenv("spring.profiles.active");
+					profile = System.getenv("spring.profiles.active").trim().toLowerCase();
 				}else if( !StringUtil.isEmpty(System.getenv("spring.profiles.active")) ) {
-					profile = System.getProperty("spring.profiles.active", "local").toLowerCase();
+					profile = System.getProperty("spring.profiles.active", "local").trim().toLowerCase();
 				}
 				if("local".equals(profile)) {
 					profile = "";
