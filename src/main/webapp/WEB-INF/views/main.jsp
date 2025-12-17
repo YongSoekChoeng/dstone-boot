@@ -74,12 +74,12 @@ String sysInfo = SystemUtil.getAllSystemProperties("\r\n");
 						<!-- Content Start  -->
 						
 						<span id="LOGOUT_SPAN" style="display: none">
-						AJAX 로그아웃
+						AJAX 로그아웃.
 						<form name="AJAX_FORM" method="post" action="">
 						<input type="button" value="GO" onclick="javascript:goLogoutAjax();" >
 						</form>
 						<br>
-						폼서밋 로그아웃
+						폼서밋 로그아웃.
 						<form name="SUBMIT_FORM" method="post" action="">
 						<input type="button" value="GO" onclick="javascript:doLogoutSubmit();" >
 						</form>
