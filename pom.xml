@@ -512,7 +512,7 @@
                 <directory>conf</directory>
                 <targetPath>${project.basedir}/target/classes</targetPath>
 				<includes>
-					<include>env.properties</include>
+					<include>*.properties</include>
 				</includes>
             </resource>
             <resource>

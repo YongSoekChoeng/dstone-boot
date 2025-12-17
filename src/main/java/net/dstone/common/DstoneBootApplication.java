@@ -14,6 +14,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 
 import net.dstone.common.utils.ConvertUtil;
+import net.dstone.common.utils.LogUtil;
 import net.dstone.common.utils.StringUtil;
 
 @SpringBootApplication
@@ -38,14 +39,18 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 		/*** SSL/TLS 설정 체크 ***/
 	    checkSecurity();
 	    
-	    String appFullPath = System.getProperty("APP_HOME") + "/" + "dstone-boot";
+	    StringBuffer msg = new StringBuffer();
+	    String appConfDir = System.getProperty("APP_CONF_DIR");
 	    SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(DstoneBootApplication.class);
 	    Map<String,Object> prop = new HashMap<String,Object>();
-	    prop.put("spring.config.location", appFullPath + "/conf/application.yml" );
-	    prop.put("logging.config", appFullPath + "/conf/log4j2.xml" );
-	    System.out.println("/******************************* 설정파일 로딩 시작 *********************************/");
-	    System.out.println( ConvertUtil.convertToJson(prop) );
-	    System.out.println("/******************************* 설정파일 로딩 끝 *********************************/");
+	    prop.put("spring.config.location", appConfDir + "/application.yml" );
+	    prop.put("logging.config", appConfDir + "/log4j2.xml" );
+	    
+	    msg.append("/******************************* 설정파일 로딩 시작 *********************************/").append("\n");
+	    msg.append( ConvertUtil.convertToJson(prop) ).append("\n");
+	    msg.append("/******************************* 설정파일 로딩 끝 *********************************/").append("\n");
+	    LogUtil.sysout(msg);
+	    
 	    springApplicationBuilder.properties(prop);
 	    springApplicationBuilder.listeners(new ApplicationPidFileWriter());
 	    springApplicationBuilder.run(args);
@@ -112,7 +117,7 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 			msg.append("jdk.tls.disabledAlgorithms").append(":").append(java.security.Security.getProperty("jdk.tls.disabledAlgorithms")).append("\n");
 			msg.append("/******************************* SSL/TLS 설정 체크 끝 *********************************/").append("\n");
 			
-			System.out.println(msg.toString());
+			LogUtil.sysout(msg);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -125,8 +130,15 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 			IS_SYS_PROPERTIES_SET = true;
 			StringBuffer msg = new StringBuffer();
 			try {
-				msg.append("/******************************* env.properties System변수로 세팅 하기위한 조치 시작 *********************************/").append("\n");
-				java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource("env.properties");
+				String profile = System.getProperty("spring.profiles.active", "local").toLowerCase();
+				if("local".equals(profile)) {
+					profile = "";
+				}else {
+					profile = "-"+profile;
+				}
+				String envFile = "env"+profile+".properties";
+				msg.append("/******************************* "+envFile+" System변수로 세팅 하기위한 조치 시작 *********************************/").append("\n");
+				java.net.URL resource = DstoneBootApplication.class.getClassLoader().getResource(envFile);
 				if (resource != null) {
 			        try (InputStream input = resource.openStream()) {
 			        	Properties props = new Properties();
@@ -149,9 +161,9 @@ public class DstoneBootApplication extends SpringBootServletInitializer {
 			            ex.printStackTrace();
 			        }
 				}
-				msg.append("/******************************* env.properties System변수로 세팅 하기위한 조치 끝  *********************************/").append("\n");
+				msg.append("/******************************* "+envFile+" System변수로 세팅 하기위한 조치 끝  *********************************/").append("\n");
 
-				System.out.println(msg.toString());
+				LogUtil.sysout(msg);
 				
 			} catch (Exception e) {
 				// TODO: handle exception

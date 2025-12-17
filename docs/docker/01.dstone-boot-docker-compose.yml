@@ -1,30 +1,32 @@
 ########################################################################################
 # <사전작업>
-# 1. 작업디렉토리 결정 후 템플릿(dstone-batch/docs/docker) 복사.
-#   예) /workshop/docker 
-# 2. 배치서버 Application 복사.
-#   - dstone-batch/target/dstone-batch-0.0.1-SNAPSHOT.jar
-# 3. 배치관리서버 Application 복사.
-#   - dstone-batch-server/dataflow/spring-cloud-dataflow-server-2.11.5.jar
+# 1. 작업디렉토리 결정 후 템플릿 복사.
+#   /workshop
 # <작업명령>
 # 1. Docker Compose 실행
-#   - docker-compose -f 01.dstone-batch-docker-compose.yml up -d
+#   - docker-compose -p dstone -f /workshop/01.dstone-boot-docker-compose.yml up -d
 # 2. 로그 확인
-#   - docker-compose -f 01.dstone-batch-docker-compose.yml logs -f
+#   - docker-compose -p dstone -f /workshop/01.dstone-boot-docker-compose.yml logs -f
 # 3. 중지 및 삭제
-#   - docker-compose -f 01.dstone-batch-docker-compose.yml down -v
+#   - docker-compose -p dstone -f /workshop/01.dstone-boot-docker-compose.yml down -v
 ########################################################################################
 services:
+  
   # MySQL 데이터베이스 서버
-  dstone-mysql:
-    image: mysql:8.0
+  dstone-mysql:  
+    # ---------- 최초작업일 때 ---------------------- #
+    # image: mysql:8.0
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    image: jysn007/dstone-mysql:latest
+    # --------------------------------------------- #    
     container_name: dstone-mysql
     environment:
       MYSQL_ROOT_PASSWORD: db2admin!@
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_0900_ai_ci
     ports:
-      - "33060:3306"
+      - "3306:3306"  
     volumes:
       - mysql-data:/var/lib/mysql
       - ./dstone-mysql/init-db:/docker-entrypoint-initdb.d
@@ -39,75 +41,108 @@ services:
       timeout: 5s
       retries: 5
 
-  # 배치서버 Application
-  dstone-batch:
-    image: eclipse-temurin:21-jdk
-    container_name: dstone-batch
-    working_dir: /workshop
-    volumes:
-      - ./dstone-batch/target/dstone-batch-0.0.1-SNAPSHOT.jar:/workshop/dstone-batch/target/dstone-batch-0.0.1-SNAPSHOT.jar
-      - ./dstone-batch/bin:/workshop/dstone-batch/bin
-      - ./dstone-batch/conf:/workshop/dstone-batch/conf
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://dstone-mysql:3306/sampleDB?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: sampleuser
-      SPRING_DATASOURCE_PASSWORD: sampleuser
-      SPRING_BATCH_JDBC_INITIALIZE_SCHEMA: always
-      TZ: Asia/Seoul
+  # RabbitMQ 서버
+  dstone-rabbitmq:    
+    # ---------- 최초작업일 때 ---------------------- #
+    # image: rabbitmq:3.13-management
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    image: jysn007/dstone-rabbitmq:latest
+    # --------------------------------------------- #    
+    container_name: dstone-rabbitmq
+    hostname: dstone-rabbitmq
     ports:
-      - "6081:6081"
-    depends_on:
-      dstone-mysql:
-        condition: service_healthy
+      - "5672:5672"   # AMQP 프로토콜 포트
+      - "15672:15672" # Management UI 포트
+    environment:
+      ###########################################################  
+      # RABBITMQ_DEFAULT_USER/PASS/VHOST 와 RABBITMQ_LOAD_DEFINITIONS안에 
+      # 동일한 사용자/브이호스트가 있으면 definitions 로딩이 스킵될 수 있음.
+      # 따라서 RABBITMQ_LOAD_DEFINITIONS을 쓸 경우 RABBITMQ_DEFAULT_USER/PASS/VHOST 제거.
+      ###########################################################  
+      #RABBITMQ_DEFAULT_USER: jysn007
+      #RABBITMQ_DEFAULT_PASS: db2admin!@
+      #RABBITMQ_DEFAULT_VHOST: /
+      RABBITMQ_LOAD_DEFINITIONS: /etc/rabbitmq/definitions.json
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+      - ./dstone-rabbitmq/init-data/dstone-rabbitmq_data.json:/etc/rabbitmq/definitions.json:ro
+      # 설정 파일 마운트
+      - ./dstone-rabbitmq/init-data/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
       - dstone-network
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      
+  # Redis 서버
+  dstone-redis:    
+    # ---------- 최초작업일 때 ---------------------- #
+    # image: redis:7.2
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    image: jysn007/dstone-redis:latest
+    # --------------------------------------------- #    
+    container_name: dstone-redis
+    hostname: dstone-redis
+    ports:
+      - "6379:6379"   # Redis 기본 포트
+    ulimits:
+      nofile:
+        soft: 10032
+        hard: 10032
+    command: ["redis-server", "--protected-mode", "no"] 
+    volumes:
+      - redis_data:/data
+    networks:
+      - dstone-network
+    restart: unless-stopped
+      
+  # Application 프레임웍 
+  dstone-boot:
+    # ---------- 최초작업일 때 ---------------------- #
+    # image: eclipse-temurin:21-jdk
+    # --------------------------------------------- #    
+    # ---------- Docker Hub 에서 가져올 때 ---------- #
+    image: jysn007/dstone-boot:latest
+    # --------------------------------------------- #    
+    container_name: dstone-boot
+    ports:
+      - "7081:7081"
+    volumes:
+      - /workshop/dstone-boot/target/dstone-boot.war:/workshop/dstone-boot/target/dstone-boot.war
+      - /workshop/dstone-boot/conf:/workshop/dstone-boot/conf
+    networks:
+      - dstone-network
+    depends_on:
+      - dstone-mysql
+      - dstone-rabbitmq
+      - dstone-redis
     command:
       - /bin/bash
       - -c
       - |
-        echo "Waiting for MySQL to be ready..."
-        sleep 10
-        echo "Starting Spring Batch Application..."
-        chmod +x /workshop/dstone-batch/bin/startApp.sh
-        cd /workshop/dstone-batch/bin
-        ./startApp.sh
+        echo "Starting Spring Boot Application..."
+        java -Xms512m -Xmx1024m -Dspring.profiles.active=dev -jar /workshop/dstone-boot/target/dstone-boot.war net.dstone.DstoneBootApplication
     restart: unless-stopped
-
-  # 배치관리서버 Application
-  dstone-batch-server:
-    image: eclipse-temurin:21-jdk
-    container_name: dstone-batch-server
-    working_dir: /workshop
-    volumes:
-      - ./dstone-batch-server:/workshop/dstone-batch-server
-      - ./dstone-batch/target:/workshop/dstone-batch-server/applications
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://dstone-mysql:3306/dataflow?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: dataflow
-      SPRING_DATASOURCE_PASSWORD: dataflow
-      TZ: Asia/Seoul
-    ports:
-      - "9393:9393"
-    depends_on:
-      dstone-mysql:
-        condition: service_healthy
-    networks:
-      - dstone-network
-    command: 
-      - /bin/bash
-      - -c
-      - |
-        echo "Waiting for MySQL to be ready..."
-        sleep 10
-        echo "Starting Batch Management Server..."
-        chmod +x /workshop/dstone-batch-server/01.dataflow.sh
-        cd /workshop/dstone-batch-server
-        ./01.dataflow.sh
-    restart: unless-stopped
+    #restart: "no"
 
 networks:
   dstone-network:
     driver: bridge
 
 volumes:
+  # MySQL 볼륨
   mysql-data:
+  # RabbitMQ 볼륨
+  rabbitmq_data:
+    driver: local
+  rabbitmq_log:
+    driver: local
+  # Redis 볼륨
+  redis_data:
+    driver: local
