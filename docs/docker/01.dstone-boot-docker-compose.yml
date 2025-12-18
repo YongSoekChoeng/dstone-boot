@@ -1,7 +1,15 @@
 ########################################################################################
+# <컨테이너목록>
+# * 아래의 모든 컨테이너들을 일괄로 생성한다.
+# 1. dstone-mysql(데이터베이스)
+# 2. dstone-rabbitmq(RabbitMQ)
+# 3. dstone-redis(Redis)
+# 4. dstone-boot(Application 프레임웍)
+# 
 # <사전작업>
 # 1. 작업디렉토리 결정 후 템플릿 복사.
 #   /workshop
+# 
 # <작업명령>
 # 1. Docker Compose 실행
 #   - docker-compose -p dstone -f /workshop/01.dstone-boot-docker-compose.yml up -d
