@@ -4,12 +4,29 @@
 # 1. dstone-mysql(데이터베이스)
 # 2. dstone-rabbitmq(RabbitMQ)
 # 3. dstone-redis(Redis)
-# 4. dstone-boot(Application 프레임웍)
+# 4. dstone-boot(프레임웍 Application)
 # 
 # <사전작업>
 # 1. 작업디렉토리 결정 후 템플릿 복사.
 #   /workshop
-# 
+#     └─ /dstone-boot                              # <Boot Application>
+#        ├─ conf/                                  #   설정 파일
+#        ├─ target/                                #   실행 파일
+#        ├─ 01.dstone-boot-docker.yml              #   개별 Docker Compose 빌드파일
+#        └─ 02.dstone-boot-docker-reg.sh           #   Docker Hub 등록 Shell
+#     └─ /dstone-mysql                             # <Database (MySQL)>
+#        ├─ init-db/                               #   DB 초기화 스크립트
+#        ├─ 01.dstone-mysql-docker.yml             #   개별 Docker Compose 빌드파일
+#        └─ 02.dstone-mysql-docker-reg.sh          #   Docker Hub 등록 Shell
+#     └─ /dstone-rabbitmq                          # <RabbitMQ>
+#        ├─ init-data/                             #   초기 데이터
+#        ├─ 01.dstone-rabbitmq-docker.yml          #   개별 Docker Compose 빌드파일
+#        └─ 02.dstone-rabbitmq-docker-reg.sh       #   Docker Hub 등록 Shell
+#     └─ /workshop/dstone-redis                    # <Redis>
+#        ├─ 01.dstone-redis-docker.yml             #   개별 Docker Compose 빌드파일
+#        └─ 02.dstone-redis-docker-reg.sh          #   Docker Hub 등록 Shell
+#     └─ /workshop/dstone-boot-docker-compose.yml  # 메인 Docker Compose 빌드파일
+#
 # <작업명령>
 # 1. Docker Compose 실행
 #   - docker-compose -p dstone -f /workshop/dstone-boot-docker-compose.yml up -d
@@ -110,7 +127,7 @@ services:
       - dstone-network
     restart: unless-stopped
       
-  # Application 프레임웍 
+  # 프레임웍 Application 
   dstone-boot:
     # ---------- 최초작업일 때 ---------------------- #
     image: eclipse-temurin:21-jdk
