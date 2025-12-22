@@ -13,6 +13,9 @@ pipeline {
             steps {
                 echo '====== Git Checkout ======'
                 checkout scm
+                script {
+                    echo "Current branch: ${env.GIT_BRANCH}"
+                }
             }
         }
         
