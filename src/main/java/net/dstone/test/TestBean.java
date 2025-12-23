@@ -7,21 +7,29 @@ public class TestBean {
 
 	public static void main(String[] args) {
 		
-		//TestBean.테스트();
+		TestBean.테스트();
 		
 		//TestBean.암복호화();
 		//TestBean.파일분리();
 		//TestBean.DB테스트();
-		TestBean.레빗엠큐테스트();
+		//TestBean.레빗엠큐테스트();
 		//TestBean.레디스테스트();
 		
 	}
 	
 
 	public static void 테스트() {
-		
-		System.out.println( net.dstone.common.tools.analyzer.util.DbGen.getDdlQuery("MYSQL", "CREATE"));
-		
+		try {
+			
+			String[] fileList = net.dstone.common.utils.FileUtil.readFileListAll("D:\\AppHome\\framework");
+			for( String file : fileList ) {
+				if( file.endsWith(".md") ) {
+					System.out.println(file);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	
