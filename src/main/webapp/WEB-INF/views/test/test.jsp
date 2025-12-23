@@ -69,7 +69,7 @@
 					<section>
 						<!-- =============================================== Content 영역 Start =============================================== -->
 						   
-						** 폼서밋 테스트<%=("Y".equals(successYn)?"성공":("N".equals(successYn)?"실패":"")) %><br>
+						*** 폼서밋 테스트<%=("Y".equals(successYn)?"성공":("N".equals(successYn)?"실패":"")) %><br>
 						<form name="SUBMIT_FORM" method="post" action="">
 						TEST_PARAM1:<input type="text" name="MY_NAME" value="TEST..." >
 						<br>
@@ -85,7 +85,7 @@
 						<br>
 						<br>
 						
-						** AJAX 테스트<span id="successYn"></span><br>
+						*** AJAX 테스트<span id="successYn"></span><br>
 						<form name="AJAX_FORM" method="post" action="">
 						TEST_PARAM1:<input type="text" name="MY_NAME" value="TEST..." >
 						<br>
