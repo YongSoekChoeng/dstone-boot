@@ -102,7 +102,7 @@ pipeline {
         }
         always {
             echo '====== Cleanup ======'
-            cleanWs()
+            deleteDir()
         }
     }
 }
