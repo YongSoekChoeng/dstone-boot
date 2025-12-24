@@ -4,11 +4,11 @@
 #   /workshop/dstone-boot
 # <작업명령>
 # 1. Docker Compose 실행
-#   - docker-compose -p dstone -f /workshop/dstone-boot/01.dstone-boot-docker.yml up -d
+#   - docker compose -p dstone -f /workshop/dstone-boot/01.dstone-boot-docker.yml up -d
 # 2. 로그 확인
-#   - docker-compose -p dstone -f /workshop/dstone-boot/01.dstone-boot-docker.yml logs -f dstone-boot
+#   - docker compose -p dstone -f /workshop/dstone-boot/01.dstone-boot-docker.yml logs -f dstone-boot
 # 3. 중지 및 삭제
-#   - docker-compose -p dstone -f /workshop/dstone-boot/01.dstone-boot-docker.yml down -v
+#   - docker compose -p dstone -f /workshop/dstone-boot/01.dstone-boot-docker.yml down -v
 ########################################################################################
 services:
 

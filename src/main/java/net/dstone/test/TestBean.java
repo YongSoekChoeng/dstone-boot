@@ -24,7 +24,20 @@ public class TestBean {
 			String[] fileList = net.dstone.common.utils.FileUtil.readFileListAll("D:\\AppHome\\framework");
 			for( String file : fileList ) {
 				if( file.endsWith(".md") ||  file.endsWith(".yml") ) {
+
+					String filePath = net.dstone.common.utils.FileUtil.getFilePath(file);
+					String fileName = net.dstone.common.utils.FileUtil.getFileName(file, true);
+					String fileConts = net.dstone.common.utils.FileUtil.readFile(file);
+
 					System.out.println(file);
+					
+					String str = "docker-compose -";
+					if(fileConts.indexOf(str) > -1) {
+						String repl = "docker compose -";
+						fileConts = net.dstone.common.utils.StringUtil.replace(fileConts, str, repl);
+						net.dstone.common.utils.FileUtil.writeFile(filePath, fileName, fileConts);
+					}
+					
 				}
 			}
 		} catch (Exception e) {
