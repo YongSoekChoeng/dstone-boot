@@ -23,7 +23,7 @@ public class TestBean {
 			
 			String[] fileList = net.dstone.common.utils.FileUtil.readFileListAll("D:\\AppHome\\framework");
 			for( String file : fileList ) {
-				if( file.endsWith(".md") ) {
+				if( file.endsWith(".md") ||  file.endsWith(".yml") ) {
 					System.out.println(file);
 				}
 			}
